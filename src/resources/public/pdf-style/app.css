@@ -1,0 +1,193 @@
+/*
+ * MyTh Ahmed Faiz Copyright © 2016-2022 All rights reserved.
+ * Email: mythpe@gmail.com
+ * Mobile: +966590470092
+ * Website: https://www.4myth.com
+ */
+@import "./SSTArabic-stylesheet.css";
+
+:root {
+    --blue: #3490dc;
+    --indigo: #6574cd;
+    --purple: #9561e2;
+    --pink: #f66d9b;
+    --red: #e3342f;
+    --orange: #f6993f;
+    --yellow: #ffed4a;
+    --green: #38c172;
+    --teal: #4dc0b5;
+    --cyan: #6cb2eb;
+    --white: #fff;
+    --gray: #6c757d;
+    --gray-dark: #343a40;
+    --primary: #ee652c;
+    --secondary: #5d5c61;
+    --success: #38c172;
+    --info: #6cb2eb;
+    --warning: #ffed4a;
+    --danger: #e3342f;
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --breakpoint-xs: 0;
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --print-color: #f79f7b;
+}
+
+body {
+    font-family: 'main-font', sans-serif;
+    background-color: white;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1.4;
+    color: #212529;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.text-decoration-underline {
+    text-decoration: underline;
+}
+
+table.table-valign-middle th,
+table.table-valign-middle td,
+.row-valign-middle th,
+.row-valign-middle td {
+    vertical-align: middle !important;
+}
+
+tr.num-width th:first-child {
+    width: 50px;
+}
+
+.divider {
+    border-bottom: 1px gainsboro solid;
+    padding: 0;
+    margin: 1px 0;
+}
+
+table.table-th-headers th {
+    background-color: #eeeeee !important;
+}
+
+.main-print-buttons {
+    z-index: 99999;
+}
+
+@media print {
+
+    table.table-colored thead th {
+        background-color: #f79f7b !important;
+    }
+
+    .page-break-inside-avoid {
+        page-break-inside: avoid !important;
+    }
+
+    .page-break-after {
+        page-break-after: always !important;
+    }
+
+    .page-break-before {
+        page-break-before: always !important;
+    }
+
+    *,
+    :after,
+    :before {
+        text-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important
+    }
+
+    a:not(.btn) {
+        text-decoration: underline
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")"
+    }
+
+    pre {
+        white-space: pre-wrap !important
+    }
+
+    blockquote,
+    pre {
+        border: 1px solid #adb5bd;
+        page-break-inside: avoid
+    }
+
+    thead {
+        display: table-header-group
+    }
+
+    img,
+    tr {
+        page-break-inside: avoid
+    }
+
+    h2,
+    h3,
+    p {
+        orphans: 3;
+        widows: 3
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid
+    }
+
+    @page {
+        /*size: a3*/
+    }
+
+    .container,
+    body {
+        min-width: 992px !important
+    }
+
+    .navbar {
+        display: none
+    }
+
+    .badge {
+        border: 1px solid #000
+    }
+
+    .table {
+        border-collapse: collapse !important
+    }
+
+    .table td,
+    .table th {
+        /*background-color: #fff!important*/
+    }
+
+    .table-bordered td,
+    .table-bordered th {
+        /*border: 1px solid #dee2e6!important*/
+    }
+
+    .table-dark {
+        /*color: inherit*/
+    }
+
+    .table-dark tbody + tbody,
+    .table-dark td,
+    .table-dark th,
+    .table-dark thead th {
+        /*border-color: #dee2e6*/
+    }
+
+    .table .thead-dark th {
+        /*color: inherit;*/
+        /*border-color: #dee2e6*/
+    }
+}

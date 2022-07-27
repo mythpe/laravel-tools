@@ -1,0 +1,36 @@
+{
+    "name": "4myth/laravel-tools",
+    "description": "Tools of laravel api",
+    "version": "1.0.0",
+    "type": "library",
+    "require": {
+        "php": ">=7.4|>=8.0",
+        "laravel/framework": ">=6.0"
+    },
+    "require-dev": {
+        "barryvdh/laravel-ide-helper": ">=2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Myth\\LaravelTools\\": "src/"
+        },
+        "files": [
+            "src/Utilities/Functions.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "MyTh",
+            "email": "mythpe@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Myth\\LaravelTools\\Providers\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev"
+}

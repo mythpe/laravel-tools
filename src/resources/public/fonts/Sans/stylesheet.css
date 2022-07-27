@@ -1,0 +1,17 @@
+/*
+ * MyTh Ahmed Faiz Copyright © 2016-2022 All rights reserved.
+ * Email: mythpe@gmail.com
+ * Mobile: +966590470092
+ * Website: https://www.4myth.com
+ */
+
+@font-face {
+    font-family: 'main-font';
+    font-weight: normal;
+    font-display: swap;
+    font-style: normal;
+    src: url('Sans.woff2') format('woff2'),
+    url('Sans.woff') format('woff'),
+    url('Sans.ttf') format('truetype'),
+    url("Sans.svg") format("svg");
+}
