@@ -6,8 +6,8 @@
     "require": {
         "php": ">=8.0",
         "laravel/framework": ">=8.0",
-        "geniusts/hijri-dates": "dev-master",
-        "akaunting/laravel-setting": "dev-master"
+        "geniusts/hijri-dates": ">=1.0",
+        "akaunting/laravel-setting": ">=1.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": ">=2"
