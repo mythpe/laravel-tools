@@ -10,7 +10,7 @@
         "akaunting/laravel-setting": ">=1.0"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": ">=2"
+        "barryvdh/laravel-ide-helper": ">=2.0"
     },
     "license": "MIT",
     "autoload": {
