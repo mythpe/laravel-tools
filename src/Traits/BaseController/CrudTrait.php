@@ -11,6 +11,8 @@ namespace Myth\LaravelTools\Traits\BaseController;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Myth\LaravelTools\Http\Resources\ApiResource;
+use Myth\LaravelTools\Models\BaseModel;
 use Myth\LaravelTools\Models\BaseModel as Model;
 
 trait CrudTrait
@@ -18,24 +20,24 @@ trait CrudTrait
     /**
      * @var string|\Myth\LaravelTools\Models\BaseModel
      */
-    public static string $controllerModel;
+    public static string $controllerModel = BaseModel::class;
 
     /**
      * Name of model in URI
      *
      * @var string|\Myth\LaravelTools\Models\BaseModel
      */
-    public static string $routeParameterModel;
+    public static string $routeParameterModel = BaseModel::class;
 
     /**
      * @var string
      */
-    public static string $controllerTransformer;
+    public static string $controllerTransformer = ApiResource::class;
 
     /**
      * @var string
      */
-    public static string $indexTransformer;
+    public static string $indexTransformer = ApiResource::class;
 
     /**
      * With query index
@@ -256,20 +258,6 @@ trait CrudTrait
     }
 
     /**
-     * @return array
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    protected function getMapFromRequest(): array
-    {
-        $array = [];
-        foreach($this->mapFromRequest as $rule => $request){
-            $array[$request] = $this->request->get($rule);
-        }
-        return $array;
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param \Myth\LaravelTools\Models\BaseModel|Builder $model
@@ -428,6 +416,51 @@ trait CrudTrait
     }
 
     /**
+     * Check from request parameters range (from-to) if equal 0 remove it.
+     *
+     * @return void
+     */
+    public function validateRangeRangeParameters(): void
+    {
+        if(count($this->validationRangeParameters) < 1){
+            return;
+        }
+
+        $filter = $this->request->input('filter', []);
+        if($this->request->has('filter') && !is_array($filter)){
+            $filter = json_decode($filter, !0);
+        }
+        if(!is_array($filter)){
+            return;
+        }
+        foreach($this->validationRangeParameters as $name){
+            $from = "from_{$name}";
+            $to = "to_{$name}";
+            if(array_key_exists($from, $filter) && !$filter[$from]){
+                unset($filter[$from]);
+            }
+            if(array_key_exists($to, $filter) && !$filter[$to]){
+                unset($filter[$to]);
+            }
+            $this->request->merge(['filter' => $filter]);
+        }
+    }
+
+    /**
+     * @return array
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    protected function getMapFromRequest(): array
+    {
+        $array = [];
+        foreach($this->mapFromRequest as $rule => $request){
+            $array[$request] = $this->request->get($rule);
+        }
+        return $array;
+    }
+
+    /**
      * @return \Myth\LaravelTools\Models\BaseModel|mixed
      */
     protected function getBindModel()
@@ -458,36 +491,5 @@ trait CrudTrait
             $builder = $this->filerQuery($builder);
         }
         return $builder;
-    }
-
-    /**
-     * Check from request parameters range (from-to) if equal 0 remove it.
-     *
-     * @return void
-     */
-    public function validateRangeRangeParameters(): void
-    {
-        if(count($this->validationRangeParameters) < 1){
-            return;
-        }
-
-        $filter = $this->request->input('filter', []);
-        if($this->request->has('filter') && !is_array($filter)){
-            $filter = json_decode($filter, !0);
-        }
-        if(!is_array($filter)){
-            return;
-        }
-        foreach($this->validationRangeParameters as $name){
-            $from = "from_{$name}";
-            $to = "to_{$name}";
-            if(array_key_exists($from, $filter) && !$filter[$from]){
-                unset($filter[$from]);
-            }
-            if(array_key_exists($to, $filter) && !$filter[$to]){
-                unset($filter[$to]);
-            }
-            $this->request->merge(['filter' => $filter]);
-        }
     }
 }
