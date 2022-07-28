@@ -1,11 +1,11 @@
 {
     "name": "4myth/laravel-tools",
-    "description": "Tools of laravel api",
+    "description": "Tools of laravel framework",
     "version": "1.0.0",
     "type": "library",
     "require": {
-        "php": ">=7.4|>=8.0",
-        "laravel/framework": ">=6.0"
+        "php": ">=8.0",
+        "laravel/framework": ">=8.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": ">=2"
