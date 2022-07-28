@@ -34,10 +34,10 @@ class ServiceProvider extends BaseServiceProvider
         );
 
         // Translations
-        $this->loadTranslationsFrom(__DIR__.'/../lang', '4myth-tools');
-        $this->publishes([
-            __DIR__.'/../lang' => $this->app->langPath('vendor/4myth-tools'),
-        ]);
+        // $this->loadTranslationsFrom(__DIR__.'/../lang', '4myth-tools');
+        // $this->publishes([
+        //     __DIR__.'/../lang' => $this->app->langPath('vendor/4myth-tools'),
+        // ]);
 
         // Views
         $this->loadViewsFrom(__DIR__.'/../resources/views', '4myth-tools');

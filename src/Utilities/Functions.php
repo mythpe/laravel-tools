@@ -6,7 +6,6 @@
  * Website: https://www.4myth.com
  */
 
-use App\Http\Middleware\PermissionMiddleware;
 use GeniusTS\HijriDate\Date;
 use GeniusTS\HijriDate\Hijri;
 use Illuminate\Database\Eloquent\Model;
@@ -16,64 +15,58 @@ use Illuminate\Support\Facades\Route as Router;
 use Illuminate\Support\Str;
 use Symfony\Component\VarDumper\VarDumper;
 
-if (!function_exists('to_number_format')) {
+if(!function_exists('to_number_format')){
     /**
-     * @param  string|int|float  $number
-     * @param  int  $decimals
-     * @param  string  $currency
-     * @param  string  $thousands_sep
-     * @param  string  $dec_point
+     * @param float|int|string $number
+     * @param int $decimals
+     * @param string|null $currency
+     * @param string $thousands_sep
+     * @param string $dec_point
      *
      * @return string
      */
-    function to_number_format($number, $decimals = 2, $currency = null, $thousands_sep = ',', $dec_point = '.')
+    function to_number_format(float|int|string $number, int $decimals = 2, ?string $currency = null, string $thousands_sep = ',', string $dec_point = '.'): string
     {
-        $v = number_format((float) $number, (int) $decimals, $dec_point, $thousands_sep);
-        //$temp = explode('.', $v);
-        //$temp[0] = isset($temp[0]) ? $temp[0] : 0;
-        //$temp[1] = isset($temp[1]) ? $temp[1] : 0;
-        //$args[0] = $temp[0];
-        //$res = "{$temp[0]}" . (intval($temp[1]) > 0 ? ".{$temp[1]}" : '');
-
-        return $v.($currency ? " {$currency}" : '');
+        $v = number_format((float) $number, $decimals, $dec_point, $thousands_sep);
+        return $v.($currency ? " $currency" : '');
     }
 }
 
-if (!function_exists('ends_with')) {
+if(!function_exists('ends_with')){
     /**
      * Determine if a given string ends with a given substring.
      *
-     * @param  string  $haystack
-     * @param  string|array  $needles
+     * @param string $haystack
+     * @param array|string $needles
      *
      * @return bool
      */
-    function ends_with($haystack, $needles)
+    function ends_with(string $haystack, array|string $needles): bool
     {
         return Str::endsWith($haystack, $needles);
     }
 }
 
-if (!function_exists('starts_with')) {
+if(!function_exists('starts_with')){
     /**
      * Determine if a given string starts with a given substring.
      *
-     * @param  string  $haystack
-     * @param  string|array  $needles
+     * @param string $haystack
+     * @param array|string $needles
      *
      * @return bool
      */
-    function starts_with($haystack, $needles)
+    function starts_with(string $haystack, array|string $needles): bool
     {
         return Str::startsWith($haystack, $needles);
     }
 }
 
-if (!function_exists('d')) {
+if(!function_exists('d')){
     /**
-     * @param  mixed  ...$vars
+     * @param mixed ...$vars
      */
-    function d(...$vars)
+    function d(...$vars): void
     {
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: *');
@@ -82,11 +75,11 @@ if (!function_exists('d')) {
 
         $debug = @debug_backtrace();
         $call = current($debug);
-        $line = (isset($call['line']) ? $call['line'] : __LINE__);
-        $file = (isset($call['file']) ? $call['file'] : __FILE__);
+        $line = ($call['line'] ?? __LINE__);
+        $file = ($call['file'] ?? __FILE__);
 
-        echo("[{$file}] Line ({$line}): <br>");
-        foreach ($vars as $v) {
+        echo("[$file] Line ($line): <br>");
+        foreach($vars as $v){
             VarDumper::dump($v);
         }
 
@@ -94,80 +87,85 @@ if (!function_exists('d')) {
     }
 }
 
-if (!function_exists('locale_attribute')) {
+if(!function_exists('locale_attribute')){
     /**
      * Get attribute by locale
      *
-     * @param  string  $attribute
-     * @param  string|null  $locale
+     * @param string $attribute
+     * @param string|null $locale
      *
      * @return string
      * @uses app()->getLocale()
      */
-    function locale_attribute($attribute = "name", $locale = null)
+    function locale_attribute(string $attribute = "name", string $locale = null): string
     {
         is_null($locale) && ($locale = app()->getLocale());
         return rtrim($attribute, '_')."_".$locale;
     }
 }
 
-if (!function_exists('str_replace_en_ar')) {
+if(!function_exists('str_replace_en_ar')){
     /**
      * Replace string for AR & EN
      *
-     * @param  string  $string
+     * @param string|null $string $string
      *
      * @return string
      */
-    function str_replace_en_ar(string $string = '')
+    function str_replace_en_ar(?string $string = ''): string
     {
-        return str_replace_name_ar(str_replace_name_en($string));
+        return str_replace_name_ar(str_replace_name_en($string ?: ''));
     }
 }
 
-if (!function_exists('str_replace_name_ar')) {
+if(!function_exists('str_replace_name_ar')){
     /**
      * Replace string for AR Name
      *
-     * @param  string  $string
+     * @param string|null $string $string
      *
      * @return string
      */
-    function str_replace_name_ar($string = '')
+    function str_replace_name_ar(?string $string = ''): string
     {
+        $string ??= '';
         $string = str_ireplace(['إ', 'أ'], 'ا', $string);
         $string = str_ireplace("عبدال", 'عبد ال', $string);
         return trim($string);
     }
 }
 
-if (!function_exists('str_replace_name_en')) {
+if(!function_exists('str_replace_name_en')){
     /**
      * Replace string for EN Name
      *
-     * @param  string  $string
+     * @param string|null $string $string
      *
      * @return string
      */
-    function str_replace_name_en($string = '')
+    function str_replace_name_en(?string $string = ''): string
     {
+        $string ??= '';
         $string = trim($string);
         return ucwords($string);
     }
 }
 
-if (!function_exists('date_by_locale')) {
+if(!function_exists('date_by_locale')){
     /**
      * Convert date By locale
      *
-     * @param $date
-     * @param  null  $toLocale
+     * @param string|null $date
+     * @param null $toLocale
      *
-     * @return mixed|string
+     * @return string
      */
-    function date_by_locale($date, $toLocale = null)
+    function date_by_locale(?string $date, $toLocale = null): string
     {
-        if (is_null($toLocale)) {
+        if(!$date){
+            return '';
+        }
+        if(is_null($toLocale)){
             $toLocale = app()->getLocale();
         }
 
@@ -260,64 +258,60 @@ if (!function_exists('date_by_locale')) {
             "Dec",
         ];
 
-        try {
+        try{
             return str_ireplace($toLocale === 'ar' ? $notAr : $ar, $toLocale === 'ar' ? $ar : $notAr, $date);
         }
-        catch (Exception $exception) {
-            //if (config('app.debug')) {
-            //    d($exception);
-            //}
+        catch(Exception $exception){
+            return '';
         }
-
-        return $date;
     }
 }
 
-if (!function_exists('manifest_directory')) {
-    function manifest_directory($path = null)
+if(!function_exists('manifest_directory')){
+    function manifest_directory($path = null): string
     {
         $directory = rtrim(config('app.manifest_directory'), '/');
-        if (!is_null($path)) {
+        if(!is_null($path)){
             $directory .= '/'.ltrim($path, '/');
         }
         return $directory;
     }
 }
 
-if (!function_exists('trans_has')) {
+if(!function_exists('trans_has')){
     /**
      * Determine if a translation exists.
      *
-     * @param  string  $key
-     * @param  string|null  $locale
-     * @param  bool  $fallback
+     * @param string $key
+     * @param string|null $locale
+     * @param bool $fallback
      *
      * @return bool
      */
-    function trans_has($key, $locale = null, $fallback = true)
+    function trans_has(string $key, ?string $locale = null, bool $fallback = true): bool
     {
         return app('translator')->has($key, $locale, $fallback);
     }
 }
 
-if (!function_exists('hijri')) {
+if(!function_exists('hijri')){
     /**
      * helper convert to hijri
      *
-     * @param  string  $date
+     * @param mixed|string $date
      *
      * @return \GeniusTS\HijriDate\Date
      */
-    function hijri($date = '')
+    function hijri($date = ''): Date
     {
-        if ($date instanceof Date) {
+        if($date instanceof Date){
             return $date;
         }
-        if (!$date instanceof Carbon) {
+        if(!$date instanceof Carbon){
             $temp = Carbon::make($date);
 
             # Hijri
-            if ($temp->year < 1990) {
+            if($temp->year < 1990){
                 $ex = explode("-", $date);
                 count($ex) < 3 && ($ex = explode("/", $date));
 
@@ -327,7 +321,7 @@ if (!function_exists('hijri')) {
 
                 $date = Hijri::convertToGregorian($day, $month, $year);
             }
-            else {
+            else{
                 $date = $temp;
             }
         }
@@ -336,14 +330,14 @@ if (!function_exists('hijri')) {
     }
 }
 
-if (!function_exists('arabic_date')) {
+if(!function_exists('arabic_date')){
     /**
      * @param $string
-     * @param  string|null|bool  $append
+     * @param bool|string|null $append
      *
      * @return string
      */
-    function arabic_date($string, $append = null)
+    function arabic_date($string, bool|string $append = null): string
     {
         $ar = [
             '/',
@@ -378,7 +372,7 @@ if (!function_exists('arabic_date')) {
     }
 }
 
-if (!function_exists('isBase64')) {
+if(!function_exists('isBase64')){
     /**
      * Check if string is image base64
      *
@@ -386,17 +380,17 @@ if (!function_exists('isBase64')) {
      *
      * @return bool
      */
-    function isBase64($str)
+    function isBase64($str): bool
     {
-        return strpos($str, ';base64') !== false || base64_encode(base64_decode($str, true)) === $str;
+        return str_contains($str, ';base64') || base64_encode(base64_decode($str, true)) === $str;
     }
 }
 
-if (!function_exists('appName')) {
+if(!function_exists('appName')){
     /**
      * Setting app name
      *
-     * @param  string|null  $locale
+     * @param string|null $locale
      *
      * @return string
      */
@@ -406,7 +400,7 @@ if (!function_exists('appName')) {
     }
 }
 
-if (!function_exists('encodeId')) {
+if(!function_exists('encodeId')){
     /**
      * Encode id
      *
@@ -414,21 +408,21 @@ if (!function_exists('encodeId')) {
      *
      * @return string
      */
-    function encodeId($id)
+    function encodeId($id): string
     {
         return md5("MyTh").base64_encode($id).md5("Ahmed");
     }
 }
 
-if (!function_exists('decodeId')) {
+if(!function_exists('decodeId')){
     /**
      * Encode id
      *
      * @param $encode
      *
-     * @return false|string
+     * @return bool|string
      */
-    function decodeId($encode)
+    function decodeId($encode): bool|string
     {
         $first = md5("MyTh");
         $last = md5("Ahmed");
@@ -438,91 +432,82 @@ if (!function_exists('decodeId')) {
     }
 }
 
-if (!function_exists('downloadMedia')) {
+if(!function_exists('downloadMedia')){
     /**
      * Get Route url for media library
      *
-     * @param  \Spatie\MediaLibrary\MediaCollections\Models\Media|\Illuminate\Database\Eloquent\Model|string|int  $media
-     * @param  string  $routeName
+     * @param \Spatie\MediaLibrary\MediaCollections\Models\Media|\Illuminate\Database\Eloquent\Model|string|int $media
+     * @param string $routeName
      *
-     * @return string
+     * @return string|null
      * @uses route
      * @uses \Illuminate\Database\Eloquent\Model
      * @uses \Spatie\MediaLibrary\MediaCollections\Models\Media
      */
-    function downloadMedia($media, string $routeName = 'Static.downloadMedia')
+    function downloadMedia($media, string $routeName = 'Static.downloadMedia'): ?string
     {
         $id = $media instanceof Model ? $media->id : $media;
         return $media ? route($routeName, encodeId($id)) : null;
     }
 }
 
-if (!function_exists('front_end_url')) {
+if(!function_exists('front_end_url')){
     /**
      *  Front end url helper
      *
-     * @param  string|null  $prefix
+     * @param string|null $prefix
      *
      * @return string
      */
-    function front_end_url(string $prefix = null)
+    function front_end_url(?string $prefix = null): string
     {
         $url = config('4myth-tools.front_end_url', '');
         $url = rtrim($url, '/');
-        if ($prefix) {
+        if($prefix){
             $url .= "/".ltrim($prefix, '/');
         }
         return $url;
     }
 }
 
-if (!function_exists('getPermissionRoutes')) {
+if(!function_exists('getPermissionRoutes')){
     /**
      * Get list of auth-routes has permission
      *
-     * @param  false  $asCode
+     * @param false $asCode
      *
-     * @return array|null
+     * @return array
      */
-    function getPermissionRoutes(bool $asCode = false)
+    function getPermissionRoutes(bool $asCode = false): array
     {
         /** @var \Illuminate\Routing\Route[] $routes */
         $routes = Router::getRoutes();
         $auth = [];
         $codes = [];
-        foreach ($routes as $route) {
+        foreach($routes as $route){
             $name = $route->getName() ?: '';
             $code = $name;
-            if (Str::endsWith($name, config('4myth-tools.skip_permission_ends_with', []))) {
+            if(Str::endsWith($name, config('4myth-tools.skip_permission_ends_with', []))){
                 continue;
             }
             $action = $route->getAction();
             $middlewares = ($action['middleware'] ?? []);
-            if (!in_array('permission', $middlewares)) {
+            if(!in_array('permission', $middlewares)){
                 continue;
             }
 
             $hasAuth = !1;
-            foreach ($middlewares as $middleware) {
-                if (Str::contains($middleware, 'auth:')) {
+            foreach($middlewares as $middleware){
+                if(Str::contains($middleware, 'auth:')){
                     $hasAuth = !0;
                     break;
                 }
             }
-            if (!$hasAuth) {
+            if(!$hasAuth){
                 continue;
             }
 
-            // $generalRouteName = Str::afterLast($name, '.');
-            //d($action, $generalRouteName,get_class($route),$route->getName());
-            //d($generalRouteName);
-            //d($code, $name);
-            // if(in_array($generalRouteName, $only)){
-            //     $code = PermissionMiddleware::routeCode($name, $generalRouteName);
-            //     $name = PermissionMiddleware::routeName($name, $generalRouteName);
-            // }
-
-            if (!array_key_exists($code, $auth)) {
+            if(!array_key_exists($code, $auth)){
                 $auth[$code] = [
                     'name' => $name,
                     'code' => $code,
@@ -536,21 +521,21 @@ if (!function_exists('getPermissionRoutes')) {
     }
 }
 
-if (!function_exists('apiResource')) {
+if(!function_exists('apiResource')){
     /**
      * Helper to make application auth-routes
      *
-     * @param  string  $name
-     * @param  string|string[]  $controller
-     * @param  \Closure|null  $group
-     * @param  array  $routeOptions
+     * @param string $name
+     * @param string|string[] $controller
+     * @param \Closure|null $group
+     * @param array $routeOptions
      *
      * @return \Illuminate\Routing\PendingResourceRegistration
      */
     function apiResource(string $name, array|string $controller, Closure $group = null, array $routeOptions = []): PendingResourceRegistration
     {
-        Router::group(['as' => "$name.", 'prefix' => $name], function ($router) use ($name, $controller, $group) {
-            if (is_callable($group)) {
+        Router::group(['as' => "$name.", 'prefix' => $name], function($router) use ($name, $controller, $group){
+            if(is_callable($group)){
                 $group($router);
             }
             //Route::delete('destroy-all', [$controller, 'destroyAll'])->name('destroyAll');

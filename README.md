@@ -1,18 +1,31 @@
-## MyTh Laravel tools
+# MyTh Laravel tools
 
 Laravel framework Tools. useful to development API applications.
 Support for JS framework such as vuejs & vuetify.
 All documentation under building.
 
-## Tool Middleware
+## Installation
+
+---
+
+#### Using composer: 
+    
+    composer require 4myth/laravel-tools
+
+#### Publish:
+
+    php artisan vendor:publish --provider="Myth\LaravelTools\Providers\ServiceProvider"
+
+### Tool Middleware
 
 - Convert Arabic numbers to English.
-- `postman` used for create postman documentation.
-- `permission` make permissions for routes. Only have auth middleware
+- `postman` use to create postman documentation.
+- `permission` use to make permissions for routes. only have auth middleware
 
-### Examples:
+---
 
-#### Convert Arabic numbers to English:
+
+##### Convert Arabic numbers to English:
 
 Edit file `app/Http/Kernel.php`.
 
@@ -23,7 +36,9 @@ Edit file `app/Http/Kernel.php`.
         ArToEnMiddleware::class
     ]
 
-#### Postman documentation Example:
+---
+
+##### Postman documentation Example:
 
 Define your routes. for example in : `routes/api.php`
 
@@ -31,7 +46,7 @@ Define your routes. for example in : `routes/api.php`
         your routes here
     });
 
-edit `app/Http/Kernel.php` to define route middleware in kernel.
+Edit `app/Http/Kernel.php` to define route middleware in kernel.
 
     use Myth\LaravelTools\Http\Middleware\PostmanMiddleware;
 
@@ -40,7 +55,9 @@ edit `app/Http/Kernel.php` to define route middleware in kernel.
         'postman' => PostmanMiddleware::class,
     ]
 
-#### Permissions Example:
+---
+
+##### Permissions Example:
 
 
 Define your routes. for example in : `routes/api.php`
@@ -53,7 +70,7 @@ Define your routes. for example in : `routes/api.php`
 
 The name of the permissions depend on the route name. an example: `example` , `User.index` and `Model.DeleteFile`
 
-edit `app/Http/Kernel.php` to define route middleware in kernel.
+Edit `app/Http/Kernel.php` to define route middleware in kernel.
 
     use Myth\LaravelTools\Http\Middleware\PermissionMiddleware;
 
@@ -62,15 +79,17 @@ edit `app/Http/Kernel.php` to define route middleware in kernel.
         'permission' => PermissionMiddleware::class,
     ]
 
+---
 
-
-## Tool commands
+### Tool commands
 
 - `php artisan myth:postman` Postman API documentation. Only routes has middleware `postman`
 - `php artisan myth:js-lang` Export language files to JS
 
+---
+
 ### Laravel File system
-This tool uses the laravel file system `config/filesystems.php`
+This tool use the laravel file system `config/filesystems.php`
 
 Types: `root`, `setup`, `media`, `pdf`, `excel` and `qr`
 

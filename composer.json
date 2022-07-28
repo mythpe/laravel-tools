@@ -5,7 +5,9 @@
     "type": "library",
     "require": {
         "php": ">=8.0",
-        "laravel/framework": ">=8.0"
+        "laravel/framework": ">=8.0",
+        "geniusts/hijri-dates": "dev-master",
+        "akaunting/laravel-setting": "dev-master"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": ">=2"
