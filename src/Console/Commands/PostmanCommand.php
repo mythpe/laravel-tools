@@ -10,7 +10,7 @@ namespace Myth\LaravelTools\Console\Commands;
 
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Console\BaseCommand;
-use Myth\LaravelTools\Utilities\Deploy;
+use Myth\LaravelTools\Utilities\Postman;
 
 class PostmanCommand extends BaseCommand
 {
@@ -50,7 +50,7 @@ class PostmanCommand extends BaseCommand
             $name = Str::random(4).'-'.time().'-'.Str::random(4);
         }
         // d($this->options(),$name);
-        $postman = new Deploy($this->option('domain'), $name, $id, $locale);
+        $postman = new Postman($this->option('domain'), $name, $id, $locale);
         $postman->documentation();
         $this->lineGreen("Created in: [{$postman->getFilePath()}]");
     }

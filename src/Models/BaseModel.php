@@ -181,8 +181,8 @@ class BaseModel extends Authenticatable implements HasMedia
             $value = Str::before($key, $t);
             $number = $this->{$value};
             if($number || $number == 0){
-                //$currency = config('config.currency');
-                //$balance = config('config.currency_balance');
+                //$currency = config('4myth-tools.currency');
+                //$balance = config('4myth-tools.currency_balance');
                 /*try {
                     if (($c = request()->header('app-currency'))) {
                         $currency = $c;
@@ -221,7 +221,7 @@ class BaseModel extends Authenticatable implements HasMedia
         if(Str::endsWith($key, ($t = "_to_date_format")) && ($attribute = Str::before($key, $t))){
             if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return $date->format(config('config.date_format.date'));
+                return $date->format(config('4myth-tools.date_format.date'));
             }
         }
 
@@ -229,7 +229,7 @@ class BaseModel extends Authenticatable implements HasMedia
         if(Str::endsWith($key, ($t = "_to_time_format")) && ($attribute = Str::before($key, $t))){
             if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return $date->format(config('config.date_format.time'));
+                return $date->format(config('4myth-tools.date_format.time'));
             }
         }
 
@@ -237,7 +237,7 @@ class BaseModel extends Authenticatable implements HasMedia
         if(Str::endsWith($key, ($t = "_to_time_string_format")) && ($attribute = Str::before($key, $t))){
             if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('config.date_format.time_string')));
+                return date_by_locale($date->format(config('4myth-tools.date_format.time_string')));
             }
         }
 
@@ -245,7 +245,7 @@ class BaseModel extends Authenticatable implements HasMedia
         if(Str::endsWith($key, ($t = "_to_datetime_format")) && ($attribute = Str::before($key, $t))){
             if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('config.date_format.datetime')));
+                return date_by_locale($date->format(config('4myth-tools.date_format.datetime')));
             }
         }
 
@@ -253,7 +253,7 @@ class BaseModel extends Authenticatable implements HasMedia
         if(Str::endsWith($key, ($t = "_to_fulldatetime_format")) && ($attribute = Str::before($key, $t))){
             if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('config.date_format.full')));
+                return date_by_locale($date->format(config('4myth-tools.date_format.full')));
             }
         }
 
@@ -262,7 +262,7 @@ class BaseModel extends Authenticatable implements HasMedia
             $attribute = substr($key, 0, strlen($key) - strlen($t));
             if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('config.date_format.day')));
+                return date_by_locale($date->format(config('4myth-tools.date_format.day')));
             }
         }
 
@@ -281,7 +281,7 @@ class BaseModel extends Authenticatable implements HasMedia
             if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
                 // dd($attribute,$date,hijri($date)->format( app_date_format('date') ) );
 
-                return arabic_date(hijri($date)->format(config('config.date_format.hijri_human')));
+                return arabic_date(hijri($date)->format(config('4myth-tools.date_format.hijri_human')));
             }
         }
 
@@ -290,7 +290,7 @@ class BaseModel extends Authenticatable implements HasMedia
             $attribute = substr($key, 0, strlen($key) - strlen($t));
             if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return arabic_date(hijri($date)->format(config('config.date_format.date')));
+                return arabic_date(hijri($date)->format(config('4myth-tools.date_format.date')));
             }
         }
 
@@ -404,7 +404,7 @@ class BaseModel extends Authenticatable implements HasMedia
      */
     public function getCreatedAtToStringAttribute(): ?string
     {
-        return $this->created_at ? $this->created_at->format(config('config.date_format.date')) : null;
+        return $this->created_at ? $this->created_at->format(config('4myth-tools.date_format.date')) : null;
     }
 
     /**
@@ -414,7 +414,7 @@ class BaseModel extends Authenticatable implements HasMedia
      */
     public function getUpdatedAtToStringAttribute(): ?string
     {
-        return $this->updated_at ? $this->updated_at->format(config('config.date_format.date')) : null;
+        return $this->updated_at ? $this->updated_at->format(config('4myth-tools.date_format.date')) : null;
     }
 
     /**

@@ -17,7 +17,7 @@ use Illuminate\Validation\Rules\Unique;
 /**
  *
  */
-class Deploy
+class Postman
 {
     /**
      * Variables will insert to postman
@@ -535,17 +535,17 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             ],
             [
                 "key"   => "App-Currency",
-                "value" => config('config.currency_code'),
+                "value" => config('4myth-tools.currency_code'),
                 "type"  => "text",
             ],
             [
                 "key"   => "App-Currency-Balance",
-                "value" => config('config.currency_balance'),
+                "value" => config('4myth-tools.currency_balance'),
                 "type"  => "text",
             ],
             [
                 "key"   => "App-Country",
-                "value" => config('config.country_code'),
+                "value" => config('4myth-tools.country_code'),
                 "type"  => "text",
             ],
         ];
