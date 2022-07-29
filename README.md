@@ -91,7 +91,7 @@ Edit `app/Http/Kernel.php` to define route middleware in kernel.
 ### Laravel File system
 This tool use the laravel file system `config/filesystems.php`
 
-Types: `root`, `setup`, `media`, `pdf`, `excel` and `qr`
+Types: `root`, `setup`, `logs`, `media`, `pdf`, `excel` and `qr`
 
     'disks' => [
         ... your disks
@@ -99,6 +99,12 @@ Types: `root`, `setup`, `media`, `pdf`, `excel` and `qr`
         'root' => [
             'driver' => 'local',
             'root'   => base_path(),
+            'throw'  => false,
+        ],
+
+        'logs' => [
+            'driver' => 'local',
+            'root'   => storage_path('logs'),
             'throw'  => false,
         ],
 
