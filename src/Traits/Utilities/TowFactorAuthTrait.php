@@ -67,7 +67,7 @@ trait TowFactorAuthTrait
      */
     public function get2FactorMinutes(): int
     {
-        return 60;
+        return 2;
     }
 
     /**
