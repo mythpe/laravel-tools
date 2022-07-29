@@ -543,3 +543,21 @@ if(!function_exists('apiResource')){
         return Router::apiResource($name, $controller, $routeOptions);
     }
 }
+
+if (!function_exists('isKsaMobile')) {
+    /**
+     * Verify the mobile number if it is a valid Saudi mobile number
+     *
+     * @param  string|int  $mobile
+     *
+     * @return bool
+     */
+    function isKsaMobile($mobile): bool
+    {
+        if ($mobile) {
+            $mobile = (int) $mobile;
+            return Str::startsWith($mobile, 966) && strlen($mobile) == 12 || Str::startsWith($mobile, 5) && strlen($mobile) == 9;
+        }
+        return !1;
+    }
+}
