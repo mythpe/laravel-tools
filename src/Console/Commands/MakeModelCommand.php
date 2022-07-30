@@ -195,7 +195,7 @@ html;
                     }
                     else {
                         $pluralWords = ucwords(str_ireplace('-', ' ', $kebabName));
-                        $row .= "$studlyWords|.$pluralWords";
+                        $row .= "$studlyWords|$pluralWords";
                     }
                     $row .= '\','.PHP_EOL;
                     $last = $file[$lastCount];
