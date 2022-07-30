@@ -5,6 +5,7 @@ namespace Myth\LaravelTools\Providers;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Myth\LaravelTools\Console\Commands\JsLangCommand;
+use Myth\LaravelTools\Console\Commands\MakeModelCommand;
 use Myth\LaravelTools\Console\Commands\PostmanCommand;
 
 class ServiceProvider extends BaseServiceProvider
@@ -59,6 +60,7 @@ class ServiceProvider extends BaseServiceProvider
             $this->commands([
                 PostmanCommand::class,
                 JsLangCommand::class,
+                MakeModelCommand::class,
             ]);
         }
     }
