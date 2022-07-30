@@ -6,7 +6,7 @@
  * Website: https://www.4myth.com
  */
 
-namespace Myth\LaravelTools\Traits\BaseModel;
+namespace Myth\LaravelTools\Traits\Utilities;
 
 use Myth\LaravelTools\Scopes\OrderByScope;
 
