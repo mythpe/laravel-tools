@@ -8,7 +8,6 @@
 
 use Myth\LaravelTools\Http\Resources\ApiCollectionResponse;
 use Myth\LaravelTools\Http\Resources\ApiResource;
-use Myth\LaravelTools\Models\Permission;
 
 return [
     /*
@@ -120,7 +119,7 @@ return [
     'js_lang_command_files'         => (array) ['attributes', 'choice'],
 
     /**
-     * Permission to skip
+     * Permissions to skip
      */
     'skip_permission_ends_with'     => (array) ['.', '.allIndex', '.indexResource'],
 ];
