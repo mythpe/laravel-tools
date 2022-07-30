@@ -85,6 +85,7 @@ Edit `app/Http/Kernel.php` to define route middleware in kernel.
 
 - `php artisan myth:postman` Postman API documentation. Only routes has middleware `postman`
 - `php artisan myth:js-lang` Export language files to JS
+- `php artisan myth:model` Make crud of model
 
 ---
 
