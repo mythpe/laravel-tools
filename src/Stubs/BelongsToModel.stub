@@ -1,0 +1,39 @@
+<?php
+/*
+ * MyTh Ahmed Faiz Copyright © 2016-{year} All rights reserved.
+ * Email: mythpe@gmail.com
+ * Mobile: +966590470092
+ * Website: https://www.4myth.com
+ */
+
+namespace App\Traits\BelongsTo;
+
+use App\Models\{model} as Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+trait BelongsTo{modelName}
+{
+
+    /**
+     * @return BelongsTo
+     */
+    public function {modelCamelName}(): BelongsTo
+    {
+        return $this->belongsTo(Model::class)->withDefault();
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param $value
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeBy{modelName}(Builder $builder, $value): Builder
+    {
+        $value instanceof Eloquent && ($value = [$value->id]);
+        !is_array($value) && ($value = explode(',', $value));
+        return $builder->whereIn('{modelForeignKey}', $value);
+    }
+}

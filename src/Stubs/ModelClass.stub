@@ -6,12 +6,13 @@
  * Website: https://www.4myth.com
  */
 
-namespace App\Models\{namespace};
+namespace App\Models{namespace};
 
 use App\Models\BaseModel;
-
-class {model} extends BaseModel
+{model_use}
+class {modelName} extends BaseModel
 {
+    {class_use}
     /**
      * The attributes that are mass assignable.
      *
@@ -19,7 +20,7 @@ class {model} extends BaseModel
      */
     protected $fillable = [
         'name_ar',
-        'name_en',
+        'name_en',{fillable}
     ];
 
     /**
@@ -29,6 +30,14 @@ class {model} extends BaseModel
      */
     protected $attributes = [
         'name_ar' => null,
-        'name_en' => null,
+        'name_en' => null,{attributes}
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [{casts}
     ];
 }

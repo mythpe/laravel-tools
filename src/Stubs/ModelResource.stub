@@ -6,12 +6,12 @@
  * Website: https://www.4myth.com
  */
 
-namespace App\Http\Resources\{namespace};
+namespace App\Http\Resources{namespace};
 
-use App\Models\{namespace}\{model} as Model;
+use App\Models\{model} as Model;
 use Myth\LaravelTools\Http\Resources\ApiResource;
 
-class {model}Resource extends ApiResource
+class {modelName}Resource extends ApiResource
 {
     /** @var Model */
     public $resource;
@@ -24,7 +24,7 @@ class {model}Resource extends ApiResource
     public function transformer(): array
     {
         $model = $this->resource;
-        return $this->transformModel([
+        return $this->transformModel([{resource}
         ]);
     }
 }

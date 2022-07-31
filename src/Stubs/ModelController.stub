@@ -6,18 +6,18 @@
  * Website: https://www.4myth.com
  */
 
-namespace App\Http\Controllers\{namespace};
+namespace App\Http\Controllers{namespace};
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\{namespace}\{model}Resource as Transformer;
-use App\Models\{namespace}\{model} as Model;
+use App\Http\Resources\{model}Resource as Transformer;
+use App\Models\{model} as Model;
 
-class {model}Controller extends Controller
+class {modelName}Controller extends Controller
 {
     public function __construct()
     {
         self::$indexTransformer = self::$controllerTransformer = Transformer::class;
-        self::$controllerModel = Model::class;
+        self::$controllerModel = Model::class;{oldest}
         parent::__construct();
     }
 
@@ -40,7 +40,7 @@ class {model}Controller extends Controller
     {
         return [
             'name_ar' => ['required'],
-            'name_en' => ['required'],
+            'name_en' => ['required'],{rules}
         ];
     }
 }
