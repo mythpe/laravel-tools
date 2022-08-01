@@ -60,6 +60,9 @@ interface Statusable
     /** @var string */
     const COMPLETED_STATUS = 'completed';
 
+    /** @var string */
+    const REJECTED_STATUS = 'rejected';
+
     /**
      * @return \Illuminate\Support\Collection
      */

@@ -55,6 +55,7 @@ trait HasStatusAttribute
             'new',
             'archived',
             'completed',
+            'rejected',
         ];
     }
 
@@ -80,7 +81,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -90,7 +91,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -100,7 +101,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -110,7 +111,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -120,7 +121,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -130,7 +131,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -140,7 +141,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -151,7 +152,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -162,7 +163,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -173,7 +174,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -184,7 +185,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -195,7 +196,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -206,13 +207,24 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
     public function setCompleted(bool $save = !0): void
     {
         $this->status = static::COMPLETED_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @param bool $save
+     *
+     * @return void
+     */
+    public function setRejected(bool $save = !0): void
+    {
+        $this->status = static::REJECTED_STATUS;
         $save && $this->save();
     }
 
@@ -286,5 +298,13 @@ trait HasStatusAttribute
     public function isCompleted(): bool
     {
         return $this->status == static::COMPLETED_STATUS;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRejected(): bool
+    {
+        return $this->status == static::REJECTED_STATUS;
     }
 }
