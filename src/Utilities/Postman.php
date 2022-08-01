@@ -36,34 +36,34 @@ class Postman
     /**
      * Postman variable of URL
      */
-    protected string $urlVariableName = 'url';
+    protected string $urlVariableName;
 
     /**
      * Postman variable of auth token
      */
-    protected string $tokenVariableName = 'token';
+    protected string $tokenVariableName;
 
     /**
      * Postman variable of language
      */
-    protected string $localeVariableName = 'locale';
+    protected string $localeVariableName;
 
     /**
      * Postman header variable of language
      */
-    protected string $localeHeaderVariableName = 'App-Locale';
+    protected string $localeHeaderVariableName;
 
     /**
      * The name of middleware used in auth-routes to create documentation
      */
-    protected string $middlewareName = 'deploy-command';
+    protected string $middlewareName;
 
     /**
      * Postman json file name
      *
      * @var string
      */
-    protected string $fileName = 'postman-collection';
+    protected string $fileName;
 
     /**
      * Name of postman collection
@@ -96,6 +96,12 @@ class Postman
         $this->collectionName = $collectionName;
         $this->collectionId = $collectionId;
         $this->locale = $locale ?: config('app.locale');
+        $this->fileName = config('4myth-tools.postman.file_name', 'postman-collection');
+        $this->middlewareName = config('4myth-tools.postman.middleware_name', 'postman');
+        $this->localeHeaderVariableName = config('4myth-tools.postman.locale_header_variable_name', 'App-Locale');
+        $this->localeVariableName = config('4myth-tools.postman.locale_variable_name', 'locale');
+        $this->tokenVariableName = config('4myth-tools.postman.token_variable_name', 'token');
+        $this->urlVariableName = config('4myth-tools.postman.url_variable_name', 'url');
     }
 
     /**
@@ -119,6 +125,210 @@ class Postman
         ];
         $this->disk()->put($this->getFileName(), json_encode($file));
         return $file;
+    }
+
+    /**
+     * @param array $items
+     */
+    public function setItems(array $items): void
+    {
+        $this->items = $items;
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Filesystem\Filesystem|\Illuminate\Filesystem\FilesystemAdapter
+     */
+    public function disk()
+    {
+        return Storage::disk('root');
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileName(): string
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param string $fileName
+     */
+    public function setFileName(string $fileName): void
+    {
+        $this->fileName = Str::finish($fileName, '.json');
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlVariableName(): string
+    {
+        return $this->urlVariableName;
+    }
+
+    /**
+     * @param string $urlVariableName
+     */
+    public function setUrlVariableName(string $urlVariableName): void
+    {
+        $this->urlVariableName = $urlVariableName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMiddlewareName(): string
+    {
+        return $this->middlewareName;
+    }
+
+    /**
+     * @param string $middlewareName
+     */
+    public function setMiddlewareName(string $middlewareName): void
+    {
+        $this->middlewareName = $middlewareName;
+    }
+
+    /**
+     * Postman body mode. urlencoded, formdata
+     *
+     * @return string
+     */
+    public function getBodyMode(): string
+    {
+        return 'formdata';
+    }
+
+    /**
+     * Get the methods name to add exec
+     *
+     * @return array<int,string>
+     */
+    public function getScriptActions(): array
+    {
+        return ['login', 'loginMobile', 'register', 'resetPassword'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getTokenVariableName(): string
+    {
+        return $this->tokenVariableName;
+    }
+
+    /**
+     * @param string $tokenVariableName
+     */
+    public function setTokenVariableName(string $tokenVariableName): void
+    {
+        $this->tokenVariableName = $tokenVariableName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCollectionName(): string
+    {
+        return $this->collectionName;
+    }
+
+    /**
+     * @param mixed|string $collectionName
+     */
+    public function setCollectionName($collectionName): void
+    {
+        $this->collectionName = $collectionName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocaleVariableName(): string
+    {
+        return $this->localeVariableName;
+    }
+
+    /**
+     * @param string $localeVariableName
+     */
+    public function setLocaleVariableName(string $localeVariableName): void
+    {
+        $this->localeVariableName = $localeVariableName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     */
+    public function setLocale(string $locale): void
+    {
+        $this->locale = $locale;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDomain(): string
+    {
+        return $this->domain;
+    }
+
+    /**
+     * @param mixed|string $domain
+     */
+    public function setDomain($domain): void
+    {
+        $this->domain = $domain;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocaleHeaderVariableName(): string
+    {
+        return $this->localeHeaderVariableName;
+    }
+
+    /**
+     * @param string $localeHeaderVariableName
+     */
+    public function setLocaleHeaderVariableName(string $localeHeaderVariableName): void
+    {
+        $this->localeHeaderVariableName = $localeHeaderVariableName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilePath(): string
+    {
+        return $this->disk()->path($this->getFileName());
+    }
+
+    /**
+     * @return string
+     */
+    public function getCollectionId(): string
+    {
+        return $this->collectionId;
+    }
+
+    /**
+     * @param string $collectionId
+     */
+    public function setCollectionId(string $collectionId): void
+    {
+        $this->collectionId = $collectionId;
     }
 
     /**
@@ -438,14 +648,6 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     }
 
     /**
-     * @param array $items
-     */
-    public function setItems(array $items): void
-    {
-        $this->items = $items;
-    }
-
-    /**
      * Postman file information
      *
      * @return array
@@ -492,30 +694,6 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     }
 
     /**
-     * @return \Illuminate\Contracts\Filesystem\Filesystem|\Illuminate\Filesystem\FilesystemAdapter
-     */
-    public function disk()
-    {
-        return Storage::disk('root');
-    }
-
-    /**
-     * @return string
-     */
-    public function getFileName(): string
-    {
-        return $this->fileName;
-    }
-
-    /**
-     * @param string $fileName
-     */
-    public function setFileName(string $fileName): void
-    {
-        $this->fileName = Str::finish($fileName, '.json');
-    }
-
-    /**
      * Postman request header
      *
      * @return \string[][]
@@ -549,38 +727,6 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 "type"  => "text",
             ],
         ];
-    }
-
-    /**
-     * @return string
-     */
-    public function getUrlVariableName(): string
-    {
-        return $this->urlVariableName;
-    }
-
-    /**
-     * @param string $urlVariableName
-     */
-    public function setUrlVariableName(string $urlVariableName): void
-    {
-        $this->urlVariableName = $urlVariableName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMiddlewareName(): string
-    {
-        return $this->middlewareName;
-    }
-
-    /**
-     * @param string $middlewareName
-     */
-    public function setMiddlewareName(string $middlewareName): void
-    {
-        $this->middlewareName = $middlewareName;
     }
 
     /**
@@ -686,16 +832,6 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             }
         }
         return !1;
-    }
-
-    /**
-     * Postman body mode. urlencoded, formdata
-     *
-     * @return string
-     */
-    public function getBodyMode(): string
-    {
-        return 'formdata';
     }
 
     /**
@@ -840,136 +976,6 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 ],
             ],
         ];
-    }
-
-    /**
-     * Get the methods name to add exec
-     *
-     * @return array<int,string>
-     */
-    public function getScriptActions(): array
-    {
-        return ['login', 'loginMobile', 'register', 'resetPassword'];
-    }
-
-    /**
-     * @return string
-     */
-    public function getTokenVariableName(): string
-    {
-        return $this->tokenVariableName;
-    }
-
-    /**
-     * @param string $tokenVariableName
-     */
-    public function setTokenVariableName(string $tokenVariableName): void
-    {
-        $this->tokenVariableName = $tokenVariableName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCollectionName(): string
-    {
-        return $this->collectionName;
-    }
-
-    /**
-     * @param mixed|string $collectionName
-     */
-    public function setCollectionName($collectionName): void
-    {
-        $this->collectionName = $collectionName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocaleVariableName(): string
-    {
-        return $this->localeVariableName;
-    }
-
-    /**
-     * @param string $localeVariableName
-     */
-    public function setLocaleVariableName(string $localeVariableName): void
-    {
-        $this->localeVariableName = $localeVariableName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocale(): string
-    {
-        return $this->locale;
-    }
-
-    /**
-     * @param string $locale
-     */
-    public function setLocale(string $locale): void
-    {
-        $this->locale = $locale;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDomain(): string
-    {
-        return $this->domain;
-    }
-
-    /**
-     * @param mixed|string $domain
-     */
-    public function setDomain($domain): void
-    {
-        $this->domain = $domain;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocaleHeaderVariableName(): string
-    {
-        return $this->localeHeaderVariableName;
-    }
-
-    /**
-     * @param string $localeHeaderVariableName
-     */
-    public function setLocaleHeaderVariableName(string $localeHeaderVariableName): void
-    {
-        $this->localeHeaderVariableName = $localeHeaderVariableName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFilePath(): string
-    {
-        return $this->disk()->path($this->getFileName());
-    }
-
-    /**
-     * @return string
-     */
-    public function getCollectionId(): string
-    {
-        return $this->collectionId;
-    }
-
-    /**
-     * @param string $collectionId
-     */
-    public function setCollectionId(string $collectionId): void
-    {
-        $this->collectionId = $collectionId;
     }
 
     /**

@@ -122,4 +122,13 @@ return [
      * Permissions to skip
      */
     'skip_permission_ends_with'     => (array) ['.', '.allIndex', '.indexResource'],
+
+    'postman' => [
+        'file_name'                   => 'postman-collection',
+        'middleware_name'             => 'postman',
+        'locale_header_variable_name' => 'App-Locale',
+        'locale_variable_name'        => 'locale',
+        'token_variable_name'         => 'token',
+        'url_variable_name'           => 'url',
+    ],
 ];
