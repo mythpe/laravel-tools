@@ -472,7 +472,7 @@ trait CrudTrait
             //d(static::$routeModel);
             //d($this->request->segments());
             //return $this->request->{$name} ?: new static::$controllerModel;
-            return $this->request->route()->parameter($name) ?: new static::$controllerModel;
+            return $this->request->route()?->parameter($name) ?: new static::$controllerModel;
         }
         return $model;
     }
