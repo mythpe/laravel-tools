@@ -124,6 +124,7 @@ return [
     'skip_permission_ends_with'     => (array) ['.', '.allIndex', '.indexResource'],
 
     'postman' => [
+        'domain'                      => env('APP_URL'),
         'file_name'                   => 'postman-collection',
         'middleware_name'             => 'postman',
         'locale_header_variable_name' => 'App-Locale',

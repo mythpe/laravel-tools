@@ -20,7 +20,7 @@ class PostmanCommand extends BaseCommand
      * @var string
      */
     protected $signature = 'myth:postman
-{--domain=http://192.168.1.34:8034 : Domain name}
+{--domain= : Domain name}
 {--name= : Name of Postman collection}
 {--id= : ID of Postman collection}
 {--locale=ar : Locale of Postman collection}
@@ -50,7 +50,8 @@ class PostmanCommand extends BaseCommand
             $name = Str::random(4).'-'.time().'-'.Str::random(4);
         }
         // d($this->options(),$name);
-        $postman = new Postman($this->option('domain'), $name, $id, $locale);
+        $domain = $this->option('domain') ?: config('4myth-tools.postman.domain', env('APP_URL'));
+        $postman = new Postman($domain, $name, $id, $locale);
         $postman->documentation();
         $this->lineGreen("Created in: [{$postman->getFilePath()}]");
     }
