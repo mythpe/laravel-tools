@@ -466,7 +466,7 @@ trait CrudTrait
     protected function getBindModel()
     {
         $name = class_basename(static::$controllerModel);
-        if(!($model = $this->request->{$name})){
+        if(!($model = $this->request->{$name}) && !app()->runningInConsole()){
             $name = static::$routeParameterModel;
             //d($this->request->route()->parameter('Agent'));
             //d(static::$routeModel);
