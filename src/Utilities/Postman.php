@@ -569,6 +569,10 @@ class Postman
                     if (in_array($actionName, ['index', 'allIndex'])) {
                         $query = array_merge($query, $this->getControllerParams($route->getController()));
                     }
+
+                    if (in_array($actionName, ['indexActiveOnly'])) {
+                        $query = array_merge($query, $this->getControllerPaginationParams($route->getController()));
+                    }
                 }
 
                 $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
@@ -932,50 +936,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      */
     protected function getControllerParams($controller): array
     {
-        $pagination = [
-            [
-                'key'         => $controller->requestWithKey,
-                'value'       => 'users,items',
-                'description' => 'Relations to append of models',
-                'disabled'    => !0,
-            ],
-            [
-                'key'         => $controller->pageKey,
-                'value'       => 1,
-                'description' => 'The page of pagination',
-                'disabled'    => !0,
-            ],
-            [
-                'key'         => $controller->itemsPerPageKey,
-                'value'       => 25,
-                'description' => 'The page of pagination',
-                'disabled'    => !0,
-            ],
-            [
-                'key'         => $controller->sortByRequestKey,
-                'value'       => json_encode(['name', 'date']),
-                'description' => 'Listing sort',
-                'disabled'    => !0,
-            ],
-            [
-                'key'         => $controller->sortDescRequestKey,
-                'value'       => json_encode([1, 0]),
-                'description' => 'The descending sorting for each key. true or false',
-                'disabled'    => !0,
-            ],
-            [
-                'key'         => $controller->searchRequestKey,
-                'value'       => 'example',
-                'description' => 'The value of searching',
-                'disabled'    => !0,
-            ],
-            [
-                'key'         => $controller->filterRequestKey,
-                'value'       => json_encode(['user_id' => 1]),
-                'description' => 'Filter items by attribute name',
-                'disabled'    => !0,
-            ],
-        ];
+        $pagination = $this->getControllerPaginationParams($controller);
         $items = [
             [
                 'id'   => 1,
@@ -1026,6 +987,61 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
         ];
 
         return array_merge($pagination, $params);
+    }
+
+    /**
+     * Postman query params
+     *
+     * @param  \App\Http\Controllers\Controller  $controller
+     *
+     * @return array
+     */
+    protected function getControllerPaginationParams($controller): array
+    {
+        return [
+            [
+                'key'         => $controller->requestWithKey,
+                'value'       => 'users,items',
+                'description' => 'Relations to append of models',
+                'disabled'    => !0,
+            ],
+            [
+                'key'         => $controller->pageKey,
+                'value'       => 1,
+                'description' => 'The page of pagination',
+                'disabled'    => !0,
+            ],
+            [
+                'key'         => $controller->itemsPerPageKey,
+                'value'       => 25,
+                'description' => 'The page of pagination',
+                'disabled'    => !0,
+            ],
+            [
+                'key'         => $controller->sortByRequestKey,
+                'value'       => json_encode(['name', 'date']),
+                'description' => 'Listing sort',
+                'disabled'    => !0,
+            ],
+            [
+                'key'         => $controller->sortDescRequestKey,
+                'value'       => json_encode([1, 0]),
+                'description' => 'The descending sorting for each key. true or false',
+                'disabled'    => !0,
+            ],
+            [
+                'key'         => $controller->searchRequestKey,
+                'value'       => 'example',
+                'description' => 'The value of searching',
+                'disabled'    => !0,
+            ],
+            [
+                'key'         => $controller->filterRequestKey,
+                'value'       => json_encode(['user_id' => 1]),
+                'description' => 'Filter items by attribute name',
+                'disabled'    => !0,
+            ],
+        ];
     }
 
     /**

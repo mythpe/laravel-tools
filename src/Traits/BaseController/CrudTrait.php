@@ -153,7 +153,7 @@ trait CrudTrait
         $query = ($args[0] ?? $query::query());
         $transformer = ($args[1] ?? $this->getIndexTransformer());
 
-        $this->isIndexActiveOnly && $query->activeOnly();
+        $this->isIndexActiveOnly && method_exists($query, 'activeOnly') && $query->activeOnly();
         if (!is_null($this->latest)) {
             $column = $this->latest;
             if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
