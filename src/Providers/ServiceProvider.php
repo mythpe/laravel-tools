@@ -2,7 +2,6 @@
 
 namespace Myth\LaravelTools\Providers;
 
-use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Myth\LaravelTools\Console\Commands\JsLangCommand;
 use Myth\LaravelTools\Console\Commands\MakeModelCommand;
@@ -17,9 +16,11 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        AboutCommand::add('MyTh Tools', [
-            'Version' => '1.0.0',
-        ]);
+        if (str_starts_with($this->app->version(), '9.')) {
+            \Illuminate\Foundation\Console\AboutCommand::add('MyTh Tools', [
+                'Version' => '1.0.0',
+            ]);
+        }
     }
 
     /**
