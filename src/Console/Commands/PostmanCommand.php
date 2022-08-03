@@ -23,6 +23,7 @@ class PostmanCommand extends BaseCommand
 {--domain= : Domain name}
 {--name= : Name of Postman collection}
 {--id= : ID of Postman collection}
+{--eid= : ID of Postman exporter}
 {--locale=ar : Locale of Postman collection}
 {--g|generate : New IDs of Postman collection}
 ';
@@ -41,8 +42,11 @@ class PostmanCommand extends BaseCommand
      */
     public function handle()
     {
-        $this->applyCustomStyle();
-        $this->alert("Start documentation");
+        $this->components->task("Start documentation", [$this, 'createDocumentation']);
+    }
+
+    protected function createDocumentation()
+    {
         $name = $this->option('name') ?: config('app.name');
         $id = $this->option('id') ?: Str::random(20);
         $locale = $this->option('locale') ?: config('app.locale');
@@ -52,7 +56,10 @@ class PostmanCommand extends BaseCommand
         // d($this->options(),$name);
         $domain = $this->option('domain') ?: config('4myth-tools.postman.domain', env('APP_URL'));
         $postman = new Postman($domain, $name, $id, $locale);
+        if(($exporter = $this->option('eid'))){
+            $postman->setExporterId($exporter);
+        }
         $postman->documentation();
-        $this->lineGreen("Created in: [{$postman->getFilePath()}]");
+        $this->components->info("File created: <fg=green>{$postman->getFilePath()}</>");
     }
 }

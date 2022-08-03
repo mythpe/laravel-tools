@@ -33,6 +33,9 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../config/4myth-tools.php', '4myth-tools'
         );
+        $this->publishes([
+            __DIR__.'/../config/4myth-tools.php' => config_path('4myth-tools.php'),
+        ], '4myth-tools-config');
 
         // Translations
         // $this->loadTranslationsFrom(__DIR__.'/../lang', '4myth-tools');
@@ -56,7 +59,7 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../resources/public' => storage_path('app/public/vendor/4myth'),
         ], 'public');
 
-        if ($this->app->runningInConsole()) {
+        if($this->app->runningInConsole()){
             $this->commands([
                 PostmanCommand::class,
                 JsLangCommand::class,

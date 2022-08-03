@@ -20,6 +20,13 @@ use Illuminate\Validation\Rules\Unique;
 class Postman
 {
     /**
+     * name on translation key
+     *
+     * @var string
+     */
+    const DESCRIPTION_KEY = 'postman.description';
+
+    /**
      * Variables will insert to postman
      *
      * @var array
@@ -83,14 +90,21 @@ class Postman
     /**
      * Postman collection id
      *
-     * @var string
+     * @var null|string
      */
-    protected string $collectionId;
+    protected ?string $collectionId;
+
+    /**
+     * Postman collection exporter id
+     *
+     * @var ?null|string
+     */
+    protected ?string $exporterId;
 
     /**
      * Postman constructor.
      */
-    public function __construct($domain = 'http://192.168.1.34:1234', $collectionName = 'Postman-API', $collectionId = "cf92d0cc-e433-4532-b5b5-ee6b2a674b86", $locale = null)
+    public function __construct($domain = 'http://192.168.1.34:1234', $collectionName = 'Postman-API', $collectionId = null, $locale = null)
     {
         $this->domain = $domain;
         $this->collectionName = $collectionName;
@@ -120,10 +134,9 @@ class Postman
         $file = [
             'info'     => $info,
             'item'     => array_values($item),
-            //'auth'     => $auth,
             'variable' => $variable,
         ];
-        $this->disk()->put($this->getFileName(), json_encode($file));
+        $this->disk()->put(Str::endsWith($this->getFileName(), '.json'), json_encode($file));
         return $file;
     }
 
@@ -316,9 +329,9 @@ class Postman
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getCollectionId(): string
+    public function getCollectionId(): ?string
     {
         return $this->collectionId;
     }
@@ -329,6 +342,22 @@ class Postman
     public function setCollectionId(string $collectionId): void
     {
         $this->collectionId = $collectionId;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExporterId(): ?string
+    {
+        return $this->exporterId;
+    }
+
+    /**
+     * @param string|null $exporterId
+     */
+    public function setExporterId(?string $exporterId): void
+    {
+        $this->exporterId = $exporterId;
     }
 
     /**
@@ -361,7 +390,7 @@ class Postman
 
             $controllerName = Str::kebab(class_basename($route->getController()));
             $controllerName = trim(str_ireplace('controller', '', $controllerName), '-');
-            $controllerName = trim(str_ireplace('-', ' ', $controllerName), ' ');
+            $controllerName = trim(str_ireplace('-', ' ', $controllerName));
             $controllerName = ucfirst($controllerName);
 
             $actionName = $route->getActionMethod();
@@ -373,8 +402,8 @@ class Postman
 
             $explodeVars = explode('/', $baseUri);
             foreach($explodeVars as $str){
-                if(strpos($str, '{') !== false){
-                    $key = preg_replace(['/(\{)+/', '/(\})+/'], ['', ''], $str);
+                if(str_contains($str, '{')){
+                    $key = preg_replace(['/(\{)+/', '/(\})+/'], '', $str);
                     if(!array_key_exists($key, $this->collectionVariables)){
                         $this->collectionVariables[$key] = 1;
                     }
@@ -561,11 +590,24 @@ class Postman
                 //app()->setLocale('en');
                 //d($itemName);
 
+                $itemDescriptionMethod = "_{$actionName}Description";
+                $itemDescription = '';
+                if(method_exists($controller, $itemDescriptionMethod)){
+                    $itemDescription = $controller->{$itemDescriptionMethod}();
+                }
+
+                if(trans_has($k = "postman.descriptions.".$controller::class.".$actionName", $this->getLocale())){
+                    $itemDescription = __($k, [
+                        'controller' => $controllerName,
+                        'method'     => $actionName,
+                    ], $this->getLocale());
+                }
                 $item = [
-                    'name'     => $itemName,
-                    'request'  => $_request,
-                    'response' => [],
-                    'event'    => [],
+                    'name'        => $itemName,
+                    'description' => $itemDescription,
+                    'request'     => $_request,
+                    'response'    => [],
+                    'event'       => [],
                 ];
                 if(in_array($actionName, $this->getScriptActions())){
                     $item['event'][] = [
@@ -588,7 +630,6 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
                 $folderName = trans_choice("choice.$choiceName", 2, [], 'en').' - '.trans_choice("choice.$choiceName", 2, [], 'ar');
                 //d($folderName);
-
                 if($auth){
                     if(!array_key_exists($folderName, $authCollection)){
                         $authCollection[$folderName] = [
@@ -599,7 +640,6 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                     $authCollection[$folderName]['item'][] = $item;
                 }
                 else{
-
                     if(!array_key_exists($folderName, $gustCollection)){
                         $gustCollection[$folderName] = [
                             'name' => $folderName,
@@ -634,12 +674,14 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
         ksort($gustCollection);
         $collection = [
             [
-                'name' => 'Auth',
-                'item' => array_values($authCollection),
+                'name'        => 'Auth',
+                'description' => __('postman.folder.auth_description') ?: '',
+                'item'        => array_values($authCollection),
             ],
             [
-                'name' => 'Gust',
-                'item' => array_values($gustCollection),
+                'name'        => 'Gust',
+                'description' => __('postman.folder.gust_description') ?: '',
+                'item'        => array_values($gustCollection),
             ],
         ];
         //d($collection);
@@ -654,11 +696,20 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      */
     protected function getFileInfo(): array
     {
-        return [
-            '_postman_id' => Str::random(36),
-            'name'        => $this->getCollectionName(),
-            'schema'      => "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        $info = [
+            //     '_postman_id' => Str::random(36),
+            'name'   => $this->getCollectionName(),
+            'schema' => "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         ];
+        if($this->getCollectionId()){
+            $info['_postman_id'] = $this->getCollectionId();
+        }
+
+        if($this->getExporterId()){
+            $info['_exporter_id'] = $this->getExporterId();
+        }
+
+        return $info;
     }
 
     /**
@@ -700,33 +751,38 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      */
     protected function getHeaders(): array
     {
-        return [
+        $headers = [
             [
                 "key"   => "Accept",
                 "value" => "application/json",
                 "type"  => "text",
             ],
-            [
+        ];
+        if($this->getLocaleHeaderVariableName()){
+            $headers[] = [
                 "key"   => $this->getLocaleHeaderVariableName(),
                 "value" => "{{{$this->getLocaleVariableName()}}}",
                 "type"  => "text",
-            ],
-            [
-                "key"   => "App-Currency",
-                "value" => config('4myth-tools.currency_code'),
-                "type"  => "text",
-            ],
-            [
-                "key"   => "App-Currency-Balance",
-                "value" => config('4myth-tools.currency_balance'),
-                "type"  => "text",
-            ],
-            [
-                "key"   => "App-Country",
-                "value" => config('4myth-tools.country_code'),
-                "type"  => "text",
-            ],
-        ];
+            ];
+        }
+        return $headers;
+        // return [
+        // [
+        //     "key"   => "App-Currency",
+        //     "value" => config('4myth-tools.currency_code'),
+        //     "type"  => "text",
+        // ],
+        // [
+        //     "key"   => "App-Currency-Balance",
+        //     "value" => config('4myth-tools.currency_balance'),
+        //     "type"  => "text",
+        // ],
+        // [
+        //     "key"   => "App-Country",
+        //     "value" => config('4myth-tools.country_code'),
+        //     "type"  => "text",
+        // ],
+        // ];
     }
 
     /**
@@ -1000,5 +1056,23 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             }
         }
         return (string) $str;
+    }
+
+    /**
+     * Get description of postman documentation
+     *
+     * @return string
+     */
+    protected function getDescription(): string
+    {
+        $description = '';
+        if(trans_has(static::DESCRIPTION_KEY, $this->getLocale())){
+            $description .= (string) (__(static::DESCRIPTION_KEY, [
+                'name' => appName($this->getLocale()),
+                'year' => now()->format("Y"),
+            ]) ?: '');
+        }
+        $description .= PHP_EOL."Powered by MyTh All rights reserved.";
+        return $description;
     }
 }
