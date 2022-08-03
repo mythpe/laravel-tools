@@ -109,7 +109,7 @@ class Postman
         $this->domain = config('app.url');
         $this->exporterId = config('4myth-tools.postman.exporter_id');
         $this->locale = config('app.locale');
-        $this->fileName = config('4myth-tools.postman.file_name', 'postman-collection');
+        $this->setFileName(config('4myth-tools.postman.file_name', 'postman-collection'));
         $this->middlewareName = config('4myth-tools.postman.middleware_name', 'postman');
         $this->localeHeaderVariableName = config('4myth-tools.postman.locale_header_variable_name', 'App-Locale');
         $this->localeVariableName = config('4myth-tools.postman.locale_variable_name', 'locale');
