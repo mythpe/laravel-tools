@@ -23,7 +23,7 @@ trait ProgressBarTrait
     protected $bar;
 
     /**
-     * @param int|null $max
+     * @param  int|null  $max
      *
      * @return $this
      */
@@ -43,7 +43,7 @@ trait ProgressBarTrait
     }
 
     /**
-     * @param int $max
+     * @param  int  $max
      *
      * @return $this
      */
@@ -65,7 +65,7 @@ trait ProgressBarTrait
     }
 
     /**
-     * @param int $step
+     * @param  int  $step
      *
      * @return \Symfony\Component\Console\Helper\ProgressBar
      */

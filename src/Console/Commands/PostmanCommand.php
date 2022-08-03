@@ -41,7 +41,7 @@ class PostmanCommand extends BaseCommand
      */
     public function handle()
     {
-        $this->components->task("Start documentation", function(){
+        $this->components->task("Start documentation", function () {
             $postman = new Postman();
             $name = $this->option('name') ?: $postman->getCollectionName();
             $id = $this->option('id');
@@ -49,23 +49,23 @@ class PostmanCommand extends BaseCommand
             $domain = $this->option('domain') ?: config('4myth-tools.postman.domain', config('app.url'));
             $locale = $this->option('locale');
 
-            if($id){
+            if ($id) {
                 $postman->setCollectionId($id);
             }
-            if($domain){
+            if ($domain) {
                 $postman->setDomain($domain);
             }
 
-            if($this->option('generate')){
+            if ($this->option('generate')) {
                 $name .= '-'.time();
             }
-            if($name){
+            if ($name) {
                 $postman->setCollectionName($name);
             }
-            if($exporter){
+            if ($exporter) {
                 $postman->setExporterId($exporter);
             }
-            if($locale){
+            if ($locale) {
                 $postman->setLocale($locale);
             }
 
