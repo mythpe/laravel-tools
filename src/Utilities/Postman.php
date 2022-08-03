@@ -135,7 +135,7 @@ class Postman
             'item'     => array_values($item),
             'variable' => $variable,
         ];
-        $this->disk()->put(Str::endsWith($this->getFileName(), '.json'), json_encode($file));
+        $this->disk()->put(Str::finish($this->getFileName(), '.json'), json_encode($file));
         return $file;
     }
 
