@@ -569,6 +569,18 @@ class Postman
                     }
                 }
 
+                $requestDescriptionMethod = "_{$actionName}Description";
+                $requestDescription = '';
+                if(method_exists($controller, $requestDescriptionMethod)){
+                    $requestDescription = $controller->{$requestDescriptionMethod}();
+                }
+                if(trans_has($k = "postman.descriptions.".$controller::class.".$actionName", $this->getLocale())){
+                    $requestDescription = __($k, [
+                        'controller' => $controllerName,
+                        'method'     => $actionName,
+                    ], $this->getLocale());
+                }
+
                 $url = [
                     'raw'   => "{$domain}/{$uri}",
                     'host'  => [$domain],
@@ -576,39 +588,21 @@ class Postman
                     'query' => $query,
                 ];
                 $_request = [
-                    'method' => $method,
-                    'header' => $header,
-                    'body'   => $body,
-                    'url'    => $url,
+                    'method'      => $method,
+                    'header'      => $header,
+                    'body'        => $body,
+                    'url'         => $url,
+                    'description' => $requestDescription,
                 ];
                 if($auth){
                     $_request['auth'] = $this->getAuth();
                 }
                 $itemName = $requestName;
-                //$itemName = "{$requestName} - ";
-                //app()->setLocale('ar');
-                //$itemName .= trans_choice($requestName, 2);
-                //app()->setLocale('en');
-                //d($itemName);
-
-                $itemDescriptionMethod = "_{$actionName}Description";
-                $itemDescription = '';
-                if(method_exists($controller, $itemDescriptionMethod)){
-                    $itemDescription = $controller->{$itemDescriptionMethod}();
-                }
-
-                if(trans_has($k = "postman.descriptions.".$controller::class.".$actionName", $this->getLocale())){
-                    $itemDescription = __($k, [
-                        'controller' => $controllerName,
-                        'method'     => $actionName,
-                    ], $this->getLocale());
-                }
                 $item = [
-                    'name'        => $itemName,
-                    'description' => $itemDescription,
-                    'request'     => $_request,
-                    'response'    => [],
-                    'event'       => [],
+                    'name'     => $itemName,
+                    'request'  => $_request,
+                    'response' => [],
+                    'event'    => [],
                 ];
                 if(in_array($actionName, $this->getScriptActions())){
                     $item['event'][] = [
