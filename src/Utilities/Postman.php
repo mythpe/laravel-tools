@@ -126,7 +126,8 @@ class Postman
      */
     public function documentation(): array
     {
-
+        $locale = app()->getLocale();
+        app()->setLocale($this->getLocale());
         $item = $this->getItems();
         $info = $this->getFileInfo();
         //$auth = $this->getAuth();
@@ -138,6 +139,7 @@ class Postman
             'variable' => $variable,
         ];
         $this->disk()->put(Str::finish($this->getFileName(), '.json'), json_encode($file));
+        app()->setLocale($locale);
         return $file;
     }
 
@@ -569,18 +571,32 @@ class Postman
                     }
                 }
 
+                $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
+                $itemName = $requestName;
+
                 $requestDescriptionMethod = "_{$actionName}Description";
                 $requestDescription = '';
                 if(method_exists($controller, $requestDescriptionMethod)){
                     $requestDescription = $controller->{$requestDescriptionMethod}();
                 }
-                if(trans_has($k = "postman.descriptions.".$controller::class.".$actionName", $this->getLocale())){
+                if(trans_has($k = "postman.descriptions.".$controller::class.".$actionName")){
                     $requestDescription = __($k, [
                         'controller' => $controllerName,
                         'method'     => $actionName,
-                    ], $this->getLocale());
+                    ]);
                 }
-
+                if(!$requestDescription && $isGeneralAction){
+                    try{
+                        $name = $controllerName;
+                        if(trans_has($k = "choice.$choiceName")){
+                            $name = trans_choice($k, 2);
+                        }
+                        $requestDescription = __("replace.$actionName", ['name' => $name]);
+                    }
+                    catch(\Exception $exception){
+                        //d($actionName, $choiceName);
+                    }
+                }
                 $url = [
                     'raw'   => "{$domain}/{$uri}",
                     'host'  => [$domain],
@@ -597,7 +613,7 @@ class Postman
                 if($auth){
                     $_request['auth'] = $this->getAuth();
                 }
-                $itemName = $requestName;
+
                 $item = [
                     'name'     => $itemName,
                     'request'  => $_request,
@@ -619,12 +635,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                         ],
                     ];
                 }
-
-                // $folderName = ucfirst(Str::plural($controllerName))." - ";
-                // app()->setLocale('ar');
-                $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
                 $folderName = trans_choice("choice.$choiceName", 2, [], 'en').' - '.trans_choice("choice.$choiceName", 2, [], 'ar');
-                //d($folderName);
                 $folderDescription = '';
                 if(trans_has($k = "postman.folder.".$controller::class)){
                     $folderDescription .= __($k, ['controller' => $controllerName]);
@@ -1068,9 +1079,9 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     protected function getDescription(): string
     {
         $description = '';
-        if(trans_has(static::DESCRIPTION_KEY, $this->getLocale())){
+        if(trans_has(static::DESCRIPTION_KEY)){
             $description .= (string) (__(static::DESCRIPTION_KEY, [
-                'name' => appName($this->getLocale()),
+                'name' => config('.app.name'),
                 'year' => now()->format("Y"),
             ]) ?: '');
         }
