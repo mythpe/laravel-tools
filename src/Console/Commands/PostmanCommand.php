@@ -42,24 +42,21 @@ class PostmanCommand extends BaseCommand
      */
     public function handle()
     {
-        $this->components->task("Start documentation", [$this, 'createDocumentation']);
-    }
-
-    protected function createDocumentation()
-    {
-        $name = $this->option('name') ?: config('app.name');
-        $id = $this->option('id') ?: Str::random(20);
-        $locale = $this->option('locale') ?: config('app.locale');
-        if($this->option('generate')){
-            $name = Str::random(4).'-'.time().'-'.Str::random(4);
-        }
-        // d($this->options(),$name);
-        $domain = $this->option('domain') ?: config('4myth-tools.postman.domain', env('APP_URL'));
-        $postman = new Postman($domain, $name, $id, $locale);
-        if(($exporter = $this->option('eid'))){
-            $postman->setExporterId($exporter);
-        }
-        $postman->documentation();
-        $this->components->info("File created: <fg=green>{$postman->getFilePath()}</>");
+        $this->components->task("Start documentation", function(){
+            $name = $this->option('name') ?: config('app.name');
+            $id = $this->option('id') ?: Str::random(20);
+            $locale = $this->option('locale') ?: config('app.locale');
+            if($this->option('generate')){
+                $name = Str::random(4).'-'.time().'-'.Str::random(4);
+            }
+            // d($this->options(),$name);
+            $domain = $this->option('domain') ?: config('4myth-tools.postman.domain', env('APP_URL'));
+            $postman = new Postman($domain, $name, $id, $locale);
+            if(($exporter = $this->option('eid'))){
+                $postman->setExporterId($exporter);
+            }
+            $postman->documentation();
+            $this->components->info("File created: <fg=green>{$postman->getFilePath()}</>");
+        });
     }
 }
