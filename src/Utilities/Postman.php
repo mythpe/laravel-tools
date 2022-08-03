@@ -1014,7 +1014,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             [
                 'key'         => $controller->itemsPerPageKey,
                 'value'       => 25,
-                'description' => 'The page of pagination',
+                'description' => 'Number of results per page',
                 'disabled'    => !0,
             ],
             [
@@ -1031,7 +1031,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             ],
             [
                 'key'         => $controller->searchRequestKey,
-                'value'       => 'example',
+                'value'       => 'text',
                 'description' => 'The value of searching',
                 'disabled'    => !0,
             ],
