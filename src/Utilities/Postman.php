@@ -625,11 +625,16 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
                 $folderName = trans_choice("choice.$choiceName", 2, [], 'en').' - '.trans_choice("choice.$choiceName", 2, [], 'ar');
                 //d($folderName);
+                $folderDescription = '';
+                if(trans_has($k = "postman.folder.".$controller::class)){
+                    $folderDescription .= __($k, ['controller' => $controllerName]);
+                }
                 if($auth){
                     if(!array_key_exists($folderName, $authCollection)){
                         $authCollection[$folderName] = [
-                            'name' => $folderName,
-                            'item' => [],
+                            'name'        => $folderName,
+                            'description' => $folderDescription,
+                            'item'        => [],
                         ];
                     }
                     $authCollection[$folderName]['item'][] = $item;
@@ -637,8 +642,9 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 else{
                     if(!array_key_exists($folderName, $gustCollection)){
                         $gustCollection[$folderName] = [
-                            'name' => $folderName,
-                            'item' => [],
+                            'name'        => $folderName,
+                            'description' => $folderDescription,
+                            'item'        => [],
                         ];
                     }
                     $gustCollection[$folderName]['item'][] = $item;
