@@ -124,7 +124,9 @@ return [
     'skip_permission_ends_with'     => (array) ['.', '.allIndex', '.indexResource'],
 
     'postman' => [
+        'postman_id'                  => null,
         'exporter_id'                 => null,
+        'collection_name'             => null,
         'domain'                      => env('APP_URL'),
         'file_name'                   => 'postman-collection',
         'middleware_name'             => 'postman',

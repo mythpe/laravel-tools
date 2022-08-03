@@ -75,7 +75,7 @@ class Postman
     /**
      * Name of postman collection
      */
-    protected string $collectionName = 'Postman-API';
+    protected string $collectionName;
 
     /**
      * Postman domain
@@ -104,12 +104,14 @@ class Postman
     /**
      * Postman constructor.
      */
-    public function __construct($domain = 'http://192.168.1.34:1234', $collectionName = 'Postman-API', $collectionId = null, $locale = null)
+    public function __construct()
     {
         $this->domain = config('app.url');
+        $this->collectionId = config('4myth-tools.postman.postman_id');
         $this->exporterId = config('4myth-tools.postman.exporter_id');
         $this->locale = config('app.locale');
-        $this->setFileName(config('4myth-tools.postman.file_name', 'postman-collection'));
+        $this->collectionName = config('4myth-tools.postman.collection_name', appName($this->locale));
+        $this->fileName = Str::finish(config('4myth-tools.postman.file_name', 'postman-collection'), '.json');
         $this->middlewareName = config('4myth-tools.postman.middleware_name', 'postman');
         $this->localeHeaderVariableName = config('4myth-tools.postman.locale_header_variable_name', 'App-Locale');
         $this->localeVariableName = config('4myth-tools.postman.locale_variable_name', 'locale');
@@ -697,8 +699,9 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     {
         $info = [
             //     '_postman_id' => Str::random(36),
-            'name'   => $this->getCollectionName(),
-            'schema' => "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+            'name'        => $this->getCollectionName(),
+            'description' => $this->getDescription(),
+            'schema'      => "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         ];
         if($this->getCollectionId()){
             $info['_postman_id'] = $this->getCollectionId();

@@ -42,12 +42,12 @@ class PostmanCommand extends BaseCommand
     public function handle()
     {
         $this->components->task("Start documentation", function(){
-            $name = $this->option('name') ?: config('app.name');
+            $postman = new Postman();
+            $name = $this->option('name') ?: $postman->getCollectionName();
             $id = $this->option('id');
             $exporter = $this->option('eid');
             $domain = $this->option('domain') ?: config('4myth-tools.postman.domain', config('app.url'));
             $locale = $this->option('locale');
-            $postman = new Postman();
 
             if($id){
                 $postman->setCollectionId($id);
