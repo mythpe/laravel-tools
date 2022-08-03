@@ -75,7 +75,7 @@ class Postman
     /**
      * Name of postman collection
      */
-    protected string $collectionName;
+    protected string $collectionName = 'Postman-API';
 
     /**
      * Postman domain
@@ -92,7 +92,7 @@ class Postman
      *
      * @var null|string
      */
-    protected ?string $collectionId;
+    protected ?string $collectionId = null;
 
     /**
      * Postman collection exporter id
@@ -106,10 +106,9 @@ class Postman
      */
     public function __construct($domain = 'http://192.168.1.34:1234', $collectionName = 'Postman-API', $collectionId = null, $locale = null)
     {
-        $this->domain = $domain;
-        $this->collectionName = $collectionName;
-        $this->collectionId = $collectionId;
-        $this->locale = $locale ?: config('app.locale');
+        $this->domain = config('app.url');
+        $this->exporterId = config('4myth-tools.postman.exporter_id');
+        $this->locale = config('app.locale');
         $this->fileName = config('4myth-tools.postman.file_name', 'postman-collection');
         $this->middlewareName = config('4myth-tools.postman.middleware_name', 'postman');
         $this->localeHeaderVariableName = config('4myth-tools.postman.locale_header_variable_name', 'App-Locale');

@@ -8,7 +8,6 @@
 
 namespace Myth\LaravelTools\Console\Commands;
 
-use Illuminate\Support\Str;
 use Myth\LaravelTools\Console\BaseCommand;
 use Myth\LaravelTools\Utilities\Postman;
 
@@ -44,17 +43,32 @@ class PostmanCommand extends BaseCommand
     {
         $this->components->task("Start documentation", function(){
             $name = $this->option('name') ?: config('app.name');
-            $id = $this->option('id') ?: Str::random(20);
-            $locale = $this->option('locale') ?: config('app.locale');
-            if($this->option('generate')){
-                $name = Str::random(4).'-'.time().'-'.Str::random(4);
+            $id = $this->option('id');
+            $exporter = $this->option('eid');
+            $domain = $this->option('domain') ?: config('4myth-tools.postman.domain', config('app.url'));
+            $locale = $this->option('locale');
+            $postman = new Postman();
+
+            if($id){
+                $postman->setCollectionId($id);
             }
-            // d($this->options(),$name);
-            $domain = $this->option('domain') ?: config('4myth-tools.postman.domain', env('APP_URL'));
-            $postman = new Postman($domain, $name, $id, $locale);
-            if(($exporter = $this->option('eid'))){
+            if($domain){
+                $postman->setDomain($domain);
+            }
+
+            if($this->option('generate')){
+                $name .= '-'.time();
+            }
+            if($name){
+                $postman->setCollectionName($name);
+            }
+            if($exporter){
                 $postman->setExporterId($exporter);
             }
+            if($locale){
+                $postman->setLocale($locale);
+            }
+
             $postman->documentation();
             $this->components->info("File created: <fg=green>{$postman->getFilePath()}</>");
         });
