@@ -15,13 +15,13 @@ use Illuminate\Support\Facades\Route as Router;
 use Illuminate\Support\Str;
 use Symfony\Component\VarDumper\VarDumper;
 
-if(!function_exists('to_number_format')){
+if (!function_exists('to_number_format')) {
     /**
-     * @param float|int|string $number
-     * @param int $decimals
-     * @param string|null $currency
-     * @param string $thousands_sep
-     * @param string $dec_point
+     * @param  float|int|string  $number
+     * @param  int  $decimals
+     * @param  string|null  $currency
+     * @param  string  $thousands_sep
+     * @param  string  $dec_point
      *
      * @return string
      */
@@ -32,12 +32,12 @@ if(!function_exists('to_number_format')){
     }
 }
 
-if(!function_exists('ends_with')){
+if (!function_exists('ends_with')) {
     /**
      * Determine if a given string ends with a given substring.
      *
-     * @param string $haystack
-     * @param array|string $needles
+     * @param  string  $haystack
+     * @param  array|string  $needles
      *
      * @return bool
      */
@@ -47,12 +47,12 @@ if(!function_exists('ends_with')){
     }
 }
 
-if(!function_exists('starts_with')){
+if (!function_exists('starts_with')) {
     /**
      * Determine if a given string starts with a given substring.
      *
-     * @param string $haystack
-     * @param array|string $needles
+     * @param  string  $haystack
+     * @param  array|string  $needles
      *
      * @return bool
      */
@@ -62,9 +62,9 @@ if(!function_exists('starts_with')){
     }
 }
 
-if(!function_exists('d')){
+if (!function_exists('d')) {
     /**
-     * @param mixed ...$vars
+     * @param  mixed  ...$vars
      */
     function d(...$vars): void
     {
@@ -79,7 +79,7 @@ if(!function_exists('d')){
         $file = ($call['file'] ?? __FILE__);
 
         echo("[$file] Line ($line): <br>");
-        foreach($vars as $v){
+        foreach ($vars as $v) {
             VarDumper::dump($v);
         }
 
@@ -87,12 +87,12 @@ if(!function_exists('d')){
     }
 }
 
-if(!function_exists('locale_attribute')){
+if (!function_exists('locale_attribute')) {
     /**
      * Get attribute by locale
      *
-     * @param string $attribute
-     * @param string|null $locale
+     * @param  string  $attribute
+     * @param  string|null  $locale
      *
      * @return string
      * @uses app()->getLocale()
@@ -104,11 +104,11 @@ if(!function_exists('locale_attribute')){
     }
 }
 
-if(!function_exists('str_replace_en_ar')){
+if (!function_exists('str_replace_en_ar')) {
     /**
      * Replace string for AR & EN
      *
-     * @param string|null $string $string
+     * @param  string|null  $string  $string
      *
      * @return string
      */
@@ -118,11 +118,11 @@ if(!function_exists('str_replace_en_ar')){
     }
 }
 
-if(!function_exists('str_replace_name_ar')){
+if (!function_exists('str_replace_name_ar')) {
     /**
      * Replace string for AR Name
      *
-     * @param string|null $string $string
+     * @param  string|null  $string  $string
      *
      * @return string
      */
@@ -135,11 +135,11 @@ if(!function_exists('str_replace_name_ar')){
     }
 }
 
-if(!function_exists('str_replace_name_en')){
+if (!function_exists('str_replace_name_en')) {
     /**
      * Replace string for EN Name
      *
-     * @param string|null $string $string
+     * @param  string|null  $string  $string
      *
      * @return string
      */
@@ -151,21 +151,21 @@ if(!function_exists('str_replace_name_en')){
     }
 }
 
-if(!function_exists('date_by_locale')){
+if (!function_exists('date_by_locale')) {
     /**
      * Convert date By locale
      *
-     * @param string|null $date
-     * @param null $toLocale
+     * @param  string|null  $date
+     * @param  null  $toLocale
      *
      * @return string
      */
     function date_by_locale(?string $date, $toLocale = null): string
     {
-        if(!$date){
+        if (!$date) {
             return '';
         }
-        if(is_null($toLocale)){
+        if (is_null($toLocale)) {
             $toLocale = app()->getLocale();
         }
 
@@ -258,33 +258,33 @@ if(!function_exists('date_by_locale')){
             "Dec",
         ];
 
-        try{
+        try {
             return str_ireplace($toLocale === 'ar' ? $notAr : $ar, $toLocale === 'ar' ? $ar : $notAr, $date);
         }
-        catch(Exception $exception){
+        catch (Exception $exception) {
             return '';
         }
     }
 }
 
-if(!function_exists('manifest_directory')){
+if (!function_exists('manifest_directory')) {
     function manifest_directory($path = null): string
     {
         $directory = rtrim(config('app.manifest_directory'), '/');
-        if(!is_null($path)){
+        if (!is_null($path)) {
             $directory .= '/'.ltrim($path, '/');
         }
         return $directory;
     }
 }
 
-if(!function_exists('trans_has')){
+if (!function_exists('trans_has')) {
     /**
      * Determine if a translation exists.
      *
-     * @param string $key
-     * @param string|null $locale
-     * @param bool $fallback
+     * @param  string  $key
+     * @param  string|null  $locale
+     * @param  bool  $fallback
      *
      * @return bool
      */
@@ -294,24 +294,24 @@ if(!function_exists('trans_has')){
     }
 }
 
-if(!function_exists('hijri')){
+if (!function_exists('hijri')) {
     /**
      * helper convert to hijri
      *
-     * @param mixed|string $date
+     * @param  mixed|string  $date
      *
      * @return \GeniusTS\HijriDate\Date
      */
     function hijri($date = ''): Date
     {
-        if($date instanceof Date){
+        if ($date instanceof Date) {
             return $date;
         }
-        if(!$date instanceof Carbon){
+        if (!$date instanceof Carbon) {
             $temp = Carbon::make($date);
 
             # Hijri
-            if($temp->year < 1990){
+            if ($temp->year < 1990) {
                 $ex = explode("-", $date);
                 count($ex) < 3 && ($ex = explode("/", $date));
 
@@ -321,7 +321,7 @@ if(!function_exists('hijri')){
 
                 $date = Hijri::convertToGregorian($day, $month, $year);
             }
-            else{
+            else {
                 $date = $temp;
             }
         }
@@ -330,10 +330,10 @@ if(!function_exists('hijri')){
     }
 }
 
-if(!function_exists('arabic_date')){
+if (!function_exists('arabic_date')) {
     /**
      * @param $string
-     * @param bool|string|null $append
+     * @param  bool|string|null  $append
      *
      * @return string
      */
@@ -372,7 +372,7 @@ if(!function_exists('arabic_date')){
     }
 }
 
-if(!function_exists('isBase64')){
+if (!function_exists('isBase64')) {
     /**
      * Check if string is image base64
      *
@@ -386,11 +386,11 @@ if(!function_exists('isBase64')){
     }
 }
 
-if(!function_exists('appName')){
+if (!function_exists('appName')) {
     /**
      * Setting app name
      *
-     * @param string|null $locale
+     * @param  string|null  $locale
      *
      * @return string
      */
@@ -400,7 +400,7 @@ if(!function_exists('appName')){
     }
 }
 
-if(!function_exists('encodeId')){
+if (!function_exists('encodeId')) {
     /**
      * Encode id
      *
@@ -414,7 +414,7 @@ if(!function_exists('encodeId')){
     }
 }
 
-if(!function_exists('decodeId')){
+if (!function_exists('decodeId')) {
     /**
      * Encode id
      *
@@ -432,12 +432,12 @@ if(!function_exists('decodeId')){
     }
 }
 
-if(!function_exists('downloadMedia')){
+if (!function_exists('downloadMedia')) {
     /**
      * Get Route url for media library
      *
-     * @param \Spatie\MediaLibrary\MediaCollections\Models\Media|\Illuminate\Database\Eloquent\Model|string|int $media
-     * @param string $routeName
+     * @param  \Spatie\MediaLibrary\MediaCollections\Models\Media|\Illuminate\Database\Eloquent\Model|string|int  $media
+     * @param  string  $routeName
      *
      * @return string|null
      * @uses route
@@ -451,11 +451,11 @@ if(!function_exists('downloadMedia')){
     }
 }
 
-if(!function_exists('front_end_url')){
+if (!function_exists('front_end_url')) {
     /**
      *  Front end url helper
      *
-     * @param string|null $prefix
+     * @param  string|null  $prefix
      *
      * @return string
      */
@@ -463,18 +463,18 @@ if(!function_exists('front_end_url')){
     {
         $url = config('4myth-tools.front_end_url', '');
         $url = rtrim($url, '/');
-        if($prefix){
+        if ($prefix) {
             $url .= "/".ltrim($prefix, '/');
         }
         return $url;
     }
 }
 
-if(!function_exists('getPermissionRoutes')){
+if (!function_exists('getPermissionRoutes')) {
     /**
      * Get list of auth-routes has permission
      *
-     * @param false $asCode
+     * @param  false  $asCode
      *
      * @return array
      */
@@ -484,30 +484,30 @@ if(!function_exists('getPermissionRoutes')){
         $routes = Router::getRoutes();
         $auth = [];
         $codes = [];
-        foreach($routes as $route){
+        foreach ($routes as $route) {
             $name = $route->getName() ?: '';
             $code = $name;
-            if(Str::endsWith($name, config('4myth-tools.skip_permission_ends_with', []))){
+            if (Str::endsWith($name, config('4myth-tools.skip_permission_ends_with', []))) {
                 continue;
             }
             $action = $route->getAction();
             $middlewares = ($action['middleware'] ?? []);
-            if(!in_array('permission', $middlewares)){
+            if (!in_array('permission', $middlewares)) {
                 continue;
             }
 
             $hasAuth = !1;
-            foreach($middlewares as $middleware){
-                if(Str::contains($middleware, 'auth:')){
+            foreach ($middlewares as $middleware) {
+                if (Str::contains($middleware, 'auth:')) {
                     $hasAuth = !0;
                     break;
                 }
             }
-            if(!$hasAuth){
+            if (!$hasAuth) {
                 continue;
             }
 
-            if(!array_key_exists($code, $auth)){
+            if (!array_key_exists($code, $auth)) {
                 $auth[$code] = [
                     'name' => $name,
                     'code' => $code,
@@ -521,21 +521,21 @@ if(!function_exists('getPermissionRoutes')){
     }
 }
 
-if(!function_exists('apiResource')){
+if (!function_exists('apiResource')) {
     /**
      * Helper to make application auth-routes
      *
-     * @param string $name
-     * @param string|string[] $controller
-     * @param \Closure|null $group
-     * @param array $routeOptions
+     * @param  string  $name
+     * @param  string|string[]  $controller
+     * @param  \Closure|null  $group
+     * @param  array  $routeOptions
      *
      * @return \Illuminate\Routing\PendingResourceRegistration
      */
     function apiResource(string $name, array|string $controller, Closure $group = null, array $routeOptions = []): PendingResourceRegistration
     {
-        Router::group(['as' => "$name.", 'prefix' => $name], function($router) use ($name, $controller, $group){
-            if(is_callable($group)){
+        Router::group(['as' => "$name.", 'prefix' => $name], function ($router) use ($name, $controller, $group) {
+            if (is_callable($group)) {
                 $group($router);
             }
             //Route::delete('destroy-all', [$controller, 'destroyAll'])->name('destroyAll');

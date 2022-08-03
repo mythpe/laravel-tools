@@ -59,7 +59,7 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../resources/public' => storage_path('app/public/vendor/4myth'),
         ], 'public');
 
-        if($this->app->runningInConsole()){
+        if ($this->app->runningInConsole()) {
             $this->commands([
                 PostmanCommand::class,
                 JsLangCommand::class,

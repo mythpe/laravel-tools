@@ -81,7 +81,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -91,7 +91,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -101,7 +101,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -111,7 +111,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -121,7 +121,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -131,7 +131,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -141,7 +141,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -152,7 +152,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -163,7 +163,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -174,7 +174,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -185,7 +185,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -196,7 +196,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -207,7 +207,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -218,7 +218,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */

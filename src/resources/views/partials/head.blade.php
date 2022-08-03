@@ -28,4 +28,8 @@
     name="viewport"
 >
 
-<title>{!! $APP_NAME !!}@hasSection("title") - @yield("title") @endif @hasSection("extra_title") - @yield("extra_title")@endif</title>
+<title>{!! $APP_NAME !!}@hasSection("title")
+        - @yield("title")
+    @endif @hasSection("extra_title")
+        - @yield("extra_title")
+    @endif</title>

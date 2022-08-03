@@ -35,8 +35,8 @@ trait FilterTrait
     protected string $filterTable = '';
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder|\Myth\LaravelTools\Models\BaseModel $builder
-     * @param null $filters
+     * @param  \Illuminate\Database\Eloquent\Builder|\Myth\LaravelTools\Models\BaseModel  $builder
+     * @param  null  $filters
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -44,19 +44,19 @@ trait FilterTrait
     {
         $filters = is_null($filters) ? $this->request->get($this->filterRequestKey) : $filters;
         //d($filters);
-        if($filters && is_array($filters)){
+        if ($filters && is_array($filters)) {
             $model = $builder->getModel();
             $this->filterTable = $model->getTable();
-            foreach($filters as $column => $value){
-                if(is_null($value)){
+            foreach ($filters as $column => $value) {
+                if (is_null($value)) {
                     continue;
                 }
-                if($this->isMapFilterColumns($column)){
+                if ($this->isMapFilterColumns($column)) {
                     $map = $this->getMapFilterColumns($column);
-                    if(is_string($map)){
+                    if (is_string($map)) {
                         $builder = $builder->{$map}($value);
                     }
-                    else{
+                    else {
                         $method = ($map[0] ?? 'where');
                         $column = ($map[1] ?? $column);
                         $operator = ($map[2] ?? '=');
@@ -65,7 +65,7 @@ trait FilterTrait
                         $builder = $builder->{$method}($column, $operator, $value, $boolean);
                     }
                 }
-                else{
+                else {
                     $builder = $this->setFilterQuery($builder, $column, $value);
                 }
             }
@@ -84,7 +84,7 @@ trait FilterTrait
     }
 
     /**
-     * @param null $column
+     * @param  null  $column
      *
      * @return array|mixed|null
      */
@@ -102,22 +102,22 @@ trait FilterTrait
      */
     protected function setFilterQuery($builder, $column, $value)
     {
-        if(Schema::hasColumn($this->filterTable, $column)){
-            if(is_array($value)){
+        if (Schema::hasColumn($this->filterTable, $column)) {
+            if (is_array($value)) {
                 $builder->whereIn($column, $value);
             }
-            else{
+            else {
                 $builder->where($column, '=', $value);
             }
         }
-        else{
+        else {
             $model = $builder->getModel();
             $name = Str::beforeLast($column, '_id');
             $camel = ucfirst(Str::camel($name));
             $method = "whereHas{$camel}";
             $scope = "scopeWhereHas{$camel}";
             //d($scope, $name, $relations);
-            if(method_exists($model, $scope)){
+            if (method_exists($model, $scope)) {
                 $builder->{$method}($value);
             }
             //d(12);
@@ -125,11 +125,11 @@ trait FilterTrait
                 Str::camel($name),
                 Str::snake($name),
             ];
-            foreach($relations as $relation){
-                if(method_exists($model, $relation)){
+            foreach ($relations as $relation) {
+                if (method_exists($model, $relation)) {
                     $_relation = $model->{$relation}();
-                    if($_relation instanceof BelongsToMany){
-                        $builder->whereHas($relation, function(Builder $builder) use ($value, $relation, $_relation){
+                    if ($_relation instanceof BelongsToMany) {
+                        $builder->whereHas($relation, function (Builder $builder) use ($value, $relation, $_relation) {
                             $relationColumn = Str::singular(Str::snake($relation)).'_id';
                             $m = is_array($value) ? 'whereIn' : 'where';
                             $builder->{$m}($relationColumn, $value);

@@ -27,9 +27,9 @@
     factory(global)
   }
 
-// Pass this if window is not defined yet
+  // Pass this if window is not defined yet
 })(typeof window !== 'undefined' ? window : this, function (window, noGlobal) {
-// Edge <= 12 - 13+, Firefox <=18 - 45+, IE 10 - 11, Safari 5.1 - 9+, iOS 6 - 9.1
+  // Edge <= 12 - 13+, Firefox <=18 - 45+, IE 10 - 11, Safari 5.1 - 9+, iOS 6 - 9.1
   // throw exceptions when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
   // arguments.callee.caller (trac-13335). But as of jQuery 3.0 (2016), strict mode should be common
   // enough that all such attempts are guarded in a try block.
@@ -83,7 +83,8 @@
   function DOMEval (code, node, doc) {
     doc = doc || document
 
-    let i; let val
+    let i
+    let val
     const script = doc.createElement('script')
 
     script.text = code
@@ -217,7 +218,12 @@
   }
 
   jQuery.extend = jQuery.fn.extend = function () {
-    let options; let name; let src; let copy; let copyIsArray; let clone
+    let options
+    let name
+    let src
+    let copy
+    let copyIsArray
+    let clone
     let target = arguments[0] || {}
     let i = 1
     const length = arguments.length
@@ -337,7 +343,8 @@
     },
 
     each: function (obj, callback) {
-      let length; let i = 0
+      let length
+      let i = 0
 
       if (isArrayLike(obj)) {
         length = obj.length
@@ -424,7 +431,8 @@
 
     // arg is for internal usage only
     map: function (elems, callback, arg) {
-      let length; let value
+      let length
+      let value
       let i = 0
       const ret = []
 
@@ -572,23 +580,23 @@
 
       // Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
       const attributes = '\\[' + whitespace + '*(' + identifier + ')(?:' +
-          whitespace +
-          // Operator (capture 2)
-          '*([*^$|!~]?=)' + whitespace +
-          // "Attribute values must be CSS identifiers [capture 5] or strings [capture 3 or capture 4]"
-          '*(?:\'((?:\\\\.|[^\\\\\'])*)\'|"((?:\\\\.|[^\\\\"])*)"|(' +
-          identifier + '))|)' + whitespace +
-          '*\\]'
+        whitespace +
+        // Operator (capture 2)
+        '*([*^$|!~]?=)' + whitespace +
+        // "Attribute values must be CSS identifiers [capture 5] or strings [capture 3 or capture 4]"
+        '*(?:\'((?:\\\\.|[^\\\\\'])*)\'|"((?:\\\\.|[^\\\\"])*)"|(' +
+        identifier + '))|)' + whitespace +
+        '*\\]'
 
       const pseudos = ':(' + identifier + ')(?:\\((' +
-          // To reduce the number of selectors needing tokenize in the preFilter, prefer arguments:
-          // 1. quoted (capture 3; capture 4 or capture 5)
-          '(\'((?:\\\\.|[^\\\\\'])*)\'|"((?:\\\\.|[^\\\\"])*)")|' +
-          // 2. simple (capture 6)
-          '((?:\\\\.|[^\\\\()[\\]]|' + attributes + ')*)|' +
-          // 3. anything else (capture 2)
-          '.*' +
-          ')\\)|)'
+        // To reduce the number of selectors needing tokenize in the preFilter, prefer arguments:
+        // 1. quoted (capture 3; capture 4 or capture 5)
+        '(\'((?:\\\\.|[^\\\\\'])*)\'|"((?:\\\\.|[^\\\\"])*)")|' +
+        // 2. simple (capture 6)
+        '((?:\\\\.|[^\\\\()[\\]]|' + attributes + ')*)|' +
+        // 3. anything else (capture 2)
+        '.*' +
+        ')\\)|)'
 
       // Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
       const rwhitespace = new RegExp(whitespace + '+', 'g')
@@ -612,17 +620,17 @@
         PSEUDO: new RegExp('^' + pseudos),
         CHILD: new RegExp(
           '^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(' +
-            whitespace +
-            '*(even|odd|(([+-]|)(\\d*)n|)' + whitespace + '*(?:([+-]|)' +
-            whitespace +
-            '*(\\d+)|))' + whitespace + '*\\)|)', 'i'),
+          whitespace +
+          '*(even|odd|(([+-]|)(\\d*)n|)' + whitespace + '*(?:([+-]|)' +
+          whitespace +
+          '*(\\d+)|))' + whitespace + '*\\)|)', 'i'),
         bool: new RegExp('^(?:' + booleans + ')$', 'i'),
         // For use in libraries implementing .is()
         // We use this for POS matching in `select`
         needsContext: new RegExp('^' + whitespace +
-            '*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(' +
-            whitespace + '*((?:-\\d)?\\d*)' + whitespace + '*\\)|)(?=[^-]|$)',
-        'i')
+          '*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(' +
+          whitespace + '*((?:-\\d)?\\d*)' + whitespace + '*\\)|)(?=[^-]|$)',
+          'i')
       }
 
       const rhtml = /HTML$/i
@@ -649,9 +657,9 @@
         return high !== high || escapedWhitespace
           ? escaped
           : high < 0
-          // BMP codepoint
+            // BMP codepoint
             ? String.fromCharCode(high + 0x10000)
-          // Supplemental Plane codepoint (surrogate pair)
+            // Supplemental Plane codepoint (surrogate pair)
             : String.fromCharCode(high >> 10 | 0xD800, high & 0x3FF | 0xDC00)
       }
 
@@ -667,7 +675,7 @@
 
           // Control characters and (dependent upon position) numbers get escaped as code points
           return ch.slice(0, -1) + '\\' +
-              ch.charCodeAt(ch.length - 1).toString(16) + ' '
+            ch.charCodeAt(ch.length - 1).toString(16) + ' '
         }
 
         // Other potentially-special ASCII characters get backslash-escaped
@@ -685,7 +693,7 @@
       const inDisabledFieldset = addCombinator(
         function (elem) {
           return elem.disabled === true && elem.nodeName.toLowerCase() ===
-              'fieldset'
+            'fieldset'
         },
         { dir: 'parentNode', next: 'legend' }
       )
@@ -721,7 +729,13 @@
       }
 
       function Sizzle (selector, context, results, seed) {
-        let m; let i; let elem; let nid; let match; let groups; let newSelector
+        let m
+        let i
+        let elem
+        let nid
+        let match
+        let groups
+        let newSelector
         let newContext = context && context.ownerDocument
 
         // nodeType defaults to 9, since context defaults to document
@@ -921,7 +935,7 @@
       function siblingCheck (a, b) {
         let cur = b && a
         const diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
-            a.sourceIndex - b.sourceIndex
+          a.sourceIndex - b.sourceIndex
 
         // Use IE sourceIndex if available on both nodes
         if (diff) {
@@ -1070,7 +1084,8 @@
        * @returns {Object} Returns the current document
        */
       setDocument = Sizzle.setDocument = function (node) {
-        let hasCompare; let subWindow
+        let hasCompare
+        let subWindow
         const doc = node ? node.ownerDocument || node : preferredDoc
 
         // Return early if doc is invalid or already selected
@@ -1161,7 +1176,9 @@
           Expr.find.ID = function (id, context) {
             if (typeof context.getElementById !== 'undefined' &&
               documentIsHTML) {
-              let node; let i; let elems
+              let node
+              let i
+              let elems
               let elem = context.getElementById(id)
 
               if (elem) {
@@ -1544,8 +1561,8 @@
           : support.attributes || !documentIsHTML
             ? elem.getAttribute(name)
             : (val = elem.getAttributeNode(name)) && val.specified
-                ? val.value
-                : null
+              ? val.value
+              : null
       }
 
       Sizzle.escape = function (sel) {
@@ -1726,8 +1743,7 @@
         filter: {
 
           TAG: function (nodeNameSelector) {
-            const nodeName = nodeNameSelector.replace(runescape, funescape)
-              .toLowerCase()
+            const nodeName = nodeNameSelector.replace(runescape, funescape).toLowerCase()
             return nodeNameSelector === '*'
               ? function () { return true }
               : function (elem) {
@@ -1778,7 +1794,7 @@
                         : operator === '~='
                           ? (' ' +
                           result.replace(rwhitespace, ' ') + ' ').indexOf(
-                              check) > -1
+                          check) > -1
                           : operator === '|='
                             ? result === check ||
                             result.slice(0, check.length + 1) === check + '-'
@@ -1799,7 +1815,12 @@
               }
 
               : function (elem, context, xml) {
-                let cache; let uniqueCache; let outerCache; let node; let nodeIndex; let start
+                let cache
+                let uniqueCache
+                let outerCache
+                let node
+                let nodeIndex
+                let start
                 let dir = simple !== forward ? 'nextSibling' : 'previousSibling'
                 const parent = elem.parentNode
                 const name = ofType && elem.nodeName.toLowerCase()
@@ -1878,8 +1899,8 @@
                       while ((node = ++nodeIndex && node && node[dir] ||
                         (diff = nodeIndex = 0) || start.pop())) {
                         if ((ofType
-                          ? node.nodeName.toLowerCase() === name
-                          : node.nodeType === 1) &&
+                            ? node.nodeName.toLowerCase() === name
+                            : node.nodeType === 1) &&
                           ++diff) {
                           // Cache the index of each encountered element
                           if (useCache) {
@@ -1916,8 +1937,8 @@
             // Remember that setFilters inherits from pseudos
             let args
             const fn = Expr.pseudos[pseudo] ||
-                Expr.setFilters[pseudo.toLowerCase()] ||
-                Sizzle.error('unsupported pseudo: ' + pseudo)
+              Expr.setFilters[pseudo.toLowerCase()] ||
+              Sizzle.error('unsupported pseudo: ' + pseudo)
 
             // The user may use createPseudo to indicate that
             // arguments are needed to create the filter function
@@ -2180,8 +2201,13 @@
       Expr.setFilters = new setFilters()
 
       tokenize = Sizzle.tokenize = function (selector, parseOnly) {
-        let matched; let match; let tokens; let type
-        let soFar; let groups; let preFilters
+        let matched
+        let match
+        let tokens
+        let type
+        let soFar
+        let groups
+        let preFilters
         const cached = tokenCache[selector + ' ']
 
         if (cached) {
@@ -2275,7 +2301,9 @@
 
           // Check against all ancestor/preceding elements
           : function (elem, context, xml) {
-            let oldCache; let uniqueCache; let outerCache
+            let oldCache
+            let uniqueCache
+            let outerCache
             const newCache = [dirruns, doneName]
 
             // We can't set arbitrary data on XML nodes, so they don't benefit from combinator caching
@@ -2372,7 +2400,9 @@
           postFinder = setMatcher(postFinder, postSelector)
         }
         return markFunction(function (seed, results, context, xml) {
-          let temp; let i; let elem
+          let temp
+          let i
+          let elem
           const preMap = []
           const postMap = []
           const preexisting = results.length
@@ -2387,13 +2417,13 @@
             : elems
 
           let matcherOut = matcher
-          // If we have a postFinder, or filtered seed, or non-seed postFilter or preexisting results,
+            // If we have a postFinder, or filtered seed, or non-seed postFilter or preexisting results,
             ? postFinder || (seed ? preFilter : preexisting || postFilter)
 
-            // ...intermediate processing is necessary
+              // ...intermediate processing is necessary
               ? []
 
-            // ...otherwise use results directly
+              // ...otherwise use results directly
               : results
             : matcherIn
 
@@ -2458,7 +2488,9 @@
       }
 
       function matcherFromTokens (tokens) {
-        let checkContext; let matcher; let j
+        let checkContext
+        let matcher
+        let j
         const len = tokens.length
         const leadingRelative = Expr.relative[tokens[0].type]
         const implicitRelative = leadingRelative || Expr.relative[' ']
@@ -2474,7 +2506,7 @@
         let matchers = [
           function (elem, context, xml) {
             const ret = (!leadingRelative &&
-                (xml || context !== outermostContext)) || (
+              (xml || context !== outermostContext)) || (
               (checkContext = context).nodeType
                 ? matchContext(elem, context, xml)
                 : matchAnyContext(elem, context, xml))
@@ -2503,8 +2535,7 @@
                 i > 1 && elementMatcher(matchers),
                 i > 1 && toSelector(
                   // If the preceding token was a descendant combinator, insert an implicit any-element `*`
-                  tokens.slice(0, i - 1)
-                    .concat({ value: tokens[i - 2].type === ' ' ? '*' : '' })
+                  tokens.slice(0, i - 1).concat({ value: tokens[i - 2].type === ' ' ? '*' : '' })
                 ).replace(rtrim, '$1'),
                 matcher,
                 i < j && matcherFromTokens(tokens.slice(i, j)),
@@ -2523,7 +2554,9 @@
         const bySet = setMatchers.length > 0
         const byElement = elementMatchers.length > 0
         const superMatcher = function (seed, context, xml, results, outermost) {
-          let elem; let j; let matcher
+          let elem
+          let j
+          let matcher
           let matchedCount = 0
           let i = '0'
           const unmatched = seed && []
@@ -2612,7 +2645,7 @@
 
             // Seedless set matches succeeding multiple successful matchers stipulate sorting
             if (outermost && !seed && setMatched.length > 0 &&
-                (matchedCount + setMatchers.length) > 1) {
+              (matchedCount + setMatchers.length) > 1) {
               Sizzle.uniqueSort(results)
             }
           }
@@ -2672,7 +2705,11 @@
        * @param {Array} [seed] A set of elements to match against
        */
       select = Sizzle.select = function (selector, context, results, seed) {
-        let i; let tokens; let token; let type; let find
+        let i
+        let tokens
+        let token
+        let type
+        let find
         const compiled = typeof selector === 'function' && selector
         const match = !seed && tokenize((selector = compiled.selector || selector))
 
@@ -2687,7 +2724,7 @@
             context.nodeType === 9 && documentIsHTML &&
             Expr.relative[tokens[1].type]) {
             context = (Expr.find.ID(
-              token.matches[0].replace(runescape, funescape), context) ||
+                token.matches[0].replace(runescape, funescape), context) ||
               [])[0]
             if (!context) {
               return results
@@ -2804,8 +2841,8 @@
             return elem[name] === true
               ? name.toLowerCase()
               : (val = elem.getAttributeNode(name)) && val.specified
-                  ? val.value
-                  : null
+                ? val.value
+                : null
           }
         })
       }
@@ -2856,6 +2893,7 @@
   function nodeName (elem, name) {
     return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase()
   }
+
   const rsingleTag = (/^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i)
 
   // Implement the identical functionality for filter and not
@@ -2902,7 +2940,8 @@
 
   jQuery.fn.extend({
     find: function (selector) {
-      let i; let ret
+      let i
+      let ret
       const len = this.length
       const self = this
 
@@ -2970,8 +3009,8 @@
     // Handle HTML strings
     if (typeof selector === 'string') {
       if (selector[0] === '<' &&
-          selector[selector.length - 1] === '>' &&
-          selector.length >= 3) {
+        selector[selector.length - 1] === '>' &&
+        selector.length >= 3) {
         // Assume that strings that start and end with <> are HTML and skip the regex check
         match = [null, selector, null]
       } else {
@@ -3044,7 +3083,7 @@
       return root.ready !== undefined
         ? root.ready(selector)
 
-      // Execute immediately if ready is not present
+        // Execute immediately if ready is not present
         : selector(jQuery)
     }
 
@@ -3304,7 +3343,7 @@
         while (++firingIndex < list.length) {
           // Run callback and check for early termination
           if (list[firingIndex].apply(memory[0], memory[1]) === false &&
-              options.stopOnFalse) {
+            options.stopOnFalse) {
             // Jump to end and forget the data so .add doesn't re-fire
             firingIndex = list.length
             memory = false
@@ -3533,10 +3572,7 @@
               deferred[tuple[1]](function () {
                 const returned = fn && fn.apply(this, arguments)
                 if (returned && isFunction(returned.promise)) {
-                  returned.promise()
-                    .progress(newDefer.notify)
-                    .done(newDefer.resolve)
-                    .fail(newDefer.reject)
+                  returned.promise().progress(newDefer.notify).done(newDefer.resolve).fail(newDefer.reject)
                 } else {
                   newDefer[tuple[0] + 'With'](
                     this,
@@ -3579,12 +3615,12 @@
                 // Retrieve `then` only once
                 then = returned &&
 
-                      // Support: Promises/A+ section 2.3.4
-                      // https://promisesaplus.com/#point-64
-                      // Only check objects and functions for thenability
-                      (typeof returned === 'object' ||
-                        typeof returned === 'function') &&
-                      returned.then
+                  // Support: Promises/A+ section 2.3.4
+                  // https://promisesaplus.com/#point-64
+                  // Only check objects and functions for thenability
+                  (typeof returned === 'object' ||
+                    typeof returned === 'function') &&
+                  returned.then
 
                 // Handle a returned thenable
                 if (isFunction(then)) {
@@ -3860,12 +3896,12 @@
   jQuery.fn.ready = function (fn) {
     readyList.then(fn)
 
-      // Wrap jQuery.readyException in a function so that the lookup
-      // happens at the time of error handling instead of callback
-      // registration.
-      .catch(function (error) {
-        jQuery.readyException(error)
-      })
+    // Wrap jQuery.readyException in a function so that the lookup
+    // happens at the time of error handling instead of callback
+    // registration.
+    .catch(function (error) {
+      jQuery.readyException(error)
+    })
 
     return this
   }
@@ -4243,7 +4279,9 @@
 
   jQuery.fn.extend({
     data: function (key, value) {
-      let i; let name; let data
+      let i
+      let name
+      let data
       const elem = this[0]
       const attrs = elem && elem.attributes
 
@@ -4496,7 +4534,8 @@
   }
 
   const swap = function (elem, options, callback, args) {
-    let ret; let name
+    let ret
+    let name
     const old = {}
 
     // Remember the old values, and insert the new ones
@@ -4516,7 +4555,8 @@
   }
 
   function adjustCSS (elem, prop, valueParts, tween) {
-    let adjusted; let scale
+    let adjusted
+    let scale
     let maxIterations = 20
     const currentValue = tween
       ? function () {
@@ -4527,12 +4567,12 @@
       }
     let initial = currentValue()
     let unit = valueParts && valueParts[3] ||
-        (jQuery.cssNumber[prop] ? '' : 'px')
+      (jQuery.cssNumber[prop] ? '' : 'px')
 
     // Starting value computation is required for potential unit mismatches
     let initialInUnit = elem.nodeType &&
-        (jQuery.cssNumber[prop] || unit !== 'px' && +initial) &&
-        rcssNum.exec(jQuery.css(elem, prop))
+      (jQuery.cssNumber[prop] || unit !== 'px' && +initial) &&
+      rcssNum.exec(jQuery.css(elem, prop))
 
     if (initialInUnit && initialInUnit[3] !== unit) {
       // Support: Firefox <=54
@@ -4605,7 +4645,8 @@
   }
 
   function showHide (elements, show) {
-    let display; let elem
+    let display
+    let elem
     const values = []
     let index = 0
     const length = elements.length
@@ -4738,7 +4779,12 @@
   const rhtml = /<|&#?\w+;/
 
   function buildFragment (elems, context, scripts, selection, ignored) {
-    let elem; let tmp; let tag; let wrap; let attached; let j
+    let elem
+    let tmp
+    let tag
+    let wrap
+    let attached
+    let j
     const fragment = context.createDocumentFragment()
     const nodes = []
     let i = 0
@@ -4944,9 +4990,17 @@
     global: {},
 
     add: function (elem, types, handler, data, selector) {
-      let handleObjIn; let eventHandle; let tmp
-      let events; let t; let handleObj
-      let special; let handlers; let type; let namespaces; let origType
+      let handleObjIn
+      let eventHandle
+      let tmp
+      let events
+      let t
+      let handleObj
+      let special
+      let handlers
+      let type
+      let namespaces
+      let origType
       const elemData = dataPriv.get(elem)
 
       // Don't attach events to noData or text/comment nodes (but allow plain objects)
@@ -5058,9 +5112,17 @@
 
     // Detach an event or set of events from an element
     remove: function (elem, types, handler, selector, mappedTypes) {
-      let j; let origCount; let tmp
-      let events; let t; let handleObj
-      let special; let handlers; let type; let namespaces; let origType
+      let j
+      let origCount
+      let tmp
+      let events
+      let t
+      let handleObj
+      let special
+      let handlers
+      let type
+      let namespaces
+      let origType
       const elemData = dataPriv.hasData(elem) && dataPriv.get(elem)
 
       if (!elemData || !(events = elemData.events)) {
@@ -5133,7 +5195,12 @@
       // Make a writable jQuery.Event from the native event object
       const event = jQuery.event.fix(nativeEvent)
 
-      let i; let j; let ret; let matched; let handleObj; let handlerQueue
+      let i
+      let j
+      let ret
+      let matched
+      let handleObj
+      let handlerQueue
       const args = new Array(arguments.length)
       const handlers = (dataPriv.get(this, 'events') || {})[event.type] || []
       const special = jQuery.event.special[event.type] || {}
@@ -5193,7 +5260,11 @@
     },
 
     handlers: function (event, handlers) {
-      let i; let handleObj; let sel; let matchedHandlers; let matchedSelectors
+      let i
+      let handleObj
+      let sel
+      let matchedHandlers
+      let matchedSelectors
       const handlerQueue = []
       const delegateCount = handlers.delegateCount
       let cur = event.target
@@ -5364,7 +5435,8 @@
     jQuery.event.add(el, type, {
       namespace: false,
       handler: function (event) {
-        let notAsync; let result
+        let notAsync
+        let result
         let saved = dataPriv.get(this, type)
 
         if ((event.isTrigger & 1) && this[type]) {
@@ -5787,7 +5859,12 @@
     // Flatten any nested arrays
     args = concat.apply([], args)
 
-    let fragment; let first; let scripts; let hasScripts; let node; let doc
+    let fragment
+    let first
+    let scripts
+    let hasScripts
+    let node
+    let doc
     let i = 0
     const l = collection.length
     const iNoClone = l - 1
@@ -5899,7 +5976,10 @@
     },
 
     clone: function (elem, dataAndEvents, deepDataAndEvents) {
-      let i; let l; let srcElements; let destElements
+      let i
+      let l
+      let srcElements
+      let destElements
       const clone = elem.cloneNode(true)
       const inPage = isAttached(elem)
 
@@ -5941,7 +6021,9 @@
     },
 
     cleanData: function (elems) {
-      let data; let elem; let type
+      let data
+      let elem
+      let type
       const special = jQuery.event.special
       let i = 0
 
@@ -6210,7 +6292,9 @@
       return Math.round(parseFloat(measure))
     }
 
-    let pixelPositionVal; let boxSizingReliableVal; let scrollboxSizeVal
+    let pixelPositionVal
+    let boxSizingReliableVal
+    let scrollboxSizeVal
     let pixelBoxStylesVal
     let reliableMarginLeftVal
     var container = document.createElement('div')
@@ -6252,7 +6336,10 @@
   })()
 
   function curCSS (elem, name, computed) {
-    let width; let minWidth; let maxWidth; let ret
+    let width
+    let minWidth
+    let maxWidth
+    let ret
 
     // Support: Firefox 51+
     // Retrieving style before computed somehow
@@ -6451,7 +6538,7 @@
     // Fake content-box until we know it's needed to know the true value.
     const boxSizingNeeded = !support.boxSizingReliable() || extra
     let isBorderBox = boxSizingNeeded &&
-        jQuery.css(elem, 'boxSizing', false, styles) === 'border-box'
+      jQuery.css(elem, 'boxSizing', false, styles) === 'border-box'
     let valueIsBorderBox = isBorderBox
 
     let val = curCSS(elem, dimension, styles)
@@ -6561,7 +6648,9 @@
       }
 
       // Make sure that we're working with the right name
-      let ret; let type; let hooks
+      let ret
+      let type
+      let hooks
       const origName = camelCase(name)
       const isCustomProp = rcustomProp.test(name)
       const style = elem.style
@@ -6628,7 +6717,9 @@
     },
 
     css: function (elem, name, extra, styles) {
-      let val; let num; let hooks
+      let val
+      let num
+      let hooks
       const origName = camelCase(name)
       const isCustomProp = rcustomProp.test(name)
 
@@ -6696,12 +6787,12 @@
         // Only read styles.position if the test has a chance to fail
         // to avoid forcing a reflow.
         const scrollboxSizeBuggy = !support.scrollboxSize() &&
-            styles.position === 'absolute'
+          styles.position === 'absolute'
 
         // To avoid forcing a reflow, only fetch boxSizing if we need it (gh-3991)
         const boxSizingNeeded = scrollboxSizeBuggy || extra
         const isBorderBox = boxSizingNeeded &&
-            jQuery.css(elem, 'boxSizing', false, styles) === 'border-box'
+          jQuery.css(elem, 'boxSizing', false, styles) === 'border-box'
         let subtract = extra
           ? boxModelAdjustment(
             elem,
@@ -6779,7 +6870,8 @@
   jQuery.fn.extend({
     css: function (name, value) {
       return access(this, function (elem, name, value) {
-        let styles; let len
+        let styles
+        let len
         const map = {}
         let i = 0
 
@@ -6918,7 +7010,8 @@
   jQuery.fx.step = {}
 
   let
-    fxNow; let inProgress
+    fxNow
+  let inProgress
   const rfxtypes = /^(?:toggle|show|hide)$/
   const rrun = /queueHooks$/
 
@@ -6978,7 +7071,14 @@
   }
 
   function defaultPrefilter (elem, props, opts) {
-    let prop; let value; let toggle; let hooks; let oldfire; let propTween; let restoreDisplay; let display
+    let prop
+    let value
+    let toggle
+    let hooks
+    let oldfire
+    let propTween
+    let restoreDisplay
+    let display
     const isBox = 'width' in props || 'height' in props
     const anim = this
     const orig = {}
@@ -7290,10 +7390,7 @@
     }
 
     // Attach callbacks from options
-    animation.progress(animation.opts.progress)
-      .done(animation.opts.done, animation.opts.complete)
-      .fail(animation.opts.fail)
-      .always(animation.opts.always)
+    animation.progress(animation.opts.progress).done(animation.opts.done, animation.opts.complete).fail(animation.opts.fail).always(animation.opts.always)
 
     jQuery.fx.timer(
       jQuery.extend(tick, {
@@ -7351,11 +7448,11 @@
     const opt = speed && typeof speed === 'object'
       ? jQuery.extend({}, speed)
       : {
-          complete: fn || !fn && easing ||
-        isFunction(speed) && speed,
-          duration: speed,
-          easing: fn && easing || easing && !isFunction(easing) && easing
-        }
+        complete: fn || !fn && easing ||
+          isFunction(speed) && speed,
+        duration: speed,
+        easing: fn && easing || easing && !isFunction(easing) && easing
+      }
 
     // Go to the end state if fx are off
     if (jQuery.fx.off) {
@@ -7396,8 +7493,8 @@
       // Show any hidden elements after setting opacity to 0
       return this.filter(isHiddenWithinTree).css('opacity', 0).show()
 
-        // Animate to the value specified
-        .end().animate({ opacity: to }, speed, easing, callback)
+      // Animate to the value specified
+      .end().animate({ opacity: to }, speed, easing, callback)
     },
     animate: function (prop, speed, easing, callback) {
       const empty = jQuery.isEmptyObject(prop)
@@ -7638,7 +7735,8 @@
 
   jQuery.extend({
     attr: function (elem, name, value) {
-      let ret; let hooks
+      let ret
+      let hooks
       const nType = elem.nodeType
 
       // Don't get/set attributes on text, comment and attribute nodes
@@ -7732,7 +7830,8 @@
     const getter = attrHandle[name] || jQuery.find.attr
 
     attrHandle[name] = function (elem, name, isXML) {
-      let ret; let handle
+      let ret
+      let handle
       const lowercaseName = name.toLowerCase()
 
       if (!isXML) {
@@ -7765,7 +7864,8 @@
 
   jQuery.extend({
     prop: function (elem, name, value) {
-      let ret; let hooks
+      let ret
+      let hooks
       const nType = elem.nodeType
 
       // Don't get/set properties on text, comment and attribute nodes
@@ -7900,7 +8000,13 @@
 
   jQuery.fn.extend({
     addClass: function (value) {
-      let classes; let elem; let cur; let curValue; let clazz; let j; let finalValue
+      let classes
+      let elem
+      let cur
+      let curValue
+      let clazz
+      let j
+      let finalValue
       let i = 0
 
       if (isFunction(value)) {
@@ -7937,7 +8043,13 @@
     },
 
     removeClass: function (value) {
-      let classes; let elem; let cur; let curValue; let clazz; let j; let finalValue
+      let classes
+      let elem
+      let cur
+      let curValue
+      let clazz
+      let j
+      let finalValue
       let i = 0
 
       if (isFunction(value)) {
@@ -8039,7 +8151,8 @@
     },
 
     hasClass: function (selector) {
-      let className; let elem
+      let className
+      let elem
       let i = 0
 
       className = ' ' + selector + ' '
@@ -8059,7 +8172,9 @@
 
   jQuery.fn.extend({
     val: function (value) {
-      let hooks; let ret; let valueIsFunction
+      let hooks
+      let ret
+      let valueIsFunction
       const elem = this[0]
 
       if (!arguments.length) {
@@ -8143,7 +8258,9 @@
       },
       select: {
         get: function (elem) {
-          let value; let option; let i
+          let value
+          let option
+          let i
           const options = elem.options
           const index = elem.selectedIndex
           const one = elem.type === 'select-one'
@@ -8185,7 +8302,8 @@
         },
 
         set: function (elem, value) {
-          let optionSet; let option
+          let optionSet
+          let option
           const options = elem.options
           const values = jQuery.makeArray(value)
           let i = options.length
@@ -8243,7 +8361,14 @@
   jQuery.extend(jQuery.event, {
 
     trigger: function (event, data, elem, onlyHandlers) {
-      let i; let cur; let tmp; let bubbleType; let ontype; let handle; let special; let lastElement
+      let i
+      let cur
+      let tmp
+      let bubbleType
+      let ontype
+      let handle
+      let special
+      let lastElement
       const eventPath = [elem || document]
       let type = hasOwn.call(event, 'type') ? event.type : event
       let namespaces = hasOwn.call(event, 'namespace')
@@ -8531,7 +8656,7 @@
         : valueOrFunction
 
       s[s.length] = encodeURIComponent(key) + '=' +
-          encodeURIComponent(value == null ? '' : value)
+        encodeURIComponent(value == null ? '' : value)
     }
 
     if (a == null) {
@@ -8687,7 +8812,8 @@
   // that takes "flat" options (not to be deep extended)
   // Fixes #9887
   function ajaxExtend (target, src) {
-    let key; let deep
+    let key
+    let deep
     const flatOptions = jQuery.ajaxSettings.flatOptions || {}
 
     for (key in src) {
@@ -8707,7 +8833,10 @@
  * - returns the corresponding response
  */
   function ajaxHandleResponses (s, jqXHR, responses) {
-    let ct; let type; let finalDataType; let firstDataType
+    let ct
+    let type
+    let finalDataType
+    let firstDataType
     const contents = s.contents
     const dataTypes = s.dataTypes
 
@@ -8763,7 +8892,11 @@
  * Also sets the responseXXX fields on the jqXHR instance
  */
   function ajaxConvert (s, response, jqXHR, isSuccess) {
-    let conv2; let current; let conv; let tmp; let prev
+    let conv2
+    let current
+    let conv
+    let tmp
+    let prev
     const converters = {}
 
     // Work with a copy of dataTypes in case we need to modify it for conversion
@@ -8992,7 +9125,7 @@
 
       // Context for global events is callbackContext if it is a DOM node or jQuery collection
       const globalEventContext = s.context &&
-        (callbackContext.nodeType || callbackContext.jquery)
+      (callbackContext.nodeType || callbackContext.jquery)
         ? jQuery(callbackContext)
         : jQuery.event
 
@@ -9022,8 +9155,8 @@
               responseHeaders = {}
               while ((match = rheaders.exec(responseHeadersString))) {
                 responseHeaders[match[1].toLowerCase() + ' '] =
-                    (responseHeaders[match[1].toLowerCase() + ' '] ||
-                      []).concat(match[2])
+                  (responseHeaders[match[1].toLowerCase() + ' '] ||
+                    []).concat(match[2])
               }
             }
             match = responseHeaders[key.toLowerCase() + ' ']
@@ -9040,7 +9173,7 @@
         setRequestHeader: function (name, value) {
           if (completed == null) {
             name = requestHeadersNames[name.toLowerCase()] =
-                requestHeadersNames[name.toLowerCase()] || name
+              requestHeadersNames[name.toLowerCase()] || name
             requestHeaders[name] = value
           }
           return this
@@ -9271,7 +9404,11 @@
 
       // Callback for when everything is done
       function done (status, nativeStatusText, responses, headers) {
-        let isSuccess; let success; let error; let response; let modified
+        let isSuccess
+        let success
+        let error
+        let response
+        let modified
         let statusText = nativeStatusText
 
         // Ignore repeat invocations
@@ -9704,16 +9841,13 @@
       let script, callback
       return {
         send: function (_, complete) {
-          script = jQuery('<script>')
-            .attr(s.scriptAttrs || {})
-            .prop({ charset: s.scriptCharset, src: s.url })
-            .on('load error', callback = function (evt) {
-              script.remove()
-              callback = null
-              if (evt) {
-                complete(evt.type === 'error' ? 404 : 200, evt.type)
-              }
-            })
+          script = jQuery('<script>').attr(s.scriptAttrs || {}).prop({ charset: s.scriptCharset, src: s.url }).on('load error', callback = function (evt) {
+            script.remove()
+            callback = null
+            if (evt) {
+              complete(evt.type === 'error' ? 404 : 200, evt.type)
+            }
+          })
 
           // Use native DOM manipulation to avoid our domManip AJAX trickery
           document.head.appendChild(script[0])
@@ -9742,13 +9876,15 @@
 
   // Detect, normalize options and install callbacks for jsonp requests
   jQuery.ajaxPrefilter('json jsonp', function (s, originalSettings, jqXHR) {
-    let callbackName; let overwritten; let responseContainer
+    let callbackName
+    let overwritten
+    let responseContainer
     const jsonProp = s.jsonp !== false && (rjsonp.test(s.url)
-      ? 'url'
-      : typeof s.data === 'string' &&
-          (s.contentType || '').indexOf('application/x-www-form-urlencoded') ===
-          0 &&
-          rjsonp.test(s.data) && 'data'
+        ? 'url'
+        : typeof s.data === 'string' &&
+        (s.contentType || '').indexOf('application/x-www-form-urlencoded') ===
+        0 &&
+        rjsonp.test(s.data) && 'data'
     )
 
     // Handle iff the expected data type is "jsonp" or we have a parameter to set
@@ -9880,7 +10016,9 @@
    * Load a url into a page
    */
   jQuery.fn.load = function (url, params, callback) {
-    let selector; let type; let response
+    let selector
+    let type
+    let response
     const self = this
     const off = url.indexOf(' ')
 
@@ -9961,7 +10099,12 @@
 
   jQuery.offset = {
     setOffset: function (elem, options, i) {
-      let curPosition; let curLeft; let curCSSTop; let curTop; let curOffset; let curCSSLeft
+      let curPosition
+      let curLeft
+      let curCSSTop
+      let curTop
+      let curOffset
+      let curCSSLeft
       let calculatePosition
       const position = jQuery.css(elem, 'position')
       const curElem = jQuery(elem)
@@ -10022,7 +10165,8 @@
           })
       }
 
-      let rect; let win
+      let rect
+      let win
       const elem = this[0]
 
       if (!elem) {
@@ -10053,7 +10197,9 @@
         return
       }
 
-      let offsetParent; let offset; let doc
+      let offsetParent
+      let offset
+      let doc
       const elem = this[0]
       let parentOffset = { top: 0, left: 0 }
 
@@ -10175,9 +10321,9 @@
         // Margin is only for outerHeight, outerWidth
         jQuery.fn[funcName] = function (margin, value) {
           const chainable = arguments.length &&
-              (defaultExtra || typeof margin !== 'boolean')
+            (defaultExtra || typeof margin !== 'boolean')
           const extra = defaultExtra ||
-              (margin === true || value === true ? 'margin' : 'border')
+            (margin === true || value === true ? 'margin' : 'border')
 
           return access(this, function (elem, type, value) {
             let doc
@@ -10217,14 +10363,14 @@
   jQuery.each(('blur focus focusin focusout resize scroll click dblclick ' +
       'mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave ' +
       'change select submit keydown keypress keyup contextmenu').split(' '),
-  function (i, name) {
-    // Handle event binding
-    jQuery.fn[name] = function (data, fn) {
-      return arguments.length > 0
-        ? this.on(name, null, data, fn)
-        : this.trigger(name)
-    }
-  })
+    function (i, name) {
+      // Handle event binding
+      jQuery.fn[name] = function (data, fn) {
+        return arguments.length > 0
+          ? this.on(name, null, data, fn)
+          : this.trigger(name)
+      }
+    })
 
   jQuery.fn.extend({
     hover: function (fnOver, fnOut) {

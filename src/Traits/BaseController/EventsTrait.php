@@ -23,7 +23,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -32,7 +32,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -41,7 +41,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -50,7 +50,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -59,7 +59,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -68,7 +68,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -77,7 +77,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -86,7 +86,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -95,7 +95,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model[]|Builder[] $models
+     * @param  Model[]|Builder[]  $models
      *
      * @return mixed|void
      */
@@ -104,7 +104,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -113,7 +113,7 @@ trait EventsTrait
     }
 
     /**
-     * @param Model[]|Builder[] $models
+     * @param  Model[]|Builder[]  $models
      *
      * @return mixed|void
      */
@@ -122,8 +122,8 @@ trait EventsTrait
     }
 
     /**
-     * @param array $rules
-     * @param Model|Builder $model
+     * @param  array  $rules
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -132,8 +132,8 @@ trait EventsTrait
     }
 
     /**
-     * @param array $rules
-     * @param Model|Builder $model
+     * @param  array  $rules
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */
@@ -142,8 +142,8 @@ trait EventsTrait
     }
 
     /**
-     * @param array $rules
-     * @param Model|Builder $model
+     * @param  array  $rules
+     * @param  Model|Builder  $model
      *
      * @return mixed|void
      */

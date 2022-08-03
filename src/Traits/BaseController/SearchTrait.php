@@ -50,7 +50,7 @@ trait SearchTrait
     protected string $searchTable = '';
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder|\Myth\LaravelTools\Models\BaseModel $builder
+     * @param  \Illuminate\Database\Eloquent\Builder|\Myth\LaravelTools\Models\BaseModel  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder|\Myth\LaravelTools\Models\BaseModel
      */
@@ -58,64 +58,64 @@ trait SearchTrait
     {
         $words = $this->request->get($this->searchRequestKey);
 
-        if(!$words){
+        if (!$words) {
             return $builder;
         }
         $model = $builder->getModel();
         $this->searchTable = $model->getTable();
-        if(!$this->customSearchColumns){
+        if (!$this->customSearchColumns) {
             // d($words,$model);
-            if(($headers = $this->request->get($this->headersRequestKey)) && is_array($headers) && !empty($headers)){
+            if (($headers = $this->request->get($this->headersRequestKey)) && is_array($headers) && !empty($headers)) {
                 // d($headers);
-                foreach($headers as $header){
-                    if(array_key_exists('value', $header)){
+                foreach ($headers as $header) {
+                    if (array_key_exists('value', $header)) {
                         $column = $header['value'];
-                        if($column == 'name' && !$model->isFillable($column) && $model->isFillable(locale_attribute("name"))){
+                        if ($column == 'name' && !$model->isFillable($column) && $model->isFillable(locale_attribute("name"))) {
                             $column = locale_attribute("name");
                         }
-                        foreach(['_to_string', 'ToString', '_to_yes'] as $c){
-                            if(Str::endsWith($column, $c)){
+                        foreach (['_to_string', 'ToString', '_to_yes'] as $c) {
+                            if (Str::endsWith($column, $c)) {
                                 $column = Str::beforeLast($column, $c);
                                 break;
                             }
                         }
                         // d($column,$this->searchTable);
-                        if(Schema::hasColumn($this->searchTable, $column)){
+                        if (Schema::hasColumn($this->searchTable, $column)) {
                             $this->mergeSearchColumns($column);
                         }
                     }
                 }
             }
-            else{
+            else {
                 $this->mergeSearchColumns($model->getFillable());
             }
             // d($this->getSearchColumns());
         }
 
-        $builder->where(function(Builder $builder) use ($words, $model){
-            foreach($this->getSearchColumns() as $k => $column){
+        $builder->where(function (Builder $builder) use ($words, $model) {
+            foreach ($this->getSearchColumns() as $k => $column) {
                 /** Default no custom */
-                if(is_numeric($k)){
-                    if(Schema::hasColumn($this->searchTable, $column) || $this->isMapQueryColumn($column)){
-                        if($this->isMapQueryColumn($column)){
+                if (is_numeric($k)) {
+                    if (Schema::hasColumn($this->searchTable, $column) || $this->isMapQueryColumn($column)) {
+                        if ($this->isMapQueryColumn($column)) {
                             $map = $this->getMapSearchQueryColumns($column);
-                            if(count($map) == 1 && method_exists($model, 'scope'.ucfirst($map[0]))){
+                            if (count($map) == 1 && method_exists($model, 'scope'.ucfirst($map[0]))) {
                                 //d($map,$words);
                                 $builder->orWhere(fn($q) => $q->{$map[0]}($words));
                             }
-                            else{
+                            else {
                                 $relation = ($map['relation'] ?? ($map[0] ?? Str::beforeLast($column, '_id')));
                                 $method = ($map['method'] ?? 'orWhereHas');
                                 $operator = ($map['operator'] ?? 'LIKE');
                                 $value = str_ireplace('{v}', $words, ($map['value'] ?? '%{v}%'));
                                 $column = ($map['column'] ?? 'name');
                                 // d($relation,$method,$operator,$value,$column);
-                                $builder->{$method}($relation, function(Builder $builder) use ($column, $operator, $value, $words){
+                                $builder->{$method}($relation, function (Builder $builder) use ($column, $operator, $value, $words) {
                                     return $builder->where($column, $operator, $value);
                                 });
                             }
                         }
-                        else{
+                        else {
 
                             //if (Str::endsWith($column, '_id') && !is_numeric($words)) {
                             //    if (method_exists($model, ($relation = Str::beforeLast($column, '_id'))) && ($relationModel = $model->$relation()
@@ -128,7 +128,7 @@ trait SearchTrait
                             //    }
                             //}
 
-                            if(Str::endsWith($column, '_id') && !is_numeric($words)){
+                            if (Str::endsWith($column, '_id') && !is_numeric($words)) {
                                 // d($words,$column);
                                 $str = Str::beforeLast($column, '_id');
                                 $relations = array_unique([
@@ -136,14 +136,14 @@ trait SearchTrait
                                     Str::camel($str),
                                     ucfirst(Str::camel($str)),
                                 ]);
-                                foreach($relations as $relation){
-                                    if(
+                                foreach ($relations as $relation) {
+                                    if (
                                         method_exists($model, $relation)
                                         && ($relationModel = $model->$relation()->getModel())
                                         && Schema::hasColumn($relationModel->getTable(), ($c = $relationModel->getNameColumn()))
-                                    ){
-                                        $builder->orWhere(function(Builder $builder) use ($relation, $c, $words){
-                                            $builder->whereHas($relation, function(Builder $builder) use ($c, $words){
+                                    ) {
+                                        $builder->orWhere(function (Builder $builder) use ($relation, $c, $words) {
+                                            $builder->whereHas($relation, function (Builder $builder) use ($c, $words) {
                                                 $builder->where($c, 'LIKE', "%{$words}%");
                                             });
                                         });
@@ -172,15 +172,15 @@ trait SearchTrait
                                 // }
 
                             }
-                            else{
+                            else {
                                 $builder->orWhere($column, 'LIKE', "%{$words}%");
                             }
                         }
                     }
                 }
-                else{
+                else {
                     //d($words);
-                    $builder->orWhere(function(Builder $builder) use ($column, $words){
+                    $builder->orWhere(function (Builder $builder) use ($column, $words) {
                         return $builder->{$column}($words);
                     });
                 }
@@ -194,7 +194,7 @@ trait SearchTrait
     }
 
     /**
-     * @param string|array $columns
+     * @param  string|array  $columns
      *
      * @return self
      */
@@ -225,7 +225,7 @@ trait SearchTrait
     }
 
     /**
-     * @param null $column
+     * @param  null  $column
      *
      * @return array
      */

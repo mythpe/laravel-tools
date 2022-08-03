@@ -154,41 +154,41 @@ trait CrudTrait
         $transformer = ($args[1] ?? $this->getIndexTransformer());
 
         $this->isIndexActiveOnly && $query->activeOnly();
-        if(!is_null($this->latest)){
+        if (!is_null($this->latest)) {
             $column = $this->latest;
-            if(is_string($column) && array_key_exists($column, $this->orderByRawColumns)){
+            if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
                 $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) desc");
             }
-            else{
-                if(is_array($this->latest)){
-                    foreach($this->latest as $item){
+            else {
+                if (is_array($this->latest)) {
+                    foreach ($this->latest as $item) {
                         $query->latest($item);
                     }
                 }
-                else{
+                else {
                     $query->latest($this->latest === !0 ? null : $this->latest);
                 }
             }
         }
 
-        if(!is_null($this->oldest)){
+        if (!is_null($this->oldest)) {
             $column = $this->oldest;
-            if(is_string($column) && array_key_exists($column, $this->orderByRawColumns)){
+            if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
                 $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) asc");
             }
-            else{
-                if(is_array($this->oldest)){
-                    foreach($this->oldest as $item){
+            else {
+                if (is_array($this->oldest)) {
+                    foreach ($this->oldest as $item) {
                         $query->oldest($item);
                     }
                 }
-                else{
+                else {
                     $query->oldest($this->oldest === !0 ? null : $this->oldest);
                 }
             }
         }
 
-        if(($r = $this->indexing($query))){
+        if (($r = $this->indexing($query))) {
             return $r;
         }
         $with = $this->with;
@@ -198,10 +198,10 @@ trait CrudTrait
         /**
          * | This for General relations to append of query
          */
-        if(($requestWith = $this->request->get($this->requestWithKey))){
+        if (($requestWith = $this->request->get($this->requestWithKey))) {
             !is_array($requestWith) && ($requestWith = explode(',', $requestWith));
-            foreach($requestWith as $value){
-                if(method_exists($model, $value) && !in_array($value, $with)){
+            foreach ($requestWith as $value) {
+                if (method_exists($model, $value) && !in_array($value, $with)) {
                     $with[] = $value;
                 }
             }
@@ -228,10 +228,10 @@ trait CrudTrait
         $rules = $this->storeRules([], $model);
         $rules = $this->requestRules($rules, $model);
         /** Events */
-        if(($r = $this->beforeStoreValidate($rules, $model))){
+        if (($r = $this->beforeStoreValidate($rules, $model))) {
             return $r;
         }
-        if(($r = $this->beforeValidate($rules, $model))){
+        if (($r = $this->beforeValidate($rules, $model))) {
             return $r;
         }
         $this->makeValidator($rules, $model);
@@ -240,18 +240,18 @@ trait CrudTrait
         // d($fill);
         $model->fill($fill);
         /** Events */
-        if(($r = $this->creating($model))){
+        if (($r = $this->creating($model))) {
             return $r;
         }
-        if(($r = $this->saving($model))){
+        if (($r = $this->saving($model))) {
             return $r;
         }
         $model->save();
         /** Events */
-        if(($r = $this->created($model))){
+        if (($r = $this->created($model))) {
             return $r;
         }
-        if(($r = $this->saved($model))){
+        if (($r = $this->saved($model))) {
             return $r;
         }
         return $this->resource($this->getControllerTransformer()::make($model->load(static::RELATIONS)->refresh()), __("messages.store_success"));
@@ -260,7 +260,7 @@ trait CrudTrait
     /**
      * Update the specified resource in storage.
      *
-     * @param \Myth\LaravelTools\Models\BaseModel|Builder $model
+     * @param  \Myth\LaravelTools\Models\BaseModel|Builder  $model
      *
      * @return \Illuminate\Http\JsonResponse|mixed|void
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -272,10 +272,10 @@ trait CrudTrait
         $rules = $this->updateRules([], $model);
         $rules = $this->requestRules($rules, $model);
         /** Events */
-        if(($r = $this->beforeUpdateValidate($rules, $model))){
+        if (($r = $this->beforeUpdateValidate($rules, $model))) {
             return $r;
         }
-        if(($r = $this->beforeValidate($rules, $model))){
+        if (($r = $this->beforeValidate($rules, $model))) {
             return $r;
         }
         $this->makeValidator($rules, $model);
@@ -285,18 +285,18 @@ trait CrudTrait
         // d($fill);
         $model->fill($fill);
         /** Events */
-        if(($r = $this->updating($model))){
+        if (($r = $this->updating($model))) {
             return $r;
         }
-        if(($r = $this->saving($model))){
+        if (($r = $this->saving($model))) {
             return $r;
         }
         $model->save();
         /** Events */
-        if(($r = $this->updated($model))){
+        if (($r = $this->updated($model))) {
             return $r;
         }
-        if(($r = $this->saved($model))){
+        if (($r = $this->saved($model))) {
             return $r;
         }
         $model = $model->load(static::RELATIONS)->refresh();
@@ -306,13 +306,13 @@ trait CrudTrait
     /**
      * Display the specified resource.
      *
-     * @param \Myth\LaravelTools\Models\BaseModel|Builder $model
+     * @param  \Myth\LaravelTools\Models\BaseModel|Builder  $model
      *
      * @return \Illuminate\Http\JsonResponse|mixed|void
      */
     public function show($model)
     {
-        if($r = $this->showing($model)){
+        if ($r = $this->showing($model)) {
             return $r;
         }
         return $this->resource($this->getControllerTransformer()::make($model->load(static::RELATIONS)));
@@ -321,29 +321,29 @@ trait CrudTrait
     /**
      * Remove the specified resource from storage.
      *
-     * @param \Myth\LaravelTools\Models\BaseModel|Builder $model
+     * @param  \Myth\LaravelTools\Models\BaseModel|Builder  $model
      *
      * @return \Illuminate\Http\JsonResponse|mixed|void
      */
     public function destroy($model)
     {
-        if(($r = $this->deleting($model))){
+        if (($r = $this->deleting($model))) {
             return $r;
         }
         /** @var \Illuminate\Database\Eloquent\Model|Model $user */
-        if(($user = auth()->user()) && $model->is($user)){
+        if (($user = auth()->user()) && $model->is($user)) {
             return $this->errorResponse(__("messages.deleted_failed"));
         }
 
-        foreach($this->checkBeforeDestroy as $relation){
-            if($model->$relation()->exists()){
+        foreach ($this->checkBeforeDestroy as $relation) {
+            if ($model->$relation()->exists()) {
                 return $this->errorResponse(__("messages.can_not_deleted"));
             }
         }
 
         $model->delete();
 
-        if(($r = $this->deleted($model))){
+        if (($r = $this->deleted($model))) {
             return $r;
         }
         return $this->resource(__('messages.deleted_success'));
@@ -359,29 +359,29 @@ trait CrudTrait
     public function destroyAll()
     {
         $model = $this->request->input('ids', []);
-        if(!is_array($model)){
+        if (!is_array($model)) {
             $model = [];
         }
-        if(count($model) < 1){
+        if (count($model) < 1) {
             return $this->errorResponse(__("messages.no_delete_selected"));
         }
-        if(($r = $this->deletingAll($model))){
+        if (($r = $this->deletingAll($model))) {
             return $r;
         }
 
         /** @var Builder $builder */
         $builder = static::$controllerModel::query();
 
-        if(count($model) > 0){
+        if (count($model) > 0) {
             $builder->whereIn('id', $model);
         }
 
-        try{
+        try {
             /** @var \Illuminate\Support\Collection $models */
             $models = $builder->get();
-            foreach($models as $m){
-                foreach($this->checkBeforeDestroy as $relation){
-                    if($$m->$relation()->exists()){
+            foreach ($models as $m) {
+                foreach ($this->checkBeforeDestroy as $relation) {
+                    if ($$m->$relation()->exists()) {
                         return $this->errorResponse(__("messages.can_not_deleted"));
                     }
                 }
@@ -389,10 +389,10 @@ trait CrudTrait
             }
             // $models->each(function($m) use ($model){});
         }
-        catch(Exception$exception){
+        catch (Exception$exception) {
             return $this->errorResponse($exception->getMessage());
         }
-        if(($r = $this->deletedAll($model))){
+        if (($r = $this->deletedAll($model))) {
             return $r;
         }
 
@@ -422,24 +422,24 @@ trait CrudTrait
      */
     public function validateRangeRangeParameters(): void
     {
-        if(count($this->validationRangeParameters) < 1){
+        if (count($this->validationRangeParameters) < 1) {
             return;
         }
 
         $filter = $this->request->input('filter', []);
-        if($this->request->has('filter') && !is_array($filter)){
+        if ($this->request->has('filter') && !is_array($filter)) {
             $filter = json_decode($filter, !0);
         }
-        if(!is_array($filter)){
+        if (!is_array($filter)) {
             return;
         }
-        foreach($this->validationRangeParameters as $name){
+        foreach ($this->validationRangeParameters as $name) {
             $from = "from_{$name}";
             $to = "to_{$name}";
-            if(array_key_exists($from, $filter) && !$filter[$from]){
+            if (array_key_exists($from, $filter) && !$filter[$from]) {
                 unset($filter[$from]);
             }
-            if(array_key_exists($to, $filter) && !$filter[$to]){
+            if (array_key_exists($to, $filter) && !$filter[$to]) {
                 unset($filter[$to]);
             }
             $this->request->merge(['filter' => $filter]);
@@ -454,7 +454,7 @@ trait CrudTrait
     protected function getMapFromRequest(): array
     {
         $array = [];
-        foreach($this->mapFromRequest as $rule => $request){
+        foreach ($this->mapFromRequest as $rule => $request) {
             $array[$request] = $this->request->get($rule);
         }
         return $array;
@@ -466,7 +466,7 @@ trait CrudTrait
     protected function getBindModel()
     {
         $name = class_basename(static::$controllerModel);
-        if(!($model = $this->request->{$name}) && !app()->runningInConsole()){
+        if (!($model = $this->request->{$name}) && !app()->runningInConsole()) {
             $name = static::$routeParameterModel;
             //d($this->request->route()->parameter('Agent'));
             //d(static::$routeModel);
@@ -478,13 +478,13 @@ trait CrudTrait
     }
 
     /**
-     * @param Builder|mixed $builder
+     * @param  Builder|mixed  $builder
      *
      * @return Builder|mixed
      */
     protected function apply($builder = null)
     {
-        if($builder){
+        if ($builder) {
             $this->validateRangeRangeParameters();
             $builder = $this->sortQuery($builder);
             $builder = $this->searchQuery($builder);

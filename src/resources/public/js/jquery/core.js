@@ -126,7 +126,12 @@ define([
   }
 
   jQuery.extend = jQuery.fn.extend = function () {
-    let options; let name; let src; let copy; let copyIsArray; let clone
+    let options
+    let name
+    let src
+    let copy
+    let copyIsArray
+    let clone
     let target = arguments[0] || {}
     let i = 1
     const length = arguments.length
@@ -246,7 +251,8 @@ define([
     },
 
     each: function (obj, callback) {
-      let length; let i = 0
+      let length
+      let i = 0
 
       if (isArrayLike(obj)) {
         length = obj.length
@@ -333,7 +339,8 @@ define([
 
     // arg is for internal usage only
     map: function (elems, callback, arg) {
-      let length; let value
+      let length
+      let value
       let i = 0
       const ret = []
 

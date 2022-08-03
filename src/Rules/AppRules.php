@@ -8,6 +8,7 @@
 
 namespace Myth\LaravelTools\Rules;
 
+use Exception;
 use Illuminate\Support\Carbon;
 
 class AppRules
@@ -54,7 +55,7 @@ class AppRules
         try {
             $date = $date ? ($request->has($date) ? Carbon::make($request->input($date, now())) : Carbon::make($date)) : now();
         }
-        catch (\Exception $exception) {
+        catch (Exception $exception) {
             $date = $request->input($date);
             return "after_or_equal:$date";
         }
@@ -77,7 +78,7 @@ class AppRules
         try {
             $date = $date ? ($request->has($date) ? Carbon::make($request->input($date, now())) : Carbon::make($date)) : now();
         }
-        catch (\Exception $exception) {
+        catch (Exception $exception) {
             $date = $request->input($date);
             return "before_or_equal:$date";
         }

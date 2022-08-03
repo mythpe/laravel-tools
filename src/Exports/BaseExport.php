@@ -28,8 +28,8 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     public $items = [];
 
     /**
-     * @param array|\Illuminate\Support\Collection $headers
-     * @param array|\Illuminate\Support\Collection $items
+     * @param  array|\Illuminate\Support\Collection  $headers
+     * @param  array|\Illuminate\Support\Collection  $items
      */
     public function __construct($headers = [], $items = [])
     {
@@ -52,14 +52,14 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     {
         $data = [];
         //d($this->headers);
-        foreach($this->headers as $k => $header){
+        foreach ($this->headers as $k => $header) {
             $data[] = is_array($header) ? ($header['text'] ?? '') : (trans_has("attributes.$header") ? __("attributes.$header") : $header);
         }
         $data = [$data];
 
-        foreach($this->items as $itemKey => $item){
+        foreach ($this->items as $itemKey => $item) {
             $v = [];
-            foreach($this->headers as $headerKey => $header){
+            foreach ($this->headers as $headerKey => $header) {
                 //d($item);
                 $v[] = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? '') : ($item[$header] ?? ''));
             }
@@ -75,7 +75,7 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event){
+            AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getDelegate()->setRightToLeft(app()->getLocale() == 'ar');
             },
         ];

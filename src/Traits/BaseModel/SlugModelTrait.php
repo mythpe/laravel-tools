@@ -17,7 +17,7 @@ trait SlugModelTrait
     /**
      * Decode model id
      *
-     * @param string $slug
+     * @param  string  $slug
      *
      * @return array
      */
@@ -28,26 +28,26 @@ trait SlugModelTrait
 
     /**
      * @param $id
-     * @param false $decode
+     * @param  false  $decode
      *
      * @return mixed|string|null
      */
     public static function printSlug($id, bool $decode = false)
     {
-        if($decode){
-            try{
+        if ($decode) {
+            try {
                 $s = urldecode($id);
                 return json_decode(decrypt($s), true);
                 // return json_decode(base64_decode($s), true);
             }
-            catch(Exception $exception){
-                if(config('app.debug')){
+            catch (Exception $exception) {
+                if (config('app.debug')) {
                     d($exception);
                 }
             }
             return null;
         }
-        else{
+        else {
             $array = [static::class, $id];
             $s = encrypt(json_encode($array, JSON_UNESCAPED_UNICODE));
             return urlencode($s);
@@ -55,9 +55,24 @@ trait SlugModelTrait
     }
 
     /**
-     * @param string $route
-     * @param int $minutes
-     * @param array $params
+     * Encode model id
+     *
+     * @param  string|Model  $model
+     *
+     * @return string
+     */
+    public static function encodeModelSlug($model): string
+    {
+        $id = $model instanceof Model ? $model->id : $model;
+        $array = [static::class, $id];
+        $s = encrypt(json_encode($array));
+        return urlencode($s);
+    }
+
+    /**
+     * @param  string  $route
+     * @param  int  $minutes
+     * @param  array  $params
      *
      * @return string
      */
@@ -77,20 +92,5 @@ trait SlugModelTrait
     public function getModelSlug(): string
     {
         return static::encodeModelSlug($this);
-    }
-
-    /**
-     * Encode model id
-     *
-     * @param string|Model $model
-     *
-     * @return string
-     */
-    public static function encodeModelSlug($model): string
-    {
-        $id = $model instanceof Model ? $model->id : $model;
-        $array = [static::class, $id];
-        $s = encrypt(json_encode($array));
-        return urlencode($s);
     }
 }
