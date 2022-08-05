@@ -9,6 +9,7 @@
 namespace Myth\LaravelTools\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -104,9 +105,9 @@ class BaseCommand extends Command
     }
 
     /**
-     * @return \Illuminate\Contracts\Filesystem\Filesystem|\Illuminate\Filesystem\FilesystemAdapter
+     * @return \Illuminate\Contracts\Filesystem\Filesystem
      */
-    protected function disk()
+    protected function disk(): Filesystem
     {
         return Storage::disk($this->diskName);
     }
@@ -256,9 +257,9 @@ class BaseCommand extends Command
 
     /**
      * @param  string  $text
-     * @param  string|array  $method
+     * @param  string  $method
      */
-    protected function echo(string $text = '', $method = 'line')
+    protected function echo(string $text = '', string $method = 'line')
     {
         if (app()->runningInConsole()) {
             if (!method_exists($this, $method)) {
