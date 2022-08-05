@@ -135,4 +135,6 @@ return [
         'token_variable_name'         => 'token',
         'url_variable_name'           => 'url',
     ],
+
+    'setting_class' => '\\App\\Models\\Setting',
 ];
