@@ -8,7 +8,6 @@
 
 namespace Myth\LaravelTools\Notifications;
 
-use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
