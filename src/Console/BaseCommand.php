@@ -139,13 +139,36 @@ class BaseCommand extends Command
                     $this->doTruncate($t);
                 }
                 else {
-                    $this->error("Table: {$originalTable}. not found");
+                    $this->components->error("Table: {$originalTable}. not found");
                 }
             }
         }
         else {
             $this->doTruncate($table);
         }
+    }
+
+    /**
+     * @param $table
+     *
+     * @return bool
+     */
+    protected function isTruncated($table): bool
+    {
+        return in_array($table, $this->tables);
+    }
+
+    /**
+     * @param $table
+     */
+    protected function doTruncate($table)
+    {
+        if ($this->isTruncated($table)) {
+            return;
+        }
+        $this->components->info("truncated : {$table}");
+        $this->tables[] = $table;
+        DB::table($table)->truncate();
     }
 
     /**
@@ -210,29 +233,6 @@ class BaseCommand extends Command
                 }
             }
         }
-    }
-
-    /**
-     * @param $table
-     *
-     * @return bool
-     */
-    protected function isTruncated($table): bool
-    {
-        return in_array($table, $this->tables);
-    }
-
-    /**
-     * @param $table
-     */
-    protected function doTruncate($table)
-    {
-        if ($this->isTruncated($table)) {
-            return;
-        }
-        $this->error("truncated : {$table}");
-        $this->tables[] = $table;
-        DB::table($table)->truncate();
     }
 
     /**
