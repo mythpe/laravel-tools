@@ -12,56 +12,57 @@ use Illuminate\Support\Collection;
 
 interface Statusable
 {
-    /** @var string */
-    const ACTIVE_STATUS = 'active';
-
-    /** @var string */
-    const INACTIVE_STATUS = 'inactive';
-
-    /** @var string */
-    const PENDING_STATUS = 'pending';
-
-    /** @var string */
-    const APPROVED_STATUS = 'approved';
-
-    /** @var string */
-    const CANCELED_STATUS = 'canceled';
-
-    /** @var string */
-    const USED_STATUS = 'used';
-
-    /** @var string */
-    const BANDED_STATUS = 'banded';
-
-    /** @var string */
-    const UNPAID_STATUS = 'unpaid';
-
-    /** @var string */
-    const PAID_STATUS = 'paid';
-
-    /** @var string */
-    const FINISHED_STATUS = 'finished';
 
     /** @var string */
     const ACTIVATED_STATUS = 'activated';
 
     /** @var string */
-    const CONFIRMED_STATUS = 'confirmed';
+    const ACTIVE_STATUS = 'active';
 
     /** @var string */
-    const UNCONFIRMED_STATUS = 'unconfirmed';
-
-    /** @var string */
-    const NEW_STATUS = 'new';
+    const APPROVED_STATUS = 'approved';
 
     /** @var string */
     const ARCHIVED_STATUS = 'archived';
 
     /** @var string */
+    const BANDED_STATUS = 'banded';
+
+    /** @var string */
+    const CANCELED_STATUS = 'canceled';
+
+    /** @var string */
     const COMPLETED_STATUS = 'completed';
 
     /** @var string */
+    const CONFIRMED_STATUS = 'confirmed';
+
+    /** @var string */
+    const FINISHED_STATUS = 'finished';
+
+    /** @var string */
+    const INACTIVE_STATUS = 'inactive';
+
+    /** @var string */
+    const NEW_STATUS = 'new';
+
+    /** @var string */
+    const PAID_STATUS = 'paid';
+
+    /** @var string */
+    const PENDING_STATUS = 'pending';
+
+    /** @var string */
     const REJECTED_STATUS = 'rejected';
+
+    /** @var string */
+    const UNCONFIRMED_STATUS = 'unconfirmed';
+
+    /** @var string */
+    const UNPAID_STATUS = 'unpaid';
+
+    /** @var string */
+    const USED_STATUS = 'used';
 
     /**
      * @return \Illuminate\Support\Collection
@@ -72,13 +73,6 @@ interface Statusable
      * @return array
      */
     public static function getStatusesCodes(): array;
-
-    /**
-     * @param $status
-     *
-     * @return string|null
-     */
-    public static function getStatus($status): ?string;
 
     /**
      * @return string
