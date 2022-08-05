@@ -128,7 +128,7 @@ to insert code automatically add this comment "use myth crud model command" to y
         $replaceContent = <<<html
             $existsNeedles
             [
-                'title'       => trans_choice("choice_custom.{$this->modelPluralName()}", 2),
+                'title'       => trans_choice("choice.{$this->modelPluralName()}", 2),
                 'name'        => 'panel.$routeName',
                 'icon'        => '',
                 'permissions' => [$permissions],
@@ -328,11 +328,11 @@ html;
             $studlyWords = ucwords(str_ireplace('-', ' ', Str::kebab(Str::studly($this->modelName))));
             $pluralWords = ucwords(str_ireplace('-', ' ', $this->modelPluralKebabName()));
             foreach (config('4myth-tools.locales') as $locale) {
-                $choice = "lang/$locale/choice_custom.php";
+                $choice = "lang/$locale/choice.php";
                 if (!$this->disk()->exists($choice)) {
                     $this->components->twoColumnDetail("<fg=red>$choice</> not exists", '<fg=red>Skipped</>');
                 }
-                elseif (trans_has("choice_custom.$pluralChoice") || trans_has("choice.$pluralChoice")) {
+                elseif (trans_has("choice.$pluralChoice")) {
                     $this->components->twoColumnDetail("<fg=red>$pluralChoice</> Trans choice exists", '<fg=red>Skipped</>');
                 }
                 else {
@@ -352,7 +352,7 @@ html;
                     $this->disk()->put($choice, implode('', $file));
                     $this->components->twoColumnDetail($choice, '<fg=green>Updated</>');
                 }
-                $attribute = "lang/$locale/attributes_custom.php";
+                $attribute = "lang/$locale/attributes.php";
                 $attr = $this->modelForeignKey();
                 $attrs = Str::plural(Str::beforeLast($attr, '_id')).'_id';
                 if (!$this->disk()->exists($attribute)) {
@@ -363,7 +363,7 @@ html;
                 $file = file($this->disk()->path($attribute));
                 $last = array_pop($file);
                 $updated = !1;
-                if (!trans_has("attributes.$attr") && !trans_has("attributes_custom.$attr")) {
+                if (!trans_has("attributes.$attr")) {
                     $updated = !0;
                     $file[] = "    '$attr' => '$studlyWords',".PHP_EOL;
                 }
@@ -371,7 +371,7 @@ html;
                     $this->components->twoColumnDetail("<fg=red>$attr</> attribute exists", '<fg=red>Skipped</>');
                 }
 
-                if (!trans_has("attributes.$attrs") && !trans_has("attributes_custom.$attrs")) {
+                if (!trans_has("attributes.$attrs")) {
                     $updated = !0;
                     $file[] = "    '$attrs' => '$pluralWords',".PHP_EOL;
                 }
