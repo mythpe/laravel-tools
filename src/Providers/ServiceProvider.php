@@ -58,6 +58,7 @@ class ServiceProvider extends BaseServiceProvider
         // Public Assets
         $this->publishes([
             __DIR__.'/../resources/public' => storage_path('app/public/vendor/4myth'),
+            __DIR__.'/../resources/vendor' => resource_path(),
         ], 'public');
 
         if ($this->app->runningInConsole()) {
