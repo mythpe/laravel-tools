@@ -4,7 +4,7 @@
     dir="{{$DIRECTION}}"
 >
 <head>
-    @include('partials.head')
+    @include('4myth-tools::partials.head')
     <link
         href="{{ asset("storage/vendor/4myth/pdf-style/app.css") }}"
         rel="stylesheet"
