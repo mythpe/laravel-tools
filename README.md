@@ -8,13 +8,47 @@ All documentation under building.
 
 ---
 
-#### Using composer: 
-    
+#### Using composer:
+
     composer require 4myth/laravel-tools
 
-#### Publish:
+### Publishes
+
+Provider
 
     php artisan vendor:publish --provider="Myth\LaravelTools\Providers\ServiceProvider"
+
+----
+
+Configuration
+
+    php artisan vendor:publish --tag=4myth-tools-config
+
+----
+
+Migrations
+
+    php artisan vendor:publish --tag=4myth-tools-migrations
+
+----
+
+Views
+
+    php artisan vendor:publish --tag=4myth-tools-views
+
+----
+
+Models
+
+    php artisan vendor:publish --tag=4myth-tools-models
+
+----
+
+Public Assets
+
+    php artisan vendor:publish --tag=4myth-tools-assets
+
+----
 
 ### Tool Middleware
 

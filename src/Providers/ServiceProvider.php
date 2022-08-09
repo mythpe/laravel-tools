@@ -53,7 +53,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', '4myth-tools');
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/4myth-tools'),
-        ]);
+        ],'4myth-tools-views');
 
         // Base Model
         $this->publishes([
@@ -64,7 +64,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishes([
             __DIR__.'/../resources/public' => storage_path('app/public/vendor/4myth'),
             __DIR__.'/../resources/vendor' => resource_path('vendor'),
-        ], 'laravel-assets');
+        ], '4myth-tools-assets');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
