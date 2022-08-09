@@ -44,6 +44,11 @@ class ServiceProvider extends BaseServiceProvider
         //     __DIR__.'/../lang' => $this->app->langPath('vendor/4myth-tools'),
         // ]);
 
+        // Migrations
+        $this->publishes([
+            __DIR__.'/../Migrations' => $this->app->databasePath('migrations'),
+        ], 'migrations');
+
         // Views
         $this->loadViewsFrom(__DIR__.'/../resources/views', '4myth-tools');
         $this->publishes([

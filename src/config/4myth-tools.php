@@ -137,4 +137,8 @@ return [
     ],
 
     'setting_class' => '\\App\\Models\\Setting',
+
+    'attributes_log_class' => \Myth\LaravelTools\Models\AttributesLog::class,
+
+    'attributes_log_morph' => 'attr_loggable',
 ];
