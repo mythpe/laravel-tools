@@ -47,7 +47,7 @@ class ServiceProvider extends BaseServiceProvider
         // Migrations
         $this->publishes([
             __DIR__.'/../Migrations' => $this->app->databasePath('migrations'),
-        ], 'migrations');
+        ], '4myth-tools-migrations');
 
         // Views
         $this->loadViewsFrom(__DIR__.'/../resources/views', '4myth-tools');
