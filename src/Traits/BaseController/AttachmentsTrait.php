@@ -22,11 +22,11 @@ trait AttachmentsTrait
     {
         $request = $this->request;
         $request->validate($this->_uploadAttachmentsRules());
-        $attachmentType = $request->input('attachment_type');
+        $attachmentType = $request->input('attachment_type', '');
         $description = trans_has(($c = "attributes.$attachmentType")) ? $c : $attachmentType;
         $collection = $model::$mediaAttachmentsCollection;
         try {
-            $model->addAttachment('attachment', $description, $collection);
+            $model->addAttachment('attachment', $description, $collection, ['user_id' => auth(config('4myth-tools.auth_guard'))->id()]);
         }
         catch (Exception $exception) {
         }

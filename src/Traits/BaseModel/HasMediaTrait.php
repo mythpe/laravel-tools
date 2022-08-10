@@ -129,14 +129,16 @@ trait HasMediaTrait
      * @param  string  $requestKey
      * @param  string|null  $description
      * @param  string|null  $collection
+     * @param  array  $properties
      *
      * @return \Spatie\MediaLibrary\MediaCollections\Models\Media
      * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist
      * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig
      */
-    public function addAttachment(string $requestKey, string $description = null, string $collection = null): Media
+    public function addAttachment(string $requestKey, string $description = null, string $collection = null, array $properties = []): Media
     {
         $collection = $collection ?: static::$mediaAttachmentsCollection;
-        return $this->addMediaFromRequest($requestKey)->withCustomProperties(['description' => $description])->toMediaCollection($collection);
+        $customProperties = array_merge(['description' => $description, 'user_id' => ($properties['user_id'] ?? null)], $properties);
+        return $this->addMediaFromRequest($requestKey)->withCustomProperties($customProperties)->toMediaCollection($collection);
     }
 }
