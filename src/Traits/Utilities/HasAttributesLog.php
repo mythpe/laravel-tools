@@ -137,17 +137,4 @@ trait HasAttributesLog
     {
         return $this->morphMany(config('4myth-tools.attributes_log_class'), config('4myth-tools.attributes_log_morph'))->withTrashed();
     }
-
-    /**
-     * @return string
-     */
-    public function getRawText(): string
-    {
-        $old = trim($this->old_value ?: '');
-        $new = trim($this->new_value ?: '');
-        if ($old && $new) {
-            return "[$old] ==> [$new]";
-        }
-        return $old ?: ($new ?: '');
-    }
 }
