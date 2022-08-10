@@ -22,8 +22,6 @@ class AttributesLog extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'loggable_id',
-        'loggable_type',
         'user_id',
         'attribute',
         'old_value',
