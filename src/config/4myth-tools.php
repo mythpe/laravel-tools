@@ -136,6 +136,8 @@ return [
         'url_variable_name'           => 'url',
     ],
 
+    'user_class' => '\\App\\Models\\User',
+
     'setting_class' => '\\App\\Models\\Setting',
 
     'attributes_log_class' => \Myth\LaravelTools\Models\AttributesLog::class,

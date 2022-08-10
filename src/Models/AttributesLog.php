@@ -8,6 +8,7 @@
 
 namespace Myth\LaravelTools\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -23,6 +24,7 @@ class AttributesLog extends BaseModel
     protected $fillable = [
         'loggable_id',
         'loggable_type',
+        'user_id',
         'attribute',
         'old_value',
         'new_value',
@@ -34,6 +36,7 @@ class AttributesLog extends BaseModel
      * @var array<string, mixed>
      */
     protected $attributes = [
+        'user_id'   => null,
         'attribute' => null,
         'old_value' => null,
         'new_value' => null,
@@ -44,6 +47,14 @@ class AttributesLog extends BaseModel
      */
     public function loggable(): MorphTo
     {
-        return $this->morphTo('attr_loggable');
+        return $this->morphTo(config('4myth-tools.attributes_log_morph'));
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(config('4myth-tools.user_class'))->withDefault();
     }
 }

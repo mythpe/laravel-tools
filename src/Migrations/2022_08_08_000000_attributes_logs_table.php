@@ -28,10 +28,11 @@ return new class extends Migration {
     {
         Schema::create($this->table, function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained(config('4myth-tools.user_class')::getModelTable())->nullOnDelete();
             $table->string('attribute')->nullable();
             $table->string('old_value')->nullable();
             $table->string('new_value')->nullable();
-            $table->morphs('attr_loggable');
+            $table->morphs(config('4myth-tools.attributes_log_morph'));
             $table->timestamps();
             $table->softDeletes();
         });

@@ -54,7 +54,7 @@ trait HasAttributesLog
                             }
                         }
                     }
-                    $model->createAttributeLog($attribute, $oldValue, $newValue);
+                    $model->createAttributeLog($attribute, $oldValue, $newValue, auth()->id());
                 }
             }
             return !0;
@@ -101,11 +101,12 @@ trait HasAttributesLog
      *
      * @return void
      */
-    public function createAttributeLog($attribute, $oldValue, $newValue): void
+    public function createAttributeLog($attribute, $oldValue, $newValue, $userId = null): void
     {
         try {
 
             $this->attributesLogs()->create([
+                'user_id'   => $userId,
                 'attribute' => $attribute,
                 'old_value' => $oldValue,
                 'new_value' => $newValue,
