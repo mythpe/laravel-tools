@@ -136,6 +136,8 @@ return [
         'url_variable_name'           => 'url',
     ],
 
+    'auth_guard' => null,
+
     'user_class' => '\\App\\Models\\User',
 
     'setting_class' => '\\App\\Models\\Setting',

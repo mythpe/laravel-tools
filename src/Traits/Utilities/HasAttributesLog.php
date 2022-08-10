@@ -54,7 +54,7 @@ trait HasAttributesLog
                             }
                         }
                     }
-                    $model->createAttributeLog($attribute, $oldValue, $newValue, auth()->id());
+                    $model->createAttributeLog($attribute, $oldValue, $newValue, auth(config('4myth-tools.auth_guard'))->id());
                 }
             }
             return !0;
