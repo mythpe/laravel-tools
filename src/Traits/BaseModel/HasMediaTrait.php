@@ -42,7 +42,6 @@ trait HasMediaTrait
      */
     public function addModelMedia($files, $collection = null): void
     {
-        $collection = $collection ?: static::$mediaSingleCollection;
         if (!is_array($files)) {
             $files = [$files];
         }
@@ -61,7 +60,7 @@ trait HasMediaTrait
             else {
                 $media = $this->addMedia($file);
             }
-            $media->toMediaCollection($collection);
+            $media->toMediaCollection($collection ?: static::$mediaSingleCollection);
         }
     }
 
@@ -71,10 +70,9 @@ trait HasMediaTrait
      *
      * @return string|null
      */
-    public function getModelMediaUrl($collection = null, string $conversionName = ''): string|null
+    public function getModelMediaUrl($collection = null, string $conversionName = ''): ?string
     {
-        $collection = $collection ?: static::$mediaSingleCollection;
-        return $this->getModelMedia($collection)?->getFullUrl($conversionName) ?: null;
+        return $this->getModelMedia($collection ?: static::$mediaSingleCollection)?->getFullUrl($conversionName) ?: null;
     }
 
     /**
@@ -87,8 +85,7 @@ trait HasMediaTrait
         if (!$this->exists) {
             return null;
         }
-        $collection = $collection ?: static::$mediaSingleCollection;
-        return $this->getFirstMedia($collection);
+        return $this->getFirstMedia($collection ?: static::$mediaSingleCollection);
     }
 
     /**
