@@ -69,12 +69,12 @@ trait HasMediaTrait
      * @param  null  $collection
      * @param  string  $conversionName
      *
-     * @return string
+     * @return string|null
      */
-    public function getModelMediaUrl($collection = null, string $conversionName = ''): string
+    public function getModelMediaUrl($collection = null, string $conversionName = ''): string|null
     {
         $collection = $collection ?: static::$mediaSingleCollection;
-        return ($r = $this->getModelMedia($collection)) ? $r->getFullUrl($conversionName) : '';
+        return $this->getModelMedia($collection)?->getFullUrl($conversionName) ?: null;
     }
 
     /**
