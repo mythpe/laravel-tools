@@ -71,10 +71,10 @@ class ApiResource extends JsonResource
         $data = array_merge(Arr::except($fillable, $model->getHidden()), $merge);
 
         // $data = array_merge($model->toArray(), $merge);
-        if (array_key_exists(($k = locale_attribute()), $data)) {
+        if (!array_key_exists('name', $data) && array_key_exists(($k = locale_attribute()), $data)) {
             $data['name'] = $data[$k];
         }
-        if (array_key_exists(($k = locale_attribute('description')), $data)) {
+        if (!array_key_exists('description', $data) && array_key_exists(($k = locale_attribute('description')), $data)) {
             $data['description'] = $data[$k];
         }
         ksort($data);
