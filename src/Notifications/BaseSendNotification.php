@@ -25,28 +25,30 @@ class BaseSendNotification extends Notification implements ShouldQueue
      * @var array
      */
     public array $via = [];
-
+    /**
+     * The notification's greeting.
+     *
+     * @var string
+     */
+    public $greeting;
     /**
      * The content will send via notification
      *
      * @var string
      */
     protected string $content = '';
-
     /**
      * The notification title
      *
      * @var string
      */
     protected string $title = '';
-
     /**
      * The channel of push notification
      *
      * @var string
      */
     protected string $pushTokenChannel = 'default';
-
     /**
      * Notification Data
      *
@@ -146,6 +148,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
         $breaks = ["<br>", "<br >", "<br />", "<br/>"];
         $content = str_ireplace($breaks, PHP_EOL, $content);
         $lines = explode(PHP_EOL, $content);
+        $mail->greeting($this->greeting);
         foreach ($lines as $line) {
             $mail->line($line);
         }
@@ -301,5 +304,19 @@ class BaseSendNotification extends Notification implements ShouldQueue
             'subject' => $this->getTitle($notifiable),
             'content' => $this->getContent($notifiable),
         ];
+    }
+
+    /**
+     * Set the greeting of the notification.
+     *
+     * @param  string  $greeting
+     *
+     * @return $this
+     */
+    public function greeting($greeting)
+    {
+        $this->greeting = $greeting;
+
+        return $this;
     }
 }
