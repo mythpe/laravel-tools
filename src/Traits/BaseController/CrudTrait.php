@@ -152,6 +152,7 @@ trait CrudTrait
         $args = func_get_args();
         $query = ($args[0] ?? $query::query());
         $transformer = ($args[1] ?? $this->getIndexTransformer());
+        $excelClass = ($args[2] ?? null);
 
         $this->isIndexActiveOnly && $query->activeOnly();
         if (!is_null($this->latest)) {
@@ -210,7 +211,7 @@ trait CrudTrait
         $withCount = array_filter($this->withCount);
         // d($with);
         $query->with($with)->withCount($withCount);
-        return $this->indexResponse($query, $transformer);
+        return $this->indexResponse($query, $transformer, $excelClass);
 
     }
 
