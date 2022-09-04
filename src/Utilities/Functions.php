@@ -539,6 +539,7 @@ if (!function_exists('apiResource')) {
                 $group($router);
             }
             //Route::delete('destroy-all', [$controller, 'destroyAll'])->name('destroyAll');
+            $router->post('Export', [$controller, 'index'])->name('export');
         });
         return Router::apiResource($name, $controller, $routeOptions);
     }
