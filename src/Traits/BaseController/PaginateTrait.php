@@ -70,7 +70,11 @@ trait PaginateTrait
             $headers = $request->input('headerItems', []);
 
             if (!$items) {
+                $ids = $request->input('ids', []);
                 $query = $this->apply($query);
+                if (!empty($ids)) {
+                    $query->whereIn($query->getModel()->getKeyName(), $ids);
+                }
                 $items = $transformer::collection($query->get())->toArray($this->request);
             }
             else {
