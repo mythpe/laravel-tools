@@ -51,6 +51,25 @@ trait PaginateTrait
     public string $itemsPerPageKey = 'itemsPerPage';
 
     /**
+     * Get class of export data
+     *
+     * @return string
+     * @uses Maatwebsite
+     */
+    public static function getControllerExcelExportClass(): string
+    {
+        return config('4myth-tools.ExcelExportClass', BaseExport::class);
+    }
+
+    /**
+     * @return string
+     */
+    public static function getControllerPdfView(): string
+    {
+        return config('4myth-tools.snappy_pdf_view', '4myth-tools::layouts.pdf_table');
+    }
+
+    /**
      * @param  mixed|Builder|\Illuminate\Database\Eloquent\Model  $query
      * @param  mixed|string|\Myth\LaravelTools\Http\Resources\ApiResource|null  $transformer
      * @param  mixed|string|null  $excelClass
@@ -72,7 +91,7 @@ trait PaginateTrait
             if (!$items) {
                 $ids = $request->input('ids', []);
                 $query = $this->apply($query);
-                if (!empty($ids)) {
+                if (!empty($ids) && is_array($ids)) {
                     $query->whereIn($query->getModel()->getKeyName(), $ids);
                 }
                 $items = $transformer::collection($query->get())->toArray($this->request);
@@ -167,25 +186,6 @@ trait PaginateTrait
     protected function getIndexTransformer(): string
     {
         return static::$indexTransformer;
-    }
-
-    /**
-     * Get class of export data
-     *
-     * @return string
-     * @uses Maatwebsite
-     */
-    public static function getControllerExcelExportClass(): string
-    {
-        return config('4myth-tools.ExcelExportClass', BaseExport::class);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getControllerPdfView(): string
-    {
-        return config('4myth-tools.snappy_pdf_view', '4myth-tools::layouts.pdf_table');
     }
 
     /**
