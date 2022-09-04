@@ -57,32 +57,35 @@ trait SearchTrait
     protected function searchQuery($builder)
     {
         $words = $this->request->input($this->searchRequestKey);
-
+        //d($words);
         if (!$words) {
             return $builder;
         }
         $model = $builder->getModel();
         $this->searchTable = $model->getTable();
         if (!$this->customSearchColumns) {
-            // d($words,$model);
+            //d($words, $model);
             if (($headers = $this->request->input($this->headersRequestKey)) && is_array($headers) && !empty($headers)) {
                 // d($headers);
                 foreach ($headers as $header) {
-                    if (array_key_exists('value', $header)) {
-                        $column = $header['value'];
+                    if (is_array($header)) {
+                        $column = ($header['value'] ?? ($header['field'] ?? ($header['name'] ?? null)));
                         if ($column == 'name' && !$model->isFillable($column) && $model->isFillable(locale_attribute("name"))) {
                             $column = locale_attribute("name");
                         }
-                        foreach (['_to_string', 'ToString', '_to_yes'] as $c) {
+                        foreach (['_to_string', 'ToString', '_to_yes', 'ToYes'] as $c) {
                             if (Str::endsWith($column, $c)) {
                                 $column = Str::beforeLast($column, $c);
                                 break;
                             }
                         }
-                        // d($column,$this->searchTable);
-                        if (Schema::hasColumn($this->searchTable, $column)) {
-                            $this->mergeSearchColumns($column);
-                        }
+                    }
+                    else {
+                        $column = $header;
+                    }
+                    // d($column,$this->searchTable);
+                    if ($column && Schema::hasColumn($this->searchTable, $column)) {
+                        $this->mergeSearchColumns($column);
                     }
                 }
             }
