@@ -51,25 +51,6 @@ trait PaginateTrait
     public string $itemsPerPageKey = 'itemsPerPage';
 
     /**
-     * Get class of export data
-     *
-     * @return string
-     * @uses Maatwebsite
-     */
-    public static function getControllerExcelExportClass(): string
-    {
-        return config('4myth-tools.ExcelExportClass', BaseExport::class);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getControllerPdfView(): string
-    {
-        return config('4myth-tools.snappy_pdf_view', '4myth-tools::layouts.pdf_table');
-    }
-
-    /**
      * @param  mixed|Builder|\Illuminate\Database\Eloquent\Model  $query
      * @param  mixed|string|\Myth\LaravelTools\Http\Resources\ApiResource|null  $transformer
      * @param  mixed|string|null  $excelClass
@@ -102,7 +83,7 @@ trait PaginateTrait
             if (!is_array($items)) {
                 $items = [];
             }
-
+            //d($headers);
             $fileName = "Export-".(auth()->id() ?: 0);
 
             if ($indexType == 'excel') {
@@ -132,7 +113,8 @@ trait PaginateTrait
                 // response()->headers->set('content-disposition',"filename={$fileName}");
                 // return  $disk->get($fileName);
             }
-            // d($headers, $items);
+            //d($headers, $items);
+            $headers = collect($headers)->filter(fn($v) => is_array($v) ? (($v['value'] ?? null) != 'control' && ($v['field'] ?? null) != 'control') : $v != 'control')->values()->toArray();
             $compact = [
                 'headerItems' => $headers,
                 'items'       => $items,
@@ -181,6 +163,25 @@ trait PaginateTrait
     protected function getIndexTransformer(): string
     {
         return static::$indexTransformer;
+    }
+
+    /**
+     * Get class of export data
+     *
+     * @return string
+     * @uses Maatwebsite
+     */
+    public static function getControllerExcelExportClass(): string
+    {
+        return config('4myth-tools.ExcelExportClass', BaseExport::class);
+    }
+
+    /**
+     * @return string
+     */
+    public static function getControllerPdfView(): string
+    {
+        return config('4myth-tools.snappy_pdf_view', '4myth-tools::layouts.pdf_table');
     }
 
     /**

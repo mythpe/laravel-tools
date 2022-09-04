@@ -29,14 +29,14 @@
     </tr>
     <tr>
         @foreach($headerItems as $k => $headerItem)
-            <th>{!! ($headerItem['text'] ?? ($headerItem['label']??($headerItem['field']??($headerItem['name']??$k)))) !!}</th>
+            <th>{!! ($headerItem['text'] ?? ($headerItem['label'] ?? ($headerItem['field'] ?? ($headerItem['name'] ?? $k)))) !!}</th>
         @endforeach
     </tr>
 
     @foreach($items as $itemKey => $item)
         <tr>
             @foreach($headerItems as $k => $headerItem)
-                <td>{!! ($item[ ($headerItem['value'] ?? $k) ] ?? ($item[ ($headerItem['field'] ?? ($item[ ($headerItem['name'] ?? $k) ])) ])) !!}</td>
+                <td>{!! ($item[ ($headerItem['value'] ?? '') ] ?? ($item[ ($headerItem['field'] ?? '') ] ?? ($item[ ($headerItem['name'] ?? '') ] ?? $k))) !!}</td>
             @endforeach
         </tr>
     @endforeach

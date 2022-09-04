@@ -52,16 +52,26 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     {
         $data = [];
         //d($this->headers);
-        foreach ($this->headers as $k => $header) {
-            $data[] = is_array($header) ? ($header['text'] ?? '') : (trans_has("attributes.$header") ? __("attributes.$header") : $header);
+        foreach ($this->headers as $header) {
+            if (is_array($header)) {
+                $value = ($header['text'] ?? ($header['label'] ?? ($header['field'] ?? ($header['name'] ?? ''))));
+            }
+            else {
+                $value = trans_has("attributes.$header") ? __("attributes.$header") : $header;
+            }
+            if ($value == 'control') {
+                continue;
+            }
+            $data[] = $value;
         }
+        //d($data);
         $data = [$data];
 
-        foreach ($this->items as $itemKey => $item) {
+        foreach ($this->items as $item) {
             $v = [];
-            foreach ($this->headers as $headerKey => $header) {
+            foreach ($this->headers as $header) {
                 //d($item);
-                $v[] = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? '') : ($item[$header] ?? ''));
+                $v[] = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? ($item[($header['field'] ?? '')] ?? ($item[($header['name'] ?? '')] ?? ''))) : ($item[$header] ?? ''));
             }
             $data[] = $v;
         }
@@ -81,3 +91,4 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
         ];
     }
 }
+
