@@ -199,7 +199,7 @@ trait CrudTrait
         /**
          * | This for General relations to append of query
          */
-        if (($requestWith = $this->request->get($this->requestWithKey))) {
+        if (($requestWith = $this->request->input($this->requestWithKey))) {
             !is_array($requestWith) && ($requestWith = explode(',', $requestWith));
             foreach ($requestWith as $value) {
                 if (method_exists($model, $value) && !in_array($value, $with)) {
@@ -456,7 +456,7 @@ trait CrudTrait
     {
         $array = [];
         foreach ($this->mapFromRequest as $rule => $request) {
-            $array[$request] = $this->request->get($rule);
+            $array[$request] = $this->request->input($rule);
         }
         return $array;
     }

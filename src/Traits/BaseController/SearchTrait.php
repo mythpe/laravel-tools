@@ -56,7 +56,7 @@ trait SearchTrait
      */
     protected function searchQuery($builder)
     {
-        $words = $this->request->get($this->searchRequestKey);
+        $words = $this->request->input($this->searchRequestKey);
 
         if (!$words) {
             return $builder;
@@ -65,7 +65,7 @@ trait SearchTrait
         $this->searchTable = $model->getTable();
         if (!$this->customSearchColumns) {
             // d($words,$model);
-            if (($headers = $this->request->get($this->headersRequestKey)) && is_array($headers) && !empty($headers)) {
+            if (($headers = $this->request->input($this->headersRequestKey)) && is_array($headers) && !empty($headers)) {
                 // d($headers);
                 foreach ($headers as $header) {
                     if (array_key_exists('value', $header)) {

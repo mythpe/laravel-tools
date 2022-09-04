@@ -52,13 +52,13 @@ trait SortTrait
     protected function sortQuery($query)
     {
         /** @var array|string $sortBy */
-        $sortBy = $this->request->get($this->sortByRequestKey);
+        $sortBy = $this->request->input($this->sortByRequestKey);
         if ($sortBy && !is_array($sortBy)) {
             $sortBy = ($a = json_decode($sortBy, true)) ? $a : [];
         }
 
         /** @var array|string $sortDesc */
-        $sortDesc = $this->request->get($this->sortDescRequestKey);
+        $sortDesc = $this->request->input($this->sortDescRequestKey);
         if ($sortDesc && !is_array($sortDesc)) {
             $sortDesc = ($a = json_decode($sortDesc, true)) ? $a : [];
         }

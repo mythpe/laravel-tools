@@ -42,7 +42,7 @@ trait FilterTrait
      */
     protected function filerQuery($builder, $filters = null)
     {
-        $filters = is_null($filters) ? $this->request->get($this->filterRequestKey) : $filters;
+        $filters = is_null($filters) ? $this->request->input($this->filterRequestKey) : $filters;
         //d($filters);
         if ($filters && is_array($filters)) {
             $model = $builder->getModel();

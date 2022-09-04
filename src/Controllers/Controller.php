@@ -191,7 +191,7 @@ class Controller extends BaseController
         $result = [];
         $model = new static::$controllerModel;
         foreach (is_array($keys) ? $keys : func_get_args() as $key) {
-            $value = $this->request->get($key);
+            $value = $this->request->input($key);
             if (is_null($value) && $model->hasCast($key)) {
                 $value = $model->{$key};
             }
