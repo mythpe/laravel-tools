@@ -70,7 +70,7 @@ to insert code automatically add this comment "use myth crud model command" to y
     {
         $this->prepare();
         $time = now()->format('Y_m_d');
-        $snake = Str::snake($this->modelName);
+        $snake = Str::snake(Str::plural($this->modelName));
         $stubs = [
             'ModelMigration.stub'     => "database/migrations/{$time}_000000_{$snake}_table.php",
             'ModelClass.stub'         => "app/Models/$this->model.php",
