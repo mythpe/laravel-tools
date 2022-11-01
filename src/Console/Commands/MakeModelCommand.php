@@ -85,14 +85,7 @@ to insert code automatically add this comment "use myth crud model command" to y
         if ($deleteModel && !$this->confirm("Delete <fg=red>$this->model</> ?")) {
             return 0;
         }
-
-        //$snake = Str::snake($modelName);
-        //use ActiveScopeTrait, OrderByScopeTrait;
-        //use_model
-        //casts
-
-        //'active'   => 'bool',
-        //'order_by' => 'int',
+        
         $stubsPath = __DIR__.'/../../Stubs';
         foreach ($stubs as $stub => $path) {
             if ($deleteModel) {
