@@ -110,12 +110,12 @@ to insert code automatically add this comment "use myth crud model command" to y
             return 0;
         }
 
-        $path = 'App\Providers\RouteServiceProvider.php';
+        $path = 'app\Providers\RouteServiceProvider.php';
         $existsNeedles = "$this->modelName::";
         $replaceContent = '        $this->binder(\''.$this->modelName.'\', \\App\\Models\\'.$this->model.'::class);';
         $this->modifyFile($path, $existsNeedles, $replaceContent);
 
-        $path = 'App\Http\Controllers\SideMenuController.php';
+        $path = 'app\Http\Controllers\SideMenuController.php';
         $existsNeedles = "// # $this->modelName.";
         $routeName = $this->modelPluralKebabName();
         $permissions = "$this->modelName.index";
