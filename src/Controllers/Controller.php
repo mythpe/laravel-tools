@@ -35,7 +35,7 @@ class Controller extends BaseController
      */
     const RELATIONS = [];
 
-    /** @var \Illuminate\Database\Eloquent\Model|null */
+    /** @var \Illuminate\Database\Eloquent\Model|null|\App\Models\User */
     public $user;
 
     /** @var mixed|\Illuminate\Http\Request|string|array|null */
