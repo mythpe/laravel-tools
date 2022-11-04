@@ -466,13 +466,12 @@ trait CrudTrait
      */
     protected function getBindModel()
     {
+        if(app()->runningInConsole()){
+            return new static::$controllerModel;
+        }
         $name = class_basename(static::$controllerModel);
         if (!($model = $this->request->{$name}) && !app()->runningInConsole()) {
             $name = static::$routeParameterModel;
-            //d($this->request->route()->parameter('Agent'));
-            //d(static::$routeModel);
-            //d($this->request->segments());
-            //return $this->request->{$name} ?: new static::$controllerModel;
             return $this->request->route()?->parameter($name) ?: new static::$controllerModel;
         }
         return $model;
