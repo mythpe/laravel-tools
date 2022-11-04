@@ -38,68 +38,68 @@ class Postman
      *
      * @var array
      */
-    protected array $items = [];
+    public array $items = [];
 
     /**
      * Postman variable of URL
      */
-    protected string $urlVariableName;
+    public string $urlVariableName;
 
     /**
      * Postman variable of auth token
      */
-    protected string $tokenVariableName;
+    public string $tokenVariableName;
 
     /**
      * Postman variable of language
      */
-    protected string $localeVariableName;
+    public string $localeVariableName;
 
     /**
      * Postman header variable of language
      */
-    protected string $localeHeaderVariableName;
+    public string $localeHeaderVariableName;
 
     /**
      * The name of middleware used in auth-routes to create documentation
      */
-    protected string $middlewareName;
+    public string $middlewareName;
 
     /**
      * Postman json file name
      *
      * @var string
      */
-    protected string $fileName;
+    public string $fileName;
 
     /**
      * Name of postman collection
      */
-    protected string $collectionName;
+    public string $collectionName;
 
     /**
      * Postman domain
      */
-    protected string $domain;
+    public string $domain;
 
     /**
      * Postman default locale
      */
-    protected string $locale;
+    public string $locale;
 
     /**
      * Postman collection id
      *
      * @var null|string
      */
-    protected ?string $collectionId = null;
+    public ?string $collectionId = null;
 
     /**
      * Postman collection exporter id
      *
      * @var ?null|string
      */
-    protected ?string $exporterId;
+    public ?string $exporterId;
 
     /**
      * Postman constructor.
@@ -368,7 +368,7 @@ class Postman
      *
      * @return array
      */
-    protected function getItems(): array
+    public function getItems(): array
     {
         // $appLocale = app()->getLocale();
         $authCollection = [];
@@ -710,7 +710,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return array
      */
-    protected function getFileInfo(): array
+    public function getFileInfo(): array
     {
         $info = [
             //     '_postman_id' => Str::random(36),
@@ -734,7 +734,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return array
      */
-    protected function getCollectionVariables(): array
+    public function getCollectionVariables(): array
     {
         $vars = [
             [
@@ -766,7 +766,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return \string[][]
      */
-    protected function getHeaders(): array
+    public function getHeaders(): array
     {
         $headers = [
             [
@@ -807,7 +807,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return string
      */
-    protected function parseFormRules($rules): string
+    public function parseFormRules($rules): string
     {
         if (!is_array($rules)) {
             $rules = explode(',', $rules);
@@ -834,7 +834,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return string
      */
-    protected function getFullExampleDescription(array $examples, string $key, string $attribute = null, array $rule = []): string
+    public function getFullExampleDescription(array $examples, string $key, string $attribute = null, array $rule = []): string
     {
         $en = null;
         $ar = null;
@@ -868,7 +868,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return string
      */
-    protected function findExample($key, array $examples): string
+    public function findExample($key, array $examples): string
     {
         $str = '';
         if (array_key_exists($key, $examples)) {
@@ -892,7 +892,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return bool
      */
-    protected function isExample($key, array $examples): bool
+    public function isExample($key, array $examples): bool
     {
         if (array_key_exists($key, $examples)) {
             return !0;
@@ -912,7 +912,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return array
      */
-    protected function findQueryExamples(array $examples): array
+    public function findQueryExamples(array $examples): array
     {
         $query = [];
         foreach ($examples as $k => $example) {
@@ -934,7 +934,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return array
      */
-    protected function getControllerParams($controller): array
+    public function getControllerParams($controller): array
     {
         $pagination = $this->getControllerPaginationParams($controller);
         $items = [
@@ -996,7 +996,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return array
      */
-    protected function getControllerPaginationParams($controller): array
+    public function getControllerPaginationParams($controller): array
     {
         return [
             [
@@ -1049,7 +1049,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return array
      */
-    protected function getAuth(): array
+    public function getAuth(): array
     {
         return [
             "type"   => "bearer",
@@ -1069,7 +1069,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return string
      */
-    protected function findExampleDescription($key, array $examples): string
+    public function findExampleDescription($key, array $examples): string
     {
         $str = '';
         if (array_key_exists($key, $examples)) {
@@ -1092,7 +1092,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return string
      */
-    protected function getDescription(): string
+    public function getDescription(): string
     {
         $description = '';
         if (trans_has(static::DESCRIPTION_KEY)) {
