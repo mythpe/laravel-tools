@@ -207,8 +207,8 @@ trait CrudTrait
                 }
             }
         }
-        $with = array_filter($with);
-        $withCount = array_filter($this->withCount);
+        $with = array_filter(array_unique($with));
+        $withCount = array_filter(array_unique($this->withCount));
         // d($with);
         $query->with($with)->withCount($withCount);
         return $this->indexResponse($query, $transformer, $excelClass);
