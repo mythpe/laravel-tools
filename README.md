@@ -8,7 +8,7 @@ All documentation under building.
 
 ---
 
-#### Using composer:
+### Using composer:
 
     composer require 4myth/laravel-tools
 
@@ -35,6 +35,12 @@ Migrations
 Views
 
     php artisan vendor:publish --tag=4myth-tools-views
+
+----
+
+Language
+
+    php artisan vendor:publish --tag=4myth-tools-lang
 
 ----
 

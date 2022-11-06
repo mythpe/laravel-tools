@@ -58,7 +58,8 @@ class ServiceProvider extends BaseServiceProvider
         // Lang
         $this->publishes([
             __DIR__.'/../lang/ar/postman.php' => lang_path('ar/postman.php'),
-        ], '4myth-tools-views');
+            __DIR__.'/../lang/en/postman.php' => lang_path('en/postman.php'),
+        ], '4myth-tools-lang');
 
         // Base Model
         $this->publishes([
