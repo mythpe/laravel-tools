@@ -24,6 +24,41 @@ class Postman
     const DESCRIPTION_KEY = 'postman.description';
 
     /**
+     * name on translation key
+     *
+     * @var string
+     */
+    const AUTH_DESCRIPTION_KEY = 'postman.folder.auth_description';
+
+    /**
+     * name on translation key
+     *
+     * @var string
+     */
+    const GUST_DESCRIPTION_KEY = 'postman.folder.gust_description';
+
+    /**
+     * Name on translation key
+     *
+     * @var string
+     */
+    const FOLDER_KEY = 'postman.folder';
+
+    /**
+     * Name on translation key
+     *
+     * @var string
+     */
+    const ITEMS_KEY = 'postman.items';
+
+    /**
+     * Name on translation key
+     *
+     * @var string
+     */
+    const DESCRIPTIONS_KEY = 'postman.descriptions';
+
+    /**
      * Variables will insert to postman
      *
      * @var array
@@ -604,7 +639,7 @@ class Postman
                     $itemName = 'List';
                 }
 
-                if (trans_has(($r = "postman.items.".$controller::class), 'ar')) {
+                if (trans_has(($r = static::ITEMS_KEY.".".$controller::class), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
                 }
                 elseif (trans_has(($r = "replace.$itemArName"), 'ar')) {
@@ -619,7 +654,7 @@ class Postman
                 if (method_exists($controller, $requestDescriptionMethod)) {
                     $requestDescription = $controller->{$requestDescriptionMethod}();
                 }
-                if (trans_has($k = "postman.descriptions.".$controller::class.".$actionName")) {
+                if (trans_has($k = static::DESCRIPTIONS_KEY.".".$controller::class.".$actionName")) {
                     $requestDescription = __($k, [
                         'controller' => $controllerName,
                         'method'     => $actionName,
@@ -677,7 +712,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 }
                 $folderName = trans_choice("choice.$choiceName", 2, [], 'en').' - '.trans_choice("choice.$choiceName", 2, [], 'ar');
                 $folderDescription = '';
-                if (trans_has($k = "postman.folder.".$controller::class)) {
+                if (trans_has($k = static::FOLDER_KEY.".".$controller::class)) {
                     $folderDescription .= __($k, ['controller' => $controllerName]);
                 }
                 if ($auth) {
@@ -713,13 +748,13 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
         ksort($gustCollection);
         $collection = [
             [
-                'name'        => 'Auth',
-                'description' => __('postman.folder.auth_description') ?: '',
+                'name'        => 'Authenticated user',
+                'description' => __(static::AUTH_DESCRIPTION_KEY) ?: '',
                 'item'        => array_values($authCollection),
             ],
             [
-                'name'        => 'Gust',
-                'description' => __('postman.folder.gust_description') ?: '',
+                'name'        => 'Guest or not Authenticated',
+                'description' => __(static::GUST_DESCRIPTION_KEY) ?: '',
                 'item'        => array_values($gustCollection),
             ],
         ];
