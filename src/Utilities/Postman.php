@@ -162,7 +162,6 @@ class Postman
         app()->setLocale($this->getLocale());
         $item = $this->getItems();
         $info = $this->getFileInfo();
-        //$auth = $this->getAuth();
         $variable = $this->getCollectionVariables();
 
         $file = [
