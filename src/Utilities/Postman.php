@@ -489,15 +489,15 @@ class Postman
                             $keys = array_keys($rules);
                             $hasChild = !1;
                             foreach ($keys as $checkArray) {
-                                if($hasChild){
+                                if ($hasChild) {
                                     break;
                                 }
-                                $hasChild = Str::contains($checkArray,"{$key}.");
+                                $hasChild = Str::contains($checkArray, "{$key}.");
                             }
-                            if($hasChild) {
+                            if ($hasChild) {
                                 continue;
                             }
-                            else{
+                            else {
                                 $formDataKey .= "[0]";
                             }
                         }
@@ -505,6 +505,9 @@ class Postman
                     if (Str::contains($formDataKey, ($s = '.*.'))) {
                         $formDataKey = implode('[0][', explode($s, $formDataKey)).']';
                         //d($formDataKey);
+                    }
+                    if (Str::endsWith($formDataKey, ($s = '.*'))) {
+                        $formDataKey = Str::before($formDataKey, $s).'[0]';
                     }
                     $value = $this->findExample($formDataKey, $examples);
                     if ($isFile) {
@@ -594,7 +597,12 @@ class Postman
 
                 $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
                 $itemName = $requestName;
-
+                if ($actionName == 'indexActiveOnly') {
+                    $itemName = 'Index';
+                }
+                if (strtolower($itemName) == 'index') {
+                    $itemName = 'List';
+                }
                 $requestDescriptionMethod = "_{$actionName}Description";
                 $requestDescription = '';
                 if (method_exists($controller, $requestDescriptionMethod)) {
@@ -861,6 +869,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
         $str = "";
         //d($examples);
         if (!is_null($attribute)) {
+            $attribute = Str::before($attribute, '.');
             $k = "attributes.{$attribute}";
             $def = ucwords($attribute);
             $ar = trans_has($k, 'ar') ? __($k, [], 'ar') : $def;
