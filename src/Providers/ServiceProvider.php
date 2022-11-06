@@ -53,7 +53,12 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', '4myth-tools');
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/4myth-tools'),
-        ],'4myth-tools-views');
+        ], '4myth-tools-views');
+
+        // Lang
+        $this->publishes([
+            __DIR__.'/../lang/ar/postman.php' => lang_path('ar/postman.php'),
+        ], '4myth-tools-views');
 
         // Base Model
         $this->publishes([

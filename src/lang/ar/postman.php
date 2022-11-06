@@ -9,18 +9,15 @@
 use Myth\LaravelTools\Utilities\Postman;
 
 return [
-    //Postman::DESCRIPTION_KEY  => '',
+    Postman::DESCRIPTION_KEY  => 'وصف البرنامج',
     Postman::FOLDER_KEY       => [
-        //'Controller::class'             => 'Some Text',
-        Postman::AUTH_DESCRIPTION_KEY => 'Some Text',
-        Postman::GUST_DESCRIPTION_KEY => 'Some Text',
-    ],
-    Postman::ITEMS_KEY        => [
-        //'Controller::class'             => 'Some Text',
+        //'Controller::class'             => 'مثال',
+        Postman::AUTH_DESCRIPTION_KEY => 'مثال',
+        Postman::GUST_DESCRIPTION_KEY => 'مثال',
     ],
     Postman::DESCRIPTIONS_KEY => [
         //'Controller::class' => [
-        //    'Method name' => 'Some Text',
+        //    'Method name' => 'مثال',
         //],
     ],
 ];

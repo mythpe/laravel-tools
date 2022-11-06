@@ -17,28 +17,28 @@ use Illuminate\Validation\Rules\Unique;
 class Postman
 {
     /**
-     * name on translation key
+     * Name on translation key.
      *
      * @var string
      */
     const DESCRIPTION_KEY = 'postman.description';
 
     /**
-     * name on translation key
+     * Name on translation key.
      *
      * @var string
      */
     const AUTH_DESCRIPTION_KEY = 'postman.folder.auth_description';
 
     /**
-     * name on translation key
+     * Name on translation key.
      *
      * @var string
      */
     const GUST_DESCRIPTION_KEY = 'postman.folder.gust_description';
 
     /**
-     * Name on translation key
+     * Name on translation key.
      *
      * @var string
      */
