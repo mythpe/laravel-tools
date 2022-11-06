@@ -116,11 +116,9 @@ trait FilterTrait
             $camel = ucfirst(Str::camel($name));
             $method = "whereHas{$camel}";
             $scope = "scopeWhereHas{$camel}";
-            //d($scope, $name, $relations);
             if (method_exists($model, $scope)) {
                 $builder->{$method}($value);
             }
-            //d(12);
             $relations = [
                 Str::camel($name),
                 Str::snake($name),
@@ -131,6 +129,7 @@ trait FilterTrait
                     if ($_relation instanceof BelongsToMany) {
                         $builder->whereHas($relation, function (Builder $builder) use ($value, $relation, $_relation) {
                             $relationColumn = Str::singular(Str::snake($relation)).'_id';
+                            $value = Str::contains($value, ',') ? explode(',', $value) : $value;
                             $m = is_array($value) ? 'whereIn' : 'where';
                             $builder->{$m}($relationColumn, $value);
                         });
