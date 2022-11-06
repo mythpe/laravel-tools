@@ -14,9 +14,6 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Exists;
 use Illuminate\Validation\Rules\Unique;
 
-/**
- *
- */
 class Postman
 {
     /**
@@ -370,7 +367,6 @@ class Postman
      */
     public function getItems(): array
     {
-        // $appLocale = app()->getLocale();
         $authCollection = [];
         $gustCollection = [];
         $routes = Route::getRoutes()->getRoutes();
@@ -443,22 +439,21 @@ class Postman
                 foreach ($controllerRuleMethods as $requestRule) {
                     if (method_exists($controller, $requestRule)) {
                         $rules = $controller->{$requestRule}();
-                        //d(class_basename( $controller),$rules);
                         break;
                     }
                 }
 
                 /** Generate Examples */
                 $controllerExampleMethods = [
-                    // Example by function name
-                    // _{METHOD}Example
+                    // # Example by function name
+                    // # _{METHOD}Example
                     "_{$actionName}Example",
-                    // Example by function & method name
-                    // _{METHOD}GetExample
+                    // # Example by function & method name
+                    // # _{METHOD}GetExample
                     "_{$actionName}".ucfirst(strtolower($method))."Example",
                 ];
                 if ($isPost) {
-                    // Controller example
+                    // # Controller example
                     $controllerExampleMethods[] = "_controllerExample";
                 }
 
@@ -466,6 +461,9 @@ class Postman
                 foreach ($controllerExampleMethods as $example) {
                     if (method_exists($controller, $example)) {
                         $examples = $controller->{$example}();
+                        if ($examples === !0) {
+                            $examples = $this->getControllerPaginationParams($controller);
+                        }
                         break;
                     }
                 }
@@ -598,7 +596,7 @@ class Postman
                 $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
                 $itemName = $requestName;
                 $itemArName = $actionName;
-                if ($actionName == 'indexActiveOnly') {
+                if (in_array($actionName, ['index', 'allIndex', 'indexActiveOnly'])) {
                     $itemArName = 'index';
                     $itemName = 'Index';
                 }
@@ -710,20 +708,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 //];
             }
         }
-        // app()->setLocale($appLocale);
-        //foreach ($items as $key => $value) {
-        //    if (!is_numeric($key)) {
-        //        $collection[] = [
-        //            'name' => $key,
-        //            'item' => $value,
-        //        ];
-        //    }
-        //    else {
-        //        $collection[] = $value;
-        //    }
-        //}
-        //d($collection);
-        //d($authCollection);
+
         ksort($authCollection);
         ksort($gustCollection);
         $collection = [
@@ -738,8 +723,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 'item'        => array_values($gustCollection),
             ],
         ];
-        //d($collection);
-        //$collection = $this->parseItems($items);
+
         return array_values($collection);
     }
 
@@ -1056,16 +1040,40 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 'description' => 'Number of results per page',
                 'disabled'    => !0,
             ],
+            //[
+            //    'key'         => $controller->sortByRequestKey,
+            //    'value'       => json_encode(['name', 'date']),
+            //    'description' => 'Listing sort',
+            //    'disabled'    => !0,
+            //],
             [
-                'key'         => $controller->sortByRequestKey,
-                'value'       => json_encode(['name', 'date']),
-                'description' => 'Listing sort',
+                'key'         => "$controller->sortByRequestKey[0]",
+                'value'       => 'name',
+                'description' => 'Listing sort. Array',
                 'disabled'    => !0,
             ],
             [
-                'key'         => $controller->sortDescRequestKey,
-                'value'       => json_encode([1, 0]),
-                'description' => 'The descending sorting for each key. true or false',
+                'key'         => "$controller->sortByRequestKey[1]",
+                'value'       => 'date',
+                'description' => 'Listing sort. Array',
+                'disabled'    => !0,
+            ],
+            //[
+            //    'key'         => $controller->sortDescRequestKey,
+            //    'value'       => json_encode([1, 0]),
+            //    'description' => 'The descending sorting for each key. true or false',
+            //    'disabled'    => !0,
+            //],
+            [
+                'key'         => "$controller->sortDescRequestKey[0]",
+                'value'       => '1',
+                'description' => 'The descending sorting for each key. true,false,1,0',
+                'disabled'    => !0,
+            ],
+            [
+                'key'         => "$controller->sortDescRequestKey[1]",
+                'value'       => '0',
+                'description' => 'The descending sorting for each key. true,false,1,0',
                 'disabled'    => !0,
             ],
             [
@@ -1075,9 +1083,9 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 'disabled'    => !0,
             ],
             [
-                'key'         => $controller->filterRequestKey,
-                'value'       => json_encode(['user_id' => 1]),
-                'description' => 'Filter items by attribute name',
+                'key'         => "$controller->filterRequestKey[user_id]",
+                'value'       => 1,
+                'description' => "Filter items by attribute name. {$controller->filterRequestKey} is Object",
                 'disabled'    => !0,
             ],
         ];
