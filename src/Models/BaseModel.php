@@ -180,6 +180,7 @@ class BaseModel extends Authenticatable implements HasMedia
         if (Str::endsWith($key, ($t = "_to_number_format"))) {
             $value = Str::before($key, $t);
             $number = $this->{$value};
+            return to_number_format((float) ($number ?: 0));
             if ($number || $number == 0) {
                 //$currency = config('4myth-tools.currency');
                 //$balance = config('4myth-tools.currency_balance');
