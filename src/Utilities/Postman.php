@@ -597,12 +597,25 @@ class Postman
 
                 $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
                 $itemName = $requestName;
+                $itemArName = $actionName;
                 if ($actionName == 'indexActiveOnly') {
+                    $itemArName = 'index';
                     $itemName = 'Index';
                 }
                 if (strtolower($itemName) == 'index') {
                     $itemName = 'List';
                 }
+
+                if (trans_has(($r = "postman.items.".$controller::class), 'ar')) {
+                    $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
+                }
+                elseif (trans_has(($r = "replace.$itemArName"), 'ar')) {
+                    $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
+                }
+                elseif (trans_has(($r = "global.$itemArName"), 'ar')) {
+                    $itemName .= ' - '.trim(__($r, ['name' => '']));
+                }
+
                 $requestDescriptionMethod = "_{$actionName}Description";
                 $requestDescription = '';
                 if (method_exists($controller, $requestDescriptionMethod)) {
