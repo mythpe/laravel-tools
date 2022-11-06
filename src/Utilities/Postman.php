@@ -479,10 +479,15 @@ class Postman
                     //d($description);
                     $formDataKey = $key;
                     $type = 'text';
+                    /**
+                     * Array examples:
+                     * -- 'model_id' => ['array','required'] [===> modelid[0]
+                     * -- 'items.*.id' => ['array','required'] [===> items[0][id]
+                     */
                     if ($isArray) {
-                        if (!Str::contains($formDataKey, '.')) {
-                            continue;
-                        }
+                        //if (!Str::contains($formDataKey, '.')) {
+                        //    continue;
+                        //}
                         $formDataKey .= "[0]";
                     }
                     if (Str::contains($formDataKey, ($s = '.*.'))) {
