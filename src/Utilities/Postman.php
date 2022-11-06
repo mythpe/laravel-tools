@@ -942,8 +942,8 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             $ex = [
                 'key'         => is_array($example) ? $example['key'] : $k,
                 'value'       => is_array($example) ? $example['value'] : $example,
-                'description' => is_array($example) ? $example['description'] : __("attributes.{$k}"),
-                'disabled'    => !0,
+                'description' => is_array($example) ? ($example['description'] ?? '') : __("attributes.{$k}"),
+                'disabled'    => is_array($example) ? ($example['disabled'] ?? !0) : !0,
             ];
             $query[] = $ex;
         }
