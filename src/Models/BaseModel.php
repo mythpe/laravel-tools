@@ -35,7 +35,7 @@ class BaseModel extends Authenticatable implements HasMedia
         if ($this->isFillable($name) && !$this->isFillable('name')) {
             $this->append(['name']);
         }
-        $this->append('created_at_to_string', 'updated_at_to_string');
+        //$this->append('created_at_to_string', 'updated_at_to_string');
         $this->makeHidden('deleted_at', 'updated_at', 'created_at', 'media');
     }
 
