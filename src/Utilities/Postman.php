@@ -481,14 +481,26 @@ class Postman
                     $type = 'text';
                     /**
                      * Array examples:
-                     * -- 'model_id' => ['array','required'] [===> modelid[0]
+                     * -- 'model_id' => ['array','required'] [===> model_id[0]
                      * -- 'items.*.id' => ['array','required'] [===> items[0][id]
                      */
                     if ($isArray) {
-                        //if (!Str::contains($formDataKey, '.')) {
-                        //    continue;
-                        //}
-                        $formDataKey .= "[0]";
+                        if (!Str::contains($formDataKey, '.')) {
+                            $keys = array_keys($rules);
+                            $hasChild = !1;
+                            foreach ($keys as $checkArray) {
+                                if($hasChild){
+                                    break;
+                                }
+                                $hasChild = Str::contains($checkArray,"{$key}.");
+                            }
+                            if($hasChild) {
+                                continue;
+                            }
+                            else{
+                                $formDataKey .= "[0]";
+                            }
+                        }
                     }
                     if (Str::contains($formDataKey, ($s = '.*.'))) {
                         $formDataKey = implode('[0][', explode($s, $formDataKey)).']';
