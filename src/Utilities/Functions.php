@@ -64,6 +64,8 @@ if (!function_exists('starts_with')) {
 if (!function_exists('d')) {
     /**
      * @param  mixed  ...$args
+     *
+     * @deprecated move to dd laravel helper
      */
     function d(...$args): void
     {
@@ -559,5 +561,22 @@ if (!function_exists('isKsaMobile')) {
             return Str::startsWith($mobile, 966) && strlen($mobile) == 12 || Str::startsWith($mobile, 5) && strlen($mobile) == 9;
         }
         return !1;
+    }
+}
+
+if (!function_exists('mythAllowHeaders')) {
+    /**
+     * @param  int  $code
+     *
+     * @return never
+     */
+    function mythAllowHeaders(int $code = 600): void
+    {
+        if (!app()->runningInConsole() || !app()->runningUnitTests()) {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+            http_response_code($code);
+        }
     }
 }
