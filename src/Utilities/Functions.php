@@ -64,26 +64,26 @@ if (!function_exists('starts_with')) {
 
 if (!function_exists('d')) {
     /**
-     * @param  mixed  ...$vars
+     * @param  mixed  ...$args
      */
-    function d(...$vars): void
+    function d(...$args): void
     {
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: *');
-        header('Access-Control-Allow-Headers: *');
-        http_response_code(500);
-
-        $debug = @debug_backtrace();
-        $call = current($debug);
-        $line = ($call['line'] ?? __LINE__);
-        $file = ($call['file'] ?? __FILE__);
-
-        echo("[$file] Line ($line): <br>");
-        foreach ($vars as $v) {
-            VarDumper::dump($v);
+        if(!app()->runningInConsole() || !app()->runningUnitTests()) {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+            http_response_code(600);
         }
-
-        die(1);
+        //$debug = @debug_backtrace();
+        //$call = current($debug);
+        //$line = ($call['line'] ?? __LINE__);
+        //$file = ($call['file'] ?? __FILE__);
+        //echo("[$file] Line ($line): <br>");
+        //foreach ($args as $v) {
+        //    VarDumper::dump($v);
+        //}
+        //die(1);
+        call_user_func_array('dd', $args);
     }
 }
 
