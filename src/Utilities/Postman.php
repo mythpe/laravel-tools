@@ -638,7 +638,7 @@ class Postman
                     $itemName = 'List';
                 }
 
-                if (trans_has(($r = static::ITEMS_KEY.".".$controller::class), 'ar')) {
+                if (trans_has(($r = static::ITEMS_KEY.'.'.$controller::class.'.'.$actionName), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
                 }
                 elseif (trans_has(($r = "replace.$itemArName"), 'ar')) {

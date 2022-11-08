@@ -6,18 +6,19 @@
  * Website: https://www.4myth.com
  */
 
-use Myth\LaravelTools\Utilities\Postman;
-
 return [
-    'description'      => 'وصف البرنامج',
-    'folder'           => [
-        //'Controller::class'             => 'مثال',
-        'auth_description'            => 'مثال',
-        Postman::GUST_DESCRIPTION_KEY => 'مثال',
+    'description'  => 'وصف البرنامج',
+    'folder'       => [
+        'Controller::class' => 'مثال',
+        'auth_description'  => 'مثال',
+        'gust_description'  => 'مثال',
     ],
-    'gust_description' => [
-        //'Controller::class' => [
-        //    'Method name' => 'مثال',
-        //],
+    'items'        => [
+        'Controller::class' => 'مثال',
+    ],
+    'descriptions' => [
+        'Controller::class' => [
+            'Method name' => 'مثال',
+        ],
     ],
 ];
