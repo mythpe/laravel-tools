@@ -14,7 +14,9 @@ return [
         'gust_description'  => 'Some Text',
     ],
     'items'        => [
-        'Controller::class' => 'Some Text',
+        'Controller::class' => [
+            'Method name' => 'Some Text',
+        ],
     ],
     'descriptions' => [
         'Controller::class' => [

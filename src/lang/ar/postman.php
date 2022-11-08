@@ -14,7 +14,9 @@ return [
         'gust_description'  => 'مثال',
     ],
     'items'        => [
-        'Controller::class' => 'مثال',
+        'Controller::class' => [
+            'Method name' => 'مثال',
+        ],
     ],
     'descriptions' => [
         'Controller::class' => [
