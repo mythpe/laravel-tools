@@ -13,7 +13,6 @@ use Illuminate\Routing\PendingResourceRegistration;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route as Router;
 use Illuminate\Support\Str;
-use Symfony\Component\VarDumper\VarDumper;
 
 if (!function_exists('to_number_format')) {
     /**
@@ -68,7 +67,7 @@ if (!function_exists('d')) {
      */
     function d(...$args): void
     {
-        if(!app()->runningInConsole() || !app()->runningUnitTests()) {
+        if (!app()->runningInConsole() && !app()->runningUnitTests()) {
             header('Access-Control-Allow-Origin: *');
             header('Access-Control-Allow-Methods: *');
             header('Access-Control-Allow-Headers: *');
