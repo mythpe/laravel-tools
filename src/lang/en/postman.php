@@ -9,13 +9,13 @@
 use Myth\LaravelTools\Utilities\Postman;
 
 return [
-    Postman::DESCRIPTION_KEY  => 'App description',
-    Postman::FOLDER_KEY       => [
+    'description'      => 'App description',
+    'folder'           => [
         //'Controller::class'             => 'Some Text',
-        Postman::AUTH_DESCRIPTION_KEY => 'Some Text',
+        'auth_description'            => 'Some Text',
         Postman::GUST_DESCRIPTION_KEY => 'Some Text',
     ],
-    Postman::DESCRIPTIONS_KEY => [
+    'gust_description' => [
         //'Controller::class' => [
         //    'Method name' => 'Some Text',
         //],
