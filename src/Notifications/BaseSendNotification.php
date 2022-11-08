@@ -300,10 +300,10 @@ class BaseSendNotification extends Notification implements ShouldQueue
      */
     public function toArray($notifiable): array
     {
-        return [
+        return array_merge([
             'subject' => $this->getTitle($notifiable),
             'content' => $this->getContent($notifiable),
-        ];
+        ], $this->getData($notifiable));
     }
 
     /**
