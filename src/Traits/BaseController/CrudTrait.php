@@ -316,7 +316,12 @@ trait CrudTrait
         if ($r = $this->showing($model)) {
             return $r;
         }
-        return $this->resource($this->getControllerTransformer()::make($model->load(static::RELATIONS)));
+        $requestWith = $this->request->input($this->requestWithKey, []);
+        if (!is_array($requestWith)) {
+            $requestWith = $requestWith ? explode(',', $requestWith) : [];
+        }
+        $with = array_unique(array_merge(static::RELATIONS, $requestWith));
+        return $this->resource($this->getControllerTransformer()::make($model->load($with)));
     }
 
     /**
