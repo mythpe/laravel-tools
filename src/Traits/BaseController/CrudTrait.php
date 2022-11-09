@@ -155,7 +155,7 @@ trait CrudTrait
         $excelClass = ($args[2] ?? null);
 
         $this->isIndexActiveOnly && $query->activeOnly();
-        if (!is_null($this->latest)) {
+        if ($this->latest) {
             $column = $this->latest;
             if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
                 $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) desc");
@@ -172,7 +172,7 @@ trait CrudTrait
             }
         }
 
-        if (!is_null($this->oldest)) {
+        if ($this->oldest) {
             $column = $this->oldest;
             if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
                 $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) asc");
