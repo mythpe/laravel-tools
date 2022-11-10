@@ -503,6 +503,9 @@ class Postman
                 }
 
                 foreach ($rules as $key => $rule) {
+                    if ($actionName == 'index' && $isPost) {
+                        break;
+                    }
                     $formRule = $this->parseFormRules($rule);
                     $isConfirmed = Str::contains($formRule, 'confirmed');
                     $isArray = Str::contains($formRule, 'array');
@@ -600,7 +603,7 @@ class Postman
                     'mode'    => $bodyMode,
                     $bodyMode => $formData,
                 ];
-                if ($isGet) {
+                if ($isGet || ($isPost && $actionName == 'index')) {
                     $queryExamples = $this->findQueryExamples($examples);
                     if (!empty($queryExamples)) {
                         foreach ($query as $queryKey => $v) {
@@ -618,11 +621,11 @@ class Postman
                         $queryExamples = array_values($queryExamples);
                     }
                     $query = array_merge($query, $queryExamples);
-                    if (in_array($actionName, ['index', 'allIndex'])) {
+                    if (in_array($actionName, ['index', 'allIndex']) && $isGet) {
                         $query = array_merge($query, $this->getControllerParams($route->getController()));
                     }
 
-                    if (in_array($actionName, ['indexActiveOnly'])) {
+                    if (in_array($actionName, ['indexActiveOnly']) || $isPost) {
                         $query = array_merge($query, $this->getControllerPaginationParams($route->getController()));
                     }
                 }
