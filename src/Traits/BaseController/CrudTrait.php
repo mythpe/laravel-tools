@@ -209,8 +209,8 @@ trait CrudTrait
         }
         $with = array_filter(array_unique($with));
         $withCount = array_filter(array_unique($this->withCount));
-        // d($with);
         $query->with($with)->withCount($withCount);
+        // dd($with);
         return $this->indexResponse($query, $transformer, $excelClass);
 
     }
@@ -255,7 +255,9 @@ trait CrudTrait
         if (($r = $this->saved($model))) {
             return $r;
         }
-        return $this->resource($this->getControllerTransformer()::make($model->load(static::RELATIONS)->refresh()), __("messages.store_success"));
+        $this->request->merge(['_message' => __("messages.store_success")]);
+        return $this->show($model);
+        //return $this->resource($this->getControllerTransformer()::make($model->load(static::RELATIONS)->refresh()), __("messages.store_success"));
     }
 
     /**
@@ -300,8 +302,9 @@ trait CrudTrait
         if (($r = $this->saved($model))) {
             return $r;
         }
-        $model = $model->load(static::RELATIONS)->refresh();
-        return $this->resource($this->getControllerTransformer()::make($model), __("messages.updated_success"));
+        $this->request->merge(['_message' => __("messages.updated_success")]);
+        return $this->show($model);
+        //return $this->resource($this->getControllerTransformer()::make($model), __("messages.updated_success"));
     }
 
     /**
@@ -321,7 +324,7 @@ trait CrudTrait
             $requestWith = $requestWith ? explode(',', $requestWith) : [];
         }
         $with = array_unique(array_merge(static::RELATIONS, $requestWith));
-        return $this->resource($this->getControllerTransformer()::make($model->load($with)));
+        return $this->resource($this->getControllerTransformer()::make($model->load($with)), $this->request->input('_message'));
     }
 
     /**
@@ -471,7 +474,7 @@ trait CrudTrait
      */
     protected function getBindModel()
     {
-        if(app()->runningInConsole()){
+        if (app()->runningInConsole()) {
             return new static::$controllerModel;
         }
         $name = class_basename(static::$controllerModel);
