@@ -58,7 +58,7 @@ class BaseModel extends Authenticatable implements HasMedia
     /**
      * @param $value
      *
-     * @return string
+     * @return string|null
      */
     public function getNameAttribute($value): ?string
     {
@@ -71,7 +71,7 @@ class BaseModel extends Authenticatable implements HasMedia
             if ($this->isFillable($attr)) {
                 $string = $this->{$attr};
             }
-            elseif ($this->getNameColumn() != 'name') {
+            elseif (method_exists($this, 'getNameColumn') && $this->getNameColumn() != 'name') {
                 $string = $this->{$this->getNameColumn()};
             }
         }
@@ -149,7 +149,11 @@ class BaseModel extends Authenticatable implements HasMedia
         if (Str::startsWith($key, ($f = "get_")) && Str::endsWith($key, ($l = "_name"))) {
             $method = Str::before($key, $l);
             $method = Str::after($method, $f);
-            return (($method && ($a = $this->{$method})) ? $a->{$a->getNameColumn()} : '');
+            if (($method && ($a = $this->{$method})) && method_exists($a, 'getNameColumn')) {
+                return $a->{$a->getNameColumn()};
+            }
+
+            return '';
         }
 
         /** {ATTRIBUTE}_code */
@@ -165,15 +169,15 @@ class BaseModel extends Authenticatable implements HasMedia
         if (Str::endsWith($key, ($t = "_id_to_string"))) {
             $method = Str::before($key, $t);
 
-            if (!is_null(($a = $this->{$method}))) {
+            if (!is_null(($a = $this->{$method})) && method_exists($a, 'getNameColumn')) {
                 return $a->{$a->getNameColumn()};
             }
 
-            if (!is_null(($a = $this->{Str::camel($method)}))) {
+            if (!is_null(($a = $this->{Str::camel($method)})) && method_exists($a, 'getNameColumn')) {
                 return $a->{$a->getNameColumn()};
             }
 
-            return !is_null(($a = $this->{$method})) ? $a->{$a->getNameColumn()} : $a;
+            return !is_null(($a = $this->{$method})) && method_exists($a, 'getNameColumn') ? $a->{$a->getNameColumn()} : $a;
         }
 
         /** {ATTRIBUTE}_to_number_format */
