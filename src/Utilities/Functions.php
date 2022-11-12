@@ -580,3 +580,15 @@ if (!function_exists('mythAllowHeaders')) {
         }
     }
 }
+
+if (!function_exists('developmentMode')) {
+    /**
+     * Check if environment in development mode
+     *
+     * @return bool
+     */
+    function developmentMode(): bool
+    {
+        return app()->environment(config('4myth-tools.development_modes', []));
+    }
+}

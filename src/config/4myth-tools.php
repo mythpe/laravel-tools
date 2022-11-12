@@ -36,6 +36,16 @@ return [
         'mobile'   => '0590470092',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Application development modes
+    |--------------------------------------------------------------------------
+    |
+    | Define the development modes of the application.
+    |
+    */
+    'development_modes'             => (array) ['development', 'testing', 'local'],
+
     /** Application one user login */
     'one_login'                     => !1,
 
@@ -145,4 +155,5 @@ return [
     'attributes_log_class' => \Myth\LaravelTools\Models\AttributesLog::class,
 
     'attributes_log_morph' => 'attr_loggable',
+
 ];
