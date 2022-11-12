@@ -53,14 +53,30 @@ trait SortTrait
     {
         /** @var array|string $sortBy */
         $sortBy = $this->request->input($this->sortByRequestKey);
-        if ($sortBy && !is_array($sortBy)) {
-            $sortBy = ($a = json_decode($sortBy, true)) ? $a : [];
+        if (!is_null($sortBy) && !is_array($sortBy)) {
+            try {
+                $sortBy = ($a = json_decode($sortBy, true)) ? $a : [];
+                if (json_last_error()) {
+                    $sortBy = [$this->request->input($this->sortByRequestKey)];
+                }
+            }
+            catch (\Exception $exception) {
+                $sortBy = [$this->request->input($this->sortByRequestKey)];
+            }
         }
 
         /** @var array|string $sortDesc */
         $sortDesc = $this->request->input($this->sortDescRequestKey);
-        if ($sortDesc && !is_array($sortDesc)) {
-            $sortDesc = ($a = json_decode($sortDesc, true)) ? $a : [];
+        if (!is_null($sortDesc) && !is_array($sortDesc)) {
+            try {
+                $sortDesc = ($a = json_decode($sortDesc, true)) ? $a : [];
+                if (json_last_error()) {
+                    $sortDesc = [$this->request->input($this->sortDescRequestKey)];
+                }
+            }
+            catch (\Exception $exception) {
+                $sortDesc = [$this->request->input($this->sortDescRequestKey)];
+            }
         }
 
         //$query->getQuery()->orders = [];
