@@ -67,6 +67,9 @@ trait SortTrait
 
         /** @var array|string $sortDesc */
         $sortDesc = $this->request->input($this->sortDescRequestKey);
+        if ($sortDesc == 1 || $sortDesc == 0) {
+            $sortDesc = [$sortDesc];
+        }
         if (!is_null($sortDesc) && !is_array($sortDesc)) {
             try {
                 $sortDesc = ($a = json_decode($sortDesc, true)) ? $a : [];
@@ -91,7 +94,7 @@ trait SortTrait
         //$query->withSum('housingUnits', 'views');
         //$query->orderBy('housing_units_count', 'desc');
         //$query->orderBy('views', 'desc');
-        // d($sortBy,$sortDesc);
+        //d($sortBy, $sortDesc);
         $model = $query->getModel();
         $table = $model->getTable();
         if (
@@ -100,7 +103,7 @@ trait SortTrait
             && is_array($sortDesc)
             && !empty($sortDesc)
         ) {
-            //d($sortBy,$sortDesc);
+            //d($sortBy, $sortDesc);
             $emptyBaseOrder = false;
 
             foreach ($sortBy as $k => $column) {
