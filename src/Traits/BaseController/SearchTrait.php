@@ -143,6 +143,7 @@ trait SearchTrait
                                     if (
                                         method_exists($model, $relation)
                                         && ($relationModel = $model->$relation()->getModel())
+                                        && method_exists($relationModel, 'getNameColumn')
                                         && Schema::hasColumn($relationModel->getTable(), ($c = $relationModel->getNameColumn()))
                                     ) {
                                         $builder->orWhere(function (Builder $builder) use ($relation, $c, $words) {
