@@ -129,7 +129,7 @@ trait FilterTrait
                     if ($_relation instanceof BelongsToMany) {
                         $builder->whereHas($relation, function (Builder $r) use ($value, $relation, $_relation) {
                             $relationColumn = Str::singular(Str::snake($relation)).'_id';
-                            $value = Str::contains($value, ',') ? explode(',', $value) : $value;
+                            $value = !is_array($value) && Str::contains($value, ',') ? explode(',', $value) : $value;
                             $m = is_array($value) ? 'whereIn' : 'where';
                             $r->{$m}("{$_relation->getTable()}.{$relationColumn}", $value);
                         });
