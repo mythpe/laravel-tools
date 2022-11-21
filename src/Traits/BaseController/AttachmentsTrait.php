@@ -27,6 +27,7 @@ trait AttachmentsTrait
         $collection = $model::$mediaAttachmentsCollection;
         try {
             $model->addAttachment('attachment', $description, $collection, ['user_id' => auth(config('4myth-tools.auth_guard'))->id()]);
+            $model->refresh();
         }
         catch (Exception $exception) {
         }
@@ -56,6 +57,7 @@ trait AttachmentsTrait
     {
         if ($media->model->is($model)) {
             $media->delete();
+            $model->refresh();
         }
         $collection = $model::$mediaAttachmentsCollection;
         $resource = config('4myth-tools.media_resource_class');
