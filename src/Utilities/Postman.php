@@ -8,6 +8,7 @@
 
 namespace Myth\LaravelTools\Utilities;
 
+use Exception;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -670,7 +671,7 @@ class Postman
                         }
                         $requestDescription = __("replace.$actionName", ['name' => $name]);
                     }
-                    catch (\Exception $exception) {
+                    catch (Exception $exception) {
                         //d($actionName, $choiceName);
                     }
                 }

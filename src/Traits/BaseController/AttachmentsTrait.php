@@ -24,7 +24,8 @@ trait AttachmentsTrait
         $request->validate($this->_uploadAttachmentsRules());
         $attachmentType = $request->input('attachment_type', '');
         $description = trans_has(($c = "attributes.$attachmentType")) ? $c : $attachmentType;
-        $collection = $model::$mediaAttachmentsCollection;
+        //$collection = $model::$mediaAttachmentsCollection;
+        $collection = request('collection', $model::$mediaAttachmentsCollection);
         try {
             $model->addAttachment('attachment', $description, $collection, ['user_id' => auth(config('4myth-tools.auth_guard'))->id()]);
             $model->refresh();
@@ -59,7 +60,7 @@ trait AttachmentsTrait
             $media->delete();
             $model->refresh();
         }
-        $collection = $model::$mediaAttachmentsCollection;
+        $collection = request('collection', $model::$mediaAttachmentsCollection);
         $resource = config('4myth-tools.media_resource_class');
         return $this->resource($resource::collection($model->getMedia($collection)), __("messages.deleted_success"));
     }

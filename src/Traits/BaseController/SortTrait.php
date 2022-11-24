@@ -8,6 +8,7 @@
 
 namespace Myth\LaravelTools\Traits\BaseController;
 
+use Exception;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -60,7 +61,7 @@ trait SortTrait
                     $sortBy = [$this->request->input($this->sortByRequestKey)];
                 }
             }
-            catch (\Exception $exception) {
+            catch (Exception $exception) {
                 $sortBy = [$this->request->input($this->sortByRequestKey)];
             }
         }
@@ -77,7 +78,7 @@ trait SortTrait
                     $sortDesc = [$this->request->input($this->sortDescRequestKey)];
                 }
             }
-            catch (\Exception $exception) {
+            catch (Exception $exception) {
                 $sortDesc = [$this->request->input($this->sortDescRequestKey)];
             }
         }

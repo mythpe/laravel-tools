@@ -8,6 +8,7 @@
 
 use Myth\LaravelTools\Http\Resources\ApiCollectionResponse;
 use Myth\LaravelTools\Http\Resources\ApiResource;
+use Myth\LaravelTools\Models\AttributesLog;
 
 return [
     /*
@@ -152,7 +153,7 @@ return [
 
     'setting_class' => '\\App\\Models\\Setting',
 
-    'attributes_log_class' => \Myth\LaravelTools\Models\AttributesLog::class,
+    'attributes_log_class' => AttributesLog::class,
 
     'attributes_log_morph' => 'attr_loggable',
 
