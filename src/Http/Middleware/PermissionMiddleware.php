@@ -26,14 +26,12 @@ class PermissionMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // return $next($request);
         /** @var \App\Models\User $user */
         $user = $request->user();
 
         throw_if(!$user, new AuthenticationException);
-        //d($user->isAdmin());
         /** Check If Administrator Or Support **/
-        if ($user->isAdmin()) {
+        if ($user->isSupport()) {
             return $next($request);
         }
         /** @var \Illuminate\Routing\Route $route */
