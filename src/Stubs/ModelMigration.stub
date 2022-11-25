@@ -27,6 +27,7 @@ return new class extends Migration {
      */
     public function up()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create($this->table, function (Blueprint $table) {
             $table->id();
             $table->string('name_ar')->nullable();
@@ -42,6 +43,7 @@ return new class extends Migration {
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists($this->table);
     }
 };
