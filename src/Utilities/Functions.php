@@ -592,3 +592,28 @@ if (!function_exists('developmentMode')) {
         return app()->environment(config('4myth-tools.development_modes', []));
     }
 }
+
+if (!function_exists('fixString')) {
+    /**
+     * trim & translate string
+     *
+     * @param $string
+     * @param  string|null  $translate  translate string target
+     * @param  bool  $ucwords  use PHP functions ucwords
+     * @param  array|null  $replace  array to use in str_ireplace
+     *
+     * @return string $string
+     */
+    function fixString($string, string|null $translate = null, $ucwords = !0, array|null $replace = null): string
+    {
+        $string = str_replace_en_ar($string);
+        is_array($replace) && ($string = trim(str_ireplace($replace[0], $replace[1], $string)));
+        if ($translate) {
+            $string = Str::slug($string, ' ', $translate);
+        }
+        if ($ucwords) {
+            $string = ucwords($string);
+        }
+        return trim($string) ?? '';
+    }
+}
