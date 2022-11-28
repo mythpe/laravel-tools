@@ -43,7 +43,7 @@ trait AttachmentsTrait
     public function _uploadAttachmentsRules(): array
     {
         return [
-            'attachment_type' => ['required'],
+            'attachment_type' => ['nullable'],
             'attachment'      => ['required', 'file'],
         ];
     }
