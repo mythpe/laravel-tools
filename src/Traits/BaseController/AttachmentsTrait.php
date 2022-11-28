@@ -28,13 +28,10 @@ trait AttachmentsTrait
         $collection = request('collection', $model::$mediaAttachmentsCollection);
         try {
             $model->addAttachment('attachment', $description, $collection, ['user_id' => auth(config('4myth-tools.auth_guard'))->id()]);
-            $model->refresh();
         }
         catch (Exception $exception) {
         }
-
-        $resource = config('4myth-tools.media_resource_class');
-        return $this->resource($resource::collection($model->getMedia($collection)), __("messages.uploaded_success"));
+        return $this->resource($this->getModelAttachmentsMedia($model), __("messages.uploaded_success"));
     }
 
     /**
@@ -58,10 +55,15 @@ trait AttachmentsTrait
     {
         if ($media->model->is($model)) {
             $media->delete();
-            $model->refresh();
         }
+        return $this->resource($this->getModelAttachmentsMedia($model), __("messages.uploaded_success"));
+    }
+
+    public function getModelAttachmentsMedia(&$model)
+    {
+        $model->refresh();
         $collection = request('collection', $model::$mediaAttachmentsCollection);
         $resource = config('4myth-tools.media_resource_class');
-        return $this->resource($resource::collection($model->getMedia($collection)), __("messages.deleted_success"));
+        return $resource::collection($model->getMedia($collection)->sortDesc());
     }
 }
