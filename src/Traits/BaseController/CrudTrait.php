@@ -115,9 +115,7 @@ trait CrudTrait
     protected array $checkBeforeDestroy = [];
 
     /**
-     * @return \Illuminate\Http\Response|mixed|\Symfony\Component\HttpFoundation\BinaryFileResponse|void
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @return \Illuminate\Http\Response|mixed|\Symfony\Component\HttpFoundation\BinaryFileResponse|void|null
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -125,13 +123,11 @@ trait CrudTrait
     {
         $def = !0;
         $this->isIndexActiveOnly = $this->request->input($this->excludeActiveIndexKey, $def) ? !1 : $def;
-        return $this->allIndex();
+        return $this->allIndex(...func_get_args());
     }
 
     /**
-     * @return \Illuminate\Http\Response|mixed|\Symfony\Component\HttpFoundation\BinaryFileResponse|void
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|mixed|\Myth\LaravelTools\Http\Resources\ApiCollectionResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse|void|null
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -143,9 +139,7 @@ trait CrudTrait
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|mixed|\Myth\LaravelTools\Http\Resources\ApiCollectionResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse|void
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|mixed|\Myth\LaravelTools\Http\Resources\ApiCollectionResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function index()
     {
