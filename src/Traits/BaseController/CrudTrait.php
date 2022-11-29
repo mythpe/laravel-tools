@@ -123,7 +123,8 @@ trait CrudTrait
      */
     public function indexActiveOnly()
     {
-        $this->isIndexActiveOnly = !0;
+        $def = !0;
+        $this->isIndexActiveOnly = $this->request->input($this->excludeActiveIndexKey, $def) ? !1 : $def;
         return $this->allIndex();
     }
 
@@ -137,6 +138,7 @@ trait CrudTrait
     public function allIndex()
     {
         $this->itemsPerPage = $this->request->input($this->itemsPerPageKey, -1);
+        $this->page = $this->request->input($this->pageKey, 1);
         return $this->index(...func_get_args());
     }
 

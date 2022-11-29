@@ -51,6 +51,13 @@ trait PaginateTrait
     public string $itemsPerPageKey = 'itemsPerPage';
 
     /**
+     * request key name
+     *
+     * @var string
+     */
+    public string $excludeActiveIndexKey = 'exclude';
+
+    /**
      * Get class of export data
      *
      * @return string
