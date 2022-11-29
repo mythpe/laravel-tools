@@ -51,7 +51,7 @@ trait PaginateTrait
     public string $itemsPerPageKey = 'itemsPerPage';
 
     /**
-     * request key name
+     * request key name of exclude active
      *
      * @var string
      */
