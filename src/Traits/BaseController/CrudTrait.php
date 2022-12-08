@@ -386,7 +386,7 @@ trait CrudTrait
             $models = $builder->get();
             foreach ($models as $m) {
                 foreach ($this->checkBeforeDestroy as $relation) {
-                    if ($$m->$relation()->exists()) {
+                    if ($m->$relation()->exists()) {
                         return $this->errorResponse(__("messages.can_not_deleted"));
                     }
                 }
