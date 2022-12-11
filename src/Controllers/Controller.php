@@ -207,7 +207,7 @@ class Controller extends BaseController
      *
      * @return string|null
      */
-    protected function attrNotEmpty($attribute): ?string
+    protected function attrNotNull($attribute): ?string
     {
         $required = 'required';
         if(app()->runningInConsole()){
@@ -219,5 +219,20 @@ class Controller extends BaseController
             return $required;
         }
         return null;
+    }
+
+    /**
+     * Model attribute should not empty value
+     *
+     * @param $attribute
+     *
+     * @return null|mixed
+     */
+    protected function attrValue($attribute)
+    {
+        if(app()->runningInConsole()){
+            return null;
+        }
+        return $this->request->input($attribute, $this->getBindModel()?->{$attribute});
     }
 }
