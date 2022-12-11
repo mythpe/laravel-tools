@@ -474,7 +474,7 @@ trait CrudTrait
             return new static::$controllerModel;
         }
         $name = class_basename(static::$controllerModel);
-        if(!($model = $this->request->{$name}) && !app()->runningInConsole()){
+        if(!($model = $this->request->{$name})){
             $name = static::$routeParameterModel;
             return $this->request->route()?->parameter($name) ?: new static::$controllerModel;
         }
