@@ -16,10 +16,9 @@ use Myth\LaravelTools\Exceptions\NoPermissionException;
 
 class PermissionMiddleware
 {
-
     /**
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
      *
      * @return \Illuminate\Http\RedirectResponse|mixed|void|string
      * @throws \Throwable
@@ -31,15 +30,15 @@ class PermissionMiddleware
 
         throw_if(!$user, new AuthenticationException);
         /** Check If Administrator Or Support **/
-        if ($user->isSupport()) {
+        if($user->isSupport()){
             return $next($request);
         }
         /** @var \Illuminate\Routing\Route $route */
         $route = $request->route();
         $routeName = $route->getName();
-        if (!Str::endsWith($routeName, config('4myth-tools.skip_permission_ends_with', []))) {
+        if(!Str::endsWith($routeName, config('4myth-tools.skip_permission_ends_with', []))){
             $routes = getPermissionRoutes(!0);
-            if (in_array($routeName, $routes)) {
+            if(in_array($routeName, $routes)){
                 throw_if(!$user->checkPermission($routeName), new NoPermissionException());
             }
         }

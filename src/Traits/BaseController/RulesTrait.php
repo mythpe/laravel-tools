@@ -21,8 +21,8 @@ trait RulesTrait
     }
 
     /**
-     * @param  array  $rules
-     * @param  Model|null  $model
+     * @param array $rules
+     * @param Model|null $model
      *
      * @return array
      */
@@ -32,8 +32,8 @@ trait RulesTrait
     }
 
     /**
-     * @param  array  $rules
-     * @param  Model|null  $model
+     * @param array $rules
+     * @param Model|null $model
      *
      * @return array
      */
@@ -43,8 +43,8 @@ trait RulesTrait
     }
 
     /**
-     * @param  array  $rules
-     * @param  Model|null  $model
+     * @param array $rules
+     * @param Model|null $model
      *
      * @return array
      */
@@ -54,8 +54,8 @@ trait RulesTrait
     }
 
     /**
-     * @param  array|null  $rules
-     * @param  Model|null  $model
+     * @param array|null $rules
+     * @param Model|null $model
      */
     protected function makeValidator(array $rules = [], &$model = null): void
     {

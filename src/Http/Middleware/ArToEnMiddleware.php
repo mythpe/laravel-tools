@@ -23,8 +23,8 @@ class ArToEnMiddleware
     ];
 
     /**
-     * @param  Request  $request
-     * @param  Closure  $next
+     * @param Request $request
+     * @param Closure $next
      *
      * @return mixed
      */
@@ -36,7 +36,7 @@ class ArToEnMiddleware
     }
 
     /**
-     * @param  array  $data
+     * @param array $data
      *
      * @return array
      */
@@ -44,7 +44,7 @@ class ArToEnMiddleware
     {
         array_walk_recursive(
             $data,
-            function (&$value, $key) {
+            function(&$value, $key){
                 $value = $this->processValue($value, $key);
             }
         );
@@ -53,14 +53,14 @@ class ArToEnMiddleware
     }
 
     /**
-     * @param  mixed  $value
-     * @param  string  $key
+     * @param mixed $value
+     * @param string $key
      *
      * @return mixed
      */
     protected function processValue($value, $key)
     {
-        if (is_string($value)) {
+        if(is_string($value)){
             $arabic_eastern = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
             $arabic_western = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 

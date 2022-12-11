@@ -16,9 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 trait ActiveScopeTrait
 {
-
     /**
-     * @param  Builder  $builder
+     * @param Builder $builder
      *
      * @return Builder
      */
@@ -28,7 +27,7 @@ trait ActiveScopeTrait
     }
 
     /**
-     * @param  Builder  $builder
+     * @param Builder $builder
      *
      * @return Builder
      */
@@ -44,7 +43,7 @@ trait ActiveScopeTrait
      */
     public function getActiveToStringAttribute(): string
     {
-        if ($this->active) {
+        if($this->active){
             return __("static.statuses.active");
         }
         return __("static.statuses.inactive");

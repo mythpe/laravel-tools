@@ -24,7 +24,7 @@ trait HasGoogleMapAttribute
      */
     public function getGoogleMapUrlAttribute($value): ?string
     {
-        if ($value) {
+        if($value){
             return (string) $value;
         }
         return $this->getGoogleMapDirApi($this->latitude, $this->longitude);
@@ -40,7 +40,7 @@ trait HasGoogleMapAttribute
      */
     public function getGoogleMapIframeAttribute($value): ?string
     {
-        if ($value) {
+        if($value){
             return (string) $value;
         }
         $lat = $this->latitude;
@@ -50,8 +50,8 @@ trait HasGoogleMapAttribute
     }
 
     /**
-     * @param  float|null  $lat
-     * @param  float|null  $lng
+     * @param float|null $lat
+     * @param float|null $lng
      *
      * @return string|null
      */
@@ -63,8 +63,8 @@ trait HasGoogleMapAttribute
     }
 
     /**
-     * @param  float|null  $lat
-     * @param  float|null  $lng
+     * @param float|null $lat
+     * @param float|null $lng
      *
      * @return string|null
      */
@@ -76,9 +76,9 @@ trait HasGoogleMapAttribute
     }
 
     /**
-     * @param  int  $z
-     * @param  float|null  $lat
-     * @param  float|null  $lng
+     * @param int $z
+     * @param float|null $lat
+     * @param float|null $lng
      *
      * @return string|null
      */

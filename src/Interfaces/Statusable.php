@@ -12,7 +12,6 @@ use Illuminate\Support\Collection;
 
 interface Statusable
 {
-
     /** @var string */
     const ACTIVATED_STATUS = 'activated';
 
@@ -78,5 +77,4 @@ interface Statusable
      * @return string
      */
     public function getStatusToStringAttribute(): string;
-
 }

@@ -14,7 +14,6 @@ use Myth\LaravelTools\Console\BaseCommand;
 
 class MakeModelCommand extends BaseCommand
 {
-
     /**
      *
      */
@@ -28,7 +27,9 @@ class MakeModelCommand extends BaseCommand
     protected $signature = 'myth:model {model}
 {--s|scoped : Create model with scopes}
 {--d|delete : Delete model}';
+
     //use myth crud model command
+
     /**
      * The console command description.
      *
@@ -39,6 +40,7 @@ to insert code automatically add this comment "use myth crud model command" to y
 -App\Providers\RouteServiceProvider.php
 -App\Http\Controllers\SideMenuController.php
 ';
+
     /**
      * @var string
      */
@@ -82,24 +84,24 @@ to insert code automatically add this comment "use myth crud model command" to y
         ];
 
         $deleteModel = (bool) $this->option('delete');
-        if ($deleteModel && !$this->confirm("Delete <fg=red>$this->model</> ?")) {
+        if($deleteModel && !$this->confirm("Delete <fg=red>$this->model</> ?")){
             return 0;
         }
 
         $stubsPath = __DIR__.'/../../Stubs';
-        foreach ($stubs as $stub => $path) {
-            if ($deleteModel) {
+        foreach($stubs as $stub => $path){
+            if($deleteModel){
                 $this->components->task("Deleting <fg=red>$path</>", fn() => $this->disk()->delete($path));
                 continue;
             }
             $content = $this->fillStub(file_get_contents("$stubsPath/$stub"));
-            if ($this->disk()->exists($path)) {
+            if($this->disk()->exists($path)){
                 $this->components->warn("File exists: <fg=red>$path</> <fg=yellow;bg=black>Skipped</>");
                 continue;
             }
             $this->components->task("Creating $path", fn() => $this->disk()->put($path, $content));
         }
-        if ($deleteModel) {
+        if($deleteModel){
             return 0;
         }
 
@@ -112,7 +114,7 @@ to insert code automatically add this comment "use myth crud model command" to y
         $existsNeedles = "// # $this->modelName.";
         $routeName = $this->modelPluralKebabName();
         $permissions = "$this->modelName.index";
-        if ($this->namespace) {
+        if($this->namespace){
             $routeName = strtolower(str_ireplace('\\', '.', $this->namespace)).".$routeName";
             $permissions = str_ireplace('\\', '.', $this->namespace).".$permissions";
         }
@@ -146,7 +148,7 @@ html;
         $this->model = preg_replace(['/\/+/', '/\\\+/'], '\\', $this->argument('model'));
         $options = explode('\\', $this->model);
         $this->modelName = array_pop($options);
-        if (count($options) > 0) {
+        if(count($options) > 0){
             $this->namespace = implode('\\', $options);
         }
     }
@@ -154,7 +156,7 @@ html;
     /**
      * Fill stub content
      *
-     * @param  string  $stub
+     * @param string $stub
      *
      * @return string
      */
@@ -163,7 +165,7 @@ html;
         $scoped = $this->option('scoped');
         $model_use = $class_use = $fillable = $attributes = $casts = $rules = $migration = $resource = $oldest = '';
 
-        if ($scoped) {
+        if($scoped){
             $model_use .= 'use Myth\LaravelTools\Traits\Utilities\OrderByScopeTrait;
 use Myth\LaravelTools\Traits\Utilities\ActiveScopeTrait;
 ';
@@ -268,7 +270,7 @@ html;
      */
     protected function modifyFile($path, $existsNeedles = null, $replaceContent = null): void
     {
-        $this->components->task("Try to modify <fg=green>$path</>", function () use ($path, $existsNeedles, $replaceContent) {
+        $this->components->task("Try to modify <fg=green>$path</>", function() use ($path, $existsNeedles, $replaceContent){
             $comment = static::LINE_COMMENT_UPDATE;
             $this->newLine();
 
@@ -276,19 +278,19 @@ html;
             $source = file($this->disk()->path($path));
             $commentIndex = null;
             $existsLine = null;
-            foreach ($source as $k => $line) {
+            foreach($source as $k => $line){
                 is_null($existsLine) && ($existsLine = Str::contains($line, $existsNeedles) ? $k : null);
                 is_null($commentIndex) && ($commentIndex = Str::contains($line, $comment) ? $k : null);
             }
 
-            if (!is_null($existsLine)) {
+            if(!is_null($existsLine)){
                 ++$existsLine;
                 $this->components->warn("<fg=red>$this->modelName</> found in line: {$existsLine}");
             }
-            elseif (is_null($commentIndex)) {
+            elseif(is_null($commentIndex)){
                 $this->components->info("Add this comment [$comment] to automatically modify the file or add this line: [$replaceContent]");
             }
-            else {
+            else{
                 $before = array_slice($source, 0, $commentIndex + 1);
                 $after = array_slice($source, $commentIndex + 1);
                 $file = array_merge($before, [
@@ -315,27 +317,27 @@ html;
      */
     protected function insertModelLanguage(): void
     {
-        $this->components->task("Add model language", function () {
+        $this->components->task("Add model language", function(){
             $pluralChoice = $this->modelPluralName();
             $this->newLine();
             $studlyWords = ucwords(str_ireplace('-', ' ', Str::kebab(Str::studly($this->modelName))));
             $pluralWords = ucwords(str_ireplace('-', ' ', $this->modelPluralKebabName()));
-            foreach (config('4myth-tools.locales') as $locale) {
+            foreach(config('4myth-tools.locales') as $locale){
                 $choice = "lang/$locale/choice.php";
-                if (!$this->disk()->exists($choice)) {
+                if(!$this->disk()->exists($choice)){
                     $this->components->twoColumnDetail("<fg=red>$choice</> not exists", '<fg=red>Skipped</>');
                 }
-                elseif (trans_has("choice.$pluralChoice")) {
+                elseif(trans_has("choice.$pluralChoice")){
                     $this->components->twoColumnDetail("<fg=red>$pluralChoice</> Trans choice exists", '<fg=red>Skipped</>');
                 }
-                else {
+                else{
                     $file = file($this->disk()->path($choice));
                     $lastCount = count($file) - 1;
                     $row = '    \''.$pluralChoice.'\' => \'';
-                    if ($locale == 'ar') {
+                    if($locale == 'ar'){
                         $row .= 'جمع|مفرد';
                     }
-                    else {
+                    else{
                         $row .= "$studlyWords|$pluralWords";
                     }
                     $row .= '\','.PHP_EOL;
@@ -348,7 +350,7 @@ html;
                 $attribute = "lang/$locale/attributes.php";
                 $attr = $this->modelForeignKey();
                 $attrs = Str::plural(Str::beforeLast($attr, '_id')).'_id';
-                if (!$this->disk()->exists($attribute)) {
+                if(!$this->disk()->exists($attribute)){
                     $this->components->twoColumnDetail("<fg=red>$attribute</> not exists", '<fg=red>Skipped</>');
                     return;
                 }
@@ -356,23 +358,23 @@ html;
                 $file = file($this->disk()->path($attribute));
                 $last = array_pop($file);
                 $updated = !1;
-                if (!trans_has("attributes.$attr")) {
+                if(!trans_has("attributes.$attr")){
                     $updated = !0;
                     $file[] = "    '$attr' => '$studlyWords',".PHP_EOL;
                 }
-                else {
+                else{
                     $this->components->twoColumnDetail("<fg=red>$attr</> attribute exists", '<fg=red>Skipped</>');
                 }
 
-                if (!trans_has("attributes.$attrs")) {
+                if(!trans_has("attributes.$attrs")){
                     $updated = !0;
                     $file[] = "    '$attrs' => '$pluralWords',".PHP_EOL;
                 }
-                else {
+                else{
                     $this->components->twoColumnDetail("<fg=red>$attrs</> attribute exists", '<fg=red>Skipped</>');
                 }
 
-                if ($updated) {
+                if($updated){
                     $file[] = $last;
                     $this->disk()->put($attribute, implode('', $file));
                     $this->components->twoColumnDetail($attribute, '<fg=green>Updated</>');
@@ -380,5 +382,4 @@ html;
             }
         });
     }
-
 }

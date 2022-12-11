@@ -20,17 +20,17 @@ trait HasAttributesLog
      */
     protected static function bootHasAttributesLog(): void
     {
-        static::saved(function (self $model) {
-            if ($model->wasRecentlyCreated) {
+        static::saved(function(self $model){
+            if($model->wasRecentlyCreated){
                 return !0;
             }
             $keys = $model->getChangeableAttributes();
-            if ($model->wasChanged($keys)) {
+            if($model->wasChanged($keys)){
                 $changes = Arr::only($model->getChanges(), $keys);
-                foreach ($changes as $attribute => $change) {
+                foreach($changes as $attribute => $change){
                     $oldValue = $model->getOriginal($attribute);
                     $newValue = $change;
-                    if (Str::endsWith($attribute, '_id')) {
+                    if(Str::endsWith($attribute, '_id')){
                         $relationName = Str::beforeLast($attribute, '_id');
                         $singular = Str::singular($relationName);
                         $cases = array_unique([
@@ -38,15 +38,15 @@ trait HasAttributesLog
                             Str::snake($singular),
                             $singular,
                         ]);
-                        foreach ($cases as $case) {
-                            if (method_exists($model, $case)) {
-                                if (($relation = $model->{$case}) && $relation->exists) {
+                        foreach($cases as $case){
+                            if(method_exists($model, $case)){
+                                if(($relation = $model->{$case}) && $relation->exists){
                                     $relationClass = get_class($relation);
-                                    if (($new = $relationClass::find($newValue)) && $new->{$model->getNameOfRelationColumn()}) {
+                                    if(($new = $relationClass::find($newValue)) && $new->{$model->getNameOfRelationColumn()}){
                                         $newValue = $new->{$model->getNameOfRelationColumn()};
                                     }
 
-                                    if (($old = $relationClass::find($oldValue)) && $old->{$model->getNameOfRelationColumn()}) {
+                                    if(($old = $relationClass::find($oldValue)) && $old->{$model->getNameOfRelationColumn()}){
                                         $oldValue = $old->{$model->getNameOfRelationColumn()};
                                     }
                                     break;
@@ -59,21 +59,21 @@ trait HasAttributesLog
             }
             return !0;
         });
-        static::deleted(function (self $model) {
-            try {
-                if (method_exists($model, 'isForceDeleting')) {
-                    if ($model->isForceDeleting()) {
+        static::deleted(function(self $model){
+            try{
+                if(method_exists($model, 'isForceDeleting')){
+                    if($model->isForceDeleting()){
                         $model->allAttributesLogs()->forceDelete();
                     }
-                    else {
+                    else{
                         $model->attributesLogs()->delete();
                     }
                 }
-                else {
+                else{
                     $model->allAttributesLogs()->forceDelete();
                 }
             }
-            catch (Exception) {
+            catch(Exception){
             }
         });
     }
@@ -103,7 +103,7 @@ trait HasAttributesLog
      */
     public function createAttributeLog($attribute, $oldValue, $newValue, $userId = null): void
     {
-        try {
+        try{
 
             $this->attributesLogs()->create([
                 'user_id'   => $userId,
@@ -112,7 +112,7 @@ trait HasAttributesLog
                 'new_value' => $newValue,
             ]);
         }
-        catch (Exception) {
+        catch(Exception){
 
         }
     }

@@ -17,7 +17,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        if (str_starts_with($this->app->version(), '9.')) {
+        if(str_starts_with($this->app->version(), '9.')){
             AboutCommand::add('MyTh Tools', [
                 'Version' => '1.0.0',
             ]);
@@ -73,7 +73,7 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../resources/vendor' => resource_path('vendor'),
         ], '4myth-tools-assets');
 
-        if ($this->app->runningInConsole()) {
+        if($this->app->runningInConsole()){
             $this->commands([
                 PostmanCommand::class,
                 JsLangCommand::class,

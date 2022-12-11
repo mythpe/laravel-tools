@@ -15,7 +15,7 @@ use Illuminate\Support\Carbon;
 trait TowFactorAuthTrait
 {
     /**
-     * @param  bool  $notify
+     * @param bool $notify
      * [TOKEN, CODE, USER_ID]
      *
      * @return array
@@ -23,10 +23,10 @@ trait TowFactorAuthTrait
     public function make2FactorCode(bool $notify = !1): array
     {
         [$token, $code] = $this->generate2FactorToken();
-        try {
+        try{
             $notify && $this->notify2FactorCode($code);
         }
-        catch (Exception $exception) {
+        catch(Exception $exception){
         }
         return [$token, $code];
     }
@@ -52,11 +52,11 @@ trait TowFactorAuthTrait
      */
     public function notify2FactorCode($code): void
     {
-        try {
+        try{
             $notification = new PublicNotification(__("messages.login.2_factor_code", ['code' => $code]), __("mail.2_factor_auth"));
             $this->notify($notification);
         }
-        catch (Exception $exception) {
+        catch(Exception $exception){
         }
     }
 
@@ -80,14 +80,14 @@ trait TowFactorAuthTrait
      */
     public function validate2FactorToken($token): ?array
     {
-        try {
+        try{
             [$timestamp, $code, $userId] = json_decode(base64_decode(str_ireplace([md5("2-factor-auth"), md5("token")], '', $token), !0), !0);
             $time = Carbon::createFromTimestamp($timestamp);
-            if (!$time->isPast()) {
+            if(!$time->isPast()){
                 return [$time, $code, $userId];
             }
         }
-        catch (Exception $exception) {
+        catch(Exception $exception){
             developmentMode() && dd($exception);
         }
         return null;

@@ -19,7 +19,7 @@ class SmsNotification
     /**
      * Set the content of the message.
      *
-     * @param  string  $content
+     * @param string $content
      *
      * @return $this
      */
@@ -32,7 +32,7 @@ class SmsNotification
     /**
      * Set the receiver of the message.
      *
-     * @param  string|string[]  $mobile
+     * @param string|string[] $mobile
      *
      * @return $this
      */

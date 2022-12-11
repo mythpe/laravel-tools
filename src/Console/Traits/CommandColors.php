@@ -45,16 +45,16 @@ trait CommandColors
      */
     protected function applyCustomStyle(): self
     {
-        foreach ($this->themes as $t => $options) {
+        foreach($this->themes as $t => $options){
             $this->output->getFormatter()->setStyle($t, new OutputFormatterStyle(...$options));
         }
         return $this;
     }
 
     /**
-     * @param  string  $str
-     * @param  string  $fg
-     * @param  string  $bg
+     * @param string $str
+     * @param string $fg
+     * @param string $bg
      *
      * @return $this
      */
@@ -65,7 +65,7 @@ trait CommandColors
     }
 
     /**
-     * @param  string  $string
+     * @param string $string
      */
     protected function lineGreen($string = '')
     {
@@ -73,8 +73,8 @@ trait CommandColors
     }
 
     /**
-     * @param  string  $str
-     * @param  string  $tag
+     * @param string $str
+     * @param string $tag
      *
      * @return $this
      */

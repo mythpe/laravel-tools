@@ -15,7 +15,7 @@ class ApiCollectionResponse extends ResourceCollection
 {
     /**
      * @param $resource
-     * @param  string|null  $collects
+     * @param string|null $collects
      */
     public function __construct($resource, string $collects = null)
     {
@@ -26,7 +26,7 @@ class ApiCollectionResponse extends ResourceCollection
     /**
      * Transform the resource collection into an array.
      *
-     * @param  Request  $request
+     * @param Request $request
      *
      * @return array
      */

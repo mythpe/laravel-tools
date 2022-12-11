@@ -32,8 +32,8 @@ trait HasMediaTrait
     }
 
     /**
-     * @param  array|string[]|string|UploadedFile  $files
-     * @param  null  $collection
+     * @param array|string[]|string|UploadedFile $files
+     * @param null $collection
      *
      * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileCannotBeAdded
      * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist
@@ -42,22 +42,22 @@ trait HasMediaTrait
      */
     public function addModelMedia($files, $collection = null): void
     {
-        if (!is_array($files)) {
+        if(!is_array($files)){
             $files = [$files];
         }
         //d($files);
-        foreach ($files as $file) {
-            if (!$file) {
+        foreach($files as $file){
+            if(!$file){
                 continue;
             }
 
-            if (is_string($file) && isBase64($file)) {
+            if(is_string($file) && isBase64($file)){
                 $media = $this->addMediaFromBase64($file);
             }
-            elseif (is_string($file)) {
+            elseif(is_string($file)){
                 $media = $this->addMediaFromRequest($file);
             }
-            else {
+            else{
                 $media = $this->addMedia($file);
             }
             $media->toMediaCollection($collection ?: static::$mediaSingleCollection);
@@ -65,8 +65,8 @@ trait HasMediaTrait
     }
 
     /**
-     * @param  null  $collection
-     * @param  string  $conversionName
+     * @param null $collection
+     * @param string $conversionName
      *
      * @return string|null
      */
@@ -76,13 +76,13 @@ trait HasMediaTrait
     }
 
     /**
-     * @param  null  $collection
+     * @param null $collection
      *
      * @return Media|null
      */
     public function getModelMedia($collection = null): ?Media
     {
-        if (!$this->exists) {
+        if(!$this->exists){
             return null;
         }
         return $this->getFirstMedia($collection ?: static::$mediaSingleCollection);
@@ -91,28 +91,28 @@ trait HasMediaTrait
     /**
      * Get Main media as media file download
      *
-     * @param  null  $collection
+     * @param null $collection
      *
      * @return string
      */
     public function getDownloadMediaFileUrl($collection = null): ?string
     {
-        if (($media = $this->getModelMedia($collection))) {
+        if(($media = $this->getModelMedia($collection))){
             return downloadMedia($media);
         }
         return null;
     }
 
     /**
-     * @param  null  $collection
-     * @param  string  $conversionName
+     * @param null $collection
+     * @param string $conversionName
      *
      * @return string|null
      */
     public function getModelMediaBase64($collection = null, string $conversionName = ''): ?string
     {
         $collection = $collection ?: static::$mediaSingleCollection;
-        if (($r = $this->getModelMedia($collection))) {
+        if(($r = $this->getModelMedia($collection))){
             $path = $r->getPath($conversionName);
             $type = pathinfo($path, PATHINFO_EXTENSION);
             $data = file_get_contents($path);
@@ -123,10 +123,10 @@ trait HasMediaTrait
     }
 
     /**
-     * @param  string  $requestKey
-     * @param  string|null  $description
-     * @param  string|null  $collection
-     * @param  array  $properties
+     * @param string $requestKey
+     * @param string|null $description
+     * @param string|null $collection
+     * @param array $properties
      *
      * @return \Spatie\MediaLibrary\MediaCollections\Models\Media
      * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist

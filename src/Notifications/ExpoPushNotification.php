@@ -40,7 +40,7 @@ class ExpoPushNotification
     protected array $data = [];
 
     /**
-     * @param  string  $title
+     * @param string $title
      *
      * @return $this
      */
@@ -53,7 +53,7 @@ class ExpoPushNotification
     /**
      * Set the content of the message.
      *
-     * @param  string  $content
+     * @param string $content
      *
      * @return $this
      */
@@ -66,7 +66,7 @@ class ExpoPushNotification
     /**
      * Set the receiver of the message.
      *
-     * @param  string|string[]  $pushToken
+     * @param string|string[] $pushToken
      *
      * @return $this
      */
@@ -109,7 +109,7 @@ class ExpoPushNotification
     }
 
     /**
-     * @param  string  $channel
+     * @param string $channel
      *
      * @return $this
      */
@@ -120,7 +120,7 @@ class ExpoPushNotification
     }
 
     /**
-     * @param  array  $data
+     * @param array $data
      *
      * @return $this
      */

@@ -46,7 +46,7 @@ trait SortTrait
     public array $orderByScopes = [];
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\Relation|mixed  $query
+     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\Relation|mixed $query
      *
      * @return mixed
      */
@@ -54,31 +54,31 @@ trait SortTrait
     {
         /** @var array|string $sortBy */
         $sortBy = $this->request->input($this->sortByRequestKey);
-        if (!is_null($sortBy) && !is_array($sortBy)) {
-            try {
+        if(!is_null($sortBy) && !is_array($sortBy)){
+            try{
                 $sortBy = ($a = json_decode($sortBy, true)) ? $a : [];
-                if (json_last_error()) {
+                if(json_last_error()){
                     $sortBy = [$this->request->input($this->sortByRequestKey)];
                 }
             }
-            catch (Exception $exception) {
+            catch(Exception $exception){
                 $sortBy = [$this->request->input($this->sortByRequestKey)];
             }
         }
 
         /** @var array|string $sortDesc */
         $sortDesc = $this->request->input($this->sortDescRequestKey);
-        if ($sortDesc == 1 || $sortDesc == 0) {
+        if($sortDesc == 1 || $sortDesc == 0){
             $sortDesc = [$sortDesc];
         }
-        if (!is_null($sortDesc) && !is_array($sortDesc)) {
-            try {
+        if(!is_null($sortDesc) && !is_array($sortDesc)){
+            try{
                 $sortDesc = ($a = json_decode($sortDesc, true)) ? $a : [];
-                if (json_last_error()) {
+                if(json_last_error()){
                     $sortDesc = [$this->request->input($this->sortDescRequestKey)];
                 }
             }
-            catch (Exception $exception) {
+            catch(Exception $exception){
                 $sortDesc = [$this->request->input($this->sortDescRequestKey)];
             }
         }
@@ -98,20 +98,20 @@ trait SortTrait
         //d($sortBy, $sortDesc);
         $model = $query->getModel();
         $table = $model->getTable();
-        if (
+        if(
             is_array($sortBy)
             && !empty($sortBy)
             && is_array($sortDesc)
             && !empty($sortDesc)
-        ) {
+        ){
             //d($sortBy, $sortDesc);
             $emptyBaseOrder = false;
 
-            foreach ($sortBy as $k => $column) {
+            foreach($sortBy as $k => $column){
                 $value = $sortDesc[$k] ?? false;
                 $direction = ((trim(strtolower($value)) === 'true' || $value === true || $value == 1) ? 'desc' : 'asc');
                 $last = ['ToString', '_to_string', '_to_yes', 'ToYes'];
-                foreach ($last as $str) {
+                foreach($last as $str){
                     $column = Str::beforeLast($column, $str);
                 }
                 $column = $this->getMapSortColumns($column);
@@ -146,7 +146,7 @@ trait SortTrait
                 //     $query->orderBy($column, $direction);
                 //     continue;
                 // }
-                if (($hasColumn || $hasScope) && !$emptyBaseOrder) {
+                if(($hasColumn || $hasScope) && !$emptyBaseOrder){
                     $emptyBaseOrder = true;
                     $query->getQuery()->orders = [];
                 }
@@ -157,19 +157,19 @@ trait SortTrait
                 //$direction = strtoupper($direction);
                 //$hasColumn && $query->orderByRaw("CONVERT(`{$column}`, UNSIGNED) {$direction}");
 
-                if ($hasColumn) {
-                    if (array_key_exists($column, $this->orderByRawColumns)) {
+                if($hasColumn){
+                    if(array_key_exists($column, $this->orderByRawColumns)){
                         $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) {$direction}");
                     }
-                    else {
+                    else{
                         $query->orderBy($column, $direction);
                     }
                 }
-                elseif ($this->hasMapSortColumns($column)) {
+                elseif($this->hasMapSortColumns($column)){
                     //d(1);
                     $query->orderBy($this->getMapSortColumns($column), $direction);
                 }
-                if ($hasScope) {
+                if($hasScope){
                     //d($scope,$direction);
                     $query = $model->{$scope}($query, $direction);
                     //d($query->getQuery()->orders);

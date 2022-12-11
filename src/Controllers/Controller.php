@@ -48,7 +48,7 @@ class Controller extends BaseController
     {
         $this->request = request();
         method_exists($this, 'iniPaginateRequest') && $this->iniPaginateRequest($this->request);
-        $this->middleware(function ($request, Closure $next) {
+        $this->middleware(function($request, Closure $next){
             $this->user = $request->user();
             return $next($request);
         });
@@ -58,14 +58,14 @@ class Controller extends BaseController
      * Send API unique response for model
      * Helper
      *
-     * @param  string|array||\App\Models\BaseModel $model
-     * @param  string|null  $message
+     * @param string|array||\App\Models\BaseModel $model
+     * @param string|null $message
      *
      * @return JsonResponse
      */
     protected function resource($model, ?string $message = ''): JsonResponse
     {
-        if (is_string($model)) {
+        if(is_string($model)){
             $message = $model;
             $model = null;
         }
@@ -79,8 +79,8 @@ class Controller extends BaseController
     /**
      * Send API Unique Response
      *
-     * @param  array  $json  response data include message
-     * @param  int  $status
+     * @param array $json response data include message
+     * @param int $status
      *
      * @return JsonResponse
      */
@@ -91,11 +91,11 @@ class Controller extends BaseController
         $json['success'] = array_key_exists('success', $json) ? $json['success'] : $status == 200;
 
         $response = response()->json($json, $status);
-        try {
+        try{
             /** For none Json Headers */
             return $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         }
-        catch (Exception $exception) {
+        catch(Exception $exception){
         }
         return $response;
     }
@@ -103,7 +103,7 @@ class Controller extends BaseController
     /**
      * Send API Unique success Message Response
      *
-     * @param  null|array|string  $data
+     * @param null|array|string $data
      *
      * @return JsonResponse
      */
@@ -115,11 +115,11 @@ class Controller extends BaseController
             "data"    => $data,
         ];
 
-        if (is_string($data)) {
+        if(is_string($data)){
             $res['message'] = $data;
             $res['data'] = null;
         }
-        if (is_array($data)) {
+        if(is_array($data)){
             $res = array_merge($res, $data);
         }
 
@@ -130,9 +130,9 @@ class Controller extends BaseController
      * Send API Unique Error Message Response
      *
      * @param $message
-     * @param  array  $errors
-     * @param  array|null  $data
-     * @param  int  $status
+     * @param array $errors
+     * @param array|null $data
+     * @param int $status
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -154,11 +154,11 @@ class Controller extends BaseController
     protected function requiredRule($model = null): ?string
     {
         $required = 'required';
-        if (app()->runningInConsole()) {
+        if(app()->runningInConsole()){
             return "required if new";
         }
         $model = $model ?? $this->getBindModel();
-        if ($this->isSingle() || $model->exists) {
+        if($this->isSingle() || $model->exists){
             return null;
             //return 'nullable';
         }
@@ -177,7 +177,7 @@ class Controller extends BaseController
      * Get data from request
      *
      * @param $keys
-     * @param  bool  $withCast
+     * @param bool $withCast
      *
      * @return array
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -185,14 +185,14 @@ class Controller extends BaseController
      */
     protected function dataGet($keys, bool $withCast = !0): array
     {
-        if (!$withCast) {
+        if(!$withCast){
             return $this->request->only($keys);
         }
         $result = [];
         $model = new static::$controllerModel;
-        foreach (is_array($keys) ? $keys : func_get_args() as $key) {
+        foreach(is_array($keys) ? $keys : func_get_args() as $key){
             $value = $this->request->input($key);
-            if (is_null($value) && $model->hasCast($key)) {
+            if(is_null($value) && $model->hasCast($key)){
                 $value = $model->{$key};
             }
             $result[$key] = $value;

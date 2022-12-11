@@ -12,9 +12,8 @@ use Illuminate\Notifications\Messages\SlackMessage;
 
 class SlackNotification extends SlackMessage
 {
-
     /**
-     * @param  string  $content
+     * @param string $content
      * @param $notifiable
      *
      * @return $this

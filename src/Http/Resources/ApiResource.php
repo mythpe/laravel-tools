@@ -14,21 +14,21 @@ use Illuminate\Support\Arr;
 class ApiResource extends JsonResource
 {
     /**
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return array
      */
     public function toArray($request)
     {
-        if (is_null($this->resource)) {
+        if(is_null($this->resource)){
             return [];
         }
 
-        if (method_exists($this, 'transformer')) {
+        if(method_exists($this, 'transformer')){
             return $this->transformer($request);
         }
 
-        if (is_array($this->resource)) {
+        if(is_array($this->resource)){
             return $this->resource;
         }
 
@@ -51,7 +51,7 @@ class ApiResource extends JsonResource
     }
 
     /**
-     * @param  array  $merge
+     * @param array $merge
      *
      * @return array
      */
@@ -62,7 +62,7 @@ class ApiResource extends JsonResource
         $id = $model->id;
         $name = $model->name;
         $fillable = $model->only($model->getFillable());
-        if (method_exists($model, 'getAppends')) {
+        if(method_exists($model, 'getAppends')){
             $appends = $model->getAppends();
             $fillable = array_merge($fillable, $model->only($appends));
         }
@@ -71,10 +71,10 @@ class ApiResource extends JsonResource
         $data = array_merge(Arr::except($fillable, $model->getHidden()), $merge);
 
         // $data = array_merge($model->toArray(), $merge);
-        if (!array_key_exists('name', $data) && array_key_exists(($k = locale_attribute()), $data)) {
+        if(!array_key_exists('name', $data) && array_key_exists(($k = locale_attribute()), $data)){
             $data['name'] = $data[$k];
         }
-        if (!array_key_exists('description', $data) && array_key_exists(($k = locale_attribute('description')), $data)) {
+        if(!array_key_exists('description', $data) && array_key_exists(($k = locale_attribute('description')), $data)){
             $data['description'] = $data[$k];
         }
         ksort($data);

@@ -28,8 +28,8 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     public $items = [];
 
     /**
-     * @param  array|\Illuminate\Support\Collection  $headers
-     * @param  array|\Illuminate\Support\Collection  $items
+     * @param array|\Illuminate\Support\Collection $headers
+     * @param array|\Illuminate\Support\Collection $items
      */
     public function __construct($headers = [], $items = [])
     {
@@ -52,14 +52,14 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     {
         $data = [];
         //d($this->headers);
-        foreach ($this->headers as $header) {
-            if (is_array($header)) {
+        foreach($this->headers as $header){
+            if(is_array($header)){
                 $value = ($header['text'] ?? ($header['label'] ?? ($header['field'] ?? ($header['name'] ?? ''))));
             }
-            else {
+            else{
                 $value = trans_has("attributes.$header") ? __("attributes.$header") : $header;
             }
-            if ($value == 'control') {
+            if($value == 'control'){
                 continue;
             }
             $data[] = $value;
@@ -67,9 +67,9 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
         //d($data);
         $data = [$data];
 
-        foreach ($this->items as $item) {
+        foreach($this->items as $item){
             $v = [];
-            foreach ($this->headers as $header) {
+            foreach($this->headers as $header){
                 //d($item);
                 $v[] = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? ($item[($header['field'] ?? '')] ?? ($item[($header['name'] ?? '')] ?? ''))) : ($item[$header] ?? ''));
             }
@@ -85,7 +85,7 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function (AfterSheet $event) {
+            AfterSheet::class => function(AfterSheet $event){
                 $event->sheet->getDelegate()->setRightToLeft(app()->getLocale() == 'ar');
             },
         ];
