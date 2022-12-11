@@ -215,7 +215,7 @@ class Controller extends BaseController
         }
         $model = $this->getBindModel();
         $value = $this->request->input($attribute, $model?->{$attribute});
-        if(!$value && $value != 0){
+        if(is_null($value)){
             return $required;
         }
         return null;
