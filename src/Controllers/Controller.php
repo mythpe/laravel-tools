@@ -199,4 +199,25 @@ class Controller extends BaseController
         }
         return $result;
     }
+
+    /**
+     * Model attribute should not empty value
+     *
+     * @param $attribute
+     *
+     * @return string|null
+     */
+    protected function attrNotEmpty($attribute): ?string
+    {
+        $required = 'required';
+        if(app()->runningInConsole()){
+            return $required;
+        }
+        $model = $this->getBindModel();
+        $value = $this->request->input($attribute, $model?->{$attribute});
+        if(!$value && $value != 0){
+            return $required;
+        }
+        return null;
+    }
 }
