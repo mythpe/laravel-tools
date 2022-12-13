@@ -189,7 +189,11 @@ trait CrudTrait
             return $r;
         }
         $with = $this->with;
+        /** @var BaseModel $model */
         $model = $query->getModel();
+        if(($uid = $this->request->input('uid')) && $query & in_array('user_id', $model->getFillable())){
+            $query->where('user_id', $uid);
+        }
         //d($this->request->all());
 
         /**
