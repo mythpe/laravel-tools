@@ -151,9 +151,12 @@ class BaseSendNotification extends Notification implements ShouldQueue
         $mail->subject($this->getTitle($notifiable));
         $content = $this->getContent($notifiable);
         $breaks = ["<br>", "<br >", "<br />", "<br/>"];
+        $s = '\n';
         $content = str_ireplace($breaks, PHP_EOL, $content);
-        $lines = explode(PHP_EOL, $content);
+        $content = str_ireplace(PHP_EOL, $s, $content);
+        $lines = explode($s, $content);
         $mail->greeting($this->greeting);
+        //d($lines);
         foreach($lines as $line){
             $mail->line($line);
         }
