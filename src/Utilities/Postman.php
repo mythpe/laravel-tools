@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Exists;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
 
 class Postman
@@ -176,7 +177,7 @@ class Postman
     }
 
     /**
-     * @param array $items
+     * @param  array  $items
      */
     public function setItems(array $items): void
     {
@@ -200,7 +201,7 @@ class Postman
     }
 
     /**
-     * @param string $fileName
+     * @param  string  $fileName
      */
     public function setFileName(string $fileName): void
     {
@@ -216,7 +217,7 @@ class Postman
     }
 
     /**
-     * @param string $urlVariableName
+     * @param  string  $urlVariableName
      */
     public function setUrlVariableName(string $urlVariableName): void
     {
@@ -232,7 +233,7 @@ class Postman
     }
 
     /**
-     * @param string $middlewareName
+     * @param  string  $middlewareName
      */
     public function setMiddlewareName(string $middlewareName): void
     {
@@ -268,7 +269,7 @@ class Postman
     }
 
     /**
-     * @param string $tokenVariableName
+     * @param  string  $tokenVariableName
      */
     public function setTokenVariableName(string $tokenVariableName): void
     {
@@ -284,7 +285,7 @@ class Postman
     }
 
     /**
-     * @param mixed|string $collectionName
+     * @param  mixed|string  $collectionName
      */
     public function setCollectionName($collectionName): void
     {
@@ -300,7 +301,7 @@ class Postman
     }
 
     /**
-     * @param string $localeVariableName
+     * @param  string  $localeVariableName
      */
     public function setLocaleVariableName(string $localeVariableName): void
     {
@@ -316,7 +317,7 @@ class Postman
     }
 
     /**
-     * @param string $locale
+     * @param  string  $locale
      */
     public function setLocale(string $locale): void
     {
@@ -332,7 +333,7 @@ class Postman
     }
 
     /**
-     * @param mixed|string $domain
+     * @param  mixed|string  $domain
      */
     public function setDomain($domain): void
     {
@@ -348,7 +349,7 @@ class Postman
     }
 
     /**
-     * @param string $localeHeaderVariableName
+     * @param  string  $localeHeaderVariableName
      */
     public function setLocaleHeaderVariableName(string $localeHeaderVariableName): void
     {
@@ -372,7 +373,7 @@ class Postman
     }
 
     /**
-     * @param string $collectionId
+     * @param  string  $collectionId
      */
     public function setCollectionId(string $collectionId): void
     {
@@ -388,7 +389,7 @@ class Postman
     }
 
     /**
-     * @param string|null $exporterId
+     * @param  string|null  $exporterId
      */
     public function setExporterId(?string $exporterId): void
     {
@@ -408,15 +409,15 @@ class Postman
         $header = $this->getHeaders();
         $domain = "{{{$this->getUrlVariableName()}}}";
 
-        foreach($routes as $route){
+        foreach ($routes as $route) {
             $action = $route->getAction();
             $middleware = $action['middleware'] ?? [];
-            if(!in_array($this->getMiddlewareName(), $middleware)){
+            if (!in_array($this->getMiddlewareName(), $middleware)) {
                 continue;
             }
             $auth = false;
-            foreach($middleware as $value){
-                if(Str::contains($value, 'auth')){
+            foreach ($middleware as $value) {
+                if (Str::contains($value, 'auth')) {
                     $auth = !0;
                     break;
                 }
@@ -435,17 +436,17 @@ class Postman
             $uri = preg_replace(['/(\{)+/', '/(\})+/'], ['{{', '}}'], $baseUri);
 
             $explodeVars = explode('/', $baseUri);
-            foreach($explodeVars as $str){
-                if(str_contains($str, '{')){
+            foreach ($explodeVars as $str) {
+                if (str_contains($str, '{')) {
                     $key = preg_replace(['/(\{)+/', '/(\})+/'], '', $str);
-                    if(!array_key_exists($key, $this->collectionVariables)){
+                    if (!array_key_exists($key, $this->collectionVariables)) {
                         $this->collectionVariables[$key] = 1;
                     }
                 }
             }
 
-            foreach($route->methods as $method){
-                if(in_array($method, ['HEAD', 'PATCH'])){
+            foreach ($route->methods as $method) {
+                if (in_array($method, ['HEAD', 'PATCH'])) {
                     continue;
                 }
                 $isGet = in_array($method, ['GET', 'HEAD']);
@@ -464,15 +465,15 @@ class Postman
                     "_{$actionName}".ucfirst(strtolower($method))."Rules",
 
                 ];
-                if($isGeneralAction){
+                if ($isGeneralAction) {
                     // # General rules.
                     $controllerRuleMethods[] = "getRules";
                 }
 
                 $controller = $route->getController();
                 $rules = [];
-                foreach($controllerRuleMethods as $requestRule){
-                    if(method_exists($controller, $requestRule)){
+                foreach ($controllerRuleMethods as $requestRule) {
+                    if (method_exists($controller, $requestRule)) {
                         $rules = $controller->{$requestRule}();
                         break;
                     }
@@ -487,24 +488,24 @@ class Postman
                     // # _{METHOD}GetExample
                     "_{$actionName}".ucfirst(strtolower($method))."Example",
                 ];
-                if($isPost){
+                if ($isPost) {
                     // # Controller example
                     $controllerExampleMethods[] = "_controllerExample";
                 }
 
                 $examples = [];
-                foreach($controllerExampleMethods as $example){
-                    if(method_exists($controller, $example)){
+                foreach ($controllerExampleMethods as $example) {
+                    if (method_exists($controller, $example)) {
                         $examples = $controller->{$example}();
-                        if($examples === !0){
+                        if ($examples === !0) {
                             $examples = $this->getControllerPaginationParams($controller);
                         }
                         break;
                     }
                 }
 
-                foreach($rules as $key => $rule){
-                    if($actionName == 'index' && $isPost){
+                foreach ($rules as $key => $rule) {
+                    if ($actionName == 'index' && $isPost) {
                         break;
                     }
                     $formRule = $this->parseFormRules($rule);
@@ -520,33 +521,33 @@ class Postman
                      * -- 'model_id' => ['array','required'] [===> model_id[0]
                      * -- 'items.*.id' => ['array','required'] [===> items[0][id]
                      */
-                    if($isArray){
-                        if(!Str::contains($formDataKey, '.')){
+                    if ($isArray) {
+                        if (!Str::contains($formDataKey, '.')) {
                             $keys = array_keys($rules);
                             $hasChild = !1;
-                            foreach($keys as $checkArray){
-                                if($hasChild){
+                            foreach ($keys as $checkArray) {
+                                if ($hasChild) {
                                     break;
                                 }
                                 $hasChild = Str::contains($checkArray, "{$key}.");
                             }
-                            if($hasChild){
+                            if ($hasChild) {
                                 continue;
                             }
-                            else{
+                            else {
                                 $formDataKey .= "[0]";
                             }
                         }
                     }
-                    if(Str::contains($formDataKey, ($s = '.*.'))){
+                    if (Str::contains($formDataKey, ($s = '.*.'))) {
                         $formDataKey = implode('[0][', explode($s, $formDataKey)).']';
                         //d($formDataKey);
                     }
-                    if(Str::endsWith($formDataKey, ($s = '.*'))){
+                    if (Str::endsWith($formDataKey, ($s = '.*'))) {
                         $formDataKey = Str::before($formDataKey, $s).'[0]';
                     }
                     $value = $this->findExample($formDataKey, $examples);
-                    if($isFile){
+                    if ($isFile) {
                         $type = "file";
                         $value = "";
                     }
@@ -558,16 +559,16 @@ class Postman
                         //'disabled'    => !$this->isExample($key, $examples),
                         'disabled'    => !$this->findExample($formDataKey, $examples),
                     ];
-                    if($isPost){
+                    if ($isPost) {
                         $formData[] = $methodData;
                     }
-                    else{
-                        if(!$isGeneralAction){
+                    else {
+                        if (!$isGeneralAction) {
                             $query[] = $methodData;
                         }
                     }
 
-                    if(!$isArray && $isConfirmed){
+                    if (!$isArray && $isConfirmed) {
                         $attr = "{$formDataKey}_confirmation";
                         $k = "attributes.{$attr}";
                         $def = ucwords($attr);
@@ -586,9 +587,9 @@ class Postman
 
                 $bodyMode = $this->getBodyMode();
 
-                if($isPut){
+                if ($isPut) {
                     $method = 'POST';
-                    if(!array_key_exists('_method', $formData)){
+                    if (!array_key_exists('_method', $formData)) {
                         $formData = array_merge([
                             [
                                 'key'         => '_method',
@@ -604,15 +605,15 @@ class Postman
                     'mode'    => $bodyMode,
                     $bodyMode => $formData,
                 ];
-                if($isGet || ($isPost && $actionName == 'index')){
+                if ($isGet || ($isPost && $actionName == 'index')) {
                     $queryExamples = $this->findQueryExamples($examples);
-                    if(!empty($queryExamples)){
-                        foreach($query as $queryKey => $v){
+                    if (!empty($queryExamples)) {
+                        foreach ($query as $queryKey => $v) {
                             $k = $v['key'] ?? null;
-                            if($k){
-                                foreach($queryExamples as $_exampleKey => $_example){
+                            if ($k) {
+                                foreach ($queryExamples as $_exampleKey => $_example) {
                                     $exampleKey = $_example['key'] ?? null;
-                                    if($exampleKey && $k == $exampleKey){
+                                    if ($exampleKey && $k == $exampleKey) {
                                         $query[$queryKey]['value'] = $_example['value'] ?? $query[$queryKey]['value'];
                                         unset($queryExamples[$_exampleKey]);
                                     }
@@ -622,11 +623,11 @@ class Postman
                         $queryExamples = array_values($queryExamples);
                     }
                     $query = array_merge($query, $queryExamples);
-                    if(in_array($actionName, ['index', 'allIndex']) && $isGet){
+                    if (in_array($actionName, ['index', 'allIndex']) && $isGet) {
                         $query = array_merge($query, $this->getControllerParams($route->getController()));
                     }
 
-                    if(in_array($actionName, ['indexActiveOnly']) || $isPost){
+                    if (in_array($actionName, ['indexActiveOnly']) || $isPost) {
                         $query = array_merge($query, $this->getControllerPaginationParams($route->getController()));
                     }
                 }
@@ -634,44 +635,44 @@ class Postman
                 $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
                 $itemName = $requestName;
                 $itemArName = $actionName;
-                if(in_array($actionName, ['index', 'allIndex', 'indexActiveOnly'])){
+                if (in_array($actionName, ['index', 'allIndex', 'indexActiveOnly'])) {
                     $itemArName = 'index';
                     $itemName = 'Index';
                 }
-                if(strtolower($itemName) == 'index'){
+                if (strtolower($itemName) == 'index') {
                     $itemName = 'List';
                 }
 
-                if(trans_has(($r = static::ITEMS_KEY.'.'.$controller::class.'.'.$actionName), 'ar')){
+                if (trans_has(($r = static::ITEMS_KEY.'.'.$controller::class.'.'.$actionName), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
                 }
-                elseif(trans_has(($r = "replace.$itemArName"), 'ar')){
+                elseif (trans_has(($r = "replace.$itemArName"), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
                 }
-                elseif(trans_has(($r = "global.$itemArName"), 'ar')){
+                elseif (trans_has(($r = "global.$itemArName"), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '']));
                 }
 
                 $requestDescriptionMethod = "_{$actionName}Description";
                 $requestDescription = '';
-                if(method_exists($controller, $requestDescriptionMethod)){
+                if (method_exists($controller, $requestDescriptionMethod)) {
                     $requestDescription = $controller->{$requestDescriptionMethod}();
                 }
-                if(trans_has($k = static::DESCRIPTIONS_KEY.".".$controller::class.".$actionName")){
+                if (trans_has($k = static::DESCRIPTIONS_KEY.".".$controller::class.".$actionName")) {
                     $requestDescription = __($k, [
                         'controller' => $controllerName,
                         'method'     => $actionName,
                     ]);
                 }
-                if(!$requestDescription && $isGeneralAction){
-                    try{
+                if (!$requestDescription && $isGeneralAction) {
+                    try {
                         $name = $controllerName;
-                        if(trans_has($k = "choice.$choiceName")){
+                        if (trans_has($k = "choice.$choiceName")) {
                             $name = trans_choice($k, 2);
                         }
                         $requestDescription = __("replace.$actionName", ['name' => $name]);
                     }
-                    catch(Exception $exception){
+                    catch (Exception $exception) {
                         //d($actionName, $choiceName);
                     }
                 }
@@ -688,7 +689,7 @@ class Postman
                     'url'         => $url,
                     'description' => $requestDescription,
                 ];
-                if($auth){
+                if ($auth) {
                     $_request['auth'] = $this->getAuth();
                 }
 
@@ -698,7 +699,7 @@ class Postman
                     'response' => [],
                     'event'    => [],
                 ];
-                if(in_array($actionName, $this->getScriptActions())){
+                if (in_array($actionName, $this->getScriptActions())) {
                     $item['event'][] = [
                         'listen' => 'test',
                         'script' => [
@@ -715,11 +716,11 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 }
                 $folderName = trans_choice("choice.$choiceName", 2, [], 'en').' - '.trans_choice("choice.$choiceName", 2, [], 'ar');
                 $folderDescription = '';
-                if(trans_has($k = static::FOLDER_KEY.".".$controller::class)){
+                if (trans_has($k = static::FOLDER_KEY.".".$controller::class)) {
                     $folderDescription .= __($k, ['controller' => $controllerName]);
                 }
-                if($auth){
-                    if(!array_key_exists($folderName, $authCollection)){
+                if ($auth) {
+                    if (!array_key_exists($folderName, $authCollection)) {
                         $authCollection[$folderName] = [
                             'name'        => $folderName,
                             'description' => $folderDescription,
@@ -728,8 +729,8 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                     }
                     $authCollection[$folderName]['item'][] = $item;
                 }
-                else{
-                    if(!array_key_exists($folderName, $gustCollection)){
+                else {
+                    if (!array_key_exists($folderName, $gustCollection)) {
                         $gustCollection[$folderName] = [
                             'name'        => $folderName,
                             'description' => $folderDescription,
@@ -778,11 +779,11 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             'description' => $this->getDescription(),
             'schema'      => "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         ];
-        if($this->getCollectionId()){
+        if ($this->getCollectionId()) {
             $info['_postman_id'] = $this->getCollectionId();
         }
 
-        if($this->getExporterId()){
+        if ($this->getExporterId()) {
             $info['_exporter_id'] = $this->getExporterId();
         }
 
@@ -811,7 +812,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             // ],
         ];
 
-        foreach($this->collectionVariables as $key => $value){
+        foreach ($this->collectionVariables as $key => $value) {
             $vars[] = [
                 'key'   => $key,
                 'value' => $value,
@@ -835,7 +836,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 "type"  => "text",
             ],
         ];
-        if($this->getLocaleHeaderVariableName()){
+        if ($this->getLocaleHeaderVariableName()) {
             $headers[] = [
                 "key"   => $this->getLocaleHeaderVariableName(),
                 "value" => "{{{$this->getLocaleVariableName()}}}",
@@ -864,33 +865,37 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
 
     /**
      * @param $rules
+     * @param  bool  $array
      *
-     * @return string
+     * @return array|string
      */
-    public function parseFormRules($rules): string
+    public function parseFormRules($rules, bool $array = !1): array|string
     {
-        if(!is_array($rules)){
+        if (!is_array($rules)) {
             $rules = explode(',', $rules);
         }
         $rules = array_filter($rules);
-        foreach($rules as $k => $rule){
-            if($rule instanceof Unique){
+        foreach ($rules as $k => $rule) {
+            if ($rule instanceof Unique) {
                 $rules[$k] = "unique";
                 continue;
             }
-            if($rule instanceof Exists){
+            if ($rule instanceof Exists || $rule instanceof Password) {
                 $rules[$k] = null;
             }
+        }
+        if ($array) {
+            return array_filter($rules);
         }
         //d($rules);
         return implode(', ', array_filter($rules));
     }
 
     /**
-     * @param array $examples
-     * @param string $key
-     * @param string|null $attribute
-     * @param array $rule
+     * @param  array  $examples
+     * @param  string  $key
+     * @param  string|null  $attribute
+     * @param  array  $rule
      *
      * @return string
      */
@@ -898,12 +903,12 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     {
         $en = null;
         $ar = null;
-        $rule = array_unique($rule);
+        $rule = $this->parseFormRules($rule, !0);
         $formRule = $this->parseFormRules($rule);
         //$str = $this->findExampleDescription($key, $examples);
         $str = "";
         //d($examples);
-        if(!is_null($attribute)){
+        if (!is_null($attribute)) {
             $attribute = Str::before($attribute, '.');
             $k = "attributes.{$attribute}";
             $def = ucwords($attribute);
@@ -911,13 +916,13 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             $en = trans_has($k, 'en') ? __($k, [], 'en') : $def;
         }
 
-        if(!is_null($en)){
+        if (!is_null($en)) {
             $str = trim("{$en} - ").trim($str);
         }
 
         $str = trim($str)." [{$formRule}] ";
         //d($str);
-        if(!is_null($ar) && $ar != $en){
+        if (!is_null($ar) && $ar != $en) {
             $str = trim($str)." - {$ar}";
         }
         return (string) $str;
@@ -925,20 +930,20 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
 
     /**
      * @param $key
-     * @param array $examples
+     * @param  array  $examples
      *
      * @return string
      */
     public function findExample($key, array $examples): string
     {
         $str = '';
-        if(array_key_exists($key, $examples)){
+        if (array_key_exists($key, $examples)) {
             $v = $examples[$key];
             $str = is_array($v) ? ($v['value'] ?? '') : $v;
         }
-        else{
-            foreach($examples as $example){
-                if($key == ($example['key'] ?? null)){
+        else {
+            foreach ($examples as $example) {
+                if ($key == ($example['key'] ?? null)) {
                     $str = ($example['value'] ?? '');
                     break;
                 }
@@ -949,18 +954,18 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
 
     /**
      * @param $key
-     * @param array $examples
+     * @param  array  $examples
      *
      * @return bool
      */
     public function isExample($key, array $examples): bool
     {
-        if(array_key_exists($key, $examples)){
+        if (array_key_exists($key, $examples)) {
             return !0;
         }
-        else{
-            foreach($examples as $example){
-                if($key == ($example['key'] ?? null)){
+        else {
+            foreach ($examples as $example) {
+                if ($key == ($example['key'] ?? null)) {
                     return !0;
                 }
             }
@@ -969,14 +974,14 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     }
 
     /**
-     * @param array $examples
+     * @param  array  $examples
      *
      * @return array
      */
     public function findQueryExamples(array $examples): array
     {
         $query = [];
-        foreach($examples as $k => $example){
+        foreach ($examples as $k => $example) {
             $ex = [
                 'key'         => is_array($example) ? $example['key'] : $k,
                 'value'       => is_array($example) ? $example['value'] : $example,
@@ -991,7 +996,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     /**
      * Postman query params
      *
-     * @param \App\Http\Controllers\Controller $controller
+     * @param  \App\Http\Controllers\Controller  $controller
      *
      * @return array
      */
@@ -1053,7 +1058,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     /**
      * Postman query params
      *
-     * @param \App\Http\Controllers\Controller $controller
+     * @param  \App\Http\Controllers\Controller  $controller
      *
      * @return array
      */
@@ -1150,20 +1155,20 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
 
     /**
      * @param $key
-     * @param array $examples
+     * @param  array  $examples
      *
      * @return string
      */
     public function findExampleDescription($key, array $examples): string
     {
         $str = '';
-        if(array_key_exists($key, $examples)){
+        if (array_key_exists($key, $examples)) {
             $v = $examples[$key];
             $str = is_array($v) ? ($v['description'] ?? '') : $v;
         }
-        else{
-            foreach($examples as $example){
-                if($key == ($example['key'] ?? null)){
+        else {
+            foreach ($examples as $example) {
+                if ($key == ($example['key'] ?? null)) {
                     $str = ($example['description'] ?? '');
                     break;
                 }
@@ -1180,7 +1185,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     public function getDescription(): string
     {
         $description = '';
-        if(trans_has(static::DESCRIPTION_KEY)){
+        if (trans_has(static::DESCRIPTION_KEY)) {
             $description .= (string) (__(static::DESCRIPTION_KEY, [
                 'name' => config('.app.name'),
                 'year' => now()->format("Y"),
