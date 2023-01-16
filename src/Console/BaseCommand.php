@@ -24,26 +24,23 @@ class BaseCommand extends Command
 {
     use ProgressBarTrait, CommandColors;
 
+    public bool $debug = false;
     /**
      * @var bool
      */
     protected bool $truncate = true;
-
     /**
      * @var bool
      */
     protected bool $echo = true;
-
     /**
      * @var Collection
      */
     protected Collection $collection;
-
     /**
      * @var array
      */
     protected array $tables = [];
-
     /**
      * @var string
      */
@@ -60,7 +57,7 @@ class BaseCommand extends Command
 
     /**
      * @param $directory
-     * @param bool $file
+     * @param  bool  $file
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -73,8 +70,8 @@ class BaseCommand extends Command
 
         asort($files);
         //d($files);
-        foreach($files as $file){
-            if(!Str::endsWith($file, '.json')){
+        foreach ($files as $file) {
+            if (!Str::endsWith($file, '.json')) {
                 continue;
             }
             //if($file != 'utilities/countries.json'){
@@ -85,20 +82,20 @@ class BaseCommand extends Command
             $table = strtolower(Str::snake(Str::plural(pathinfo($file, PATHINFO_FILENAME))));
             $this->truncate($table);
             //d($data);
-            foreach($data as $v){
+            foreach ($data as $v) {
                 $this->insert($v, $table);
             }
         }
     }
 
     /**
-     * @param array $data
+     * @param  array  $data
      *
      * @return \Illuminate\Support\Collection
      */
     protected function iniCollection(array $data = []): Collection
     {
-        if(!$this->collection instanceof Collection){
+        if (!$this->collection instanceof Collection) {
             $this->collection = Collection::make($data);
         }
         return $this->collection;
@@ -117,34 +114,34 @@ class BaseCommand extends Command
      */
     protected function truncate($table)
     {
-        if(!$this->truncate){
+        if (!$this->truncate) {
             return;
         }
         $originalTable = $table;
-        if($this->isTruncated($table)){
+        if ($this->isTruncated($table)) {
             return;
         }
 
-        if(!Schema::hasTable($table)){
+        if (!Schema::hasTable($table)) {
             $found = false;
-            foreach(['snake', 'camel', 'kebab'] as $method){
+            foreach (['snake', 'camel', 'kebab'] as $method) {
                 $table = Str::{$method}(Str::plural($table));
-                if(Schema::hasTable($table)){
+                if (Schema::hasTable($table)) {
                     $this->doTruncate($table);
                     $found = true;
                     break;
                 }
             }
-            if(!$found){
-                if(Schema::hasTable(($t = 'c_'.Str::snake(Str::plural($originalTable))))){
+            if (!$found) {
+                if (Schema::hasTable(($t = 'c_'.Str::snake(Str::plural($originalTable))))) {
                     $this->doTruncate($t);
                 }
-                else{
+                else {
                     $this->components->error("Table: {$originalTable}. not found");
                 }
             }
         }
-        else{
+        else {
             $this->doTruncate($table);
         }
     }
@@ -164,10 +161,10 @@ class BaseCommand extends Command
      */
     protected function doTruncate($table)
     {
-        if($this->isTruncated($table)){
+        if ($this->isTruncated($table)) {
             return;
         }
-        $this->components->info("truncated : {$table}");
+        !$this->debug && $this->components->info("truncated : {$table}");
         $this->tables[] = $table;
         DB::table($table)->truncate();
     }
@@ -175,7 +172,7 @@ class BaseCommand extends Command
     /**
      * @param $data
      * @param $table
-     * @param null $model
+     * @param  null  $model
      */
     protected function insert($data, $table, $model = null)
     {
@@ -186,17 +183,17 @@ class BaseCommand extends Command
         unset($data['data']);
         //d($data);
 
-        if(is_null($model)){
+        if (is_null($model)) {
             $namespaces = ['\\App\\Models', '\\App\\Models\\Utilities'];
             $directories = Storage::disk('app')->directories('Models');
-            foreach($directories as $directory){
+            foreach ($directories as $directory) {
                 $namespaces[] = '\\App\\'.str_ireplace('/', '\\', $directory);
             }
             $class = ucfirst(Str::camel(Str::singular($table)));
             $model = null;
-            foreach($namespaces as $namespace){
+            foreach ($namespaces as $namespace) {
                 $c = "{$namespace}\\{$class}";
-                if(class_exists($c)){
+                if (class_exists($c)) {
                     $model = $c;
                     break;
                 }
@@ -207,12 +204,12 @@ class BaseCommand extends Command
             $model->save();
             $this->pushData($model);
         }
-        else{
+        else {
             $relationType = $model->{$table}();
-            if(
+            if (
                 !$relationType instanceof HasMany
                 // !$relationType instanceof BelongsToMany
-            ){
+            ) {
                 d(get_class($model->{$table}()));
             }
             // d($insert,$model,$model->getFillable());
@@ -220,16 +217,16 @@ class BaseCommand extends Command
             $model = $model->{$table}()->create($insert);
             $this->pushData($model);
         }
-        $this->echo(class_basename($model)." Inserted: {$model->id}");
+        !$this->debug && $this->echo(class_basename($model)." Inserted: {$model->id}");
 
-        if($hasRelations && count($data) > 0){
+        if ($hasRelations && count($data) > 0) {
             //d($data);
-            foreach($data as $relation => $row){
-                if(Str::startsWith($relation, '_')){
+            foreach ($data as $relation => $row) {
+                if (Str::startsWith($relation, '_')) {
                     continue;
                 }
                 $this->truncate($relation);
-                foreach($row as $child){
+                foreach ($row as $child) {
                     $this->insert($child, $relation, $model);
                 }
             }
@@ -245,7 +242,7 @@ class BaseCommand extends Command
     {
         $key = is_object($model) ? get_class($model) : $model;
         $this->iniCollection();
-        if(!$this->collection->has($key)){
+        if (!$this->collection->has($key)) {
             $this->collection->put($key, Collection::make());
         }
         /** @var Collection $data */
@@ -256,21 +253,21 @@ class BaseCommand extends Command
     }
 
     /**
-     * @param string $text
-     * @param string $method
+     * @param  string  $text
+     * @param  string  $method
      */
     protected function echo(string $text = '', string $method = 'line')
     {
-        if(app()->runningInConsole()){
-            if(!method_exists($this, $method)){
+        if (app()->runningInConsole()) {
+            if (!method_exists($this, $method)) {
                 $this->l($text, $method);
             }
-            else{
+            else {
                 $this->{$method}($text);
             }
         }
-        else{
-            if(!$this->echo){
+        else {
+            if (!$this->echo) {
                 return;
             }
             echo "{$text}<BR>";
