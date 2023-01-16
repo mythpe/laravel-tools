@@ -24,7 +24,8 @@ class BaseCommand extends Command
 {
     use ProgressBarTrait, CommandColors;
 
-    public bool $debug = false;
+    static bool $debug = !1;
+
     /**
      * @var bool
      */
@@ -164,7 +165,7 @@ class BaseCommand extends Command
         if ($this->isTruncated($table)) {
             return;
         }
-        !$this->debug && $this->components->info("truncated : {$table}");
+        static::$debug && $this->components->info("truncated : {$table}");
         $this->tables[] = $table;
         DB::table($table)->truncate();
     }
@@ -217,7 +218,7 @@ class BaseCommand extends Command
             $model = $model->{$table}()->create($insert);
             $this->pushData($model);
         }
-        !$this->debug && $this->echo(class_basename($model)." Inserted: {$model->id}");
+        static::$debug && $this->echo(class_basename($model)." Inserted: {$model->id}");
 
         if ($hasRelations && count($data) > 0) {
             //d($data);
