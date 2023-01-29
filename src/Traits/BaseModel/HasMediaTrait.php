@@ -50,8 +50,7 @@ trait HasMediaTrait
         $this->addMediaConversion('thumb')
             ->performOnCollections(static::$mediaSingleCollection)
             ->width(static::$thumbWidth)
-            ->height(static::$thumbHeight)
-            ->sharpen(100);
+            ->height(static::$thumbHeight);
     }
 
     /**
