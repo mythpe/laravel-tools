@@ -211,7 +211,7 @@ class BaseCommand extends Command
                 !$relationType instanceof HasMany
                 // !$relationType instanceof BelongsToMany
             ) {
-                d(get_class($model->{$table}()));
+                //d(get_class($model->{$table}()));
             }
             // d($insert,$model,$model->getFillable());
             // $insert = Arr::only($insert, $model->getFillable());
