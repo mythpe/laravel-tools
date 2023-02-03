@@ -20,37 +20,54 @@ trait HasMediaTrait
      * @var string
      */
     public static string $mediaSingleCollection = 'default';
-
+    /**
+     * @var string
+     */
+    public static string $mediaAttachmentsCollection = 'attachments';
+    /**
+     * Auto Responsive Images of media single collection
+     *
+     * @var bool
+     */
+    public bool $mediaSingleCollectionUsingResponsiveImages = !1;
+    /**
+     * Disabled auto media thumbnail
+     *
+     * @var bool
+     */
+    public bool $singleMediaUsingThumb = !1;
+    /**
+     * Name of media conversion to be used
+     *
+     * @var string
+     */
+    public string $singleMediaThumbName = 'thumb';
     /**
      * media single collection tuhmb width
      *
      * @var int
      */
-    public static int $thumbWidth = 250;
-
+    public int $singleMediaThumbWidth = 250;
     /**
      * media single collection tuhmb height
      *
      * @var int
      */
-    public static int $thumbHeight = 250;
-
-    /**
-     * @var string
-     */
-    public static string $mediaAttachmentsCollection = 'attachments';
+    public int $singleMediaThumbHeight = 250;
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection(static::$mediaSingleCollection)->singleFile();
+        $this->addMediaCollection(static::$mediaSingleCollection)->withResponsiveImagesIf($this->mediaSingleCollectionUsingResponsiveImages)->singleFile();
     }
 
     public function registerMediaConversions(Media $media = null): void
     {
-        $this->addMediaConversion('thumb')
-            ->performOnCollections(static::$mediaSingleCollection)
-            ->width(static::$thumbWidth)
-            ->height(static::$thumbHeight);
+        if ($this->singleMediaUsingThumb) {
+            $this->addMediaConversion($this->singleMediaThumbName)
+                ->performOnCollections(static::$mediaSingleCollection)
+                ->width($this->singleMediaThumbWidth)
+                ->height($this->singleMediaThumbHeight);
+        }
     }
 
     /**
