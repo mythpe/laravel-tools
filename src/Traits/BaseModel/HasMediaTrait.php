@@ -8,6 +8,7 @@
 
 namespace Myth\LaravelTools\Traits\BaseModel;
 
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -120,9 +121,27 @@ trait HasMediaTrait
      *
      * @return string|null
      */
-    public function getModelThumbUrl($collection = null, string $conversionName = 'thumb'): ?string
+    public function getModelThumbUrl($collection = null, string|null $conversionName = null): ?string
     {
-        return $this->getModelMediaUrl($collection, $conversionName);
+        if ($this->singleMediaUsingThumb) {
+            $conversionName ??= $this->singleMediaThumbName;
+            return $this->getModelMediaUrl($collection, $conversionName);
+        }
+        return null;
+    }
+
+    public function getModelResponsiveUrls(string|null $collection = null): array
+    {
+        $srcset = [];
+        if ($this->singleMediaUsingResponsiveImages) {
+            $collection ??= static::$mediaSingleCollection;
+            $firstMedia = $this->getFirstMedia($collection);
+            foreach ($firstMedia->getResponsiveImageUrls() as $url) {
+                $a = explode('_', Str::beforeLast($url, '.'));
+                $srcset[] = $url." {$a[count($a) - 2]}w";
+            }
+        }
+        return $srcset;
     }
 
     /**
