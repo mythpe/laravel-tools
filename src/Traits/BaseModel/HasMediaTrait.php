@@ -130,6 +130,13 @@ trait HasMediaTrait
         return null;
     }
 
+    /**
+     * Get Responsive images of collection as array
+     *
+     * @param  string|null  $collection
+     *
+     * @return array
+     */
     public function getModelResponsiveUrls(string|null $collection = null): array
     {
         $srcset = [];
