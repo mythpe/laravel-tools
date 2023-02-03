@@ -124,7 +124,7 @@ trait HasMediaTrait
     public function getModelThumbUrl($collection = null, string|null $conversionName = null): ?string
     {
         if ($this->singleMediaUsingThumb) {
-            $conversionName ??= $this->singleMediaThumbName;
+            $conversionName = $conversionName ?: $this->singleMediaThumbName;
             return $this->getModelMediaUrl($collection, $conversionName);
         }
         return null;
@@ -141,7 +141,7 @@ trait HasMediaTrait
     {
         $srcset = [];
         if ($this->singleMediaUsingResponsiveImages) {
-            $collection ??= static::$mediaSingleCollection;
+            $collection = $collection ?: static::$mediaSingleCollection;
             $firstMedia = $this->getFirstMedia($collection);
             foreach ($firstMedia->getResponsiveImageUrls() as $url) {
                 $a = explode('_', Str::beforeLast($url, '.'));
