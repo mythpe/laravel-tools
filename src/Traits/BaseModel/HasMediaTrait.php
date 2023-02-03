@@ -29,7 +29,7 @@ trait HasMediaTrait
      *
      * @var bool
      */
-    public bool $mediaSingleCollectionUsingResponsiveImages = !1;
+    public bool $singleMediaUsingResponsiveImages = !1;
     /**
      * Disabled auto media thumbnail
      *
@@ -57,7 +57,7 @@ trait HasMediaTrait
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection(static::$mediaSingleCollection)->withResponsiveImagesIf($this->mediaSingleCollectionUsingResponsiveImages)->singleFile();
+        $this->addMediaCollection(static::$mediaSingleCollection)->withResponsiveImagesIf($this->singleMediaUsingResponsiveImages)->singleFile();
     }
 
     public function registerMediaConversions(Media $media = null): void
