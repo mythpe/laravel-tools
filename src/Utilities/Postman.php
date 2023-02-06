@@ -12,9 +12,6 @@ use Exception;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Exists;
-use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\Rules\Unique;
 
 class Postman
 {
@@ -509,10 +506,12 @@ class Postman
                         break;
                     }
                     $formRule = $this->parseFormRules($rule);
-                    $isConfirmed = Str::contains($formRule, 'confirmed');
-                    $isArray = Str::contains($formRule, 'array');
-                    $isFile = Str::contains($formRule, ['file', 'image']);
-                    $description = $this->getFullExampleDescription($examples, $key, $key, $rule);
+                    $isRequired = Str::contains(strtolower($formRule), 'required');
+                    $isConfirmed = Str::contains(strtolower($formRule), 'confirmed');
+                    $isArray = Str::contains(strtolower($formRule), 'array');
+                    $isFile = Str::contains(strtolower($formRule), ['file', 'image', 'imagefile']);
+                    $description = $this->getFullDescription($examples, $key, $key, $rule);
+                    //d($examples);
                     //d($description);
                     $formDataKey = $key;
                     $type = 'text';
@@ -557,7 +556,8 @@ class Postman
                         'description' => $description,
                         'type'        => $type,
                         //'disabled'    => !$this->isExample($key, $examples),
-                        'disabled'    => !$this->findExample($formDataKey, $examples),
+                        'disabled'    => !$this->findExample($formDataKey, $examples) && !$isRequired,
+                        //'disabled'    => !1,
                     ];
                     if ($isPost) {
                         $formData[] = $methodData;
@@ -876,12 +876,15 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
         }
         $rules = array_filter($rules);
         foreach ($rules as $k => $rule) {
-            if ($rule instanceof Unique) {
+            if ($rule instanceof \Illuminate\Validation\Rules\Unique) {
                 $rules[$k] = "unique";
                 continue;
             }
-            if ($rule instanceof Exists || $rule instanceof Password) {
+            elseif ($rule instanceof \Illuminate\Validation\Rules\Exists || $rule instanceof \Illuminate\Validation\Rules\Password) {
                 $rules[$k] = null;
+            }
+            elseif ($rule instanceof \Illuminate\Contracts\Validation\Rule) {
+                $rules[$k] = class_basename($rule);
             }
         }
         if ($array) {
@@ -899,19 +902,25 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
      *
      * @return string
      */
-    public function getFullExampleDescription(array $examples, string $key, string $attribute = null, array $rule = []): string
+    public function getFullDescription(array $examples, string $key, string $attribute = null, array $rule = []): string
     {
         $en = null;
         $ar = null;
         $rule = $this->parseFormRules($rule, !0);
         $formRule = $this->parseFormRules($rule);
         //$str = $this->findExampleDescription($key, $examples);
+        //dd($key,$attribute);
         $str = "";
-        //d($examples);
         if (!is_null($attribute)) {
-            $attribute = Str::before($attribute, '.');
-            $k = "attributes.{$attribute}";
-            $def = ucwords($attribute);
+            $attr = $attribute;
+            if (Str::contains($attr, '*.') && (trans_has("attributes.{$attr}", 'ar') || trans_has("attributes.{$attr}", 'en'))) {
+                $attr = Str::afterLast($attribute, '.');
+            }
+            else {
+                $attr = Str::before($attribute, '.');
+            }
+            $k = "attributes.{$attr}";
+            $def = ucwords($attr);
             $ar = trans_has($k, 'ar') ? __($k, [], 'ar') : $def;
             $en = trans_has($k, 'en') ? __($k, [], 'en') : $def;
         }
