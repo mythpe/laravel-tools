@@ -929,11 +929,13 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             $str = trim("{$en} - ").trim($str);
         }
 
-        $str = trim($str)." [{$formRule}] ";
-        //d($str);
+        //$str = trim($str)." [{$formRule}] ";
+        $str = trim($str);
         if (!is_null($ar) && $ar != $en) {
-            $str = trim($str)." - {$ar}";
+            //$str = trim($str)." - {$ar}";
+            $str = trim("$ar - ".trim($str));
         }
+        $str = trim($str)." [{$formRule}] ";
         return (string) $str;
     }
 
