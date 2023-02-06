@@ -37,6 +37,9 @@ interface Statusable
     const CONFIRMED_STATUS = 'confirmed';
 
     /** @var string */
+    const DRAFT_STATUS = 'draft';
+
+    /** @var string */
     const FINISHED_STATUS = 'finished';
 
     /** @var string */
@@ -50,6 +53,9 @@ interface Statusable
 
     /** @var string */
     const PENDING_STATUS = 'pending';
+
+    /** @var string */
+    const PROCESSING_STATUS = 'processing';
 
     /** @var string */
     const REJECTED_STATUS = 'rejected';

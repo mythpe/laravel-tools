@@ -28,6 +28,7 @@ trait HasStatusAttribute
             'value' => $id,
             'key'   => $id,
             'text'  => $text,
+            'label' => $text,
             'name'  => $text,
         ])->sortBy('name')->values();
     }
@@ -46,11 +47,13 @@ trait HasStatusAttribute
             'canceled',
             'completed',
             'confirmed',
+            'draft',
             'finished',
             'inactive',
             'new',
             'paid',
             'pending',
+            'processing',
             'rejected',
             'unconfirmed',
             'unpaid',
@@ -70,7 +73,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -80,7 +83,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -90,7 +93,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -109,7 +112,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -119,7 +122,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -129,7 +132,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -148,7 +151,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -158,7 +161,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -168,7 +171,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -187,7 +190,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -197,7 +200,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -207,7 +210,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -226,7 +229,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -236,7 +239,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -246,7 +249,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -265,7 +268,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -275,7 +278,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -285,7 +288,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -304,7 +307,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -314,7 +317,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -324,7 +327,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -343,7 +346,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -353,7 +356,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -363,7 +366,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -382,7 +385,46 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDraftOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::DRAFT_STATUS);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeNotDraftOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::DRAFT_STATUS);
+    }
+
+    /**
+     * @param  bool  $save
+     *
+     * @return void
+     */
+    public function setDraft(bool $save = !0): void
+    {
+        $this->status = static::DRAFT_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDraft(): bool
+    {
+        return $this->status == static::DRAFT_STATUS;
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -392,7 +434,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -402,7 +444,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -421,7 +463,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -431,7 +473,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -441,7 +483,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -460,7 +502,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -470,7 +512,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -480,7 +522,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -499,7 +541,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -509,7 +551,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -519,7 +561,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -538,7 +580,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -548,7 +590,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -558,7 +600,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -577,7 +619,46 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeProcessingOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PROCESSING_STATUS);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeNotProcessingOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PROCESSING_STATUS);
+    }
+
+    /**
+     * @param  bool  $save
+     *
+     * @return void
+     */
+    public function setProcessing(bool $save = !0): void
+    {
+        $this->status = static::PROCESSING_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProcessing(): bool
+    {
+        return $this->status == static::PROCESSING_STATUS;
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -587,7 +668,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -597,7 +678,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -616,7 +697,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -626,7 +707,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -636,7 +717,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -655,7 +736,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -665,7 +746,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -675,7 +756,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
@@ -694,7 +775,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -704,7 +785,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -714,7 +795,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param bool $save
+     * @param  bool  $save
      *
      * @return void
      */
