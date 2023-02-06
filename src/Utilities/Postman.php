@@ -507,6 +507,9 @@ class Postman
                     }
                     $formRule = $this->parseFormRules($rule);
                     $isRequired = Str::contains(strtolower($formRule), 'required');
+                    $isMobile = Str::contains(strtolower($formRule), 'mobile');
+                    $isNumeric = Str::contains(strtolower($formRule), ['int', 'integer', 'double', 'float', 'numeric']);
+                    $isEmail = Str::contains(strtolower($formRule), 'email');
                     $isConfirmed = Str::contains(strtolower($formRule), 'confirmed');
                     $isArray = Str::contains(strtolower($formRule), 'array');
                     $isFile = Str::contains(strtolower($formRule), ['file', 'image', 'imagefile']);
@@ -550,9 +553,24 @@ class Postman
                         $type = "file";
                         $value = "";
                     }
+                    elseif (!$value) {
+                        if ($isMobile) {
+                            $numerify = config('4myth-tools.postman.fake_mobile') ?: '05########';
+                            $value = fake()->numerify($numerify);
+                        }
+                        elseif ($isEmail) {
+                            $value = fake()->companyEmail();
+                        }
+                        elseif (Str::contains($key, ['name', '_name'])) {
+                            $value = fake()->name;
+                        }
+                        elseif (Str::endsWith($key, '_id') || $isNumeric) {
+                            $value = "1";
+                        }
+                    }
                     $methodData = [
                         'key'         => $formDataKey,
-                        'value'       => !$value && $isRequired ? "1" : $value,
+                        'value'       => $value,
                         'description' => $description,
                         'type'        => $type,
                         //'disabled'    => !$this->isExample($key, $examples),

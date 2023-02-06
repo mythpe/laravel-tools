@@ -1,38 +1,45 @@
 {
-    "name": "4myth/laravel-tools",
-    "description": "Tools of laravel framework",
-    "version": "1.0.0",
-    "type": "library",
-    "require": {
-        "php": ">=8.0",
-        "laravel/framework": ">=8.0",
-        "geniusts/hijri-dates": ">=1.0",
-        "akaunting/laravel-setting": ">=1.0"
+  "name" : "4myth/laravel-tools",
+  "description" : "Tools of laravel framework",
+  "version" : "1.0.0",
+  "type" : "library",
+  "require" : {
+    "php" : ">=8.1",
+    "laravel/framework" : ">=8.0",
+    "geniusts/hijri-dates" : ">=1.0",
+    "akaunting/laravel-setting" : ">=1.0"
+  },
+  "require-dev" : {
+    "barryvdh/laravel-ide-helper" : "^2.12",
+    "fakerphp/faker" : "^1.9.1",
+    "laravel/pint" : "^1.0",
+    "laravel/sail" : "^1.0.1",
+    "mockery/mockery" : "^1.4.4",
+    "nunomaduro/collision" : "^6.1",
+    "phpunit/phpunit" : "^9.5.10",
+    "spatie/laravel-ignition" : "^1.0"
+  },
+  "license" : "MIT",
+  "autoload" : {
+    "psr-4" : {
+      "Myth\\LaravelTools\\" : "src/"
     },
-    "require-dev": {
-        "barryvdh/laravel-ide-helper": ">=2.0"
-    },
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Myth\\LaravelTools\\": "src/"
-        },
-        "files": [
-            "src/Utilities/Functions.php"
-        ]
-    },
-    "authors": [
-        {
-            "name": "MyTh",
-            "email": "mythpe@gmail.com"
-        }
-    ],
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Myth\\LaravelTools\\Providers\\ServiceProvider"
-            ]
-        }
-    },
-    "minimum-stability": "dev"
+    "files" : [
+      "src/Utilities/Functions.php"
+    ]
+  },
+  "authors" : [
+    {
+      "name" : "MyTh",
+      "email" : "mythpe@gmail.com"
+    }
+  ],
+  "extra" : {
+    "laravel" : {
+      "providers" : [
+        "Myth\\LaravelTools\\Providers\\ServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability" : "dev"
 }

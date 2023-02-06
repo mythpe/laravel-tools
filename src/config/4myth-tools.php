@@ -145,6 +145,7 @@ return [
         'locale_variable_name'        => 'locale',
         'token_variable_name'         => 'token',
         'url_variable_name'           => 'url',
+        'fake_mobile'                 => '05########',
     ],
 
     'auth_guard' => null,
