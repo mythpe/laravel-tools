@@ -545,7 +545,7 @@ class Postman
                     if (Str::endsWith($formDataKey, ($s = '.*'))) {
                         $formDataKey = Str::before($formDataKey, $s).'[0]';
                     }
-                    $value = $this->findExample($formDataKey, $examples);
+                    $value = $this->findExample($formDataKey, $examples) ?: "1";
                     if ($isFile) {
                         $type = "file";
                         $value = "";
