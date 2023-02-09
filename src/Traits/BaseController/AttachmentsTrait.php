@@ -56,7 +56,7 @@ trait AttachmentsTrait
         if($media->model->is($model)){
             $media->delete();
         }
-        return $this->resource($this->getModelAttachmentsMedia($model), __("messages.uploaded_success"));
+        return $this->resource($this->getModelAttachmentsMedia($model), __("messages.deleted_success"));
     }
 
     public function getModelAttachmentsMedia(&$model)
