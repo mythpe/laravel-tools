@@ -14,7 +14,7 @@ use Illuminate\Http\JsonResponse;
 trait AttachmentsTrait
 {
     /**
-     * @param \Myth\LaravelTools\Models\BaseModel|\Illuminate\Database\Eloquent\Builder $model
+     * @param  \Myth\LaravelTools\Models\BaseModel|\Illuminate\Database\Eloquent\Builder  $model
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -26,10 +26,10 @@ trait AttachmentsTrait
         $description = trans_has(($c = "attributes.$attachmentType")) ? $c : $attachmentType;
         //$collection = $model::$mediaAttachmentsCollection;
         $collection = request('collection', $model::$mediaAttachmentsCollection);
-        try{
+        try {
             $model->addAttachment('attachment', $description, $collection, ['user_id' => auth(config('4myth-tools.auth_guard'))->id()]);
         }
-        catch(Exception $exception){
+        catch (Exception $exception) {
         }
         return $this->resource($this->getModelAttachmentsMedia($model), __("messages.uploaded_success"));
     }
@@ -46,14 +46,14 @@ trait AttachmentsTrait
     }
 
     /**
-     * @param \Myth\LaravelTools\Models\BaseModel|\Illuminate\Database\Eloquent\Builder $model
-     * @param \Myth\LaravelTools\Models\BaseModel $media
+     * @param  \Myth\LaravelTools\Models\BaseModel|\Illuminate\Database\Eloquent\Builder  $model
+     * @param  \Myth\LaravelTools\Models\BaseModel  $media
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function deleteAttachment($model, $media): JsonResponse
     {
-        if($media->model->is($model)){
+        if ($media->model->is($model)) {
             $media->delete();
         }
         return $this->resource($this->getModelAttachmentsMedia($model), __("messages.deleted_success"));
@@ -64,6 +64,6 @@ trait AttachmentsTrait
         $model->refresh();
         $collection = request('collection', $model::$mediaAttachmentsCollection);
         $resource = config('4myth-tools.media_resource_class');
-        return $resource::collection($model->getMedia($collection)->sortDesc());
+        return $resource::collection($model->getMedia($collection));
     }
 }
