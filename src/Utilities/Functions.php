@@ -318,6 +318,12 @@ if (!function_exists('date_by_locale')) {
         try {
             $str = $date;
             $str = str_ireplace([
+                "seconds",
+                "Seconds",
+                "second",
+                "Second",
+            ], 'sec', $str);
+            $str = str_ireplace([
                 "minutes",
                 "Minutes",
                 "minute",
@@ -339,6 +345,11 @@ if (!function_exists('date_by_locale')) {
                 "دقيقة",
                 "دقائق",
             ], 'د', $str);
+            $str = str_ireplace([
+                "ثانية",
+                "ثوان",
+                "ثواني",
+            ], 'ث', $str);
             return $str;
         }
         catch (Exception $exception) {
