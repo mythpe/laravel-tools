@@ -345,11 +345,11 @@ if (!function_exists('date_by_locale')) {
                 "دقيقة",
                 "دقائق",
             ], 'د', $str);
-            $str = str_ireplace([
-                "ثانية",
-                "ثوان",
-                "ثواني",
-            ], 'ث', $str);
+            //$str = str_ireplace([
+            //    "ثانية",
+            //    //"ثواني",
+            //    //"ثوان",
+            //], 'ث', $str);
             return $str;
         }
         catch (Exception $exception) {
