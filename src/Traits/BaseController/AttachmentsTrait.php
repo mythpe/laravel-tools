@@ -24,10 +24,13 @@ trait AttachmentsTrait
         $request->validate($this->_uploadAttachmentsRules());
         $attachmentType = $request->input('attachment_type', '');
         $description = trans_has(($c = "attributes.$attachmentType")) ? $c : $attachmentType;
-        //$collection = $model::$mediaAttachmentsCollection;
         $collection = request('collection', $model::$mediaAttachmentsCollection);
         try {
-            $model->addAttachment('attachment', $description, $collection, ['user_id' => auth(config('4myth-tools.auth_guard'))->id()]);
+            $media = $model->addAttachment('attachment', $description, $collection, ['user_id' => auth(config('4myth-tools.auth_guard'))->id()]);
+            if ($request->input('return') == 'current') {
+                $resource = config('4myth-tools.media_resource_class');
+                return $this->resource($resource::make($media));
+            }
         }
         catch (Exception $exception) {
         }
