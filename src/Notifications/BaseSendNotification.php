@@ -154,8 +154,10 @@ class BaseSendNotification extends Notification implements ShouldQueue
         $content = str_ireplace($breaks, PHP_EOL, $content);
         $content = str_ireplace(PHP_EOL, $s, $content);
         $lines = explode($s, $content);
-        $greeting = is_array($this->greeting) ? __(...$this->greeting) : (trans_has($this->greeting) ? __($this->greeting) : $this->greeting);
-        $mail->greeting($greeting);
+        if ($this->greeting) {
+            $greeting = is_array($this->greeting) ? __(...$this->greeting) : (trans_has($this->greeting) ? __($this->greeting) : $this->greeting);
+            $mail->greeting($greeting);
+        }
         //d($lines);
         foreach ($lines as $line) {
             $mail->line($line);
