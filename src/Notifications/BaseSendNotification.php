@@ -38,14 +38,14 @@ class BaseSendNotification extends Notification implements ShouldQueue
      *
      * @var string
      */
-    protected string $content = '';
+    protected string|array|null $content = '';
 
     /**
      * The notification title
      *
      * @var string
      */
-    protected string $title = '';
+    protected string|array|null $title = '';
 
     /**
      * The channel of push notification
@@ -125,17 +125,17 @@ class BaseSendNotification extends Notification implements ShouldQueue
      */
     public function getContent($notifiable): string
     {
-        return trans_has($this->content) ? __($this->content) : $this->content;
+        return (is_array($this->content) ? __(...$this->content) : (trans_has($this->content) ? __($this->content) : $this->content)) ?: '';
     }
 
     /**
-     * @param  string  $content
+     * @param  string|array|null  $content
      *
      * @return $this
      */
-    public function setContent(string $content): self
+    public function setContent(string|array|null $content): self
     {
-        $this->content = $content;
+        $this->content = $content ?: '';
         return $this;
     }
 
@@ -172,15 +172,18 @@ class BaseSendNotification extends Notification implements ShouldQueue
      */
     public function getTitle($notifiable): string
     {
-        return trans_has($this->title) ? __($this->title) : $this->title;
+        return (is_array($this->title) ? __(...$this->title) : (trans_has($this->title) ? __($this->title) : $this->title)) ?: '';
     }
 
     /**
-     * @param  string  $title
+     * @param  string|array|null  $title
+     *
+     * @return $this
      */
-    public function setTitle(string $title): void
+    public function setTitle(string|array|null $title): self
     {
-        $this->title = $title;
+        $this->title = $title ?: '';
+        return $this;
     }
 
     /**
