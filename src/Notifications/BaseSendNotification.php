@@ -317,7 +317,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     /**
      * Set the greeting of the notification.
      *
-     * @param  string  $greeting
+     * @param  string|array  $greeting
      *
      * @return $this
      */
