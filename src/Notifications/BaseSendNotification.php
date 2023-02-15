@@ -63,7 +63,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
 
     public function __construct(array $via = [])
     {
-        if(empty($via) && method_exists(config('4myth-tools.setting_class'), 'getNotificationMethods')){
+        if (empty($via) && method_exists(config('4myth-tools.setting_class'), 'getNotificationMethods')) {
             $via = config('4myth-tools.setting_class')::getNotificationMethods();
         }
         $this->via = array_unique($via);
@@ -80,13 +80,13 @@ class BaseSendNotification extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      *
      * @return array
      */
     public function via($notifiable): array
     {
-        if($notifiable instanceof AnonymousNotifiable){
+        if ($notifiable instanceof AnonymousNotifiable) {
             return array_keys($notifiable->routes);
         }
         //return ['sms'];
@@ -97,14 +97,13 @@ class BaseSendNotification extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      *
      * @return array
      */
     public function getVia($notifiable): array
     {
-        $via = $this->via;
-        return array_unique($via);
+        return collect($this->via)->unique()->filter()->values()->toArray();
     }
 
     /**
@@ -126,11 +125,11 @@ class BaseSendNotification extends Notification implements ShouldQueue
      */
     public function getContent($notifiable): string
     {
-        return $this->content;
+        return trans_has($this->content) ? __($this->content) : $this->content;
     }
 
     /**
-     * @param string $content
+     * @param  string  $content
      *
      * @return $this
      */
@@ -155,9 +154,9 @@ class BaseSendNotification extends Notification implements ShouldQueue
         $content = str_ireplace($breaks, PHP_EOL, $content);
         $content = str_ireplace(PHP_EOL, $s, $content);
         $lines = explode($s, $content);
-        $mail->greeting($this->greeting);
+        $mail->greeting(trans_has($this->greeting) ? __($this->greeting) : $this->greeting);
         //d($lines);
-        foreach($lines as $line){
+        foreach ($lines as $line) {
             $mail->line($line);
         }
         return $mail;
@@ -172,11 +171,11 @@ class BaseSendNotification extends Notification implements ShouldQueue
      */
     public function getTitle($notifiable): string
     {
-        return $this->title;
+        return trans_has($this->title) ? __($this->title) : $this->title;
     }
 
     /**
-     * @param string $title
+     * @param  string  $title
      */
     public function setTitle(string $title): void
     {
@@ -202,11 +201,11 @@ class BaseSendNotification extends Notification implements ShouldQueue
      */
     public function getMobile($notifiable)
     {
-        if($notifiable instanceof AnonymousNotifiable){
+        if ($notifiable instanceof AnonymousNotifiable) {
             return $notifiable->routeNotificationFor('sms');
         }
-        if($notifiable instanceof Model){
-            if(method_exists($notifiable, 'getNotificationMobile')){
+        if ($notifiable instanceof Model) {
+            if (method_exists($notifiable, 'getNotificationMobile')) {
                 return $notifiable->getNotificationMobile($this);
             }
             return $notifiable->mobile;
@@ -230,7 +229,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param array $data
+     * @param  array  $data
      *
      * @return $this
      */
@@ -249,11 +248,11 @@ class BaseSendNotification extends Notification implements ShouldQueue
      */
     public function getPushToken($notifiable)
     {
-        if($notifiable instanceof AnonymousNotifiable){
+        if ($notifiable instanceof AnonymousNotifiable) {
             return $notifiable->routeNotificationFor('push_token');
         }
-        if($notifiable instanceof Model){
-            if(method_exists($notifiable, 'getNotificationPushToken')){
+        if ($notifiable instanceof Model) {
+            if (method_exists($notifiable, 'getNotificationPushToken')) {
                 return $notifiable->getNotificationPushToken($this);
             }
             return $notifiable->push_token;
@@ -272,7 +271,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param string $pushTokenChannel
+     * @param  string  $pushTokenChannel
      */
     public function setPushTokenChannel(string $pushTokenChannel): void
     {
@@ -317,7 +316,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     /**
      * Set the greeting of the notification.
      *
-     * @param string $greeting
+     * @param  string  $greeting
      *
      * @return $this
      */
