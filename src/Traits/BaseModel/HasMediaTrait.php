@@ -123,7 +123,7 @@ trait HasMediaTrait
      */
     public function getModelThumbUrl($collection = null, string|null $conversionName = null): ?string
     {
-        return $this->getModelMediaUrl($collection, $conversionName);
+        return $this->getModelMediaUrl($collection, $conversionName ?: '');
         if ($this->singleMediaUsingThumb) {
             $conversionName = $conversionName ?: $this->singleMediaThumbName;
             return $this->getModelMediaUrl($collection, $conversionName);
