@@ -10,14 +10,12 @@ namespace Myth\LaravelTools\Traits\BaseModel;
 
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait HasMediaTrait
 {
-    //use InteractsWithMedia;
-    use Manipulations;
+    use InteractsWithMedia;
 
     /**
      * @var string
@@ -65,12 +63,12 @@ trait HasMediaTrait
 
     public function registerMediaConversions(Media $media = null): void
     {
-        //if ($this->singleMediaUsingThumb) {
-        $this->addMediaConversion($this->singleMediaThumbName)
-            ->performOnCollections(static::$mediaSingleCollection)
-            ->width($this->singleMediaThumbWidth)
-            ->height($this->singleMediaThumbHeight);
-        //}
+        if ($this->singleMediaUsingThumb) {
+            $this->addMediaConversion($this->singleMediaThumbName)
+                ->performOnCollections(static::$mediaSingleCollection)
+                ->width($this->singleMediaThumbWidth)
+                ->height($this->singleMediaThumbHeight);
+        }
     }
 
     /**
