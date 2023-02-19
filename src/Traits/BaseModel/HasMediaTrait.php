@@ -63,12 +63,12 @@ trait HasMediaTrait
 
     public function registerMediaConversions(Media $media = null): void
     {
-        if ($this->singleMediaUsingThumb) {
-            $this->addMediaConversion($this->singleMediaThumbName)
-                ->performOnCollections(static::$mediaSingleCollection)
-                ->width($this->singleMediaThumbWidth)
-                ->height($this->singleMediaThumbHeight);
-        }
+        //if ($this->singleMediaUsingThumb) {
+        $this->addMediaConversion($this->singleMediaThumbName)
+            ->performOnCollections(static::$mediaSingleCollection)
+            ->width($this->singleMediaThumbWidth)
+            ->height($this->singleMediaThumbHeight);
+        //}
     }
 
     /**
