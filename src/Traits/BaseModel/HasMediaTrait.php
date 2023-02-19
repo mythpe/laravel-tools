@@ -10,12 +10,14 @@ namespace Myth\LaravelTools\Traits\BaseModel;
 
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait HasMediaTrait
 {
-    use InteractsWithMedia;
+    //use InteractsWithMedia;
+    use Manipulations;
 
     /**
      * @var string
