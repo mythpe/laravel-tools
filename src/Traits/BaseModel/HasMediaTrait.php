@@ -61,15 +61,15 @@ trait HasMediaTrait
         $this->addMediaCollection(static::$mediaSingleCollection)->withResponsiveImagesIf($this->singleMediaUsingResponsiveImages)->singleFile();
     }
 
-    public function registerMediaConversions(Media $media = null): void
-    {
-        if ($this->singleMediaUsingThumb) {
-            $this->addMediaConversion($this->singleMediaThumbName)
-                ->performOnCollections(static::$mediaSingleCollection)
-                ->width($this->singleMediaThumbWidth)
-                ->height($this->singleMediaThumbHeight);
-        }
-    }
+    //public function registerMediaConversions(Media $media = null): void
+    //{
+    //    if ($this->singleMediaUsingThumb) {
+    //        $this->addMediaConversion($this->singleMediaThumbName)
+    //            ->performOnCollections(static::$mediaSingleCollection)
+    //            ->width($this->singleMediaThumbWidth)
+    //            ->height($this->singleMediaThumbHeight);
+    //    }
+    //}
 
     /**
      * @param  array|string[]|string|UploadedFile  $files
@@ -123,6 +123,7 @@ trait HasMediaTrait
      */
     public function getModelThumbUrl($collection = null, string|null $conversionName = null): ?string
     {
+        return $this->getModelMediaUrl($collection, $conversionName);
         if ($this->singleMediaUsingThumb) {
             $conversionName = $conversionName ?: $this->singleMediaThumbName;
             return $this->getModelMediaUrl($collection, $conversionName);
