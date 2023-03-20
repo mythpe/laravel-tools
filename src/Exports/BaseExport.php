@@ -71,7 +71,8 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
             $v = [];
             foreach($this->headers as $header){
                 //d($item);
-                $v[] = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? ($item[($header['field'] ?? '')] ?? ($item[($header['name'] ?? '')] ?? ''))) : ($item[$header] ?? ''));
+                $r = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? ($item[($header['field'] ?? '')] ?? ($item[($header['name'] ?? '')] ?? ''))) : ($item[$header] ?? ''));
+                $v[] = $r instanceof \Illuminate\Http\Resources\MissingValue ? null : $r;
             }
             $data[] = $v;
         }
