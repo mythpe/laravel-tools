@@ -21,6 +21,9 @@ use Myth\LaravelTools\Traits\BaseModel\HasMediaTrait;
 use Myth\LaravelTools\Traits\BaseModel\SlugModelTrait;
 use Spatie\MediaLibrary\HasMedia;
 
+/**
+ *
+ */
 class BaseModel extends Authenticatable implements HasMedia
 {
     use HasFactory;
@@ -28,6 +31,15 @@ class BaseModel extends Authenticatable implements HasMedia
     use HasMediaTrait;
     use SlugModelTrait;
 
+    /**
+     * @var bool
+     */
+    public $registerMediaConversionsUsingModelInstance = true;
+
+
+    /**
+     * @param  array  $attributes
+     */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);

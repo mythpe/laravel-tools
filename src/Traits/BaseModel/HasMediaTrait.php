@@ -44,13 +44,13 @@ trait HasMediaTrait
      */
     public string $singleMediaThumbName = 'thumb';
     /**
-     * media single collection tuhmb width
+     * media single collection thumb width
      *
      * @var int
      */
     public int $singleMediaThumbWidth = 250;
     /**
-     * media single collection tuhmb height
+     * media single collection thumb height
      *
      * @var int
      */
@@ -61,15 +61,18 @@ trait HasMediaTrait
         $this->addMediaCollection(static::$mediaSingleCollection)->withResponsiveImagesIf($this->singleMediaUsingResponsiveImages)->singleFile();
     }
 
-    //public function registerMediaConversions(Media $media = null): void
-    //{
-    //    if ($this->singleMediaUsingThumb) {
-    //        $this->addMediaConversion($this->singleMediaThumbName)
-    //            ->performOnCollections(static::$mediaSingleCollection)
-    //            ->width($this->singleMediaThumbWidth)
-    //            ->height($this->singleMediaThumbHeight);
-    //    }
-    //}
+    /**
+     * @throws \Spatie\Image\Exceptions\InvalidManipulation
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        if ($this->singleMediaUsingThumb) {
+            $this->addMediaConversion($this->singleMediaThumbName)
+                ->performOnCollections($this->getSingleMediaThumbPerformOnCollections())
+                ->width($this->singleMediaThumbWidth)
+                ->height($this->singleMediaThumbHeight);
+        }
+    }
 
     /**
      * @param  array|string[]|string|UploadedFile  $files
@@ -123,12 +126,11 @@ trait HasMediaTrait
      */
     public function getModelThumbUrl($collection = null, string|null $conversionName = null): ?string
     {
-        return $this->getModelMediaUrl($collection, $conversionName ?: '');
         if ($this->singleMediaUsingThumb) {
             $conversionName = $conversionName ?: $this->singleMediaThumbName;
             return $this->getModelMediaUrl($collection, $conversionName);
         }
-        return null;
+        return $this->getModelMediaUrl($collection, $conversionName ?: '');
     }
 
     /**
@@ -214,5 +216,15 @@ trait HasMediaTrait
         $collection = $collection ?: static::$mediaAttachmentsCollection;
         $customProperties = array_merge(['description' => $description, 'user_id' => ($properties['user_id'] ?? null)], $properties);
         return $this->addMediaFromRequest($requestKey)->withCustomProperties($customProperties)->toMediaCollection($collection);
+    }
+
+    /**
+     * Name of collection to register with performOnCollections
+     *
+     * @return string
+     */
+    public function getSingleMediaThumbPerformOnCollections(): string
+    {
+        return static::$mediaSingleCollection;
     }
 }
