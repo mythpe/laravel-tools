@@ -42,7 +42,7 @@ trait SearchTrait
     /**
      * @var string
      */
-    public string $headersRequestKey = 'headerItems';
+    public string $headersRequestKey = 'searchColumns';
 
     /**
      * @var string
@@ -63,16 +63,18 @@ trait SearchTrait
         }
         $model = $builder->getModel();
         $this->searchTable = $model->getTable();
+        $nameAttribute = 'name';
         if (!$this->customSearchColumns) {
-            //d($words, $model);
+            // d($words, $model);
+            // d(1,$this->request->input($this->headersRequestKey));
             if (($headers = $this->request->input($this->headersRequestKey)) && is_array($headers) && !empty($headers)) {
                 // d($headers);
                 foreach ($headers as $header) {
                     $insertNameColumns = !1;
                     if (is_array($header)) {
-                        $column = ($header['value'] ?? ($header['field'] ?? ($header['name'] ?? null)));
-                        if ($column == 'name' && !$model->isFillable($column) && $model->isFillable(locale_attribute("name"))) {
-                            $column = locale_attribute("name");
+                        $column = ($header['value'] ?? ($header['name'] ?? ($header['field'] ??  ($header['label'] ?? null))));
+                        if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
+                            $column = locale_attribute($nameAttribute);
                             $insertNameColumns = !0;
                         }
                         foreach (['_to_string', 'ToString', '_to_yes', 'ToYes', '_to_number_format', 'toNumberFormat'] as $c) {
@@ -84,21 +86,26 @@ trait SearchTrait
                     }
                     else {
                         $column = $header;
+                        if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
+                            $insertNameColumns = !0;
+                        }
                     }
-                    // d($column,$this->searchTable);
+                    // d($nameAttribute,$column,$insertNameColumns);
+                    if($insertNameColumns && ($locales = config('4myth-tools.locales'))){
+                        foreach ($locales as $l){
+                            $newCol = "{$nameAttribute}_{$l}";
+                            // d($newCol);
+                            if($newCol == $column){
+                                continue;
+                            }
+                            if(Schema::hasColumn($this->searchTable, $newCol)){
+                                $this->mergeSearchColumns($newCol);
+                            }
+                        }
+
+                    }
                     if ($column && Schema::hasColumn($this->searchTable, $column)) {
                         $this->mergeSearchColumns($column);
-                        /*if($insertNameColumns && ($locales = config('4myth-tools.locales'))){
-                            foreach ($locales as $l){
-                                if($l == $column){
-                                    continue;
-                                }
-                                if(Schema::hasColumn($this->searchTable, $l)){
-                                    $this->mergeSearchColumns($column);
-                                }
-                            }
-
-                        }*/
                     }
                 }
             }
