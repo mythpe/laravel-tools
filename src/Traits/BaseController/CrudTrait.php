@@ -128,8 +128,7 @@ trait CrudTrait
      */
     public function indexActiveOnly()
     {
-        $def = !0;
-        $this->isIndexActiveOnly = $this->request->input($this->excludeActiveIndexKey, $def) ? !1 : $def;
+        $this->isIndexActiveOnly = !0;
         return $this->allIndex(...func_get_args());
     }
 

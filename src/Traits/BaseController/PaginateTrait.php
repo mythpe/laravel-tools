@@ -57,13 +57,6 @@ trait PaginateTrait
     public string $itemsPerPageKey = 'itemsPerPage';
 
     /**
-     * request key name of exclude active
-     *
-     * @var string
-     */
-    public string $excludeActiveIndexKey = 'exclude';
-
-    /**
      * @param mixed|Builder|Model $query
      * @param mixed|string|ApiResource|null $transformer
      * @param mixed|string|null $excelClass
