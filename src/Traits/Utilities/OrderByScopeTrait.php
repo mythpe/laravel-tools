@@ -13,10 +13,12 @@ use Myth\LaravelTools\Scopes\OrderByScope;
 
 trait OrderByScopeTrait
 {
-    public static function bootOrderByScopeTrait()
+    public static function bootOrderByScopeTrait(): void
     {
         $columns = static::getScopeOrderByColumns();
-        static::addGlobalScope(OrderByScope::make($columns, static::scopeOrderByDirection()));
+        if (!in_array(request()->input('fdt'), ['i', 'e', 's', 'u', 'd'])) {
+            self::addGlobalScope(OrderByScope::make($columns, self::scopeOrderByDirection()));
+        }
     }
 
     /**
