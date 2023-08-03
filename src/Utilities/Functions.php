@@ -10,21 +10,23 @@ use GeniusTS\HijriDate\Date;
 use GeniusTS\HijriDate\Hijri;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\PendingResourceRegistration;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route as Router;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 if (!function_exists('to_number_format')) {
     /**
-     * @param  float|int|string  $number
-     * @param  int  $decimals
-     * @param  string|null  $currency
-     * @param  string  $thousands_sep
-     * @param  string  $dec_point
+     * @param float|int|string $number
+     * @param int $decimals
+     * @param string|null $currency
+     * @param string $thousands_sep
+     * @param string $dec_point
      *
      * @return string
      */
-    function to_number_format(float|int|string $number, int $decimals = 2, ?string $currency = null, string $thousands_sep = ',', string $dec_point = '.'): string
+    function to_number_format(float | int | string $number, int $decimals = 2, ?string $currency = null, string $thousands_sep = ',', string $dec_point = '.'): string
     {
         $v = number_format((float) $number, $decimals, $dec_point, $thousands_sep);
         return $v.($currency ? " $currency" : '');
@@ -35,12 +37,12 @@ if (!function_exists('ends_with')) {
     /**
      * Determine if a given string ends with a given substring.
      *
-     * @param  string  $haystack
-     * @param  array|string  $needles
+     * @param string $haystack
+     * @param array|string $needles
      *
      * @return bool
      */
-    function ends_with(string $haystack, array|string $needles): bool
+    function ends_with(string $haystack, array | string $needles): bool
     {
         return Str::endsWith($haystack, $needles);
     }
@@ -50,12 +52,12 @@ if (!function_exists('starts_with')) {
     /**
      * Determine if a given string starts with a given substring.
      *
-     * @param  string  $haystack
-     * @param  array|string  $needles
+     * @param string $haystack
+     * @param array|string $needles
      *
      * @return bool
      */
-    function starts_with(string $haystack, array|string $needles): bool
+    function starts_with(string $haystack, array | string $needles): bool
     {
         return Str::startsWith($haystack, $needles);
     }
@@ -63,7 +65,7 @@ if (!function_exists('starts_with')) {
 
 if (!function_exists('d')) {
     /**
-     * @param  mixed  ...$args
+     * @param mixed ...$args
      *
      * @deprecated move to dd laravel helper
      */
@@ -92,8 +94,8 @@ if (!function_exists('locale_attribute')) {
     /**
      * Get attribute by locale
      *
-     * @param  string  $attribute
-     * @param  string|null  $locale
+     * @param string $attribute
+     * @param string|null $locale
      *
      * @return string
      * @uses app()->getLocale()
@@ -109,7 +111,7 @@ if (!function_exists('str_replace_en_ar')) {
     /**
      * Replace string for AR & EN
      *
-     * @param  string|null  $string  $string
+     * @param string|null $string $string
      *
      * @return string
      */
@@ -123,7 +125,7 @@ if (!function_exists('str_replace_name_ar')) {
     /**
      * Replace string for AR Name
      *
-     * @param  string|null  $string  $string
+     * @param string|null $string $string
      *
      * @return string
      */
@@ -140,7 +142,7 @@ if (!function_exists('str_replace_name_en')) {
     /**
      * Replace string for EN Name
      *
-     * @param  string|null  $string  $string
+     * @param string|null $string $string
      *
      * @return string
      */
@@ -156,8 +158,8 @@ if (!function_exists('date_by_locale')) {
     /**
      * Convert date By locale
      *
-     * @param  string|null  $date
-     * @param  null  $toLocale
+     * @param string|null $date
+     * @param null $toLocale
      *
      * @return string
      */
@@ -373,9 +375,9 @@ if (!function_exists('trans_has')) {
     /**
      * Determine if a translation exists.
      *
-     * @param  string  $key
-     * @param  string|null  $locale
-     * @param  bool  $fallback
+     * @param string $key
+     * @param string|null $locale
+     * @param bool $fallback
      *
      * @return bool
      */
@@ -389,9 +391,9 @@ if (!function_exists('hijri')) {
     /**
      * helper convert to hijri
      *
-     * @param  mixed|string  $date
+     * @param mixed|string $date
      *
-     * @return \GeniusTS\HijriDate\Date
+     * @return Date
      */
     function hijri($date = ''): Date
     {
@@ -411,8 +413,7 @@ if (!function_exists('hijri')) {
                 $day = strpos("$date", "$year") === 0 && isset($ex[2]) ? $ex[2] : 1;
 
                 $date = Hijri::convertToGregorian($day, $month, $year);
-            }
-            else {
+            } else {
                 $date = $temp;
             }
         }
@@ -424,11 +425,11 @@ if (!function_exists('hijri')) {
 if (!function_exists('arabic_date')) {
     /**
      * @param $string
-     * @param  bool|string|null  $append
+     * @param bool|string|null $append
      *
      * @return string
      */
-    function arabic_date($string, bool|string $append = null): string
+    function arabic_date($string, bool | string $append = null): string
     {
         $ar = [
             '/',
@@ -481,7 +482,7 @@ if (!function_exists('appName')) {
     /**
      * Setting app name
      *
-     * @param  string|null  $locale
+     * @param string|null $locale
      *
      * @return string
      */
@@ -513,7 +514,7 @@ if (!function_exists('decodeId')) {
      *
      * @return bool|string
      */
-    function decodeId($encode): bool|string
+    function decodeId($encode): bool | string
     {
         $first = md5("MyTh");
         $last = md5("Ahmed");
@@ -527,12 +528,12 @@ if (!function_exists('downloadMedia')) {
     /**
      * Get Route url for media library
      *
-     * @param  \Spatie\MediaLibrary\MediaCollections\Models\Media|\Illuminate\Database\Eloquent\Model|string|int  $media
-     * @param  string  $routeName
+     * @param Media|Model|string|int $media
+     * @param string $routeName
      *
      * @return string|null
      * @uses route
-     * @uses \Illuminate\Database\Eloquent\Model
+     * @uses Model
      * @uses \Spatie\MediaLibrary\MediaCollections\Models\Media
      */
     function downloadMedia($media, string $routeName = 'Static.downloadMedia'): ?string
@@ -546,7 +547,7 @@ if (!function_exists('front_end_url')) {
     /**
      *  Front end url helper
      *
-     * @param  string|null  $prefix
+     * @param string|null $prefix
      *
      * @return string
      */
@@ -565,13 +566,13 @@ if (!function_exists('getPermissionRoutes')) {
     /**
      * Get list of auth-routes has permission
      *
-     * @param  false  $asCode
+     * @param false $asCode
      *
      * @return array
      */
     function getPermissionRoutes(bool $asCode = false): array
     {
-        /** @var \Illuminate\Routing\Route[] $routes */
+        /** @var Route[] $routes */
         $routes = Router::getRoutes();
         $auth = [];
         $codes = [];
@@ -616,14 +617,14 @@ if (!function_exists('apiResource')) {
     /**
      * Helper to make application auth-routes
      *
-     * @param  string  $name
-     * @param  string|string[]  $controller
-     * @param  \Closure|null  $group
-     * @param  array  $routeOptions
+     * @param string $name
+     * @param string|string[] $controller
+     * @param Closure|null $group
+     * @param array $routeOptions
      *
-     * @return \Illuminate\Routing\PendingResourceRegistration
+     * @return PendingResourceRegistration
      */
-    function apiResource(string $name, array|string $controller, Closure $group = null, array $routeOptions = []): PendingResourceRegistration
+    function apiResource(string $name, array | string $controller, Closure $group = null, array $routeOptions = []): PendingResourceRegistration
     {
         Router::group(['as' => "$name.", 'prefix' => $name], function ($router) use ($name, $controller, $group) {
             if (is_callable($group)) {
@@ -640,7 +641,7 @@ if (!function_exists('isKsaMobile')) {
     /**
      * Verify the mobile number if it is a valid Saudi mobile number
      *
-     * @param  string|int  $mobile
+     * @param string|int $mobile
      *
      * @return bool
      */
@@ -656,7 +657,7 @@ if (!function_exists('isKsaMobile')) {
 
 if (!function_exists('mythAllowHeaders')) {
     /**
-     * @param  int  $code
+     * @param int $code
      *
      * @return never
      */
@@ -688,13 +689,13 @@ if (!function_exists('fixString')) {
      * trim & translate string
      *
      * @param $string
-     * @param  string|null  $translate  translate string target
-     * @param  bool  $ucwords  use PHP functions ucwords
-     * @param  array|null  $replace  array to use in str_ireplace
+     * @param string|null $translate translate string target
+     * @param bool $ucwords use PHP functions ucwords
+     * @param array|null $replace array to use in str_ireplace
      *
      * @return string $string
      */
-    function fixString($string, string|null $translate = null, $ucwords = !0, array|null $replace = null): string
+    function fixString($string, string | null $translate = null, $ucwords = !0, array | null $replace = null): string
     {
         $string = str_replace_en_ar($string);
         is_array($replace) && ($string = trim(str_ireplace($replace[0], $replace[1], $string)));

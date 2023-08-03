@@ -22,7 +22,7 @@ trait HasDescriptionAttribute
      */
     public function getDescriptionAttribute($value): mixed
     {
-        if($value){
+        if ($value) {
             return $value;
         }
         return (string) $this->{locale_attribute('description')};

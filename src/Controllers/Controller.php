@@ -8,12 +8,15 @@
 
 namespace Myth\LaravelTools\Controllers;
 
+use App\Models\User;
 use Closure;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Myth\LaravelTools\Traits\BaseController\AttachmentsTrait;
 use Myth\LaravelTools\Traits\BaseController\CrudTrait;
@@ -23,6 +26,8 @@ use Myth\LaravelTools\Traits\BaseController\PaginateTrait;
 use Myth\LaravelTools\Traits\BaseController\RulesTrait;
 use Myth\LaravelTools\Traits\BaseController\SearchTrait;
 use Myth\LaravelTools\Traits\BaseController\SortTrait;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class Controller extends BaseController
 {
@@ -35,10 +40,10 @@ class Controller extends BaseController
      */
     const RELATIONS = [];
 
-    /** @var \Illuminate\Database\Eloquent\Model|null|\App\Models\User */
+    /** @var Model|null|User */
     public $user;
 
-    /** @var mixed|\Illuminate\Http\Request|string|array|null */
+    /** @var mixed|Request|string|array|null */
     protected $request;
 
     /**
@@ -134,7 +139,7 @@ class Controller extends BaseController
      * @param array|null $data
      * @param int $status
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     protected function errorResponse($message, array $errors = [], ?array $data = null, int $status = 422): JsonResponse
     {
@@ -180,8 +185,8 @@ class Controller extends BaseController
      * @param bool $withCast
      *
      * @return array
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function dataGet($keys, bool $withCast = !0): array
     {

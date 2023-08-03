@@ -9,14 +9,16 @@
 namespace Myth\LaravelTools\Traits\BaseController;
 
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Myth\LaravelTools\Models\BaseModel;
 
 trait AttachmentsTrait
 {
     /**
-     * @param  \Myth\LaravelTools\Models\BaseModel|\Illuminate\Database\Eloquent\Builder  $model
+     * @param BaseModel|Builder $model
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function uploadAttachments($model): JsonResponse
     {
@@ -48,11 +50,19 @@ trait AttachmentsTrait
         ];
     }
 
+    public function getModelAttachmentsMedia(&$model)
+    {
+        $model->refresh();
+        $collection = request('collection', $model::$mediaAttachmentsCollection);
+        $resource = config('4myth-tools.media_resource_class');
+        return $resource::collection($model->getMedia($collection));
+    }
+
     /**
-     * @param  \Myth\LaravelTools\Models\BaseModel|\Illuminate\Database\Eloquent\Builder  $model
-     * @param  \Myth\LaravelTools\Models\BaseModel  $media
+     * @param BaseModel|Builder $model
+     * @param BaseModel $media
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function deleteAttachment($model, $media): JsonResponse
     {
@@ -60,13 +70,5 @@ trait AttachmentsTrait
             $media->delete();
         }
         return $this->resource($this->getModelAttachmentsMedia($model), __("messages.deleted_success"));
-    }
-
-    public function getModelAttachmentsMedia(&$model)
-    {
-        $model->refresh();
-        $collection = request('collection', $model::$mediaAttachmentsCollection);
-        $resource = config('4myth-tools.media_resource_class');
-        return $resource::collection($model->getMedia($collection));
     }
 }

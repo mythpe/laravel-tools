@@ -41,7 +41,7 @@ class AttributesLog extends BaseModel
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
     public function loggable(): MorphTo
     {
@@ -49,7 +49,7 @@ class AttributesLog extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -63,7 +63,7 @@ class AttributesLog extends BaseModel
     {
         $old = trim($this->old_value ?: '');
         $new = trim($this->new_value ?: '');
-        if($old && $new){
+        if ($old && $new) {
             return "[$old] ==> [$new]";
         }
         return $old ?: ($new ?: '');

@@ -8,37 +8,41 @@
 
 namespace Myth\LaravelTools\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Exceptions\NoPermissionException;
+use Throwable;
 
 class PermissionMiddleware
 {
     /**
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param Request $request
+     * @param Closure $next
      *
-     * @return \Illuminate\Http\RedirectResponse|mixed|void|string
-     * @throws \Throwable
+     * @return RedirectResponse|mixed|void|string
+     * @throws Throwable
      */
     public function handle(Request $request, Closure $next)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         throw_if(!$user, new AuthenticationException);
         /** Check If Administrator Or Support **/
-        if($user->isSupport()){
+        if ($user->isSupport()) {
             return $next($request);
         }
-        /** @var \Illuminate\Routing\Route $route */
+        /** @var Route $route */
         $route = $request->route();
         $routeName = $route->getName();
-        if(!Str::endsWith($routeName, config('4myth-tools.skip_permission_ends_with', []))){
+        if (!Str::endsWith($routeName, config('4myth-tools.skip_permission_ends_with', []))) {
             $routes = getPermissionRoutes(!0);
-            if(in_array($routeName, $routes)){
+            if (in_array($routeName, $routes)) {
                 throw_if(!$user->checkPermission($routeName), new NoPermissionException());
             }
         }

@@ -13,21 +13,13 @@ use Illuminate\Support\Str;
 trait HasRefKeyTrait
 {
     /**
-     * @return string
-     */
-    public static function getRefKeyName(): string
-    {
-        return 'ref_key';
-    }
-
-    /**
      * @return mixed|void
      */
     protected static function bootHasRefKeyTrait()
     {
-        static::created(function(self $model){
+        static::created(function (self $model) {
             $attribute = static::getRefKeyName();
-            if(is_null($model->{$attribute})){
+            if (is_null($model->{$attribute})) {
                 $model->{$attribute} = $model->generateRefKey();
                 $model->save();
             }
@@ -37,9 +29,17 @@ trait HasRefKeyTrait
     /**
      * @return string
      */
+    public static function getRefKeyName(): string
+    {
+        return 'ref_key';
+    }
+
+    /**
+     * @return string
+     */
     public function generateRefKey(): string
     {
-        if(!$this->id){
+        if (!$this->id) {
             return '';
         }
         $prefix = $this->getRefKeyPrefix();
@@ -56,7 +56,7 @@ trait HasRefKeyTrait
         $class = Str::kebab($class);
         $class = ucwords($class, '-');
         $str = [];
-        foreach(explode('-', $class) as $value){
+        foreach (explode('-', $class) as $value) {
             $str[] = strtoupper(substr($value, 0, 1));
         }
         return implode('', $str);

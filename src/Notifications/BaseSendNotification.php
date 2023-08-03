@@ -31,21 +31,21 @@ class BaseSendNotification extends Notification implements ShouldQueue
      *
      * @var string
      */
-    public string|array|null $greeting = null;
+    public string | array | null $greeting = null;
 
     /**
      * The content will send via notification
      *
      * @var string
      */
-    protected string|array|null $content = '';
+    protected string | array | null $content = '';
 
     /**
      * The notification title
      *
      * @var string
      */
-    protected string|array|null $title = '';
+    protected string | array | null $title = '';
 
     /**
      * The channel of push notification
@@ -80,7 +80,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      *
      * @return array
      */
@@ -97,7 +97,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      *
      * @return array
      */
@@ -109,11 +109,37 @@ class BaseSendNotification extends Notification implements ShouldQueue
     /**
      * @param $notifiable
      *
-     * @return \Myth\LaravelTools\Notifications\SlackNotification
+     * @return array
      */
-    public function toSlack($notifiable): SlackNotification
+    public function toArray($notifiable): array
     {
-        return (new SlackNotification())->setContent($this->getContent($notifiable), $notifiable);
+        return array_merge([
+            'subject' => $this->getTitle($notifiable),
+            'content' => $this->getContent($notifiable),
+        ], $this->getData($notifiable));
+    }
+
+    /**
+     * The title will send
+     *
+     * @param $notifiable
+     *
+     * @return string
+     */
+    public function getTitle($notifiable): string
+    {
+        return (is_array($this->title) ? __(...$this->title) : (trans_has($this->title) ? __($this->title) : $this->title)) ?: '';
+    }
+
+    /**
+     * @param string|array|null $title
+     *
+     * @return $this
+     */
+    public function setTitle(string | array | null $title): self
+    {
+        $this->title = $title ?: '';
+        return $this;
     }
 
     /**
@@ -129,20 +155,38 @@ class BaseSendNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param  string|array|null  $content
+     * @param string|array|null $content
      *
      * @return $this
      */
-    public function setContent(string|array|null $content): self
+    public function setContent(string | array | null $content): self
     {
         $this->content = $content ?: '';
         return $this;
     }
 
     /**
+     * @return array
+     */
+    public function getData($notifiable): array
+    {
+        return $this->data;
+    }
+
+    /**
      * @param $notifiable
      *
-     * @return \Illuminate\Notifications\Messages\MailMessage|mixed
+     * @return SlackNotification
+     */
+    public function toSlack($notifiable): SlackNotification
+    {
+        return (new SlackNotification())->setContent($this->getContent($notifiable), $notifiable);
+    }
+
+    /**
+     * @param $notifiable
+     *
+     * @return MailMessage|mixed
      */
     public function toMail($notifiable)
     {
@@ -170,32 +214,23 @@ class BaseSendNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * The title will send
+     * Set the greeting of the notification.
      *
-     * @param $notifiable
-     *
-     * @return string
-     */
-    public function getTitle($notifiable): string
-    {
-        return (is_array($this->title) ? __(...$this->title) : (trans_has($this->title) ? __($this->title) : $this->title)) ?: '';
-    }
-
-    /**
-     * @param  string|array|null  $title
+     * @param string|array $greeting
      *
      * @return $this
      */
-    public function setTitle(string|array|null $title): self
+    public function greeting($greeting)
     {
-        $this->title = $title ?: '';
+        $this->greeting = $greeting;
+
         return $this;
     }
 
     /**
      * @param $notifiable
      *
-     * @return \Myth\LaravelTools\Notifications\SmsNotification
+     * @return SmsNotification
      */
     public function toSms($notifiable): SmsNotification
     {
@@ -226,7 +261,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     /**
      * @param $notifiable
      *
-     * @return \Myth\LaravelTools\Notifications\ExpoPushNotification
+     * @return ExpoPushNotification
      */
     public function toPushToken($notifiable): ExpoPushNotification
     {
@@ -239,7 +274,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param  array  $data
+     * @param array $data
      *
      * @return $this
      */
@@ -281,19 +316,11 @@ class BaseSendNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param  string  $pushTokenChannel
+     * @param string $pushTokenChannel
      */
     public function setPushTokenChannel(string $pushTokenChannel): void
     {
         $this->pushTokenChannel = $pushTokenChannel;
-    }
-
-    /**
-     * @return array
-     */
-    public function getData($notifiable): array
-    {
-        return $this->data;
     }
 
     /**
@@ -308,32 +335,5 @@ class BaseSendNotification extends Notification implements ShouldQueue
             'slack' => 'default',
             'sms'   => 'default',
         ];
-    }
-
-    /**
-     * @param $notifiable
-     *
-     * @return array
-     */
-    public function toArray($notifiable): array
-    {
-        return array_merge([
-            'subject' => $this->getTitle($notifiable),
-            'content' => $this->getContent($notifiable),
-        ], $this->getData($notifiable));
-    }
-
-    /**
-     * Set the greeting of the notification.
-     *
-     * @param  string|array  $greeting
-     *
-     * @return $this
-     */
-    public function greeting($greeting)
-    {
-        $this->greeting = $greeting;
-
-        return $this;
     }
 }

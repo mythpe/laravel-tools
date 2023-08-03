@@ -9,7 +9,12 @@
 namespace Myth\LaravelTools\Traits\BaseModel;
 
 use Illuminate\Support\Str;
+use Spatie\Image\Exceptions\InvalidManipulation;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileCannotBeAdded;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\InvalidBase64Data;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -62,7 +67,7 @@ trait HasMediaTrait
     }
 
     /**
-     * @throws \Spatie\Image\Exceptions\InvalidManipulation
+     * @throws InvalidManipulation
      */
     public function registerMediaConversions(Media $media = null): void
     {
@@ -75,13 +80,23 @@ trait HasMediaTrait
     }
 
     /**
-     * @param  array|string[]|string|UploadedFile  $files
-     * @param  null  $collection
+     * Name of collection to register with performOnCollections
      *
-     * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileCannotBeAdded
-     * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist
-     * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig
-     * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\InvalidBase64Data
+     * @return string
+     */
+    public function getSingleMediaThumbPerformOnCollections(): string
+    {
+        return static::$mediaSingleCollection;
+    }
+
+    /**
+     * @param array|string[]|string|UploadedFile $files
+     * @param null $collection
+     *
+     * @throws FileCannotBeAdded
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     * @throws InvalidBase64Data
      */
     public function addModelMedia($files, $collection = null): void
     {
@@ -96,11 +111,9 @@ trait HasMediaTrait
 
             if (is_string($file) && isBase64($file)) {
                 $media = $this->addMediaFromBase64($file);
-            }
-            elseif (is_string($file)) {
+            } elseif (is_string($file)) {
                 $media = $this->addMediaFromRequest($file);
-            }
-            else {
+            } else {
                 $media = $this->addMedia($file);
             }
             $media->toMediaCollection($collection ?: static::$mediaSingleCollection);
@@ -108,23 +121,12 @@ trait HasMediaTrait
     }
 
     /**
-     * @param  null  $collection
-     * @param  string  $conversionName
+     * @param null $collection
+     * @param string $conversionName
      *
      * @return string|null
      */
-    public function getModelMediaUrl($collection = null, string $conversionName = ''): ?string
-    {
-        return $this->getModelMedia($collection ?: static::$mediaSingleCollection)?->getFullUrl($conversionName) ?: null;
-    }
-
-    /**
-     * @param  null  $collection
-     * @param  string  $conversionName
-     *
-     * @return string|null
-     */
-    public function getModelThumbUrl($collection = null, string|null $conversionName = null): ?string
+    public function getModelThumbUrl($collection = null, string | null $conversionName = null): ?string
     {
         if ($this->singleMediaUsingThumb) {
             $conversionName = $conversionName ?: $this->singleMediaThumbName;
@@ -134,13 +136,37 @@ trait HasMediaTrait
     }
 
     /**
+     * @param null $collection
+     * @param string $conversionName
+     *
+     * @return string|null
+     */
+    public function getModelMediaUrl($collection = null, string $conversionName = ''): ?string
+    {
+        return $this->getModelMedia($collection ?: static::$mediaSingleCollection)?->getFullUrl($conversionName) ?: null;
+    }
+
+    /**
+     * @param null $collection
+     *
+     * @return Media|null
+     */
+    public function getModelMedia($collection = null): ?Media
+    {
+        if (!$this->exists) {
+            return null;
+        }
+        return $this->getFirstMedia($collection ?: static::$mediaSingleCollection);
+    }
+
+    /**
      * Get Responsive images of collection as array
      *
-     * @param  string|null  $collection
+     * @param string|null $collection
      *
      * @return array
      */
-    public function getModelResponsiveUrls(string|null $collection = null): array
+    public function getModelResponsiveUrls(string | null $collection = null): array
     {
         $srcset = [];
         if ($this->singleMediaUsingResponsiveImages) {
@@ -155,22 +181,9 @@ trait HasMediaTrait
     }
 
     /**
-     * @param  null  $collection
-     *
-     * @return Media|null
-     */
-    public function getModelMedia($collection = null): ?Media
-    {
-        if (!$this->exists) {
-            return null;
-        }
-        return $this->getFirstMedia($collection ?: static::$mediaSingleCollection);
-    }
-
-    /**
      * Get Main media as media file download
      *
-     * @param  null  $collection
+     * @param null $collection
      *
      * @return string
      */
@@ -183,8 +196,8 @@ trait HasMediaTrait
     }
 
     /**
-     * @param  null  $collection
-     * @param  string  $conversionName
+     * @param null $collection
+     * @param string $conversionName
      *
      * @return string|null
      */
@@ -202,29 +215,19 @@ trait HasMediaTrait
     }
 
     /**
-     * @param  string  $requestKey
-     * @param  string|null  $description
-     * @param  string|null  $collection
-     * @param  array  $properties
+     * @param string $requestKey
+     * @param string|null $description
+     * @param string|null $collection
+     * @param array $properties
      *
-     * @return \Spatie\MediaLibrary\MediaCollections\Models\Media
-     * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist
-     * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig
+     * @return Media
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
      */
     public function addAttachment(string $requestKey, string $description = null, string $collection = null, array $properties = []): Media
     {
         $collection = $collection ?: static::$mediaAttachmentsCollection;
         $customProperties = array_merge(['description' => $description, 'user_id' => ($properties['user_id'] ?? null)], $properties);
         return $this->addMediaFromRequest($requestKey)->withCustomProperties($customProperties)->toMediaCollection($collection);
-    }
-
-    /**
-     * Name of collection to register with performOnCollections
-     *
-     * @return string
-     */
-    public function getSingleMediaThumbPerformOnCollections(): string
-    {
-        return static::$mediaSingleCollection;
     }
 }

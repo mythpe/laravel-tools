@@ -11,6 +11,7 @@ namespace Myth\LaravelTools\Traits\BaseController;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Myth\LaravelTools\Models\BaseModel;
 
 trait SearchTrait
 {
@@ -50,9 +51,9 @@ trait SearchTrait
     protected string $searchTable = '';
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder|\Myth\LaravelTools\Models\BaseModel  $builder
+     * @param Builder|BaseModel $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder|\Myth\LaravelTools\Models\BaseModel
+     * @return Builder|BaseModel
      */
     protected function searchQuery($builder)
     {
@@ -72,7 +73,7 @@ trait SearchTrait
                 foreach ($headers as $header) {
                     $insertNameColumns = !1;
                     if (is_array($header)) {
-                        $column = ($header['value'] ?? ($header['name'] ?? ($header['field'] ??  ($header['label'] ?? null))));
+                        $column = ($header['value'] ?? ($header['name'] ?? ($header['field'] ?? ($header['label'] ?? null))));
                         if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
                             $column = locale_attribute($nameAttribute);
                             $insertNameColumns = !0;
@@ -83,22 +84,21 @@ trait SearchTrait
                                 break;
                             }
                         }
-                    }
-                    else {
+                    } else {
                         $column = $header;
                         if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
                             $insertNameColumns = !0;
                         }
                     }
                     // d($nameAttribute,$column,$insertNameColumns);
-                    if($insertNameColumns && ($locales = config('4myth-tools.locales'))){
-                        foreach ($locales as $l){
+                    if ($insertNameColumns && ($locales = config('4myth-tools.locales'))) {
+                        foreach ($locales as $l) {
                             $newCol = "{$nameAttribute}_{$l}";
                             // d($newCol);
-                            if($newCol == $column){
+                            if ($newCol == $column) {
                                 continue;
                             }
-                            if(Schema::hasColumn($this->searchTable, $newCol)){
+                            if (Schema::hasColumn($this->searchTable, $newCol)) {
                                 $this->mergeSearchColumns($newCol);
                             }
                         }
@@ -108,8 +108,7 @@ trait SearchTrait
                         $this->mergeSearchColumns($column);
                     }
                 }
-            }
-            else {
+            } else {
                 $this->mergeSearchColumns($model->getFillable());
             }
             // d($this->getSearchColumns());
@@ -125,8 +124,7 @@ trait SearchTrait
                             if (count($map) == 1 && method_exists($model, 'scope'.ucfirst($map[0]))) {
                                 //d($map,$words);
                                 $builder->orWhere(fn($q) => $q->{$map[0]}($words));
-                            }
-                            else {
+                            } else {
                                 $relation = ($map['relation'] ?? ($map[0] ?? Str::beforeLast($column, '_id')));
                                 $method = ($map['method'] ?? 'orWhereHas');
                                 $operator = ($map['operator'] ?? 'LIKE');
@@ -137,8 +135,7 @@ trait SearchTrait
                                     return $builder->where($column, $operator, $value);
                                 });
                             }
-                        }
-                        else {
+                        } else {
 
                             //if (Str::endsWith($column, '_id') && !is_numeric($words)) {
                             //    if (method_exists($model, ($relation = Str::beforeLast($column, '_id'))) && ($relationModel = $model->$relation()
@@ -195,17 +192,14 @@ trait SearchTrait
                                 //     }
                                 // }
 
-                            }
-                            elseif ($column == 'id' && is_numeric($words)) {
+                            } elseif ($column == 'id' && is_numeric($words)) {
                                 $builder->where($column, '=', (int) $words);
-                            }
-                            else {
+                            } else {
                                 $builder->orWhere($column, 'LIKE', "%{$words}%");
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     //d($words);
                     $builder->orWhere(function (Builder $builder) use ($column, $words) {
                         return $builder->{$column}($words);
@@ -221,7 +215,7 @@ trait SearchTrait
     }
 
     /**
-     * @param  string|array  $columns
+     * @param string|array $columns
      *
      * @return self
      */
@@ -252,7 +246,7 @@ trait SearchTrait
     }
 
     /**
-     * @param  null  $column
+     * @param null $column
      *
      * @return array
      */

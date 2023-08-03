@@ -70,7 +70,7 @@ interface Statusable
     const USED_STATUS = 'used';
 
     /**
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public static function getStatuses(): Collection;
 

@@ -38,13 +38,13 @@ class BaseModel extends Authenticatable implements HasMedia
 
 
     /**
-     * @param  array  $attributes
+     * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $name = locale_attribute();
-        if($this->isFillable($name) && !$this->isFillable('name')){
+        if ($this->isFillable($name) && !$this->isFillable('name')) {
             $this->append(['name']);
         }
         //$this->append('created_at_to_string', 'updated_at_to_string');
@@ -75,15 +75,13 @@ class BaseModel extends Authenticatable implements HasMedia
     public function getNameAttribute($value): ?string
     {
         $string = "";
-        if($value){
+        if ($value) {
             $string = $value;
-        }
-        else{
+        } else {
             $attr = locale_attribute();
-            if($this->isFillable($attr)){
+            if ($this->isFillable($attr)) {
                 $string = $this->{$attr};
-            }
-            elseif(method_exists($this, 'getNameColumn') && $this->getNameColumn() != 'name'){
+            } elseif (method_exists($this, 'getNameColumn') && $this->getNameColumn() != 'name') {
                 $string = $this->{$this->getNameColumn()};
             }
         }
@@ -108,8 +106,8 @@ class BaseModel extends Authenticatable implements HasMedia
             "{$class}_name",
         ];
         $name = 'name';
-        foreach($fill as $item){
-            if($this->isFillable($item)){
+        foreach ($fill as $item) {
+            if ($this->isFillable($item)) {
                 $name = $item;
                 break;
             }
@@ -124,44 +122,44 @@ class BaseModel extends Authenticatable implements HasMedia
      */
     public function __get($key)
     {
-        if(!$key){
+        if (!$key) {
             return;
         }
 
         // If the attribute exists in the attribute array or has a "get" mutator we will
         // get the attribute's value. Otherwise, we will proceed as if the developers
         // are asking for a relationship's value. This covers both types of values.
-        if(array_key_exists($key, $this->attributes) || array_key_exists($key, $this->casts) || $this->hasGetMutator($key) || $this->isClassCastable($key)){
+        if (array_key_exists($key, $this->attributes) || array_key_exists($key, $this->casts) || $this->hasGetMutator($key) || $this->isClassCastable($key)) {
             return $this->getAttributeValue($key);
         }
 
         /** get_{ATTRIBUTE}_from_{RELATION}_class */
-        if(substr($key, 0, strlen(($get = "get_"))) == $get && substr($key, -strlen(($trait = "_class"))) == $trait){
+        if (substr($key, 0, strlen(($get = "get_"))) == $get && substr($key, -strlen(($trait = "_class"))) == $trait) {
             $call = substr($key, strlen($get), (strlen($key) - strlen($get)) - strlen($trait));
             $callArray = explode("_from_", $call);
             krsort($callArray);
             $method = $this;
             $i = 0;
-            foreach($callArray as $item){
+            foreach ($callArray as $item) {
                 $i++;
-                try{
+                try {
                     $method = $method->{$item};
                 }
-                catch(Exception $exception){
+                catch (Exception $exception) {
                     $method = '';
                 }
 
-                if($i == count($callArray)){
+                if ($i == count($callArray)) {
                     return ($method instanceof $this ? "" : (is_null($method) ? "" : $method));
                 }
             }
         }
 
         /** get_{RELATION}_name */
-        if(Str::startsWith($key, ($f = "get_")) && Str::endsWith($key, ($l = "_name"))){
+        if (Str::startsWith($key, ($f = "get_")) && Str::endsWith($key, ($l = "_name"))) {
             $method = Str::before($key, $l);
             $method = Str::after($method, $f);
-            if(($method && ($a = $this->{$method})) && method_exists($a, 'getNameColumn')){
+            if (($method && ($a = $this->{$method})) && method_exists($a, 'getNameColumn')) {
                 return $a->{$a->getNameColumn()};
             }
 
@@ -169,23 +167,23 @@ class BaseModel extends Authenticatable implements HasMedia
         }
 
         /** {ATTRIBUTE}_code */
-        if(Str::endsWith($key, ($t = "_code")) && !$this->isFillable($key)){
+        if (Str::endsWith($key, ($t = "_code")) && !$this->isFillable($key)) {
             $method = $this->modelHasMethod(Str::before($key, $t));
 
-            if(!is_null(($a = $this->{$method}))){
+            if (!is_null(($a = $this->{$method}))) {
                 return $a->code;
             }
         }
 
         /** {ATTRIBUTE}_id_to_string */
-        if(Str::endsWith($key, ($t = "_id_to_string"))){
+        if (Str::endsWith($key, ($t = "_id_to_string"))) {
             $method = Str::before($key, $t);
 
-            if(!is_null(($a = $this->{$method})) && method_exists($a, 'getNameColumn')){
+            if (!is_null(($a = $this->{$method})) && method_exists($a, 'getNameColumn')) {
                 return $a->{$a->getNameColumn()};
             }
 
-            if(!is_null(($a = $this->{Str::camel($method)})) && method_exists($a, 'getNameColumn')){
+            if (!is_null(($a = $this->{Str::camel($method)})) && method_exists($a, 'getNameColumn')) {
                 return $a->{$a->getNameColumn()};
             }
 
@@ -193,11 +191,11 @@ class BaseModel extends Authenticatable implements HasMedia
         }
 
         /** {ATTRIBUTE}_to_number_format */
-        if(Str::endsWith($key, ($t = "_to_number_format"))){
+        if (Str::endsWith($key, ($t = "_to_number_format"))) {
             $value = Str::before($key, $t);
             $number = $this->{$value};
             return to_number_format((float) ($number ?: 0));
-            if($number || $number == 0){
+            if ($number || $number == 0) {
                 //$currency = config('4myth-tools.currency');
                 //$balance = config('4myth-tools.currency_balance');
                 /*try {
@@ -223,79 +221,79 @@ class BaseModel extends Authenticatable implements HasMedia
         }
 
         /** {ATTRIBUTE}_to_en_yes */
-        if(Str::endsWith($key, ($t = "_to_en_yes")) && !$this->isFillable($key)){
+        if (Str::endsWith($key, ($t = "_to_en_yes")) && !$this->isFillable($key)) {
             $method = Str::before($key, $t);
             return !is_null(($_name = $this->{$method})) ? ($_name ? "yes" : "no") : $_name;
         }
 
         /** {ATTRIBUTE}_to_yes */
-        if(Str::endsWith($key, ($t = "_to_yes")) && !$this->isFillable($key)){
+        if (Str::endsWith($key, ($t = "_to_yes")) && !$this->isFillable($key)) {
             $method = Str::before($key, $t);
             return !is_null(($_name = $this->{$method})) ? __("global.".($_name ? "yes" : "no")) : $_name;
         }
 
         /** {DATE_ATTRIBUTE}_to_date_format */
-        if(Str::endsWith($key, ($t = "_to_date_format")) && ($attribute = Str::before($key, $t))){
-            if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
+        if (Str::endsWith($key, ($t = "_to_date_format")) && ($attribute = Str::before($key, $t))) {
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return $date->format(config('4myth-tools.date_format.date'));
             }
         }
 
         /** {DATE_ATTRIBUTE}_to_time_format */
-        if(Str::endsWith($key, ($t = "_to_time_format")) && ($attribute = Str::before($key, $t))){
-            if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
+        if (Str::endsWith($key, ($t = "_to_time_format")) && ($attribute = Str::before($key, $t))) {
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return $date->format(config('4myth-tools.date_format.time'));
             }
         }
 
         /** {DATE_ATTRIBUTE}_to_time_string_format */
-        if(Str::endsWith($key, ($t = "_to_time_string_format")) && ($attribute = Str::before($key, $t))){
-            if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
+        if (Str::endsWith($key, ($t = "_to_time_string_format")) && ($attribute = Str::before($key, $t))) {
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return date_by_locale($date->format(config('4myth-tools.date_format.time_string')));
             }
         }
 
         /** {DATE_ATTRIBUTE}_to_datetime_format */
-        if(Str::endsWith($key, ($t = "_to_datetime_format")) && ($attribute = Str::before($key, $t))){
-            if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
+        if (Str::endsWith($key, ($t = "_to_datetime_format")) && ($attribute = Str::before($key, $t))) {
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return date_by_locale($date->format(config('4myth-tools.date_format.datetime')));
             }
         }
 
         /** {DATE_ATTRIBUTE}_to_fulldatetime_format */
-        if(Str::endsWith($key, ($t = "_to_fulldatetime_format")) && ($attribute = Str::before($key, $t))){
-            if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
+        if (Str::endsWith($key, ($t = "_to_fulldatetime_format")) && ($attribute = Str::before($key, $t))) {
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return date_by_locale($date->format(config('4myth-tools.date_format.full')));
             }
         }
 
         /** {DATE_ATTRIBUTE}_to_day_format */
-        if(Str::endsWith($key, ($t = "_to_day_format"))){
+        if (Str::endsWith($key, ($t = "_to_day_format"))) {
             $attribute = substr($key, 0, strlen($key) - strlen($t));
-            if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return date_by_locale($date->format(config('4myth-tools.date_format.day')));
             }
         }
 
         /** {DATE_ATTRIBUTE}_to_hijri */
-        if(Str::endsWith($key, ($t = "_to_hijri"))){
+        if (Str::endsWith($key, ($t = "_to_hijri"))) {
             $attribute = substr($key, 0, strlen($key) - strlen($t));
-            if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return hijri($date);
             }
         }
 
         /** {DATE_ATTRIBUTE}_to_full_arabic_date */
-        if(Str::endsWith($key, ($t = "_to_full_arabic_date"))){
+        if (Str::endsWith($key, ($t = "_to_full_arabic_date"))) {
             $attribute = substr($key, 0, strlen($key) - strlen($t));
-            if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 // dd($attribute,$date,hijri($date)->format( app_date_format('date') ) );
 
                 return arabic_date(hijri($date)->format(config('4myth-tools.date_format.hijri_human')));
@@ -303,23 +301,23 @@ class BaseModel extends Authenticatable implements HasMedia
         }
 
         /** {DATE_ATTRIBUTE}_to_arabic_date */
-        if(Str::endsWith($key, ($t = "_to_arabic_date"))){
+        if (Str::endsWith($key, ($t = "_to_arabic_date"))) {
             $attribute = substr($key, 0, strlen($key) - strlen($t));
-            if($this->isDateAttribute($attribute) && ($date = $this->{$attribute})){
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return arabic_date(hijri($date)->format(config('4myth-tools.date_format.date')));
             }
         }
 
         /** {RELATION}_to_ids */
-        if(Str::endsWith($key, ($t = "_to_ids"))){
+        if (Str::endsWith($key, ($t = "_to_ids"))) {
             $relation = Str::beforeLast($key, $t);
-            if(method_exists($this, $relation)){
+            if (method_exists($this, $relation)) {
                 $m = $this->{$relation}();
-                if($m instanceof HasMany){
+                if ($m instanceof HasMany) {
                     return $m->pluck('id')->toArray();
                 }
-                if($m instanceof BelongsToMany){
+                if ($m instanceof BelongsToMany) {
                     $name = Str::snake(Str::singular($relation));
                     return $m->pluck("{$name}_id")->toArray();
                 }
@@ -331,10 +329,45 @@ class BaseModel extends Authenticatable implements HasMedia
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * Check if model has method
+     *
+     * @param $method
+     *
+     * @return string|null
+     */
+    protected function modelHasMethod($method): ?string
+    {
+        $methods = $this->strCasesArray($method);
+
+        foreach ($methods as $m) {
+            if (method_exists($this, $m)) {
+                return $m;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * helper
+     *
+     * @param $str
+     *
+     * @return array
+     */
+    protected function strCasesArray($str): array
+    {
+        return collect([
+            $str,
+            Str::snake($str),
+            Str::camel($str),
+        ])->uniqueStrict()->toArray();
+    }
+
+    /**
+     * @param Builder $builder
      * @param $value
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeFromCreatedAt(Builder $builder, $value): Builder
     {
@@ -342,10 +375,10 @@ class BaseModel extends Authenticatable implements HasMedia
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param Builder $builder
      * @param $value
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeToCreatedAt(Builder $builder, $value): Builder
     {
@@ -359,7 +392,7 @@ class BaseModel extends Authenticatable implements HasMedia
      */
     public function getMobileWithCountryCode(string $code = '+966'): string
     {
-        if(($mobile = $this->mobile)){
+        if (($mobile = $this->mobile)) {
             return "{$code}{$mobile}";
         }
         return '';
@@ -405,40 +438,5 @@ class BaseModel extends Authenticatable implements HasMedia
     public function getAppends(): array
     {
         return $this->appends;
-    }
-
-    /**
-     * Check if model has method
-     *
-     * @param $method
-     *
-     * @return string|null
-     */
-    protected function modelHasMethod($method): ?string
-    {
-        $methods = $this->strCasesArray($method);
-
-        foreach($methods as $m){
-            if(method_exists($this, $m)){
-                return $m;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * helper
-     *
-     * @param $str
-     *
-     * @return array
-     */
-    protected function strCasesArray($str): array
-    {
-        return collect([
-            $str,
-            Str::snake($str),
-            Str::camel($str),
-        ])->uniqueStrict()->toArray();
     }
 }

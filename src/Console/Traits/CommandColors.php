@@ -45,7 +45,7 @@ trait CommandColors
      */
     protected function applyCustomStyle(): self
     {
-        foreach($this->themes as $t => $options){
+        foreach ($this->themes as $t => $options) {
             $this->output->getFormatter()->setStyle($t, new OutputFormatterStyle(...$options));
         }
         return $this;

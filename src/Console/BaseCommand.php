@@ -9,6 +9,7 @@
 namespace Myth\LaravelTools\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
@@ -58,9 +59,9 @@ class BaseCommand extends Command
 
     /**
      * @param $directory
-     * @param  bool  $file
+     * @param bool $file
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     protected function fetchFiles($directory, bool $file = !1)
     {
@@ -90,9 +91,9 @@ class BaseCommand extends Command
     }
 
     /**
-     * @param  array  $data
+     * @param array $data
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     protected function iniCollection(array $data = []): Collection
     {
@@ -103,7 +104,7 @@ class BaseCommand extends Command
     }
 
     /**
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return Filesystem
      */
     protected function disk(): Filesystem
     {
@@ -136,13 +137,11 @@ class BaseCommand extends Command
             if (!$found) {
                 if (Schema::hasTable(($t = 'c_'.Str::snake(Str::plural($originalTable))))) {
                     $this->doTruncate($t);
-                }
-                else {
+                } else {
                     $this->components->error("Table: {$originalTable}. not found");
                 }
             }
-        }
-        else {
+        } else {
             $this->doTruncate($table);
         }
     }
@@ -173,7 +172,7 @@ class BaseCommand extends Command
     /**
      * @param $data
      * @param $table
-     * @param  null  $model
+     * @param null $model
      */
     protected function insert($data, $table, $model = null)
     {
@@ -204,8 +203,7 @@ class BaseCommand extends Command
             $model->fill($insert);
             $model->save();
             $this->pushData($model);
-        }
-        else {
+        } else {
             $relationType = $model->{$table}();
             if (
                 !$relationType instanceof HasMany
@@ -237,7 +235,7 @@ class BaseCommand extends Command
     /**
      * @param $model
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     protected function pushData($model): Collection
     {
@@ -254,20 +252,18 @@ class BaseCommand extends Command
     }
 
     /**
-     * @param  string  $text
-     * @param  string  $method
+     * @param string $text
+     * @param string $method
      */
     protected function echo(string $text = '', string $method = 'line')
     {
         if (app()->runningInConsole()) {
             if (!method_exists($this, $method)) {
                 $this->l($text, $method);
-            }
-            else {
+            } else {
                 $this->{$method}($text);
             }
-        }
-        else {
+        } else {
             if (!$this->echo) {
                 return;
             }

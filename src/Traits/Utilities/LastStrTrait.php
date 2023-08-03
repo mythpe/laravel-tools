@@ -19,7 +19,7 @@ trait LastStrTrait
      */
     public function mobileLastStr(int $length = 4): string
     {
-        if(!$this->mobile){
+        if (!$this->mobile) {
             return '';
         }
         return 'xxxx'.substr($this->mobile, -$length);
@@ -30,7 +30,7 @@ trait LastStrTrait
      */
     public function emailLastStr(): string
     {
-        if(!$this->email){
+        if (!$this->email) {
             return '';
         }
         $email = explode('@', $this->email);

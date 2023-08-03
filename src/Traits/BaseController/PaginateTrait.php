@@ -10,12 +10,17 @@ namespace Myth\LaravelTools\Traits\BaseController;
 
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use Myth\LaravelTools\Exports\BaseExport;
 use Myth\LaravelTools\Http\Resources\ApiCollectionResponse;
+use Myth\LaravelTools\Http\Resources\ApiResource;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 trait PaginateTrait
@@ -58,30 +63,11 @@ trait PaginateTrait
     public string $excludeActiveIndexKey = 'exclude';
 
     /**
-     * Get class of export data
-     *
-     * @return string
-     * @uses Maatwebsite
-     */
-    public static function getControllerExcelExportClass(): string
-    {
-        return config('4myth-tools.ExcelExportClass', BaseExport::class);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getControllerPdfView(): string
-    {
-        return config('4myth-tools.snappy_pdf_view', '4myth-tools::layouts.pdf_table');
-    }
-
-    /**
-     * @param mixed|Builder|\Illuminate\Database\Eloquent\Model $query
-     * @param mixed|string|\Myth\LaravelTools\Http\Resources\ApiResource|null $transformer
+     * @param mixed|Builder|Model $query
+     * @param mixed|string|ApiResource|null $transformer
      * @param mixed|string|null $excelClass
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Myth\LaravelTools\Http\Resources\ApiCollectionResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @return JsonResponse|Response|ApiCollectionResponse|BinaryFileResponse
      */
     protected function indexResponse($query = null, ?string $transformer = null, $excelClass = null)
     {
@@ -91,36 +77,35 @@ trait PaginateTrait
         $indexType = $request->input('indexType');
         $modelName = Str::pluralStudly(class_basename($query->getModel()));
         $pageTitle = $request->input(($a = 'pageTitle')) ? $request->input($a) : (trans_has(($a = "choice.{$modelName}")) ? trans_choice($a, 2) : $modelName);
-        if($indexType == 'pdf' || $indexType == 'excel'){
+        if ($indexType == 'pdf' || $indexType == 'excel') {
             $items = $request->input('items', []);
             $headers = $request->input('headerItems', []);
 
-            if(!$items){
+            if (!$items) {
                 $ids = $request->input('ids', []);
                 $query = $this->apply($query);
-                if(!empty($ids) && is_array($ids)){
+                if (!empty($ids) && is_array($ids)) {
                     $query->whereIn($query->getModel()->getKeyName(), $ids);
                 }
                 $items = $transformer::collection($query->get())->toArray($this->request);
-            }
-            else{
+            } else {
                 $items = $transformer::collection($query->whereIn('id', $items)->get())->toArray($this->request);
             }
 
-            if(!is_array($headers)){
+            if (!is_array($headers)) {
                 $headers = [];
             }
-            if(!is_array($items)){
+            if (!is_array($items)) {
                 $items = [];
             }
             //d($headers);
             $fileName = "Export-".(auth()->id() ?: 0);
 
-            if($indexType == 'excel'){
+            if ($indexType == 'excel') {
                 $fileName = "{$fileName}.xlsx";
                 /** @var BaseExport $excelClass */
                 $excelClass = is_null($excelClass) ? static::getControllerExcelExportClass() : $excelClass;
-                if($this->request->input('toUrl')){
+                if ($this->request->input('toUrl')) {
                     $disk = Storage::disk('excel');
                     Excel::store($excelClass::make($headers, $items), $fileName, 'excel');
                     return $this->successResponse([
@@ -128,7 +113,7 @@ trait PaginateTrait
                     ]);
                 }
                 //d($fileName);
-                /** @var \Symfony\Component\HttpFoundation\BinaryFileResponse $e */
+                /** @var BinaryFileResponse $e */
                 return Excel::download($excelClass::make($headers, $items), "{$fileName}")->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $fileName);
                 // response()->headers->set('content-disposition',"filename={$fileName}");
                 // $r->headers->set('content-disposition', "filename={$fileName}");
@@ -158,7 +143,7 @@ trait PaginateTrait
             $pdf = SnappyPdf::loadView(static::getControllerPdfView(), $compact);
             $pdf->setOption('title', $pageTitle);
 
-            if($this->request->input('toUrl')){
+            if ($this->request->input('toUrl')) {
                 $pdf->save($path, !0);
                 return $this->successResponse([
                     'data' => ['url' => $disk->url($fileName),],
@@ -196,6 +181,25 @@ trait PaginateTrait
     }
 
     /**
+     * Get class of export data
+     *
+     * @return string
+     * @uses Maatwebsite
+     */
+    public static function getControllerExcelExportClass(): string
+    {
+        return config('4myth-tools.ExcelExportClass', BaseExport::class);
+    }
+
+    /**
+     * @return string
+     */
+    public static function getControllerPdfView(): string
+    {
+        return config('4myth-tools.snappy_pdf_view', '4myth-tools::layouts.pdf_table');
+    }
+
+    /**
      * Do calc for Pagination.
      *
      * @param Builder $query
@@ -206,8 +210,8 @@ trait PaginateTrait
     {
         // d($query);
         $query = $this->apply($query);
-        if($this->itemsPerPage == -1 || !is_null($this->limit)){
-            if(!is_null($this->limit)){
+        if ($this->itemsPerPage == -1 || !is_null($this->limit)) {
+            if (!is_null($this->limit)) {
                 $query->limit((int) ($this->limit));
             }
 
@@ -227,7 +231,7 @@ trait PaginateTrait
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      *
      * @return $this
      */

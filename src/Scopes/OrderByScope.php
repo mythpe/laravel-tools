@@ -49,21 +49,21 @@ class OrderByScope implements Scope
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $builder
-     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param Builder $builder
+     * @param Model $model
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function apply(Builder $builder, Model $model)
     {
         $table = $model->getTable();
-        foreach($this->columns as $k => $column){
+        foreach ($this->columns as $k => $column) {
             $direction = $this->direction;
-            if(!is_numeric($k)){
+            if (!is_numeric($k)) {
                 $direction = $column;
                 $column = $k;
             }
-            if(!$column || !Schema::hasColumn($table, $column)){
+            if (!$column || !Schema::hasColumn($table, $column)) {
                 continue;
             }
             //d($column,$direction);

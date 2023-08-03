@@ -8,6 +8,8 @@
 
 namespace Myth\LaravelTools\Exports;
 
+use Illuminate\Http\Resources\MissingValue;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -18,18 +20,18 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     WithEvents
 {
     /**
-     * @var array|\Illuminate\Support\Collection
+     * @var array|Collection
      */
     public $headers = [];
 
     /**
-     * @var array|\Illuminate\Support\Collection
+     * @var array|Collection
      */
     public $items = [];
 
     /**
-     * @param array|\Illuminate\Support\Collection $headers
-     * @param array|\Illuminate\Support\Collection $items
+     * @param array|Collection $headers
+     * @param array|Collection $items
      */
     public function __construct($headers = [], $items = [])
     {
@@ -46,20 +48,19 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     }
 
     /**
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function collection()
     {
         $data = [];
         //d($this->headers);
-        foreach($this->headers as $header){
-            if(is_array($header)){
+        foreach ($this->headers as $header) {
+            if (is_array($header)) {
                 $value = ($header['text'] ?? ($header['label'] ?? ($header['field'] ?? ($header['name'] ?? ''))));
-            }
-            else{
+            } else {
                 $value = trans_has("attributes.$header") ? __("attributes.$header") : $header;
             }
-            if($value == 'control'){
+            if ($value == 'control') {
                 continue;
             }
             $data[] = $value;
@@ -67,12 +68,12 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
         //d($data);
         $data = [$data];
 
-        foreach($this->items as $item){
+        foreach ($this->items as $item) {
             $v = [];
-            foreach($this->headers as $header){
+            foreach ($this->headers as $header) {
                 //d($item);
                 $r = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? ($item[($header['field'] ?? '')] ?? ($item[($header['name'] ?? '')] ?? ''))) : ($item[$header] ?? ''));
-                $v[] = $r instanceof \Illuminate\Http\Resources\MissingValue ? null : $r;
+                $v[] = $r instanceof MissingValue ? null : $r;
             }
             $data[] = $v;
         }
@@ -86,7 +87,7 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event){
+            AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getDelegate()->setRightToLeft(app()->getLocale() == 'ar');
             },
         ];

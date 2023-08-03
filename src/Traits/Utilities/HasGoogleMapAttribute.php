@@ -24,10 +24,23 @@ trait HasGoogleMapAttribute
      */
     public function getGoogleMapUrlAttribute($value): ?string
     {
-        if($value){
+        if ($value) {
             return (string) $value;
         }
         return $this->getGoogleMapDirApi($this->latitude, $this->longitude);
+    }
+
+    /**
+     * @param float|null $lat
+     * @param float|null $lng
+     *
+     * @return string|null
+     */
+    public function getGoogleMapDirApi(float | null $lat = null, float | null $lng = null): ?string
+    {
+        $lat = $lat ?: $this->latitude;
+        $lng = $lng ?: $this->longitude;
+        return $lat && $lng ? "https://www.google.com/maps/dir/?api=1&destination=".urlencode("{$lat},{$lng}") : null;
     }
 
     /**
@@ -40,7 +53,7 @@ trait HasGoogleMapAttribute
      */
     public function getGoogleMapIframeAttribute($value): ?string
     {
-        if($value){
+        if ($value) {
             return (string) $value;
         }
         $lat = $this->latitude;
@@ -55,24 +68,11 @@ trait HasGoogleMapAttribute
      *
      * @return string|null
      */
-    public function getGoogleMapSearchApi(float|null $lat = null, float|null $lng = null): ?string
+    public function getGoogleMapSearchApi(float | null $lat = null, float | null $lng = null): ?string
     {
         $lat = $lat ?: $this->latitude;
         $lng = $lng ?: $this->longitude;
         return $lat && $lng ? "https://www.google.com/maps/search/?api=1&query=".urlencode("{$lat},{$lng}") : null;
-    }
-
-    /**
-     * @param float|null $lat
-     * @param float|null $lng
-     *
-     * @return string|null
-     */
-    public function getGoogleMapDirApi(float|null $lat = null, float|null $lng = null): ?string
-    {
-        $lat = $lat ?: $this->latitude;
-        $lng = $lng ?: $this->longitude;
-        return $lat && $lng ? "https://www.google.com/maps/dir/?api=1&destination=".urlencode("{$lat},{$lng}") : null;
     }
 
     /**
@@ -82,7 +82,7 @@ trait HasGoogleMapAttribute
      *
      * @return string|null
      */
-    public function getGoogleMapPlaceApi(int $z = 17, float|null $lat = null, float|null $lng = null): ?string
+    public function getGoogleMapPlaceApi(int $z = 17, float | null $lat = null, float | null $lng = null): ?string
     {
         $lat = $lat ?: $this->latitude;
         $lng = $lng ?: $this->longitude;

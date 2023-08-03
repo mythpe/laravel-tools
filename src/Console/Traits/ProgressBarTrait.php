@@ -35,7 +35,7 @@ trait ProgressBarTrait
     }
 
     /**
-     * @return \Symfony\Component\Console\Helper\ProgressBar
+     * @return ProgressBar
      */
     protected function getBar(): ?ProgressBar
     {
@@ -67,7 +67,7 @@ trait ProgressBarTrait
     /**
      * @param int $step
      *
-     * @return \Symfony\Component\Console\Helper\ProgressBar
+     * @return ProgressBar
      */
     protected function advanceBar(int $step = 1): ProgressBar
     {

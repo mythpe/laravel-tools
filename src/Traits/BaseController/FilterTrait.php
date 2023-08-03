@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Myth\LaravelTools\Models\BaseModel;
 
 trait FilterTrait
 {
@@ -35,28 +36,27 @@ trait FilterTrait
     protected string $filterTable = '';
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder|\Myth\LaravelTools\Models\BaseModel $builder
+     * @param Builder|BaseModel $builder
      * @param null $filters
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     protected function filerQuery($builder, $filters = null)
     {
         $filters = is_null($filters) ? $this->request->input($this->filterRequestKey) : $filters;
         //d($filters);
-        if($filters && is_array($filters)){
+        if ($filters && is_array($filters)) {
             $model = $builder->getModel();
             $this->filterTable = $model->getTable();
-            foreach($filters as $column => $value){
-                if(is_null($value)){
+            foreach ($filters as $column => $value) {
+                if (is_null($value)) {
                     continue;
                 }
-                if($this->isMapFilterColumns($column)){
+                if ($this->isMapFilterColumns($column)) {
                     $map = $this->getMapFilterColumns($column);
-                    if(is_string($map)){
+                    if (is_string($map)) {
                         $builder = $builder->{$map}($value);
-                    }
-                    else{
+                    } else {
                         $method = ($map[0] ?? 'where');
                         $column = ($map[1] ?? $column);
                         $operator = ($map[2] ?? '=');
@@ -64,8 +64,7 @@ trait FilterTrait
                         $value = strtolower($operator) == 'like' ? "%{$value}%" : $value;
                         $builder = $builder->{$method}($column, $operator, $value, $boolean);
                     }
-                }
-                else{
+                } else {
                     $builder = $this->setFilterQuery($builder, $column, $value);
                 }
             }
@@ -102,32 +101,30 @@ trait FilterTrait
      */
     protected function setFilterQuery($builder, $column, $value)
     {
-        if(Schema::hasColumn($this->filterTable, $column)){
-            if(is_array($value)){
+        if (Schema::hasColumn($this->filterTable, $column)) {
+            if (is_array($value)) {
                 $builder->whereIn($column, $value);
-            }
-            else{
+            } else {
                 $builder->where($column, '=', $value);
             }
-        }
-        else{
+        } else {
             $model = $builder->getModel();
             $name = Str::beforeLast($column, '_id');
             $camel = ucfirst(Str::camel($name));
             $method = "whereHas{$camel}";
             $scope = "scopeWhereHas{$camel}";
-            if(method_exists($model, $scope)){
+            if (method_exists($model, $scope)) {
                 $builder->{$method}($value);
             }
             $relations = [
                 Str::camel($name),
                 Str::snake($name),
             ];
-            foreach($relations as $relation){
-                if(method_exists($model, $relation)){
+            foreach ($relations as $relation) {
+                if (method_exists($model, $relation)) {
                     $_relation = $model->{$relation}();
-                    if($_relation instanceof BelongsToMany){
-                        $builder->whereHas($relation, function(Builder $r) use ($value, $relation, $_relation){
+                    if ($_relation instanceof BelongsToMany) {
+                        $builder->whereHas($relation, function (Builder $r) use ($value, $relation, $_relation) {
                             $relationColumn = Str::singular(Str::snake($relation)).'_id';
                             $value = !is_array($value) && Str::contains($value, ',') ? explode(',', $value) : $value;
                             $m = is_array($value) ? 'whereIn' : 'where';

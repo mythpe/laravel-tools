@@ -30,32 +30,32 @@ class AppRules
     }
 
     /**
-     * @param \Illuminate\Support\Carbon|string|null $date
+     * @param Carbon|string|null $date
      *
      * @return string
      */
-    public static function timeAfterOrEqual(Carbon|string $date = null): string
+    public static function timeAfterOrEqual(Carbon | string $date = null): string
     {
         return static::dateAfterOrEqual($date, 'time');
     }
 
     /**
-     * @param \Illuminate\Support\Carbon|string|null $date
+     * @param Carbon|string|null $date
      * @param string $configFormat
      *
      * @return string
      */
-    public static function dateAfterOrEqual(Carbon|string $date = null, string $configFormat = 'date'): string
+    public static function dateAfterOrEqual(Carbon | string $date = null, string $configFormat = 'date'): string
     {
         $format = config("4myth-tools.date_format.{$configFormat}");
         $request = request();
-        if(!$date instanceof Carbon && $request->has($date)){
+        if (!$date instanceof Carbon && $request->has($date)) {
             return "after_or_equal:$date";
         }
-        try{
+        try {
             $date = $date ? ($request->has($date) ? Carbon::make($request->input($date, now())) : Carbon::make($date)) : now();
         }
-        catch(Exception $exception){
+        catch (Exception $exception) {
             $date = $request->input($date);
             return "after_or_equal:$date";
         }
@@ -63,22 +63,22 @@ class AppRules
     }
 
     /**
-     * @param \Illuminate\Support\Carbon|string|null $date
+     * @param Carbon|string|null $date
      * @param string $configFormat
      *
      * @return string
      */
-    public static function dateBeforeOrEqual(Carbon|string $date = null, string $configFormat = 'date'): string
+    public static function dateBeforeOrEqual(Carbon | string $date = null, string $configFormat = 'date'): string
     {
         $format = config("4myth-tools.date_format.{$configFormat}");
         $request = request();
-        if(!$date instanceof Carbon && $request->has($date)){
+        if (!$date instanceof Carbon && $request->has($date)) {
             return "before_or_equal:$date";
         }
-        try{
+        try {
             $date = $date ? ($request->has($date) ? Carbon::make($request->input($date, now())) : Carbon::make($date)) : now();
         }
-        catch(Exception $exception){
+        catch (Exception $exception) {
             $date = $request->input($date);
             return "before_or_equal:$date";
         }

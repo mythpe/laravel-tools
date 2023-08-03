@@ -104,7 +104,7 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'contact_us_url'       => env('CONTACT_US_URL', env('APP_URL')),
+    'contact_us_url'                => env('CONTACT_US_URL', env('APP_URL')),
 
     /*
     |--------------------------------------------------------------------------
@@ -112,7 +112,7 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'about_us_url'         => env('ABOUT_US_URL', env('APP_URL')),
+    'about_us_url'                  => env('ABOUT_US_URL', env('APP_URL')),
 
     /*
     |--------------------------------------------------------------------------
@@ -120,7 +120,7 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'terms_conditions_url' => env('TERMS_CONDITIONS_URL', env('APP_URL')),
+    'terms_conditions_url'          => env('TERMS_CONDITIONS_URL', env('APP_URL')),
 
     /*
     |--------------------------------------------------------------------------
@@ -128,7 +128,7 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'privacy_policy_url'   => env('PRIVACY_POLICY_URL', env('APP_URL')),
+    'privacy_policy_url'            => env('PRIVACY_POLICY_URL', env('APP_URL')),
 
     /**
      * Production of Expo access token

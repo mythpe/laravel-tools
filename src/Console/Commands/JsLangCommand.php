@@ -39,10 +39,10 @@ class JsLangCommand extends BaseCommand
         $disk = $this->disk();
         $dir = 'deploy';
         $files = config('4myth-tools.js_lang_command_files', []);
-        foreach($locales as $locale){
-            foreach($files as $file){
+        foreach ($locales as $locale) {
+            foreach ($files as $file) {
                 $lang = __($file, [], $locale);
-                if(!is_array($lang)){
+                if (!is_array($lang)) {
                     $this->error(sprintf(
                         'File %s/%s is empty',
                         $locale,
@@ -51,10 +51,10 @@ class JsLangCommand extends BaseCommand
                     continue;
                 }
                 $data = collect($lang);
-                if($file == 'choice' && $locale == 'ar'){
-                    $data = $data->map(function($v){
+                if ($file == 'choice' && $locale == 'ar') {
+                    $data = $data->map(function ($v) {
                         $res = explode('|', $v);
-                        if(count($res) == 2){
+                        if (count($res) == 2) {
                             return implode('|', [$res[1], $res[0]]);
                         }
 

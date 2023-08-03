@@ -8,13 +8,15 @@
 
 namespace Myth\LaravelTools\Utilities;
 
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Logger
 {
-    /** @var \Illuminate\Contracts\Filesystem\Filesystem|\Illuminate\Filesystem\FilesystemAdapter */
+    /** @var Filesystem|FilesystemAdapter */
     public $disk;
 
     /** @var string */

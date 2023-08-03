@@ -8,13 +8,15 @@
 
 namespace Myth\LaravelTools\Http\Resources;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 
 class ApiResource extends JsonResource
 {
     /**
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      *
      * @return array
      */
@@ -52,13 +54,13 @@ class ApiResource extends JsonResource
     }
 
     /**
-     * @param  array  $merge
+     * @param array $merge
      *
      * @return array
      */
     protected function transformModel(array $merge = []): array
     {
-        /** @var \Illuminate\Database\Eloquent\Model $model */
+        /** @var Model $model */
         $model = $this->resource;
         $id = $model->id;
         $name = $model->name;

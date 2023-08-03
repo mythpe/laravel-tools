@@ -34,39 +34,23 @@ trait SlugModelTrait
      */
     public static function printSlug($id, bool $decode = false)
     {
-        if($decode){
-            try{
+        if ($decode) {
+            try {
                 $s = urldecode($id);
                 return json_decode(decrypt($s), true);
                 // return json_decode(base64_decode($s), true);
             }
-            catch(Exception $exception){
-                if(config('app.debug')){
+            catch (Exception $exception) {
+                if (config('app.debug')) {
                     d($exception);
                 }
             }
             return null;
-        }
-        else{
+        } else {
             $array = [static::class, $id];
             $s = encrypt(json_encode($array, JSON_UNESCAPED_UNICODE));
             return urlencode($s);
         }
-    }
-
-    /**
-     * Encode model id
-     *
-     * @param string|Model $model
-     *
-     * @return string
-     */
-    public static function encodeModelSlug($model): string
-    {
-        $id = $model instanceof Model ? $model->id : $model;
-        $array = [static::class, $id];
-        $s = encrypt(json_encode($array));
-        return urlencode($s);
     }
 
     /**
@@ -92,5 +76,20 @@ trait SlugModelTrait
     public function getModelSlug(): string
     {
         return static::encodeModelSlug($this);
+    }
+
+    /**
+     * Encode model id
+     *
+     * @param string|Model $model
+     *
+     * @return string
+     */
+    public static function encodeModelSlug($model): string
+    {
+        $id = $model instanceof Model ? $model->id : $model;
+        $array = [static::class, $id];
+        $s = encrypt(json_encode($array));
+        return urlencode($s);
     }
 }

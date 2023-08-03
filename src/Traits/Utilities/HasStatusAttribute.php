@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
 trait HasStatusAttribute
 {
     /**
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public static function getStatuses(): Collection
     {
@@ -73,9 +73,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeActivatedOnly(Builder $builder): Builder
     {
@@ -83,9 +83,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotActivatedOnly(Builder $builder): Builder
     {
@@ -93,7 +93,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -112,9 +112,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeActiveOnly(Builder $builder): Builder
     {
@@ -122,9 +122,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotActiveOnly(Builder $builder): Builder
     {
@@ -132,7 +132,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -151,9 +151,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeApprovedOnly(Builder $builder): Builder
     {
@@ -161,9 +161,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotApprovedOnly(Builder $builder): Builder
     {
@@ -171,7 +171,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -190,9 +190,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeArchivedOnly(Builder $builder): Builder
     {
@@ -200,9 +200,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotArchivedOnly(Builder $builder): Builder
     {
@@ -210,7 +210,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -229,9 +229,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeBandedOnly(Builder $builder): Builder
     {
@@ -239,9 +239,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotBandedOnly(Builder $builder): Builder
     {
@@ -249,7 +249,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -268,9 +268,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeCanceledOnly(Builder $builder): Builder
     {
@@ -278,9 +278,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotCanceledOnly(Builder $builder): Builder
     {
@@ -288,7 +288,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -307,9 +307,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeCompletedOnly(Builder $builder): Builder
     {
@@ -317,9 +317,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotCompletedOnly(Builder $builder): Builder
     {
@@ -327,7 +327,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -346,9 +346,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeConfirmedOnly(Builder $builder): Builder
     {
@@ -356,9 +356,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotConfirmedOnly(Builder $builder): Builder
     {
@@ -366,7 +366,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -385,9 +385,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeDraftOnly(Builder $builder): Builder
     {
@@ -395,9 +395,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotDraftOnly(Builder $builder): Builder
     {
@@ -405,7 +405,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -424,9 +424,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeFinishedOnly(Builder $builder): Builder
     {
@@ -434,9 +434,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotFinishedOnly(Builder $builder): Builder
     {
@@ -444,7 +444,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -463,9 +463,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeInactiveOnly(Builder $builder): Builder
     {
@@ -473,9 +473,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotInactiveOnly(Builder $builder): Builder
     {
@@ -483,7 +483,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -502,9 +502,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNewOnly(Builder $builder): Builder
     {
@@ -512,9 +512,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotNewOnly(Builder $builder): Builder
     {
@@ -522,7 +522,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -541,9 +541,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopePaidOnly(Builder $builder): Builder
     {
@@ -551,9 +551,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotPaidOnly(Builder $builder): Builder
     {
@@ -561,7 +561,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -580,9 +580,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopePendingOnly(Builder $builder): Builder
     {
@@ -590,9 +590,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotPendingOnly(Builder $builder): Builder
     {
@@ -600,7 +600,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -619,9 +619,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeProcessingOnly(Builder $builder): Builder
     {
@@ -629,9 +629,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotProcessingOnly(Builder $builder): Builder
     {
@@ -639,7 +639,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -658,9 +658,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeRejectedOnly(Builder $builder): Builder
     {
@@ -668,9 +668,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotRejectedOnly(Builder $builder): Builder
     {
@@ -678,7 +678,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -697,9 +697,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeUnconfirmedOnly(Builder $builder): Builder
     {
@@ -707,9 +707,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotUnconfirmedOnly(Builder $builder): Builder
     {
@@ -717,7 +717,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -736,9 +736,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeUnpaidOnly(Builder $builder): Builder
     {
@@ -746,9 +746,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotUnpaidOnly(Builder $builder): Builder
     {
@@ -756,7 +756,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
@@ -775,9 +775,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeUsedOnly(Builder $builder): Builder
     {
@@ -785,9 +785,9 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param Builder $builder
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeNotUsedOnly(Builder $builder): Builder
     {
@@ -795,7 +795,7 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param  bool  $save
+     * @param bool $save
      *
      * @return void
      */
