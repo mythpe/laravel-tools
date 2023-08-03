@@ -16,9 +16,9 @@ class {modelName}Controller extends Controller
 {
     public function __construct()
     {
+        parent::__construct();
         self::$indexTransformer = self::$controllerTransformer = Transformer::class;
         self::$controllerModel = Model::class;{oldest}
-        parent::__construct();
     }
 
     /**
