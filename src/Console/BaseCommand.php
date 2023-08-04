@@ -1,18 +1,16 @@
 <?php
 /*
- * MyTh Ahmed Faiz Copyright © 2016-2023 All rights reserved.
+ * MyTh Ahmed Faiz Copyright © 2016-2022 All rights reserved.
  * Email: mythpe@gmail.com
  * Mobile: +966590470092
  * Website: https://www.4myth.com
- * Github: https://github.com/mythpe
  */
 
 namespace Myth\LaravelTools\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -62,39 +60,34 @@ class BaseCommand extends Command
      * @param $directory
      * @param bool $file
      *
-     * @throws FileNotFoundException
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function fetchFiles($directory, bool $file = !1)
+    protected function fetchFiles($directory, bool $file = !1): void
     {
-        $this->iniCollection();
-        Schema::disableForeignKeyConstraints();
-
-        $files = $file ? [$directory] : $this->disk()->files($directory);
-
-        asort($files);
-        //d($files);
-        foreach ($files as $file) {
-            if (!Str::endsWith($file, '.json')) {
-                continue;
+        $this->components->task('Fetch Files:', function () use (&$directory, &$file) {
+            $this->line('');
+            $this->iniCollection();
+            Schema::disableForeignKeyConstraints();
+            $files = $file ? [$directory] : $this->disk()->files($directory);
+            asort($files);
+            foreach ($files as $file) {
+                if (!Str::endsWith($file, '.json')) {
+                    continue;
+                }
+                $data = json_decode($this->disk()->get($file), true);
+                $table = strtolower(Str::snake(Str::plural(pathinfo($file, PATHINFO_FILENAME))));
+                $this->truncate($table);
+                foreach ($data as $v) {
+                    $this->insert($v, $table);
+                }
             }
-            //if($file != 'utilities/countries.json'){
-            //    continue;
-            //}
-            //d($file);
-            $data = json_decode($this->disk()->get($file), true);
-            $table = strtolower(Str::snake(Str::plural(pathinfo($file, PATHINFO_FILENAME))));
-            $this->truncate($table);
-            //d($data);
-            foreach ($data as $v) {
-                $this->insert($v, $table);
-            }
-        }
+        });
     }
 
     /**
      * @param array $data
      *
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     protected function iniCollection(array $data = []): Collection
     {
@@ -105,7 +98,7 @@ class BaseCommand extends Command
     }
 
     /**
-     * @return Filesystem
+     * @return \Illuminate\Contracts\Filesystem\Filesystem
      */
     protected function disk(): Filesystem
     {
@@ -115,7 +108,7 @@ class BaseCommand extends Command
     /**
      * @param $table
      */
-    protected function truncate($table)
+    protected function truncate($table): void
     {
         if (!$this->truncate) {
             return;
@@ -160,7 +153,7 @@ class BaseCommand extends Command
     /**
      * @param $table
      */
-    protected function doTruncate($table)
+    protected function doTruncate($table): void
     {
         if ($this->isTruncated($table)) {
             return;
@@ -175,15 +168,13 @@ class BaseCommand extends Command
      * @param $table
      * @param null $model
      */
-    protected function insert($data, $table, $model = null)
+    protected function insert($data, $table, $model = null): void
     {
         $this->iniCollection();
-        //d($data);
         $hasRelations = array_key_exists('data', $data);
         $insert = $hasRelations ? $data['data'] : $data;
         unset($data['data']);
-        //d($data);
-
+        $parentName = $model ? class_basename($model) : null;
         if (is_null($model)) {
             $namespaces = ['\\App\\Models', '\\App\\Models\\Utilities'];
             $directories = Storage::disk('app')->directories('Models');
@@ -203,29 +194,29 @@ class BaseCommand extends Command
             $insert = Arr::only($insert, $model->getFillable());
             $model->fill($insert);
             $model->save();
+            //$this->echo("Push Data: $table");
             $this->pushData($model);
         } else {
-            $relationType = $model->{$table}();
-            if (
-                !$relationType instanceof HasMany
-                // !$relationType instanceof BelongsToMany
-            ) {
-                //d(get_class($model->{$table}()));
-            }
-            // d($insert,$model,$model->getFillable());
-            // $insert = Arr::only($insert, $model->getFillable());
             $model = $model->{$table}()->create($insert);
+            //$this->echo("Inserted: $table");
             $this->pushData($model);
         }
-        static::$debug && $this->echo(class_basename($model)." Inserted: {$model->id}");
+        $classLabel = Str::singular(class_basename($model));
+        $this->echo("[".($parentName ? "$parentName => " : '')."$classLabel] => {$model->id}");
 
         if ($hasRelations && count($data) > 0) {
-            //d($data);
             foreach ($data as $relation => $row) {
                 if (Str::startsWith($relation, '_')) {
                     continue;
                 }
-                $this->truncate($relation);
+                $r = $model->{$relation}();
+                $_table = method_exists($r, 'getTable') ? $r->getTable() : $relation;
+                $this->truncate($_table);
+                if ($r instanceof BelongsToMany) {
+                    $model->{$relation}()->sync($row, !1);
+                    $this->echo("Sync [$classLabel]: ".json_encode($row));
+                    break;
+                }
                 foreach ($row as $child) {
                     $this->insert($child, $relation, $model);
                 }
@@ -236,7 +227,7 @@ class BaseCommand extends Command
     /**
      * @param $model
      *
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     protected function pushData($model): Collection
     {
@@ -256,11 +247,12 @@ class BaseCommand extends Command
      * @param string $text
      * @param string $method
      */
-    protected function echo(string $text = '', string $method = 'line')
+    protected function echo(string $text, ?string $method = null): void
     {
         if (app()->runningInConsole()) {
-            if (!method_exists($this, $method)) {
-                $this->l($text, $method);
+            if (!$method || !method_exists($this, $method)) {
+                // $this->l($text, $method);
+                $this->components->info($text);
             } else {
                 $this->{$method}($text);
             }
