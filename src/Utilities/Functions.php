@@ -535,7 +535,7 @@ if (!function_exists('downloadMedia')) {
      * @return string|null
      * @uses route
      * @uses Model
-     * @uses \Spatie\MediaLibrary\MediaCollections\Models\Media
+     * @uses Media
      */
     function downloadMedia($media, string $routeName = 'Static.downloadMedia'): ?string
     {

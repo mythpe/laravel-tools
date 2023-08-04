@@ -10,6 +10,7 @@
 namespace Myth\LaravelTools\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
@@ -61,7 +62,7 @@ class BaseCommand extends Command
      * @param $directory
      * @param bool $file
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     protected function fetchFiles($directory, bool $file = !1): void
     {
@@ -88,7 +89,7 @@ class BaseCommand extends Command
     /**
      * @param array $data
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     protected function iniCollection(array $data = []): Collection
     {
@@ -99,7 +100,7 @@ class BaseCommand extends Command
     }
 
     /**
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return Filesystem
      */
     protected function disk(): Filesystem
     {
@@ -228,7 +229,7 @@ class BaseCommand extends Command
     /**
      * @param $model
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     protected function pushData($model): Collection
     {
