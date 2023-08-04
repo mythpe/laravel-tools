@@ -105,32 +105,56 @@ trait SearchTrait
                         }
 
                     }
-                    if ($column && Schema::hasColumn($this->searchTable, $column)) {
-                        $this->mergeSearchColumns($column);
+                    if ($column) {
+                        if (Schema::hasColumn($this->searchTable, $column)) {
+                            $this->mergeSearchColumns($column);
+                        } else {
+                            if (!$this->isMapQueryColumn($column)) {
+                                if (method_exists($model, $this->parseColumn($column))) {
+                                    $this->mergeSearchColumns($column);
+                                } elseif (method_exists($model, $this->parseColumn($column))) {
+                                    $this->mergeSearchColumns($column);
+                                }
+                            }
+                        }
                     }
                 }
             } else {
                 $this->mergeSearchColumns($model->getFillable());
             }
-            // d($this->getSearchColumns());
         }
 
         $builder->where(function (Builder $builder) use ($words, $model) {
             foreach ($this->getSearchColumns() as $k => $column) {
                 /** Default no custom */
                 if (is_numeric($k)) {
-                    if (Schema::hasColumn($this->searchTable, $column) || $this->isMapQueryColumn($column)) {
+                    if (
+                        // Normal
+                        Schema::hasColumn($this->searchTable, $column)
+                        // Set map from controller
+                        || $this->isMapQueryColumn($column)
+                        // Search if it has relation
+                        || method_exists($model, $this->parseColumn($column))
+                        || method_exists($model, $this->parseColumn($column, !0))
+                    ) {
                         if ($this->isMapQueryColumn($column)) {
                             $map = $this->getMapSearchQueryColumns($column);
                             if (count($map) == 1 && method_exists($model, 'scope'.ucfirst($map[0]))) {
-                                //d($map,$words);
                                 $builder->orWhere(fn($q) => $q->{$map[0]}($words));
                             } else {
+                                // d(3);
                                 $relation = ($map['relation'] ?? ($map[0] ?? Str::beforeLast($column, '_id')));
                                 $method = ($map['method'] ?? 'orWhereHas');
                                 $operator = ($map['operator'] ?? 'LIKE');
                                 $value = str_ireplace('{v}', $words, ($map['value'] ?? '%{v}%'));
-                                $column = ($map['column'] ?? 'name');
+                                $column = ($map['column'] ?? null);
+                                if (is_null($column)) {
+                                    if (method_exists($model, 'getNameColumn')) {
+                                        $column = $model->getNameColumn();
+                                    } else {
+                                        $name = 'name';
+                                    }
+                                }
                                 // d($relation,$method,$operator,$value,$column);
                                 $builder->{$method}($relation, function (Builder $builder) use ($column, $operator, $value, $words) {
                                     return $builder->where($column, $operator, $value);
@@ -229,14 +253,6 @@ trait SearchTrait
     }
 
     /**
-     * @return array
-     */
-    protected function getSearchColumns(): array
-    {
-        return $this->searchColumns;
-    }
-
-    /**
      * @param $column
      *
      * @return bool
@@ -244,6 +260,22 @@ trait SearchTrait
     protected function isMapQueryColumn($column): bool
     {
         return array_key_exists($column, $this->mapSearchQueryColumns);
+    }
+
+    public function parseColumn($str, $camel = !1): string
+    {
+        if (!$camel) {
+            return Str::snake(Str::beforeLast($str, '_id'));
+        }
+        return Str::endsWith($str, 'Id') ? Str::camel(Str::beforeLast($str, 'Id')) : $str;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getSearchColumns(): array
+    {
+        return $this->searchColumns;
     }
 
     /**
