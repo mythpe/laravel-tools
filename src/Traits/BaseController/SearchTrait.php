@@ -262,6 +262,12 @@ trait SearchTrait
         return array_key_exists($column, $this->mapSearchQueryColumns);
     }
 
+    /**
+     * Parsing name of column
+     * @param $str
+     * @param $camel
+     * @return string
+     */
     public function parseColumn($str, $camel = !1): string
     {
         if (!$camel) {
