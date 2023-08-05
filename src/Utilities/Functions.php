@@ -344,16 +344,15 @@ if (!function_exists('date_by_locale')) {
                 '1 س',
                 'س',
             ], $str);
-            $str = str_ireplace([
-                "دقيقة",
-                "دقائق",
-            ], 'د', $str);
             //$str = str_ireplace([
             //    "ثانية",
             //    //"ثواني",
             //    //"ثوان",
             //], 'ث', $str);
-            return $str;
+            return str_ireplace([
+                "دقيقة",
+                "دقائق",
+            ], 'د', $str);
         }
         catch (Exception $exception) {
             return '';

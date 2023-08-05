@@ -346,7 +346,6 @@ class BaseCommand extends Command
     {
         $n = Str::before($name, '{');
         $n = ucfirst(str_ireplace(['-', ':'], ' ', strtolower(Str::kebab($n))));
-        $n = Str::pluralStudly($n);
-        return $n;
+        return Str::pluralStudly($n);
     }
 }

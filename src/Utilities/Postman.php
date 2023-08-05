@@ -443,7 +443,7 @@ class Postman
                         $query = array_merge($query, $this->getControllerParams($route->getController()));
                     }
 
-                    if (in_array($actionName, ['indexActiveOnly']) || $isPost) {
+                    if ($actionName == 'indexActiveOnly' || $isPost) {
                         $query = array_merge($query, $this->getControllerPaginationParams($route->getController()));
                     }
                 }
@@ -786,7 +786,6 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
         foreach ($rules as $k => $rule) {
             if ($rule instanceof Unique) {
                 $rules[$k] = "unique";
-                continue;
             } elseif ($rule instanceof Exists || $rule instanceof Password) {
                 $rules[$k] = null;
             } elseif ($rule instanceof Rule) {
