@@ -102,9 +102,9 @@ trait HasTranslatorTrait
     public function getMapTranslators(?string $locale = null): array
     {
         $result = [];
-        if (is_null($locale) && static::getDefaultTranslatorLocale() == app()->getLocale()) {
-            return $result;
-        }
+        // if (is_null($locale) && static::getDefaultTranslatorLocale() == app()->getLocale()) {
+        //     return $result;
+        // }
         foreach ($this->getTranslators($locale) as $translator) {
             $result["{$translator->attribute}_{$translator->locale}"] = $translator->value;
         }
@@ -119,7 +119,7 @@ trait HasTranslatorTrait
 
     public function translateAttribute(string $attribute, ?string $locale = null): ?string
     {
-        return $this->getTranslatorModel($attribute, $locale)?->value;
+        return $this->getTranslatorModel($attribute, $locale)?->value ?: $this->{$attribute};
     }
 
     public function getTranslatorModel(string $attribute, ?string $locale = null): ?Model
