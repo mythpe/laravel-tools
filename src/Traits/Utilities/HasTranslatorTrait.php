@@ -16,6 +16,12 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasTranslatorTrait
 {
+    /**
+     * Append attributes on resource
+     * @var bool
+     */
+    static bool $autoAppendTranslators = !0;
+
     public static function getTranslatorAttributes(): array
     {
         return ['name'];
@@ -33,8 +39,7 @@ trait HasTranslatorTrait
 
     public static function getDefaultTranslatorLocale(): string
     {
-        $locale = collect(self::getTranslatorLocales())->first(fn($l) => $l != self::getOriginalTranslatorLocale());
-        return $locale ?: config('app.locale');
+        return app()->getLocale();
     }
 
     protected static function bootHasTranslatorTrait(): void
@@ -96,10 +101,12 @@ trait HasTranslatorTrait
 
     public function getMapTranslators(?string $locale = null): array
     {
-        $locale = $locale ?: self::getDefaultTranslatorLocale();
         $result = [];
+        if (is_null($locale) && static::getDefaultTranslatorLocale() == app()->getLocale()) {
+            return $result;
+        }
         foreach ($this->getTranslators($locale) as $translator) {
-            $result["{$translator->attribute}_{$locale}"] = $translator->value;
+            $result["{$translator->attribute}_{$translator->locale}"] = $translator->value;
         }
         return $result;
     }
