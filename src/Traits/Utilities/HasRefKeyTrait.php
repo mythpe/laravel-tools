@@ -14,6 +14,14 @@ use Illuminate\Support\Str;
 trait HasRefKeyTrait
 {
     /**
+     * @return string
+     */
+    public static function getRefKeyName(): string
+    {
+        return 'ref_key';
+    }
+
+    /**
      * @return mixed|void
      */
     protected static function bootHasRefKeyTrait()
@@ -25,14 +33,6 @@ trait HasRefKeyTrait
                 $model->save();
             }
         });
-    }
-
-    /**
-     * @return string
-     */
-    public static function getRefKeyName(): string
-    {
-        return 'ref_key';
     }
 
     /**

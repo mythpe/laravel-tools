@@ -126,6 +126,15 @@ trait CrudTrait
     protected bool $autoSavingImage = !1;
 
     /**
+     * @return array
+     */
+    public static function getInsertModelImageOptions(): array
+    {
+        $model = self::$controllerModel;
+        return ['blobAvatar', $model::$mediaSingleCollection];
+    }
+
+    /**
      * @return Response|mixed|BinaryFileResponse|void|null
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -272,20 +281,6 @@ trait CrudTrait
     }
 
     /**
-     * @return array
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    protected function getMapFromRequest(): array
-    {
-        $array = [];
-        foreach ($this->mapFromRequest as $rule => $request) {
-            $array[$request] = $this->request->input($rule);
-        }
-        return $array;
-    }
-
-    /**
      * Insert auto image of model
      * @param Model $model
      *
@@ -302,19 +297,10 @@ trait CrudTrait
             try {
                 $model->addModelMedia($k);
             }
-            catch (\Exception $exception) {
+            catch (Exception $exception) {
                 return $this->errorResponse($exception->getMessage());
             }
         }
-    }
-
-    /**
-     * @return array
-     */
-    public static function getInsertModelImageOptions(): array
-    {
-        $model = self::$controllerModel;
-        return ['blobAvatar', $model::$mediaSingleCollection];
     }
 
     /**
@@ -488,6 +474,51 @@ trait CrudTrait
     }
 
     /**
+     * Check from request parameters range (from-to) if equal 0 remove it.
+     *
+     * @return void
+     */
+    public function validateRangeRangeParameters(): void
+    {
+        if (count($this->validationRangeParameters) < 1) {
+            return;
+        }
+
+        $filter = $this->request->input('filter', []);
+        if ($this->request->has('filter') && !is_array($filter)) {
+            $filter = json_decode($filter, !0);
+        }
+        if (!is_array($filter)) {
+            return;
+        }
+        foreach ($this->validationRangeParameters as $name) {
+            $from = "from_{$name}";
+            $to = "to_{$name}";
+            if (array_key_exists($from, $filter) && !$filter[$from]) {
+                unset($filter[$from]);
+            }
+            if (array_key_exists($to, $filter) && !$filter[$to]) {
+                unset($filter[$to]);
+            }
+            $this->request->merge(['filter' => $filter]);
+        }
+    }
+
+    /**
+     * @return array
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    protected function getMapFromRequest(): array
+    {
+        $array = [];
+        foreach ($this->mapFromRequest as $rule => $request) {
+            $array[$request] = $this->request->input($rule);
+        }
+        return $array;
+    }
+
+    /**
      * @return Model|mixed
      */
     protected function getBindModel()
@@ -517,36 +548,5 @@ trait CrudTrait
             $builder = $this->filerQuery($builder);
         }
         return $builder;
-    }
-
-    /**
-     * Check from request parameters range (from-to) if equal 0 remove it.
-     *
-     * @return void
-     */
-    public function validateRangeRangeParameters(): void
-    {
-        if (count($this->validationRangeParameters) < 1) {
-            return;
-        }
-
-        $filter = $this->request->input('filter', []);
-        if ($this->request->has('filter') && !is_array($filter)) {
-            $filter = json_decode($filter, !0);
-        }
-        if (!is_array($filter)) {
-            return;
-        }
-        foreach ($this->validationRangeParameters as $name) {
-            $from = "from_{$name}";
-            $to = "to_{$name}";
-            if (array_key_exists($from, $filter) && !$filter[$from]) {
-                unset($filter[$from]);
-            }
-            if (array_key_exists($to, $filter) && !$filter[$to]) {
-                unset($filter[$to]);
-            }
-            $this->request->merge(['filter' => $filter]);
-        }
     }
 }

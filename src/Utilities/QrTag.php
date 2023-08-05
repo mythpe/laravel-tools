@@ -30,18 +30,6 @@ class QrTag
     }
 
     /**
-     * To convert the string value to hex.
-     *
-     * @param $value
-     *
-     * @return false|string
-     */
-    protected function toHex($value)
-    {
-        return pack("H*", sprintf("%02X", $value));
-    }
-
-    /**
      * @return int
      */
     public function getTag(): int
@@ -65,5 +53,17 @@ class QrTag
     public function getValue(): string
     {
         return $this->value;
+    }
+
+    /**
+     * To convert the string value to hex.
+     *
+     * @param $value
+     *
+     * @return false|string
+     */
+    protected function toHex($value)
+    {
+        return pack("H*", sprintf("%02X", $value));
     }
 }

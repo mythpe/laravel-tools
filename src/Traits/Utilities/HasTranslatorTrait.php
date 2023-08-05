@@ -9,17 +9,33 @@
 
 namespace Myth\LaravelTools\Traits\Utilities;
 
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasTranslatorTrait
 {
-    /**
-     * Append Translators
-     * @var bool
-     */
-    static bool $autoAppendTranslators = !0;
+    public static function getTranslatorAttributes(): array
+    {
+        return ['name'];
+    }
+
+    public static function getTranslatorLocales(): array
+    {
+        return config('4myth-tools.locales');
+    }
+
+    public static function getOriginalTranslatorLocale(): string
+    {
+        return config('app.locale');
+    }
+
+    public static function getDefaultTranslatorLocale(): string
+    {
+        $locale = collect(self::getTranslatorLocales())->first(fn($l) => $l != self::getOriginalTranslatorLocale());
+        return $locale ?: config('app.locale');
+    }
 
     protected static function bootHasTranslatorTrait(): void
     {
@@ -54,24 +70,9 @@ trait HasTranslatorTrait
             try {
                 $model->translator()->delete();
             }
-            catch (\Exception) {
+            catch (Exception) {
             }
         });
-    }
-
-    public static function getTranslatorAttributes(): array
-    {
-        return ['name'];
-    }
-
-    public static function getTranslatorLocales(): array
-    {
-        return config('4myth-tools.locales');
-    }
-
-    public static function getOriginalTranslatorLocale(): string
-    {
-        return config('app.locale');
     }
 
     public function createTranslator($locale, $attribute, $value): Model
@@ -95,7 +96,7 @@ trait HasTranslatorTrait
 
     public function getMapTranslators(?string $locale = null): array
     {
-        $locale = $locale ?: self::getDefualtTranslatorLocale();
+        $locale = $locale ?: self::getDefaultTranslatorLocale();
         $result = [];
         foreach ($this->getTranslators($locale) as $translator) {
             $result["{$translator->attribute}_{$locale}"] = $translator->value;
@@ -103,15 +104,9 @@ trait HasTranslatorTrait
         return $result;
     }
 
-    public static function getDefualtTranslatorLocale(): string
-    {
-        $locale = collect(self::getTranslatorLocales())->first(fn($l) => $l != self::getOriginalTranslatorLocale());
-        return $locale ?: config('app.locale');
-    }
-
     public function getTranslators(?string $locale = null): Collection
     {
-        $locale = $locale ?: self::getDefualtTranslatorLocale();
+        $locale = $locale ?: self::getDefaultTranslatorLocale();
         return $this->translator()->where(['locale' => $locale])->get();
     }
 
@@ -122,7 +117,7 @@ trait HasTranslatorTrait
 
     public function getTranslatorModel(string $attribute, ?string $locale = null): ?Model
     {
-        $locale = $locale ?: self::getDefualtTranslatorLocale();
+        $locale = $locale ?: self::getDefaultTranslatorLocale();
         return $this->translator()->where(['locale' => $locale, 'attribute' => $attribute])->first();
     }
 

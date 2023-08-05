@@ -52,6 +52,20 @@ trait SearchTrait
     protected string $searchTable = '';
 
     /**
+     * Parsing name of column
+     * @param $str
+     * @param $camel
+     * @return string
+     */
+    public function parseColumn($str, $camel = !1): string
+    {
+        if (!$camel) {
+            return Str::snake(Str::beforeLast($str, '_id'));
+        }
+        return Str::endsWith($str, 'Id') ? Str::camel(Str::beforeLast($str, 'Id')) : $str;
+    }
+
+    /**
      * @param Builder|BaseModel $builder
      *
      * @return Builder|BaseModel
@@ -260,20 +274,6 @@ trait SearchTrait
     protected function isMapQueryColumn($column): bool
     {
         return array_key_exists($column, $this->mapSearchQueryColumns);
-    }
-
-    /**
-     * Parsing name of column
-     * @param $str
-     * @param $camel
-     * @return string
-     */
-    public function parseColumn($str, $camel = !1): string
-    {
-        if (!$camel) {
-            return Str::snake(Str::beforeLast($str, '_id'));
-        }
-        return Str::endsWith($str, 'Id') ? Str::camel(Str::beforeLast($str, 'Id')) : $str;
     }
 
     /**

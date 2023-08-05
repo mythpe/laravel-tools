@@ -55,6 +55,21 @@ trait SlugModelTrait
     }
 
     /**
+     * Encode model id
+     *
+     * @param string|Model $model
+     *
+     * @return string
+     */
+    public static function encodeModelSlug($model): string
+    {
+        $id = $model instanceof Model ? $model->id : $model;
+        $array = [static::class, $id];
+        $s = encrypt(json_encode($array));
+        return urlencode($s);
+    }
+
+    /**
      * @param string $route
      * @param int $minutes
      * @param array $params
@@ -77,20 +92,5 @@ trait SlugModelTrait
     public function getModelSlug(): string
     {
         return static::encodeModelSlug($this);
-    }
-
-    /**
-     * Encode model id
-     *
-     * @param string|Model $model
-     *
-     * @return string
-     */
-    public static function encodeModelSlug($model): string
-    {
-        $id = $model instanceof Model ? $model->id : $model;
-        $array = [static::class, $id];
-        $s = encrypt(json_encode($array));
-        return urlencode($s);
     }
 }

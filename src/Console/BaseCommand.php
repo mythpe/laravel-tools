@@ -9,10 +9,12 @@
 
 namespace Myth\LaravelTools\Console;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -57,6 +59,43 @@ class BaseCommand extends Command
     {
         parent::__construct();
         $this->collection = Collection::make();
+    }
+
+    /**
+     * Insert random image
+     * @param BaseModel $model
+     * @param array $data
+     * @return void
+     */
+    public function insertImageFromUrl(BaseModel $model, array $data): void
+    {
+        if (array_key_exists('_avatar', $data)) {
+            try {
+                $src = $data['_avatar'];
+                if ($src === 1 || $src === !0) {
+                    $r = 2 / 3;
+                    $w = 400;
+                    $h = (int) floor($w * $r);
+                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/$w/$h";
+                } elseif (Str::startsWith($src, ($r = 'r:'))) {
+                    $array = explode(',', Str::after($src, $r));
+                    $r = explode('/', $array[0]);
+                    $r = $r[0] / $r[1];
+                    $w = $array[1];
+                    $h = (int) floor($w * $r);
+                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/$w/$h";
+                } elseif (is_array($src)) {
+                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/{$src[0]}/".($src[1] ?? $src[0]);
+                } elseif (is_string($src) && Str::startsWith($src, '/')) {
+                    $src = base_path($src);
+                }
+                $model->addModelMedia($src);
+            }
+            catch (Exception $exception) {
+                $this->echo("Insert Image: [".get_class($model)."] ID => {$model->id}");
+                $this->components->error($exception);
+            }
+        }
     }
 
     /**
@@ -203,7 +242,7 @@ class BaseCommand extends Command
             $this->pushData($model);
         } else {
             $model = $model->{$table}();
-            if ($model instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
+            if ($model instanceof Relation) {
                 $fill = Arr::only($insert, $model->getModel()->getFillable());
             } else {
                 $fill = Arr::only($insert, $model->getFillable());
@@ -232,43 +271,6 @@ class BaseCommand extends Command
                 foreach ($row as $child) {
                     $this->insert($child, $relation, $model);
                 }
-            }
-        }
-    }
-
-    /**
-     * Insert random image
-     * @param BaseModel $model
-     * @param array $data
-     * @return void
-     */
-    public function insertImageFromUrl(BaseModel $model, array $data): void
-    {
-        if (array_key_exists('_avatar', $data)) {
-            try {
-                $src = $data['_avatar'];
-                if ($src === 1 || $src === !0) {
-                    $r = 2 / 3;
-                    $w = 400;
-                    $h = (int) floor($w * $r);
-                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/$w/$h";
-                } elseif (Str::startsWith($src, ($r = 'r:'))) {
-                    $array = explode(',', Str::after($src, $r));
-                    $r = explode('/', $array[0]);
-                    $r = $r[0] / $r[1];
-                    $w = $array[1];
-                    $h = (int) floor($w * $r);
-                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/$w/$h";
-                } elseif (is_array($src)) {
-                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/{$src[0]}/".($src[1] ?? $src[0]);
-                } elseif (is_string($src) && Str::startsWith($src, '/')) {
-                    $src = base_path($src);
-                }
-                $model->addModelMedia($src);
-            }
-            catch (\Exception $exception) {
-                $this->echo("Insert Image: [".get_class($model)."] ID => {$model->id}");
-                $this->components->error($exception);
             }
         }
     }

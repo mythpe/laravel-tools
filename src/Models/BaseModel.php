@@ -20,7 +20,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Traits\BaseModel\HasMediaTrait;
 use Myth\LaravelTools\Traits\BaseModel\SlugModelTrait;
-use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
@@ -32,12 +31,11 @@ class BaseModel extends Authenticatable implements HasMedia
     use Notifiable;
     use HasMediaTrait;
     use SlugModelTrait;
-    use HasTranslatorTrait;
 
     /**
      * @var bool
      */
-    public $registerMediaConversionsUsingModelInstance = true;
+    public $registerMediaConversionsUsingModelInstance = !0;
 
 
     /**
@@ -332,41 +330,6 @@ class BaseModel extends Authenticatable implements HasMedia
     }
 
     /**
-     * Check if model has method
-     *
-     * @param $method
-     *
-     * @return string|null
-     */
-    protected function modelHasMethod($method): ?string
-    {
-        $methods = $this->strCasesArray($method);
-
-        foreach ($methods as $m) {
-            if (method_exists($this, $m)) {
-                return $m;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * helper
-     *
-     * @param $str
-     *
-     * @return array
-     */
-    protected function strCasesArray($str): array
-    {
-        return collect([
-            $str,
-            Str::snake($str),
-            Str::camel($str),
-        ])->uniqueStrict()->toArray();
-    }
-
-    /**
      * @param Builder $builder
      * @param $value
      *
@@ -441,5 +404,40 @@ class BaseModel extends Authenticatable implements HasMedia
     public function getAppends(): array
     {
         return $this->appends;
+    }
+
+    /**
+     * Check if model has method
+     *
+     * @param $method
+     *
+     * @return string|null
+     */
+    protected function modelHasMethod($method): ?string
+    {
+        $methods = $this->strCasesArray($method);
+
+        foreach ($methods as $m) {
+            if (method_exists($this, $m)) {
+                return $m;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * helper
+     *
+     * @param $str
+     *
+     * @return array
+     */
+    protected function strCasesArray($str): array
+    {
+        return collect([
+            $str,
+            Str::snake($str),
+            Str::camel($str),
+        ])->uniqueStrict()->toArray();
     }
 }
