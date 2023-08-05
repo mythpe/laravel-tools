@@ -10,18 +10,17 @@
 namespace App\Models{namespace};
 
 use App\Models\BaseModel;
-{model_use}
+
 class {modelName} extends BaseModel
 {
     {class_use}
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
-        'name_ar',
-        'name_en',{fillable}
+        'name',{fillable}
     ];
 
     /**
@@ -30,8 +29,7 @@ class {modelName} extends BaseModel
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'name_ar' => null,
-        'name_en' => null,{attributes}
+        'name' => null,{attributes}
     ];
 
     /**
@@ -41,4 +39,5 @@ class {modelName} extends BaseModel
      */
     protected $casts = [{casts}
     ];
+    {class_methods}
 }

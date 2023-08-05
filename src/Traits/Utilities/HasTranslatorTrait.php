@@ -77,35 +77,34 @@ trait HasTranslatorTrait
         //     }
         // });
         self::saving(function (self $model) {
+            // Save the original value of attribute.
             $availableAttributes = self::availableTranslationAttributes();
             if (empty($availableAttributes)) {
                 return;
             }
-            $locales = self::getAvailableTranslatorLocales();
             $data = self::getTranslationFrom();
-            $originalLocale = self::translatorLocale();
-            foreach ($locales as $locale) {
+            $translatorLocale = self::translatorLocale();
+            foreach (self::getAvailableTranslatorLocales() as $locale) {
                 foreach ($availableAttributes as $attribute) {
                     $key = "{$attribute}_$locale";
-                    $value = $data[$key];
-                    if ($locale == $originalLocale && $model->isFillable($attribute)) {
+                    $value = $data[$key] ?? null;
+                    if ($locale == $translatorLocale && $model->isFillable($attribute)) {
                         $model->fill([$attribute => $value]);
                     }
                 }
             }
         });
         self::saved(function (self $model) {
-            $translatable = self::availableTranslationAttributes();
-            if (empty($translatable)) {
+            $availableAttributes = self::availableTranslationAttributes();
+            if (empty($availableAttributes)) {
                 return;
             }
-            $locales = self::getAvailableTranslatorLocales();
             $data = self::getTranslationFrom();
             $translatorLocale = self::translatorLocale();
-            foreach ($locales as $locale) {
-                foreach ($translatable as $attribute) {
+            foreach (self::getAvailableTranslatorLocales() as $locale) {
+                foreach ($availableAttributes as $attribute) {
                     $key = "{$attribute}_$locale";
-                    $value = $data[$key];
+                    $value = $data[$key] ?? null;
                     // Skip original attribute to save the translation
                     if ($locale == $translatorLocale && $model->isFillable($attribute)) {
                         continue;

@@ -27,6 +27,7 @@ class MakeModelCommand extends BaseCommand
      */
     protected $signature = 'myth:model {model}
 {--s|scoped : Create model with scopes}
+{--t|translator : Create model with translator scope}
 {--d|delete : Delete model}';
 
     //use myth crud model command
@@ -164,13 +165,10 @@ html;
     protected function fillStub(string $stub): string
     {
         $scoped = $this->option('scoped');
-        $model_use = $class_use = $fillable = $attributes = $casts = $rules = $migration = $resource = $oldest = '';
+        $class_methods = $class_use = $fillable = $attributes = $casts = $rules = $migration = $resource = $oldest = '';
 
         if ($scoped) {
-            $model_use .= 'use Myth\LaravelTools\Traits\Utilities\OrderByScopeTrait;
-use Myth\LaravelTools\Traits\Utilities\ActiveScopeTrait;
-';
-            $class_use .= 'use ActiveScopeTrait, OrderByScopeTrait;
+            $class_use .= 'use \Myth\LaravelTools\Traits\Utilities\OrderByScopeTrait, \Myth\LaravelTools\Traits\Utilities\ActiveScopeTrait;
 ';
             $fillable .= <<<html
 
@@ -201,12 +199,23 @@ html;
         //$this->oldest = \'order_by\';';
 
         }
+
+        if ($this->option('translator')) {
+            $class_use .= 'use \Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
+';
+            $class_methods .= "
+    public static function availableTranslationAttributes(): array
+    {
+        return ['name',];
+    }
+";
+        }
+
         return str_ireplace([
             '{namespace}',
             '{model}',
             '{modelName}',
             '{year}',
-            '{model_use}',
             '{class_use}',
             '{fillable}',
             '{attributes}',
@@ -218,12 +227,12 @@ html;
             '{modelForeignKey}',
             '{modelCamelName}',
             '{modelPluralName}',
+            '{class_methods}',
         ], [
             $this->namespace ? '\\'.$this->namespace : null,
             $this->model,
             $this->modelName,
             Carbon::now()->format('Y'),
-            $model_use,
             $class_use,
             $fillable,
             $attributes,
@@ -235,6 +244,7 @@ html;
             $this->modelForeignKey(),
             $this->modelCamelName(),
             Str::camel($this->modelPluralName()),
+            $class_methods,
         ], $stub);
     }
 
