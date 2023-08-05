@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticate;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Traits\BaseModel\HasMediaTrait;
@@ -24,8 +24,11 @@ use Spatie\MediaLibrary\HasMedia;
 
 /**
  *
+ * @property array|mixed|string|void|null $id
+ * @property array|mixed|string|void|null $created_at
+ * @property array|mixed|string|void|null $updated_at
  */
-class BaseModel extends Authenticatable implements HasMedia
+class BaseModel extends Authenticate implements HasMedia
 {
     use HasFactory;
     use Notifiable;
@@ -35,7 +38,7 @@ class BaseModel extends Authenticatable implements HasMedia
     /**
      * @var bool
      */
-    public $registerMediaConversionsUsingModelInstance = !0;
+    public bool $registerMediaConversionsUsingModelInstance = !0;
 
 
     /**
@@ -196,7 +199,7 @@ class BaseModel extends Authenticatable implements HasMedia
             $value = Str::before($key, $t);
             $number = $this->{$value};
             return to_number_format((float) ($number ?: 0));
-            if ($number || $number == 0) {
+            // if ($number || $number == 0) {
                 //$currency = config('4myth-tools.currency');
                 //$balance = config('4myth-tools.currency_balance');
                 /*try {
@@ -208,17 +211,16 @@ class BaseModel extends Authenticatable implements HasMedia
                 }
                 try {
                     if (($c = request()->header('app-currency-balance'))) {
-                        $balance = floatval($c);
+                        $balance = (float) $c;
                     }
                 } catch (\Exception$exception) {
                     $balance = 1;
                 }*/
                 //$number *= $balance;
                 //return to_number_format((float) $number, 2, $currency);
-                return to_number_format((float) $number);
-            }
-
-            return $number;
+                // return to_number_format((float) $number);
+            // }
+            // return $number;
         }
 
         /** {ATTRIBUTE}_to_en_yes */
@@ -265,8 +267,8 @@ class BaseModel extends Authenticatable implements HasMedia
             }
         }
 
-        /** {DATE_ATTRIBUTE}_to_fulldatetime_format */
-        if (Str::endsWith($key, ($t = "_to_fulldatetime_format")) && ($attribute = Str::before($key, $t))) {
+        /** {DATE_ATTRIBUTE}_to_full_datetime_format */
+        if (Str::endsWith($key, ($t = "_to_full_datetime_format")) && ($attribute = Str::before($key, $t))) {
             if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return date_by_locale($date->format(config('4myth-tools.date_format.full')));
@@ -358,8 +360,10 @@ class BaseModel extends Authenticatable implements HasMedia
      */
     public function getMobileWithCountryCode(string $code = '+966'): string
     {
-        if (($mobile = $this->mobile)) {
-            return "{$code}{$mobile}";
+        if (!empty($this->mobile)) {
+            if (($mobile = $this->mobile)) {
+                return "$code$mobile";
+            }
         }
         return '';
     }

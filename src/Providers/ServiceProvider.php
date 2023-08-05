@@ -22,7 +22,7 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         if (str_starts_with($this->app->version(), '9.')) {
             AboutCommand::add('MyTh Tools', [
@@ -36,7 +36,7 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         // Configuration
         $this->mergeConfigFrom(

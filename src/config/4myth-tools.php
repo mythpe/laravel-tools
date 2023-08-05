@@ -21,7 +21,7 @@ return [
     | Define the languages used by the application.
     |
     */
-    'locales'                       => (array) ['ar', 'en'],
+    'locales'                       => ['ar', 'en'],
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ return [
     | Define the user attributes of the application.
     |
     */
-    'support'                       => (array) [
+    'support'                       => [
         'username' => 'support',
         'name_ar'  => 'Support',
         'name_en'  => 'Support',
@@ -47,7 +47,7 @@ return [
     | Define the development modes of the application.
     |
     */
-    'development_modes'             => (array) ['development', 'testing', 'local'],
+    'development_modes'             => ['development', 'testing', 'local'],
 
     /** Application one user login */
     'one_login'                     => !1,
@@ -162,12 +162,12 @@ return [
     /**
      * Name of lang files
      */
-    'js_lang_command_files'         => (array) ['attributes', 'choice'],
+    'js_lang_command_files'         => ['attributes', 'choice'],
 
     /**
      * Permissions to skip
      */
-    'skip_permission_ends_with'     => (array) ['.', '.allIndex', '.indexResource'],
+    'skip_permission_ends_with'     => ['.', '.allIndex', '.indexResource'],
 
     'postman' => [
         'postman_id'                  => null,

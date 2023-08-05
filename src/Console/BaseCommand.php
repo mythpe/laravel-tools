@@ -71,28 +71,29 @@ class BaseCommand extends Command
     {
         if (array_key_exists('_avatar', $data)) {
             try {
+                $random = rand(1, 50);
                 $src = $data['_avatar'];
                 if ($src === 1 || $src === !0) {
                     $r = 2 / 3;
                     $w = 400;
                     $h = (int) floor($w * $r);
-                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/$w/$h";
+                    $src = "https://picsum.photos/id/$random/$w/$h";
                 } elseif (Str::startsWith($src, ($r = 'r:'))) {
                     $array = explode(',', Str::after($src, $r));
                     $r = explode('/', $array[0]);
                     $r = $r[0] / $r[1];
                     $w = $array[1];
                     $h = (int) floor($w * $r);
-                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/$w/$h";
+                    $src = "https://picsum.photos/id/$random/$w/$h";
                 } elseif (is_array($src)) {
-                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/{$src[0]}/".($src[1] ?? $src[0]);
+                    $src = "https://picsum.photos/id/$random/$src[0]/".($src[1] ?? $src[0]);
                 } elseif (is_string($src) && Str::startsWith($src, '/')) {
                     $src = base_path($src);
                 }
                 $model->addModelMedia($src);
             }
             catch (Exception $exception) {
-                $this->echo("Insert Image: [".get_class($model)."] ID => {$model->id}");
+                $this->echo("Insert Image: [".get_class($model)."] ID => $model->id");
                 $this->components->error($exception);
             }
         }
@@ -241,6 +242,7 @@ class BaseCommand extends Command
             //$this->echo("Push Data: $table");
             $this->pushData($model);
         } else {
+            /** @var BaseModel $model */
             $model = $model->{$table}();
             if ($model instanceof Relation) {
                 $fill = Arr::only($insert, $model->getModel()->getFillable());
