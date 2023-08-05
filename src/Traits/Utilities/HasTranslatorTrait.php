@@ -21,6 +21,7 @@ trait HasTranslatorTrait
      * @var bool
      */
     static bool $autoAppendTranslators = !0;
+    protected array $translatorAttributes = [];
 
     /**
      * Attributes that have translation
@@ -70,17 +71,30 @@ trait HasTranslatorTrait
 
     protected static function bootHasTranslatorTrait(): void
     {
-        // $original = self::getOriginalTranslatorLocale();
-        // $locales = self::getTranslatorLocales();
-        // self::retrieved(function (self $model) use ($locales, $original) {
-        //     if ($model::$autoAppendTranslators) {
-        //     }
-        // });
+        self::retrieved(function (self $model) {
+            if (method_exists($model, 'translationAttributes') && property_exists($model, 'autoAppendTranslators') && $model::$autoAppendTranslators) {
+                $model->translatorAttributes = $model->translationAttributes();
+                foreach ($model->translatorAttributes as $k => $v) {
+                    $model->setAttribute($k, $v);
+                }
+            }
+        });
         self::saving(function (self $model) {
             // Save the original value of attribute.
             $availableAttributes = self::availableTranslationAttributes();
             if (empty($availableAttributes)) {
                 return;
+            }
+            if (!empty($model->translatorAttributes)) {
+                $rawAttributes = $model->getAttributes();
+                $keys = array_keys($rawAttributes);
+                foreach ($model->translatorAttributes as $k => $v) {
+                    if (in_array($k, $availableAttributes)) {
+                        continue;
+                    }
+                    unset($rawAttributes[$k]);
+                }
+                $model->setRawAttributes($rawAttributes);
             }
             $data = self::getTranslationFrom();
             $translatorLocale = self::translatorLocale();
@@ -89,7 +103,8 @@ trait HasTranslatorTrait
                     $key = "{$attribute}_$locale";
                     $value = $data[$key] ?? null;
                     if ($locale == $translatorLocale && $model->isFillable($attribute)) {
-                        $model->fill([$attribute => $value]);
+                        // $model->fill([$attribute => $value]);
+                        $model->setAttribute($attribute, $value);
                     }
                 }
             }
@@ -106,9 +121,9 @@ trait HasTranslatorTrait
                     $key = "{$attribute}_$locale";
                     $value = $data[$key] ?? null;
                     // Skip original attribute to save the translation
-                    if ($locale == $translatorLocale && $model->isFillable($attribute)) {
-                        continue;
-                    }
+                    // if ($locale == $translatorLocale && $model->isFillable($attribute)) {
+                    //     continue;
+                    // }
                     if (array_key_exists($key, $data)) {
                         $model->createTranslation($locale, $attribute, $value);
                     }
