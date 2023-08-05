@@ -16,7 +16,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Myth\LaravelTools\Http\Resources\ApiCollectionResponse;
 use Myth\LaravelTools\Http\Resources\ApiResource;
-use Myth\LaravelTools\Models\BaseModel;
 use Myth\LaravelTools\Models\BaseModel as Model;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -27,14 +26,14 @@ trait CrudTrait
     /**
      * @var string|Model
      */
-    public static string $controllerModel = BaseModel::class;
+    public static string $controllerModel = Model::class;
 
     /**
      * Name of model in URI
      *
      * @var string|Model
      */
-    public static string $routeParameterModel = BaseModel::class;
+    public static string $routeParameterModel = Model::class;
 
     /**
      * @var string
@@ -120,6 +119,11 @@ trait CrudTrait
      * @var array
      */
     protected array $checkBeforeDestroy = [];
+    /**
+     * Auto save model image after saved event
+     * @var bool
+     */
+    protected bool $autoSavingImage = !1;
 
     /**
      * @return Response|mixed|BinaryFileResponse|void|null
@@ -191,7 +195,7 @@ trait CrudTrait
             return $r;
         }
         $with = $this->with;
-        /** @var BaseModel $model */
+        /** @var Model $model */
         $model = $query->getModel();
         if (($uid = $this->request->input('uid')) && $query & in_array('user_id', $model->getFillable())) {
             $query->where('user_id', $uid);
@@ -257,9 +261,14 @@ trait CrudTrait
         if (($r = $this->saved($model))) {
             return $r;
         }
-        $this->request->merge(['_message' => __("messages.store_success")]);
+        if ($this->autoSavingImage) {
+            if (($r = $this->insertModelImage($model))) {
+                return $r;
+            }
+        }
+        $_m = '_message';
+        $this->request->merge([$_m => $this->request->input($_m, __("messages.store_success"))]);
         return $this->show($model);
-        //return $this->resource($this->getControllerTransformer()::make($model->load(static::RELATIONS)->refresh()), __("messages.store_success"));
     }
 
     /**
@@ -274,6 +283,38 @@ trait CrudTrait
             $array[$request] = $this->request->input($rule);
         }
         return $array;
+    }
+
+    /**
+     * Insert auto image of model
+     * @param Model $model
+     *
+     * @return mixed|void
+     */
+    public function insertModelImage(&$model)
+    {
+        [$k, $collection] = self::getInsertModelImageOptions();
+        $request = $this->request;
+        if ($request->input("${k}Removed")) {
+            $model->clearMediaCollection($collection ?: 'default');
+        }
+        if ($request->hasFile($k)) {
+            try {
+                $model->addModelMedia($k);
+            }
+            catch (\Exception $exception) {
+                return $this->errorResponse($exception->getMessage());
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public static function getInsertModelImageOptions(): array
+    {
+        $model = self::$controllerModel;
+        return ['blobAvatar', $model::$mediaSingleCollection];
     }
 
     /**
@@ -338,9 +379,14 @@ trait CrudTrait
         if (($r = $this->saved($model))) {
             return $r;
         }
-        $this->request->merge(['_message' => __("messages.updated_success")]);
+        if ($this->autoSavingImage) {
+            if (($r = $this->insertModelImage($model))) {
+                return $r;
+            }
+        }
+        $_m = '_message';
+        $this->request->merge([$_m => $this->request->input($_m, __("messages.updated_success"))]);
         return $this->show($model);
-        //return $this->resource($this->getControllerTransformer()::make($model), __("messages.updated_success"));
     }
 
     /**
@@ -371,7 +417,8 @@ trait CrudTrait
         if (($r = $this->deleted($model))) {
             return $r;
         }
-        return $this->resource(__('messages.deleted_success'));
+        $_m = '_message';
+        return $this->resource($this->request->input($_m, __('messages.deleted_success')));
     }
 
     /**
@@ -420,8 +467,8 @@ trait CrudTrait
         if (($r = $this->deletedAll($model))) {
             return $r;
         }
-
-        return $this->resource(__('messages.deleted_success'));
+        $_m = '_message';
+        return $this->resource($this->request->input($_m, __("messages.deleted_success")));
     }
 
     /**

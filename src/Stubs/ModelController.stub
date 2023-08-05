@@ -17,6 +17,7 @@ class {modelName}Controller extends Controller
     public function __construct()
     {
         parent::__construct();
+        //$this->autoSavingImage = !0;
         self::$indexTransformer = self::$controllerTransformer = Transformer::class;
         self::$controllerModel = Model::class;{oldest}
     }
