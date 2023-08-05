@@ -29,10 +29,10 @@ return new class extends Migration {
     {
         Schema::create($this->table, function (Blueprint $table) {
             $table->id();
+            $table->morphs(config('4myth-tools.translatable_morph'));
             $table->string('locale');
             $table->string('attribute');
             $table->longText('value')->nullable();
-            $table->morphs(config('4myth-tools.translatable_morph'));
             $table->timestamps();
         });
     }
