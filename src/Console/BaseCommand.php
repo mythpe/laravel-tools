@@ -248,7 +248,10 @@ class BaseCommand extends Command
             try {
                 $src = $data['_avatar'];
                 if ($src === 1 || $src === !0) {
-                    $src = 'https://picsum.photos/id/'.rand(1, 100).'/400/266';
+                    $r = 2 / 3;
+                    $w = 400;
+                    $h = (int) floor($w * $r);
+                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/$w/$h";
                 } elseif (Str::startsWith($src, ($r = 'r:'))) {
                     $array = explode(',', Str::after($src, $r));
                     $r = explode('/', $array[0]);
