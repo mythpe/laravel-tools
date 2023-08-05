@@ -77,8 +77,8 @@ class ApiResource extends JsonResource
         $id = $model->id;
         $label = $model->name;
         $fillable = $model->only($model->getFillable());
-        if (method_exists($model, 'getMapAllTranslators') && property_exists($model, 'autoAppendTranslators') && $model::$autoAppendTranslators) {
-            $fillable = array_merge($model->getMapAllTranslators(), $fillable);
+        if (method_exists($model, 'translationAttributes') && property_exists($model, 'autoAppendTranslators') && $model::$autoAppendTranslators) {
+            $fillable = array_merge($fillable, $model->translationAttributes());
         }
         if (method_exists($model, 'getAppends')) {
             $appends = $model->getAppends();

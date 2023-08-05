@@ -10,7 +10,7 @@
 namespace Myth\LaravelTools\Traits\Utilities;
 
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -22,22 +22,39 @@ trait HasTranslatorTrait
      */
     static bool $autoAppendTranslators = !0;
 
-    public static function getTranslatorAttributes(): array
+    /**
+     * Attributes that have translation
+     * @return string[]
+     */
+    public static function availableTranslationAttributes(): array
     {
         return ['name'];
     }
 
-    public static function getTranslatorLocales(): array
+    /**
+     * Available Locales of translator
+     * @return array
+     */
+    public static function getAvailableTranslatorLocales(): array
     {
         return config('4myth-tools.locales');
     }
 
-    public static function getOriginalTranslatorLocale(): string
+    /**
+     * The primary locale of the translator
+     * default application fallback local
+     * @return string
+     */
+    public static function translatorLocale(): string
     {
-        return config('app.locale');
+        return config('app.fallback_locale');
     }
 
-    public static function getDefaultTranslatorLocale(): string
+    /**
+     * The default locale that will be used for translation
+     * @return string
+     */
+    public static function defaultTranslatorLocale(): string
     {
         return app()->getLocale();
     }
@@ -48,25 +65,44 @@ trait HasTranslatorTrait
         // $locales = self::getTranslatorLocales();
         // self::retrieved(function (self $model) use ($locales, $original) {
         //     if ($model::$autoAppendTranslators) {
-        //         $q = $model->getMapAllTranslators();
         //     }
         // });
-        self::saved(function (self $model) {
-            $translatable = self::getTranslatorAttributes();
+        self::saving(function (self $model) {
+            $translatable = self::availableTranslationAttributes();
             if (empty($translatable)) {
                 return;
             }
-            $locales = self::getTranslatorLocales();
+            $locales = self::getAvailableTranslatorLocales();
             $request = request()->all();
-            $originalLocale = self::getOriginalTranslatorLocale();
+            $originalLocale = self::translatorLocale();
             foreach ($locales as $locale) {
-                if ($locale == $originalLocale) {
-                    continue;
-                }
                 foreach ($translatable as $attribute) {
                     $key = "{$attribute}_$locale";
+                    $value = $request[$key];
+                    if ($locale == $originalLocale && $model->isFillable($attribute)) {
+                        $model->fill([$attribute => $value]);
+                    }
+                }
+            }
+        });
+        self::saved(function (self $model) {
+            $translatable = self::availableTranslationAttributes();
+            if (empty($translatable)) {
+                return;
+            }
+            $locales = self::getAvailableTranslatorLocales();
+            $request = request()->all();
+            $originalLocale = self::translatorLocale();
+            foreach ($locales as $locale) {
+                foreach ($translatable as $attribute) {
+                    $key = "{$attribute}_$locale";
+                    $value = $request[$key];
+                    if ($locale == $originalLocale && $model->isFillable($attribute)) {
+                        // d($locale,$originalLocale);
+                        continue;
+                    }
                     if (array_key_exists($key, $request)) {
-                        $model->createTranslator($locale, $attribute, $request[$key]);
+                        $model->createTranslation($locale, $attribute, $value);
                     }
                 }
             }
@@ -80,7 +116,15 @@ trait HasTranslatorTrait
         });
     }
 
-    public function createTranslator($locale, $attribute, $value): Model
+    /**
+     * Create attribute translation
+     * Insert/Update translation of attribute
+     * @param $locale
+     * @param $attribute
+     * @param $value
+     * @return Model
+     */
+    public function createTranslation($locale, $attribute, $value): Model
     {
         $data = [
             'locale'    => $locale,
@@ -94,52 +138,82 @@ trait HasTranslatorTrait
         return $this->translator()->create($data);
     }
 
+    /**
+     * @return MorphMany
+     */
     public function translator(): MorphMany
     {
         return $this->morphMany(config('4myth-tools.translatable_class'), config('4myth-tools.translatable_morph'));
     }
 
-    public function getMapTranslators(?string $locale = null): array
+    /**
+     * Get translation attributes
+     * @param string|null $locale
+     * @return array
+     */
+    public function translationAttributes(?string $locale = null): array
     {
         $result = [];
-        // if (is_null($locale) && static::getDefaultTranslatorLocale() == app()->getLocale()) {
-        //     return $result;
-        // }
-        foreach ($this->getTranslators($locale) as $translator) {
-            $result["{$translator->attribute}_{$translator->locale}"] = $translator->value;
+        $availableLocales = collect(static::getAvailableTranslatorLocales());
+        $attributes = static::availableTranslationAttributes();
+        if (!is_null($locale)) {
+            $availableLocales = $availableLocales->filter(fn($e) => $e != $locale)->values();
+        }
+        foreach ($availableLocales as $availableLocale) {
+            foreach ($attributes as $attribute) {
+                if ($availableLocale == app()->getLocale() && !array_key_exists($attribute, $result)) {
+                    $result[$attribute] = $this->{$attribute};
+                }
+                $result["{$attribute}_$availableLocale"] = $this->translateAttribute($attribute, $availableLocale);
+            }
         }
         return $result;
     }
 
-    public function getTranslators(?string $locale = null): Collection
+    /**
+     * @param string|null $locale
+     * @param string|null $attribute
+     * @return MorphMany
+     */
+    public function translationQuery(?string $locale = null, ?string $attribute = null): MorphMany
     {
-        $locale = $locale ?: self::getDefaultTranslatorLocale();
-        return $this->translator()->where(['locale' => $locale])->get();
+        return $this->translator()
+            ->when(!is_null($locale), fn(Builder $q) => $q->where(['locale' => $locale]))
+            ->when(!is_null($attribute), fn(Builder $q) => $q->where(['attribute' => $attribute]));
     }
 
+    /**
+     * translate attributes, if it doesn't have translation will be returned the original attribute
+     * @param string $attribute
+     * @param string|null $locale
+     * @return string|null
+     */
     public function translateAttribute(string $attribute, ?string $locale = null): ?string
     {
-        return $this->getTranslatorModel($attribute, $locale)?->value ?: $this->{$attribute};
+        return $this->translationModel($attribute, $locale)?->value ?: $this->{$attribute};
     }
 
-    public function getTranslatorModel(string $attribute, ?string $locale = null): ?Model
+    /**
+     * Get translation model
+     * @param string $attribute
+     * @param string|null $locale
+     * @return Model|null
+     */
+    public function translationModel(string $attribute, ?string $locale = null): ?Model
     {
-        $locale = $locale ?: self::getDefaultTranslatorLocale();
-        return $this->translator()->where(['locale' => $locale, 'attribute' => $attribute])->first();
+        $locale = $locale ?: self::defaultTranslatorLocale();
+        return $this->translationQuery($locale, $attribute)->first();
     }
 
-    public function getMapAllTranslators(): array
+    /**
+     * Check if attribute has translation
+     * @param string $attribute
+     * @param string|null $locale
+     * @return bool
+     */
+    public function hasTranslation(string $attribute, ?string $locale = null): bool
     {
-        $result = [];
-        foreach ($this->getAllTranslators() as $translator) {
-            $locale = $translator->locale;
-            $result["{$translator->attribute}_{$locale}"] = $translator->value;
-        }
-        return $result;
-    }
-
-    public function getAllTranslators(): Collection
-    {
-        return $this->translator()->get();
+        $locale = $locale ?: self::defaultTranslatorLocale();
+        return $this->translationQuery($locale, $attribute)->exists();
     }
 }
