@@ -216,6 +216,7 @@ class BaseCommand extends Command
         $this->iniCollection();
         $hasRelations = array_key_exists('data', $data);
         $insert = $hasRelations ? $data['data'] : $data;
+        request()->merge($insert);
         // d($insert);
         unset($data['data']);
         $parentName = $model ? class_basename($model) : null;
