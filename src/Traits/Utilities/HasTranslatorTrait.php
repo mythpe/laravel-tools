@@ -59,6 +59,15 @@ trait HasTranslatorTrait
         return app()->getLocale();
     }
 
+    /**
+     * The data will be used to save the translation of model. default request all
+     * @return array
+     */
+    public static function getTranslationFrom(): array
+    {
+        return request()->all();
+    }
+
     protected static function bootHasTranslatorTrait(): void
     {
         // $original = self::getOriginalTranslatorLocale();
@@ -68,17 +77,17 @@ trait HasTranslatorTrait
         //     }
         // });
         self::saving(function (self $model) {
-            $translatable = self::availableTranslationAttributes();
-            if (empty($translatable)) {
+            $availableAttributes = self::availableTranslationAttributes();
+            if (empty($availableAttributes)) {
                 return;
             }
             $locales = self::getAvailableTranslatorLocales();
-            $request = request()->all();
+            $data = self::getTranslationFrom();
             $originalLocale = self::translatorLocale();
             foreach ($locales as $locale) {
-                foreach ($translatable as $attribute) {
+                foreach ($availableAttributes as $attribute) {
                     $key = "{$attribute}_$locale";
-                    $value = $request[$key];
+                    $value = $data[$key];
                     if ($locale == $originalLocale && $model->isFillable($attribute)) {
                         $model->fill([$attribute => $value]);
                     }
@@ -91,17 +100,17 @@ trait HasTranslatorTrait
                 return;
             }
             $locales = self::getAvailableTranslatorLocales();
-            $request = request()->all();
-            $originalLocale = self::translatorLocale();
+            $data = self::getTranslationFrom();
+            $translatorLocale = self::translatorLocale();
             foreach ($locales as $locale) {
                 foreach ($translatable as $attribute) {
                     $key = "{$attribute}_$locale";
-                    $value = $request[$key];
-                    if ($locale == $originalLocale && $model->isFillable($attribute)) {
-                        // d($locale,$originalLocale);
+                    $value = $data[$key];
+                    // Skip original attribute to save the translation
+                    if ($locale == $translatorLocale && $model->isFillable($attribute)) {
                         continue;
                     }
-                    if (array_key_exists($key, $request)) {
+                    if (array_key_exists($key, $data)) {
                         $model->createTranslation($locale, $attribute, $value);
                     }
                 }
