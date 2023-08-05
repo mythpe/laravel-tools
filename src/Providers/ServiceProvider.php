@@ -42,15 +42,11 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../config/4myth-tools.php', '4myth-tools'
         );
+
+        // Config
         $this->publishes([
             __DIR__.'/../config/4myth-tools.php' => config_path('4myth-tools.php'),
         ], '4myth-tools-config');
-
-        // Translations
-        // $this->loadTranslationsFrom(__DIR__.'/../lang', '4myth-tools');
-        // $this->publishes([
-        //     __DIR__.'/../lang' => $this->app->langPath('vendor/4myth-tools'),
-        // ]);
 
         // Migrations
         $this->publishes([

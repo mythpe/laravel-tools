@@ -20,6 +20,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Traits\BaseModel\HasMediaTrait;
 use Myth\LaravelTools\Traits\BaseModel\SlugModelTrait;
+use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
@@ -31,6 +32,7 @@ class BaseModel extends Authenticatable implements HasMedia
     use Notifiable;
     use HasMediaTrait;
     use SlugModelTrait;
+    use HasTranslatorTrait;
 
     /**
      * @var bool
