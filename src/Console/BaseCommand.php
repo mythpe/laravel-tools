@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Console\Traits\CommandColors;
 use Myth\LaravelTools\Console\Traits\ProgressBarTrait;
+use Myth\LaravelTools\Models\BaseModel;
 
 class BaseCommand extends Command
 {
@@ -175,6 +176,7 @@ class BaseCommand extends Command
         $this->iniCollection();
         $hasRelations = array_key_exists('data', $data);
         $insert = $hasRelations ? $data['data'] : $data;
+        // d($insert);
         unset($data['data']);
         $parentName = $model ? class_basename($model) : null;
         if (is_null($model)) {
@@ -193,13 +195,21 @@ class BaseCommand extends Command
                 }
             }
             $model = new $model();
-            $insert = Arr::only($insert, $model->getFillable());
-            $model->fill($insert);
+            $fill = Arr::only($insert, $model->getFillable());
+            $model->fill($fill);
             $model->save();
+            $this->insertImageFromUrl($model, $insert);
             //$this->echo("Push Data: $table");
             $this->pushData($model);
         } else {
-            $model = $model->{$table}()->create($insert);
+            $model = $model->{$table}();
+            if ($model instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
+                $fill = Arr::only($insert, $model->getModel()->getFillable());
+            } else {
+                $fill = Arr::only($insert, $model->getFillable());
+            }
+            $model = $model->create($fill);
+            $this->insertImageFromUrl($model, $insert);
             //$this->echo("Inserted: $table");
             $this->pushData($model);
         }
@@ -227,22 +237,37 @@ class BaseCommand extends Command
     }
 
     /**
-     * @param $model
-     *
-     * @return Collection
+     * Insert random image
+     * @param BaseModel $model
+     * @param array $data
+     * @return void
      */
-    protected function pushData($model): Collection
+    public function insertImageFromUrl(BaseModel $model, array $data): void
     {
-        $key = is_object($model) ? get_class($model) : $model;
-        $this->iniCollection();
-        if (!$this->collection->has($key)) {
-            $this->collection->put($key, Collection::make());
+        if (array_key_exists('_avatar', $data)) {
+            try {
+                $src = $data['_avatar'];
+                if ($src === 1 || $src === !0) {
+                    $src = 'https://picsum.photos/id/'.rand(1, 100).'/400/266';
+                } elseif (Str::startsWith($src, ($r = 'r:'))) {
+                    $array = explode(',', Str::after($src, $r));
+                    $r = explode('/', $array[0]);
+                    $r = $r[0] / $r[1];
+                    $w = $array[1];
+                    $h = (int) floor($w * $r);
+                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/$w/$h";
+                } elseif (is_array($src)) {
+                    $src = 'https://picsum.photos/id/'.rand(1, 100)."/{$src[0]}/".($src[1] ?? $src[0]);
+                } elseif (is_string($src) && Str::startsWith($src, '/')) {
+                    $src = base_path($src);
+                }
+                $model->addModelMedia($src);
+            }
+            catch (\Exception $exception) {
+                $this->echo("Insert Image: [".get_class($model)."] ID => {$model->id}");
+                $this->components->error($exception);
+            }
         }
-        /** @var Collection $data */
-        $data = $this->collection->get($key);
-        $data->push($model);
-        $this->collection->put($key, $data);
-        return $this->collection;
     }
 
     /**
@@ -264,6 +289,25 @@ class BaseCommand extends Command
             }
             echo "{$text}<BR>";
         }
+    }
+
+    /**
+     * @param $model
+     *
+     * @return Collection
+     */
+    protected function pushData($model): Collection
+    {
+        $key = is_object($model) ? get_class($model) : $model;
+        $this->iniCollection();
+        if (!$this->collection->has($key)) {
+            $this->collection->put($key, Collection::make());
+        }
+        /** @var Collection $data */
+        $data = $this->collection->get($key);
+        $data->push($model);
+        $this->collection->put($key, $data);
+        return $this->collection;
     }
 
     /**

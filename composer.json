@@ -23,7 +23,8 @@
     "geniusts/hijri-dates" : ">=1.0",
     "akaunting/laravel-setting" : ">=1.0",
     "bavix/laravel-wallet": "^9.6",
-    "beyondcode/laravel-websockets": "^1.13"
+    "beyondcode/laravel-websockets": "^1.13",
+    "barryvdh/laravel-snappy": "^1.0@dev"
   },
   "license" : "MIT",
   "autoload" : {

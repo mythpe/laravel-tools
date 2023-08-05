@@ -109,11 +109,14 @@ trait HasMediaTrait
             if (!$file) {
                 continue;
             }
-
-            if (is_string($file) && isBase64($file)) {
-                $media = $this->addMediaFromBase64($file);
-            } elseif (is_string($file)) {
-                $media = $this->addMediaFromRequest($file);
+            if (is_string($file)) {
+                if (isBase64($file)) {
+                    $media = $this->addMediaFromBase64($file);
+                } elseif (filter_var($file, FILTER_VALIDATE_URL)) {
+                    $media = $this->addMediaFromUrl($file);
+                } else {
+                    $media = is_file($file) ? (Str::startsWith($file, base_path()) ? $this->copyMedia($file) : $this->addMedia($file)) : $this->addMediaFromRequest($file);
+                }
             } else {
                 $media = $this->addMedia($file);
             }
