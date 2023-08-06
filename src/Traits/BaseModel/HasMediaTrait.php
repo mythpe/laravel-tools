@@ -26,7 +26,7 @@ trait HasMediaTrait
     /**
      * @var string
      */
-    public static string $mediaSingleCollection = 'default';
+    public static string $mediaSingleCollection = 'avatar';
     /**
      * @var string
      */

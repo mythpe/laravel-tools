@@ -131,7 +131,7 @@ trait CrudTrait
     public static function getInsertModelImageOptions(): array
     {
         $model = self::$controllerModel;
-        return ['blobAvatar', $model::$mediaSingleCollection];
+        return [$model::$mediaSingleCollection, $model::$mediaSingleCollection];
     }
 
     /**
@@ -288,14 +288,14 @@ trait CrudTrait
      */
     public function insertModelImage(&$model)
     {
-        [$k, $collection] = self::getInsertModelImageOptions();
+        [$fileKey, $collection] = self::getInsertModelImageOptions();
         $request = $this->request;
-        if ($request->input("${k}Removed")) {
+        if ($request->input("${fileKey}_removed")) {
             $model->clearMediaCollection($collection ?: 'default');
         }
-        if ($request->hasFile($k)) {
+        if ($request->hasFile($fileKey) || $request->input($fileKey)) {
             try {
-                $model->addModelMedia($k);
+                $model->addModelMedia($fileKey);
             }
             catch (Exception $exception) {
                 return $this->errorResponse($exception->getMessage());
