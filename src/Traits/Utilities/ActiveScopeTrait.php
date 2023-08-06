@@ -45,8 +45,8 @@ trait ActiveScopeTrait
     public function getActiveToStringAttribute(): string
     {
         if ($this->active) {
-            return __("static.statuses.active");
+            return __("const.statuses.active");
         }
-        return __("static.statuses.inactive");
+        return __("const.statuses.inactive");
     }
 }

@@ -23,15 +23,12 @@ trait HasStatusAttribute
      */
     public static function getStatuses(): Collection
     {
-        $lang = collect(__("static.statuses") ?: [])->only(static::getStatusesCodes());
+        $lang = collect(__("const.statuses") ?: [])->only(static::getStatusesCodes());
         return $lang->map(fn($text, $id) => [
             'id'    => $id,
             'value' => $id,
-            'key'   => $id,
-            'text'  => $text,
             'label' => $text,
-            'name'  => $text,
-        ])->sortBy('name')->values();
+        ])->sortBy('label')->values();
     }
 
     /**
@@ -70,7 +67,7 @@ trait HasStatusAttribute
      */
     public function getStatusToStringAttribute(): string
     {
-        return trans_has(($k = "static.statuses.$this->status")) ? __($k) : "";
+        return trans_has(($k = "const.statuses.$this->status")) ? __($k) : "";
     }
 
     /**
