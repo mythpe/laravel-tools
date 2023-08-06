@@ -103,7 +103,6 @@ trait HasTranslatorTrait
             }
             if (!empty($model->translatedAttributes)) {
                 $rawAttributes = $model->getAttributes();
-                $keys = array_keys($rawAttributes);
                 foreach ($model->translatedAttributes as $k => $v) {
                     if (in_array($k, $availableAttributes)) {
                         continue;
@@ -131,7 +130,6 @@ trait HasTranslatorTrait
                 return;
             }
             $data = self::getTranslationFrom();
-            $translatorLocale = self::translatorLocale();
             foreach (self::getAvailableTranslatorLocales() as $locale) {
                 foreach ($availableAttributes as $attribute) {
                     $key = "{$attribute}_$locale";
@@ -145,6 +143,7 @@ trait HasTranslatorTrait
                     }
                 }
             }
+            $model->translateAttributes();
         });
         self::deleted(function (self $model) {
             try {
