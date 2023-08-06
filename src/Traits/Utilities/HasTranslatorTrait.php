@@ -89,7 +89,7 @@ trait HasTranslatorTrait
     {
         self::retrieved(function (self $model) {
             if (method_exists($model, 'autoTranslation') && $model->autoTranslation()) {
-                $model->translatedAttributes = $model->translationAttributes();
+                $model->translatedAttributes = $model->translateAttributes();
                 foreach ($model->translatedAttributes as $k => $v) {
                     $model->setAttribute($k, $v);
                 }
@@ -159,7 +159,7 @@ trait HasTranslatorTrait
      * Get translated attributes
      * @return array
      */
-    public function translatedAttributes(): array
+    public function getTranslatedAttributes(): array
     {
         return $this->translatedAttributes;
     }
@@ -195,11 +195,11 @@ trait HasTranslatorTrait
     }
 
     /**
-     * Get translation attributes
+     * Do & Get translation of attributes
      * @param string|null $locale
      * @return array
      */
-    public function translationAttributes(?string $locale = null): array
+    public function translateAttributes(?string $locale = null): array
     {
         $result = [];
         $availableLocales = collect(static::getAvailableTranslatorLocales());
@@ -209,12 +209,14 @@ trait HasTranslatorTrait
         }
         foreach ($availableLocales as $availableLocale) {
             foreach ($attributes as $attribute) {
+                $value = $this->translateAttribute($attribute, $availableLocale);
                 if ($availableLocale == app()->getLocale() && !array_key_exists($attribute, $result)) {
-                    $result[$attribute] = $this->{$attribute};
+                    $result[$attribute] = $value;
                 }
-                $result["{$attribute}_$availableLocale"] = $this->translateAttribute($attribute, $availableLocale);
+                $result["{$attribute}_$availableLocale"] = $value;
             }
         }
+        $this->translatedAttributes = $result;
         return $result;
     }
 
