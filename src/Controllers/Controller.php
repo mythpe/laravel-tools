@@ -249,6 +249,6 @@ class Controller extends BaseController
      */
     protected function requiredByLocale(string $locale = 'ar', $default = 'nullable')
     {
-        return config('app.locale') == $locale ? 'required' : $default;
+        return config('app.fallback_locale') == $locale ? 'required' : $default;
     }
 }
