@@ -45,7 +45,7 @@ trait FilterTrait
     protected function filerQuery($builder, $filters = null)
     {
         $filters = is_null($filters) ? $this->request->input($this->filterRequestKey) : $filters;
-        //d($filters);
+        // d($filters);
         if ($filters && is_array($filters)) {
             $model = $builder->getModel();
             $this->filterTable = $model->getTable();
@@ -117,19 +117,20 @@ trait FilterTrait
             if (method_exists($model, $scope)) {
                 $builder->{$method}($value);
             }
-            $relations = [
+            $relations = array_unique([
                 Str::camel($name),
                 Str::snake($name),
-            ];
+            ]);
             foreach ($relations as $relation) {
                 if (method_exists($model, $relation)) {
                     $_relation = $model->{$relation}();
                     if ($_relation instanceof BelongsToMany) {
                         $builder->whereHas($relation, function (Builder $r) use ($value, $relation, $_relation) {
-                            $relationColumn = Str::singular(Str::snake($relation)).'_id';
+                            // $relationColumn = Str::singular(Str::snake($relation)).'_id';
+                            $relationColumn = $_relation->getRelatedPivotKeyName();
                             $value = !is_array($value) && Str::contains($value, ',') ? explode(',', $value) : $value;
                             $m = is_array($value) ? 'whereIn' : 'where';
-                            $r->{$m}("{$_relation->getTable()}.{$relationColumn}", $value);
+                            return $r->{$m}("{$_relation->getTable()}.{$relationColumn}", $value);
                         });
                         break;
                     }
