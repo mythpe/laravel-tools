@@ -20,8 +20,13 @@ trait HasTranslatorTrait
      * Append attributes on resource
      * @var bool
      */
-    static bool $autoAppendTranslators = !0;
-    protected array $translatorAttributes = [];
+    static bool $enableAutoTranslation = !0;
+
+    /**
+     * cash translation attributes
+     * @var array
+     */
+    protected array $translatedAttributes = [];
 
     /**
      * Attributes that have translation
@@ -69,12 +74,23 @@ trait HasTranslatorTrait
         return request()->all();
     }
 
+    /**
+     * @return bool
+     */
+    public static function autoTranslation(): bool
+    {
+        return self::$enableAutoTranslation;
+    }
+
+    /**
+     * @return void
+     */
     protected static function bootHasTranslatorTrait(): void
     {
         self::retrieved(function (self $model) {
-            if (method_exists($model, 'translationAttributes') && property_exists($model, 'autoAppendTranslators') && $model::$autoAppendTranslators) {
-                $model->translatorAttributes = $model->translationAttributes();
-                foreach ($model->translatorAttributes as $k => $v) {
+            if (method_exists($model, 'autoTranslation') && $model->autoTranslation()) {
+                $model->translatedAttributes = $model->translationAttributes();
+                foreach ($model->translatedAttributes as $k => $v) {
                     $model->setAttribute($k, $v);
                 }
             }
@@ -85,10 +101,10 @@ trait HasTranslatorTrait
             if (empty($availableAttributes)) {
                 return;
             }
-            if (!empty($model->translatorAttributes)) {
+            if (!empty($model->translatedAttributes)) {
                 $rawAttributes = $model->getAttributes();
                 $keys = array_keys($rawAttributes);
-                foreach ($model->translatorAttributes as $k => $v) {
+                foreach ($model->translatedAttributes as $k => $v) {
                     if (in_array($k, $availableAttributes)) {
                         continue;
                     }
@@ -137,6 +153,15 @@ trait HasTranslatorTrait
             catch (Exception) {
             }
         });
+    }
+
+    /**
+     * Get translated attributes
+     * @return array
+     */
+    public function translatedAttributes(): array
+    {
+        return $this->translatedAttributes;
     }
 
     /**
