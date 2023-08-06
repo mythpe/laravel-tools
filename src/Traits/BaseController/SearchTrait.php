@@ -235,6 +235,16 @@ trait SearchTrait
                                 $builder->where($column, '=', (int) $words);
                             } else {
                                 $builder->orWhere($column, 'LIKE', "%{$words}%");
+                                if (in_array(
+                                    \Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait::class,
+                                    array_keys((new \ReflectionClass($model))->getTraits())
+                                )) {
+                                    $availableAttributes = $model->availableTranslationAttributes();
+                                    $locales = $model::getAvailableTranslatorLocales();
+                                    if (in_array($column, $availableAttributes)) {
+                                        $builder->orWhere(fn(Builder $t) => $t->whereHas('translator', fn($m) => $m->where('attribute', $column)->where('value', 'LIKE', "%$words%")));
+                                    }
+                                }
                             }
                         }
                     }
