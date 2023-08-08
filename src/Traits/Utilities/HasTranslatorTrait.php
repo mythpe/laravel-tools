@@ -89,7 +89,7 @@ trait HasTranslatorTrait
             foreach (Translator::availableLocales() as $locale) {
                 foreach ($availableAttributes as $attribute) {
                     $key = "{$attribute}_$locale";
-                    $value = $data[$key] ?? null;
+                    $value = ($data[$key] ?? $model->{$attribute});
                     if ($locale == $translatorLocale && $model->isFillable($attribute)) {
                         // $model->fill([$attribute => $value]);
                         $model->setAttribute($attribute, $value);
