@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AttributesLog extends BaseModel
+class AttributeLog extends BaseModel
 {
     use SoftDeletes;
 
@@ -46,7 +46,7 @@ class AttributesLog extends BaseModel
      */
     public function loggable(): MorphTo
     {
-        return $this->morphTo(config('4myth-tools.attributes_log_morph'));
+        return $this->morphTo(config('4myth-tools.attribute_log_morph'));
     }
 
     /**

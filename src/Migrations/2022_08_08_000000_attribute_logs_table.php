@@ -17,7 +17,7 @@ return new class extends Migration {
 
     public function __construct()
     {
-        $this->table = config('4myth-tools.attributes_log_class')::getModelTable();
+        $this->table = config('4myth-tools.attribute_log_class')::getModelTable();
     }
 
     /**
@@ -33,7 +33,7 @@ return new class extends Migration {
             $table->string('attribute')->nullable();
             $table->string('old_value')->nullable();
             $table->string('new_value')->nullable();
-            $table->morphs(config('4myth-tools.attributes_log_morph'));
+            $table->morphs(config('4myth-tools.attribute_log_morph'));
             $table->timestamps();
             $table->softDeletes();
         });

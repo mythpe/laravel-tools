@@ -14,12 +14,12 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
-trait HasAttributesLog
+trait HasAttributeLog
 {
     /**
      * @return void
      */
-    protected static function bootHasAttributesLog(): void
+    protected static function bootHasAttributeLog(): void
     {
         static::saved(function (self $model) {
             if ($model->wasRecentlyCreated) {
@@ -64,12 +64,12 @@ trait HasAttributesLog
             try {
                 if (method_exists($model, 'isForceDeleting')) {
                     if ($model->isForceDeleting()) {
-                        $model->allAttributesLogs()->forceDelete();
+                        $model->attributeLogsWithTrashed()->forceDelete();
                     } else {
-                        $model->attributesLogs()->delete();
+                        $model->attributeLogs()->delete();
                     }
                 } else {
-                    $model->allAttributesLogs()->forceDelete();
+                    $model->attributeLogsWithTrashed()->forceDelete();
                 }
             }
             catch (Exception) {
@@ -97,14 +97,14 @@ trait HasAttributesLog
      * @param $attribute
      * @param $oldValue
      * @param $newValue
-     *
+     * @param $userId
      * @return void
      */
     public function createAttributeLog($attribute, $oldValue, $newValue, $userId = null): void
     {
         try {
 
-            $this->attributesLogs()->create([
+            $this->attributeLogs()->create([
                 'user_id'   => $userId,
                 'attribute' => $attribute,
                 'old_value' => $oldValue,
@@ -119,21 +119,21 @@ trait HasAttributesLog
     /**
      * @return MorphMany
      */
-    public function attributesLogs(): MorphMany
+    public function attributeLogs(): MorphMany
     {
-        return $this->morphMany(config('4myth-tools.attributes_log_class'), config('4myth-tools.attributes_log_morph'));
+        return $this->morphMany(config('4myth-tools.attribute_log_class'), config('4myth-tools.attribute_log_morph'));
     }
 
     /**
      * @return MorphMany
      */
-    public function allAttributesLogs(): MorphMany
+    public function attributeLogsWithTrashed(): MorphMany
     {
-        return $this->morphMany(config('4myth-tools.attributes_log_class'), config('4myth-tools.attributes_log_morph'))->withTrashed();
+        return $this->morphMany(config('4myth-tools.attribute_log_class'), config('4myth-tools.attribute_log_morph'))->withTrashed();
     }
 
-    public function trashedAttributesLogs(): MorphMany
+    public function trashedAttributeLogs(): MorphMany
     {
-        return $this->morphMany(config('4myth-tools.attributes_log_class'), config('4myth-tools.attributes_log_morph'))->onlyTrashed();
+        return $this->morphMany(config('4myth-tools.attribute_log_class'), config('4myth-tools.attribute_log_morph'))->onlyTrashed();
     }
 }
