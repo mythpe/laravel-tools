@@ -93,8 +93,8 @@ class BaseModel extends Authenticate implements HasMedia
     public function getNameAttribute($value): ?string
     {
         $string = "";
-        if (count(func_get_args()) > 0) {
-            $string = func_get_arg(1);
+        if ($value) {
+            $string = $$value;
         } else {
             $attr = locale_attribute();
             if ($this->isFillable($attr)) {
