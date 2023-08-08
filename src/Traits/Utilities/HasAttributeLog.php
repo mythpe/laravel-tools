@@ -78,7 +78,9 @@ trait HasAttributeLog
     }
 
     /**
-     * @return array
+     * /**
+     * Get available attributes will log into database
+     * @return string[]
      */
     public function getChangeableAttributes(): array
     {
