@@ -17,7 +17,7 @@ return new class extends Migration {
 
     public function __construct()
     {
-        $this->table = config('4myth-tools.translatable_class')::getModelTable();
+        $this->table = config('4myth-tools.translator_class')::getModelTable();
     }
 
     /**
@@ -29,7 +29,7 @@ return new class extends Migration {
     {
         Schema::create($this->table, function (Blueprint $table) {
             $table->id();
-            $table->morphs(config('4myth-tools.translatable_morph'));
+            $table->morphs(config('4myth-tools.translator_morph'));
             $table->string('locale');
             $table->string('attribute');
             $table->longText('value')->nullable();

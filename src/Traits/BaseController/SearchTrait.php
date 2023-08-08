@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Models\BaseModel;
+use Myth\LaravelTools\Models\Translator;
+use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
+use Myth\LaravelTools\Utilities\Helpers;
 
 trait SearchTrait
 {
@@ -235,12 +238,8 @@ trait SearchTrait
                                 $builder->where($column, '=', (int) $words);
                             } else {
                                 $builder->orWhere($column, 'LIKE', "%{$words}%");
-                                if (in_array(
-                                    \Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait::class,
-                                    array_keys((new \ReflectionClass($model))->getTraits())
-                                )) {
+                                if (Helpers::hasTrait($model, HasTranslatorTrait::class)) {
                                     $availableAttributes = $model->availableTranslationAttributes();
-                                    $locales = $model::getAvailableTranslatorLocales();
                                     if (in_array($column, $availableAttributes)) {
                                         $builder->orWhere(fn(Builder $t) => $t->whereHas('translator', fn($m) => $m->where('attribute', $column)->where('value', 'LIKE', "%$words%")));
                                     }

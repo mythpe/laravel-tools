@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Myth\LaravelTools\Models\Translator;
 
 trait HasTranslatorTrait
 {
@@ -32,37 +33,9 @@ trait HasTranslatorTrait
      * Attributes that have translation
      * @return string[]
      */
-    public static function availableTranslationAttributes(): array
+    public static function translatorAttributes(): array
     {
         return ['name'];
-    }
-
-    /**
-     * Available Locales of translator
-     * @return array
-     */
-    public static function getAvailableTranslatorLocales(): array
-    {
-        return config('4myth-tools.locales');
-    }
-
-    /**
-     * The primary locale of the translator
-     * default application fallback local
-     * @return string
-     */
-    public static function translatorLocale(): string
-    {
-        return config('app.fallback_locale');
-    }
-
-    /**
-     * The default locale that will be used for translation
-     * @return string
-     */
-    public static function defaultTranslatorLocale(): string
-    {
-        return app()->getLocale();
     }
 
     /**
@@ -79,7 +52,7 @@ trait HasTranslatorTrait
      */
     public static function autoTranslation(): bool
     {
-        return self::$enableAutoTranslation;
+        return static::$enableAutoTranslation;
     }
 
     /**
@@ -87,7 +60,7 @@ trait HasTranslatorTrait
      */
     protected static function bootHasTranslatorTrait(): void
     {
-        self::retrieved(function (self $model) {
+        static::retrieved(function (self $model) {
             if (method_exists($model, 'autoTranslation') && $model->autoTranslation()) {
                 $model->translatedAttributes = $model->translateAttributes();
                 foreach ($model->translatedAttributes as $k => $v) {
@@ -95,9 +68,9 @@ trait HasTranslatorTrait
                 }
             }
         });
-        self::saving(function (self $model) {
+        static::saving(function (self $model) {
             // Save the original value of attribute.
-            $availableAttributes = self::availableTranslationAttributes();
+            $availableAttributes = static::translatorAttributes();
             if (empty($availableAttributes)) {
                 return;
             }
@@ -111,9 +84,9 @@ trait HasTranslatorTrait
                 }
                 $model->setRawAttributes($rawAttributes);
             }
-            $data = self::getTranslationFrom();
-            $translatorLocale = self::translatorLocale();
-            foreach (self::getAvailableTranslatorLocales() as $locale) {
+            $data = static::getTranslationFrom();
+            $translatorLocale = Translator::getLocale();
+            foreach (Translator::availableLocales() as $locale) {
                 foreach ($availableAttributes as $attribute) {
                     $key = "{$attribute}_$locale";
                     $value = $data[$key] ?? null;
@@ -124,13 +97,13 @@ trait HasTranslatorTrait
                 }
             }
         });
-        self::saved(function (self $model) {
-            $availableAttributes = self::availableTranslationAttributes();
+        static::saved(function (self $model) {
+            $availableAttributes = static::translatorAttributes();
             if (empty($availableAttributes)) {
                 return;
             }
-            $data = self::getTranslationFrom();
-            foreach (self::getAvailableTranslatorLocales() as $locale) {
+            $data = static::getTranslationFrom();
+            foreach (Translator::availableLocales() as $locale) {
                 foreach ($availableAttributes as $attribute) {
                     $key = "{$attribute}_$locale";
                     $value = $data[$key] ?? null;
@@ -145,7 +118,7 @@ trait HasTranslatorTrait
             }
             $model->translateAttributes();
         });
-        self::deleted(function (self $model) {
+        static::deleted(function (self $model) {
             try {
                 $model->translator()->delete();
             }
@@ -190,7 +163,7 @@ trait HasTranslatorTrait
      */
     public function translator(): MorphMany
     {
-        return $this->morphMany(config('4myth-tools.translatable_class'), config('4myth-tools.translatable_morph'));
+        return $this->morphMany(config('4myth-tools.translator_class'), config('4myth-tools.translator_morph'));
     }
 
     /**
@@ -201,8 +174,8 @@ trait HasTranslatorTrait
     public function translateAttributes(?string $locale = null): array
     {
         $result = [];
-        $availableLocales = collect(static::getAvailableTranslatorLocales());
-        $attributes = static::availableTranslationAttributes();
+        $availableLocales = collect(Translator::availableLocales());
+        $attributes = static::translatorAttributes();
         if (!is_null($locale)) {
             $availableLocales = $availableLocales->filter(fn($e) => $e != $locale)->values();
         }
@@ -250,7 +223,7 @@ trait HasTranslatorTrait
      */
     public function translationModel(string $attribute, ?string $locale = null): ?Model
     {
-        $locale = $locale ?: self::defaultTranslatorLocale();
+        $locale = $locale ?: Translator::defaultLocale();
         return $this->translationQuery($locale, $attribute)->first();
     }
 
@@ -262,7 +235,7 @@ trait HasTranslatorTrait
      */
     public function hasTranslation(string $attribute, ?string $locale = null): bool
     {
-        $locale = $locale ?: self::defaultTranslatorLocale();
+        $locale = $locale ?: Translator::defaultLocale();
         return $this->translationQuery($locale, $attribute)->exists();
     }
 }

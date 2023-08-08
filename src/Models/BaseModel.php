@@ -20,6 +20,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Traits\BaseModel\HasMediaTrait;
 use Myth\LaravelTools\Traits\BaseModel\SlugModelTrait;
+use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
+use Myth\LaravelTools\Utilities\Helpers;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
@@ -40,6 +42,8 @@ class BaseModel extends Authenticate implements HasMedia
      */
     public bool $registerMediaConversionsUsingModelInstance = !0;
 
+    public string $mythDateFormat = '';
+
 
     /**
      * @param array $attributes
@@ -51,8 +55,7 @@ class BaseModel extends Authenticate implements HasMedia
         if ($this->isFillable($name) && !$this->isFillable('name')) {
             $this->append(['name']);
         }
-        //$this->append('created_at_to_string', 'updated_at_to_string');
-        $this->makeHidden('deleted_at', 'updated_at', 'created_at', 'media');
+        $this->makeHidden($this->defaultHiddenAttributes());
     }
 
     /**
@@ -72,6 +75,17 @@ class BaseModel extends Authenticate implements HasMedia
     }
 
     /**
+     * Make attributes hidden fro array
+     * @return string[]
+     */
+    public function defaultHiddenAttributes(): array
+    {
+        return ['deleted_at', 'updated_at', 'created_at', 'media'];
+    }
+
+    /**
+     *
+     * $this->name
      * @param $value
      *
      * @return string|null
@@ -79,8 +93,8 @@ class BaseModel extends Authenticate implements HasMedia
     public function getNameAttribute($value): ?string
     {
         $string = "";
-        if ($value) {
-            $string = $value;
+        if (count(func_get_args()) > 0) {
+            $string = func_get_arg(1);
         } else {
             $attr = locale_attribute();
             if ($this->isFillable($attr)) {
@@ -104,13 +118,13 @@ class BaseModel extends Authenticate implements HasMedia
         $class = Str::snake($class);
         $class = Str::singular($class);
         $class = strtolower($class);
-        $fill = [
+        $array = [
             'name',
             locale_attribute(),
             "{$class}_name",
         ];
         $name = 'name';
-        foreach ($fill as $item) {
+        foreach ($array as $item) {
             if ($this->isFillable($item)) {
                 $name = $item;
                 break;
@@ -135,6 +149,19 @@ class BaseModel extends Authenticate implements HasMedia
         // are asking for a relationship's value. This covers both types of values.
         if (array_key_exists($key, $this->attributes) || array_key_exists($key, $this->casts) || $this->hasGetMutator($key) || $this->isClassCastable($key)) {
             return $this->getAttributeValue($key);
+        }
+
+        if (Helpers::hasTrait($this, HasTranslatorTrait::class)) {
+            $locales = Translator::availableLocales();
+            $attrs = $this->translatorAttributes();
+            foreach ($attrs as $attr) {
+                foreach ($locales as $locale) {
+                    $ends = "_$key";
+                    if (Str::endsWith($key, $ends) && ($attribute = Str::beforeLast($key, $ends)) && $attribute == $attr) {
+                        return $this->translateAttribute($attribute, $locale);
+                    }
+                }
+            }
         }
 
         /** get_{ATTRIBUTE}_from_{RELATION}_class */
@@ -172,11 +199,10 @@ class BaseModel extends Authenticate implements HasMedia
 
         /** {ATTRIBUTE}_code */
         if (Str::endsWith($key, ($t = "_code")) && !$this->isFillable($key)) {
-            $method = $this->modelHasMethod(Str::before($key, $t));
-
-            if (!is_null(($a = $this->{$method}))) {
+            if (($method = $this->__getMethod(Str::before($key, $t))) && !is_null(($a = $this->{$method}))) {
                 return $a->code;
             }
+            return null;
         }
 
         /** {ATTRIBUTE}_id_to_string */
@@ -200,25 +226,25 @@ class BaseModel extends Authenticate implements HasMedia
             $number = $this->{$value};
             return to_number_format((float) ($number ?: 0));
             // if ($number || $number == 0) {
-                //$currency = config('4myth-tools.currency');
-                //$balance = config('4myth-tools.currency_balance');
-                /*try {
-                    if (($c = request()->header('app-currency'))) {
-                        $currency = $c;
-                    }
-                } catch (\Exception$exception) {
-                    $currency = '';
+            //$currency = config('4myth-tools.currency');
+            //$balance = config('4myth-tools.currency_balance');
+            /*try {
+                if (($c = request()->header('app-currency'))) {
+                    $currency = $c;
                 }
-                try {
-                    if (($c = request()->header('app-currency-balance'))) {
-                        $balance = (float) $c;
-                    }
-                } catch (\Exception$exception) {
-                    $balance = 1;
-                }*/
-                //$number *= $balance;
-                //return to_number_format((float) $number, 2, $currency);
-                // return to_number_format((float) $number);
+            } catch (\Exception$exception) {
+                $currency = '';
+            }
+            try {
+                if (($c = request()->header('app-currency-balance'))) {
+                    $balance = (float) $c;
+                }
+            } catch (\Exception$exception) {
+                $balance = 1;
+            }*/
+            //$number *= $balance;
+            //return to_number_format((float) $number, 2, $currency);
+            // return to_number_format((float) $number);
             // }
             // return $number;
         }
@@ -354,18 +380,17 @@ class BaseModel extends Authenticate implements HasMedia
     }
 
     /**
-     * @param string $code
-     *
+     * @param string $str
+     * @param string $attributes
+     * @param bool $prepend
      * @return string
      */
-    public function getMobileWithCountryCode(string $code = '+966'): string
+    public function __prepend(string $str = '+966', string $attributes = 'mobile', bool $prepend = !0): string
     {
-        if (!empty($this->mobile)) {
-            if (($mobile = $this->mobile)) {
-                return "$code$mobile";
-            }
+        if (!($value = $this->{$attributes})) {
+            return '';
         }
-        return '';
+        return $prepend ? "$str$value" : "$value$str";
     }
 
     /**
@@ -375,7 +400,7 @@ class BaseModel extends Authenticate implements HasMedia
      *
      * @return string
      */
-    public function getIdString(int $length = 4, bool $hashTag = !0, $value = null): string
+    public function __idToString(int $length = 4, bool $hashTag = !0, $value = null): string
     {
         $value = is_null($value) ? $this->getKey() : $value;
         $id = str_pad($value, $length, '0', STR_PAD_LEFT);
@@ -403,23 +428,15 @@ class BaseModel extends Authenticate implements HasMedia
     }
 
     /**
-     * @return array
-     */
-    public function getAppends(): array
-    {
-        return $this->appends;
-    }
-
-    /**
      * Check if model has method
      *
      * @param $method
      *
      * @return string|null
      */
-    protected function modelHasMethod($method): ?string
+    public function __getMethod($method): ?string
     {
-        $methods = $this->strCasesArray($method);
+        $methods = Helpers::strCasesArray($method);
 
         foreach ($methods as $m) {
             if (method_exists($this, $m)) {
@@ -427,21 +444,5 @@ class BaseModel extends Authenticate implements HasMedia
             }
         }
         return null;
-    }
-
-    /**
-     * helper
-     *
-     * @param $str
-     *
-     * @return array
-     */
-    protected function strCasesArray($str): array
-    {
-        return collect([
-            $str,
-            Str::snake($str),
-            Str::camel($str),
-        ])->uniqueStrict()->toArray();
     }
 }

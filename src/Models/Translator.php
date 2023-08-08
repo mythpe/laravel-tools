@@ -11,7 +11,7 @@ namespace Myth\LaravelTools\Models;
 
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Translatable extends BaseModel
+class Translator extends BaseModel
 {
 
     /**
@@ -45,6 +45,35 @@ class Translatable extends BaseModel
      */
     public function translatable(): MorphTo
     {
-        return $this->morphTo(config('4myth-tools.translatable_morph'));
+        return $this->morphTo(config('4myth-tools.translator_morph'));
     }
+
+    /**
+     * Available Locales of translator
+     * @return array
+     */
+    public static function availableLocales(): array
+    {
+        return config('4myth-tools.locales');
+    }
+
+    /**
+     * The default locale that will be used for translation
+     * @return string
+     */
+    public static function defaultLocale(): string
+    {
+        return app()->getLocale();
+    }
+
+    /**
+     * The primary locale of the translator
+     * default application fallback local
+     * @return string
+     */
+    public static function getLocale(): string
+    {
+        return config('app.fallback_locale');
+    }
+
 }

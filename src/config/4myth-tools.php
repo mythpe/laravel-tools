@@ -10,7 +10,7 @@
 use Myth\LaravelTools\Http\Resources\ApiCollectionResponse;
 use Myth\LaravelTools\Http\Resources\ApiResource;
 use Myth\LaravelTools\Models\AttributesLog;
-use Myth\LaravelTools\Models\Translatable;
+use Myth\LaravelTools\Models\Translator;
 
 return [
     /*
@@ -193,8 +193,8 @@ return [
 
     'attributes_log_morph' => 'attr_loggable',
 
-    'translatable_class' => Translatable::class,
+    'translator_class' => Translator::class,
 
-    'translatable_morph' => 'translatable',
+    'translator_morph' => 'translatable',
 
 ];
