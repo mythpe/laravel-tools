@@ -94,7 +94,7 @@ class BaseModel extends Authenticate implements HasMedia
     {
         $string = "";
         if ($value) {
-            $string = $$value;
+            $string = $value;
         } else {
             $attr = locale_attribute();
             if ($this->isFillable($attr)) {
