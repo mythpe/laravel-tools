@@ -189,6 +189,8 @@ return [
 
     'setting_class' => '\\App\\Models\\Setting',
 
+    'permission_class' => '\\App\\Models\\Permission',
+
     'attribute_log_class' => AttributeLog::class,
 
     'attribute_log_morph' => 'attr_loggable',

@@ -42,7 +42,7 @@ class PermissionMiddleware
         $route = $request->route();
         $routeName = $route->getName();
         if (!Str::endsWith($routeName, config('4myth-tools.skip_permission_ends_with', []))) {
-            $routes = getPermissionRoutes(!0);
+            $routes = getRouterPermissions(!0);
             if (in_array($routeName, $routes)) {
                 throw_if(!$user->checkPermission($routeName), new NoPermissionException());
             }

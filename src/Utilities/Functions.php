@@ -562,7 +562,7 @@ if (!function_exists('front_end_url')) {
     }
 }
 
-if (!function_exists('getPermissionRoutes')) {
+if (!function_exists('getRouterPermissions')) {
     /**
      * Get list of auth-routes has permission
      *
@@ -570,7 +570,7 @@ if (!function_exists('getPermissionRoutes')) {
      *
      * @return array
      */
-    function getPermissionRoutes(bool $asCode = false): array
+    function getRouterPermissions(bool $asCode = false): array
     {
         /** @var Route[] $routes */
         $routes = Router::getRoutes();
