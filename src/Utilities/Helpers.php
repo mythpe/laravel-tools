@@ -9,6 +9,8 @@
 
 namespace Myth\LaravelTools\Utilities;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Helpers
@@ -42,5 +44,43 @@ class Helpers
             return in_array($traitOrString, array_keys($uses));
         }
         return !1;
+    }
+
+    /**
+     * write file
+     * @param $path
+     * @param array|Collection $contents
+     * @param array $options
+     * @return void
+     */
+    public static function writeFile($path, array | Collection $contents, array $options = []): void
+    {
+        $disk = Storage::disk('root');
+        $isPhp = ($options['php'] ?? Str::endsWith($path, '.php'));
+        $isDirectories = ($options['directories'] ?? !1);
+        $storePath = ($options['export'] ?? '/resources/setup/deploy/exported');
+        if ($isPhp) {
+            $directories = $isDirectories ? $contents : [$contents];
+            foreach ($directories as $dirKey => $dirValue) {
+                $exportPath = Str::finish("$storePath".($dirKey ? "/$dirKey" : '')."/{$path}", '.php');
+                $values = collect();
+                foreach ($dirValue as $k => $v) {
+                    $values->push("'$k' => '$v'");
+                }
+                $php = <<<php
+<?php
+
+return [
+\r{$values->implode(','.PHP_EOL)}
+];
+php;
+
+                $disk->put($exportPath,
+                $php);
+                if (($c = ($options['callback'] ?? null)) && is_callable($c)) {
+                    $c($disk->path($exportPath));
+                }
+            }
+        }
     }
 }
