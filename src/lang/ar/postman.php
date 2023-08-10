@@ -10,7 +10,10 @@
 return [
     'description'  => 'وصف البرنامج',
     'folder'       => [
-        'Controller::class' => 'مثال',
+        'Controller::class' => [
+            'name'        => 'مثال',
+            'description' => 'مثال',
+        ],
         'auth_description'  => 'مثال',
         'gust_description'  => 'مثال',
     ],

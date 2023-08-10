@@ -9,11 +9,9 @@
 
 namespace Myth\LaravelTools\Utilities;
 
-use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -223,12 +221,12 @@ class Postman
                     break;
                 }
             }
-
-            $controllerName = Str::kebab(class_basename($route->getController()));
-            $controllerName = trim(str_ireplace('controller', '', $controllerName), '-');
+            $controller = $route->getController();
+            $controllerClassName = $controller::class;
+            $controllerName = Str::kebab(class_basename($controller));
+            $controllerName = str_ireplace('-controller', '', $controllerName);
+            $controllerName = ucwords($controllerName, '-');
             $controllerName = trim(str_ireplace('-', ' ', $controllerName));
-            $controllerName = ucfirst($controllerName);
-
             $actionName = $route->getActionMethod();
             $isGeneralAction = in_array(strtolower($actionName), ['index', 'view', 'show', 'update', 'edit', 'store', 'create', 'destroy'], !0);
             $requestName = ucfirst(str_ireplace(['-', '\s+'], ' ', Str::kebab($actionName)));
@@ -263,7 +261,7 @@ class Postman
                     "_{$actionName}Rules",
                     // # Rules by function & method name
                     // # _{METHOD}PostRules
-                    "_{$actionName}".ucfirst(strtolower($method))."Rules",
+                    "_$actionName".ucfirst(strtolower($method))."Rules",
 
                 ];
                 if ($isGeneralAction) {
@@ -271,7 +269,7 @@ class Postman
                     $controllerRuleMethods[] = "getRules";
                 }
 
-                $controller = $route->getController();
+
                 $rules = [];
                 foreach ($controllerRuleMethods as $requestRule) {
                     if (method_exists($controller, $requestRule)) {
@@ -287,7 +285,7 @@ class Postman
                     "_{$actionName}Example",
                     // # Example by function & method name
                     // # _{METHOD}GetExample
-                    "_{$actionName}".ucfirst(strtolower($method))."Example",
+                    "_$actionName".ucfirst(strtolower($method))."Example",
                 ];
                 if ($isPost) {
                     // # Controller example
@@ -317,9 +315,7 @@ class Postman
                     $isConfirmed = Str::contains(strtolower($formRule), 'confirmed');
                     $isArray = Str::contains(strtolower($formRule), 'array');
                     $isFile = Str::contains(strtolower($formRule), ['file', 'image', 'imagefile']);
-                    $description = $this->getFullDescription($examples, $key, $key, $rule);
-                    //d($examples);
-                    //d($description);
+                    $description = $this->getFullDescription($key, $rule);
                     $formDataKey = $key;
                     $type = 'text';
                     /**
@@ -335,7 +331,7 @@ class Postman
                                 if ($hasChild) {
                                     break;
                                 }
-                                $hasChild = Str::contains($checkArray, "{$key}.");
+                                $hasChild = Str::contains($checkArray, "$key.");
                             }
                             if ($hasChild) {
                                 continue;
@@ -386,7 +382,7 @@ class Postman
 
                     if (!$isArray && $isConfirmed) {
                         $attr = "{$formDataKey}_confirmation";
-                        $k = "attributes.{$attr}";
+                        $k = "attributes.$attr";
                         $def = ucwords($attr);
                         $ar = trans_has($k, 'ar', !1) ? __($k, [], 'ar') : $def;
                         $en = trans_has($k, 'en', !1) ? __($k, [], 'en') : $def;
@@ -394,7 +390,7 @@ class Postman
                         $formData[] = [
                             'key'         => $attr,
                             'value'       => $value,
-                            'description' => $en.($en != $ar ? " - {$ar}" : ''),
+                            'description' => $en.($en != $ar ? " - $ar" : ''),
                             'type'        => 'text',
                             'disabled'    => $this->isExample($key, $examples),
                         ];
@@ -440,11 +436,11 @@ class Postman
                     }
                     $query = array_merge($query, $queryExamples);
                     if (in_array($actionName, ['index', 'allIndex']) && $isGet) {
-                        $query = array_merge($query, $this->getControllerParams($route->getController()));
+                        $query = array_merge($query, $this->getControllerParams($controller));
                     }
 
                     if ($actionName == 'indexActiveOnly' || $isPost) {
-                        $query = array_merge($query, $this->getControllerPaginationParams($route->getController()));
+                        $query = array_merge($query, $this->getControllerPaginationParams($controller));
                     }
                 }
 
@@ -459,7 +455,7 @@ class Postman
                     $itemName = 'List';
                 }
 
-                if (trans_has(($r = static::ITEMS_KEY.'.'.$controller::class.'.'.$actionName), 'ar')) {
+                if (trans_has(($r = static::ITEMS_KEY.".$controllerClassName.$actionName"), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
                 } elseif (trans_has(($r = "replace.$itemArName"), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
@@ -472,7 +468,7 @@ class Postman
                 if (method_exists($controller, $requestDescriptionMethod)) {
                     $requestDescription = $controller->{$requestDescriptionMethod}();
                 }
-                if (trans_has($k = static::DESCRIPTIONS_KEY.".".$controller::class.".$actionName")) {
+                if (trans_has($k = static::DESCRIPTIONS_KEY.".$controllerClassName.$actionName")) {
                     $requestDescription = __($k, [
                         'controller' => $controllerName,
                         'method'     => $actionName,
@@ -491,7 +487,7 @@ class Postman
                     }
                 }
                 $url = [
-                    'raw'   => "{$domain}/{$uri}",
+                    'raw'   => "$domain/$uri",
                     'host'  => [$domain],
                     'path'  => [$uri],
                     'query' => $query,
@@ -528,11 +524,24 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                         ],
                     ];
                 }
-                $folderName = trans_choice("choice.$choiceName", 2, [], 'en').' - '.trans_choice("choice.$choiceName", 2, [], 'ar');
+                $folderName = $controllerName;
                 $folderDescription = '';
-                if (trans_has($k = static::FOLDER_KEY.".".$controller::class)) {
-                    $folderDescription .= __($k, ['controller' => $controllerName]);
+                // Folder name
+                if (trans_has($k = static::FOLDER_KEY.".$controllerClassName.name")) {
+                    $folderName = __($k, ['controller' => $controllerName]);
+                } else if (trans_has($k = "choice.$choiceName")) {
+                    $folderName = trans_choice("choice.$choiceName", 2, [], 'en').' - '.trans_choice("choice.$choiceName", 2, [], 'ar');
                 }
+
+                if (trans_has($k = static::FOLDER_KEY.".$controllerClassName.description")) {
+                    $folderDescription .= __($k, ['controller' => $controllerName]);
+                } elseif (trans_has($k = static::FOLDER_KEY.".$controllerClassName")) {
+                    $folderTrans = __($k);
+                    if (!is_array($folderTrans)) {
+                        $folderDescription .= $folderTrans;
+                    }
+                }
+
                 if ($auth) {
                     if (!array_key_exists($folderName, $authCollection)) {
                         $authCollection[$folderName] = [
@@ -695,7 +704,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     /**
      * Postman query params
      *
-     * @param Controller $controller
+     * @param $controller
      *
      * @return array
      */
@@ -765,7 +774,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             [
                 'key'         => "$controller->filterRequestKey[user_id]",
                 'value'       => 1,
-                'description' => "Filter items by attribute name. {$controller->filterRequestKey} is Object",
+                'description' => "Filter items by attribute name. $controller->filterRequestKey is Object",
                 'disabled'    => !0,
             ],
         ];
@@ -800,47 +809,40 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     }
 
     /**
-     * @param array $examples
-     * @param string $key
      * @param string|null $attribute
      * @param array $rule
-     *
      * @return string
      */
-    public function getFullDescription(array $examples, string $key, string $attribute = null, array $rule = []): string
+    public function getFullDescription(string $attribute = null, array $rule = []): string
     {
         $en = null;
         $ar = null;
         $rule = $this->parseFormRules($rule, !0);
         $formRule = $this->parseFormRules($rule);
-        //$str = $this->findExampleDescription($key, $examples);
-        //dd($key,$attribute);
         $str = "";
         if (!is_null($attribute)) {
             $attr = $attribute;
-            if (Str::contains($attr, '*.') && (trans_has("attributes.{$attr}", 'ar') || trans_has("attributes.{$attr}", 'en'))) {
+            if (Str::contains($attr, '*.') && (trans_has("attributes.$attr", 'ar') || trans_has("attributes.$attr", 'en'))) {
                 $attr = Str::afterLast($attribute, '.');
             } else {
                 $attr = Str::before($attribute, '.');
             }
-            $k = "attributes.{$attr}";
+            $k = "attributes.$attr";
             $def = ucwords($attr);
             $ar = trans_has($k, 'ar') ? __($k, [], 'ar') : $def;
             $en = trans_has($k, 'en') ? __($k, [], 'en') : $def;
         }
 
         if (!is_null($en)) {
-            $str = trim("{$en} - ").trim($str);
+            $str = trim("$en - ").trim($str);
         }
 
-        //$str = trim($str)." [{$formRule}] ";
         $str = trim($str);
         if (!is_null($ar) && $ar != $en) {
             //$str = trim($str)." - {$ar}";
             $str = trim("$ar - ".trim($str));
         }
-        $str = trim($str)." [{$formRule}] ";
-        return (string) $str;
+        return trim($str)." [$formRule] ";
     }
 
     /**
@@ -908,7 +910,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             $ex = [
                 'key'         => is_array($example) ? $example['key'] : $k,
                 'value'       => is_array($example) ? $example['value'] : $example,
-                'description' => is_array($example) ? ($example['description'] ?? '') : __("attributes.{$k}"),
+                'description' => is_array($example) ? ($example['description'] ?? '') : __("attributes.$k"),
                 'disabled'    => is_array($example) ? ($example['disabled'] ?? !0) : !0,
             ];
             $query[] = $ex;
@@ -919,7 +921,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     /**
      * Postman query params
      *
-     * @param Controller $controller
+     * @param $controller
      *
      * @return array
      */
@@ -1056,9 +1058,9 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     }
 
     /**
-     * @param mixed|string $collectionName
+     * @param string $collectionName
      */
-    public function setCollectionName($collectionName): void
+    public function setCollectionName(string $collectionName): void
     {
         $this->collectionName = $collectionName;
     }
@@ -1072,7 +1074,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     {
         $description = '';
         if (trans_has(static::DESCRIPTION_KEY)) {
-            $description .= (string) (__(static::DESCRIPTION_KEY, [
+            $description .= (__(static::DESCRIPTION_KEY, [
                 'name' => config('.app.name'),
                 'year' => now()->format("Y"),
             ]) ?: '');
@@ -1154,17 +1156,17 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     }
 
     /**
-     * @param mixed|string $domain
+     * @param string $domain
      */
-    public function setDomain($domain): void
+    public function setDomain(string $domain): void
     {
         $this->domain = $domain;
     }
 
     /**
-     * @return Filesystem|FilesystemAdapter
+     * @return Filesystem
      */
-    public function disk()
+    public function disk(): Filesystem
     {
         return Storage::disk('root');
     }

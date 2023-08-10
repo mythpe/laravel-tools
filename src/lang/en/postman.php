@@ -10,18 +10,21 @@
 return [
     'description'  => 'App description',
     'folder'       => [
-        'Controller::class' => 'Some Text',
-        'auth_description'  => 'Some Text',
-        'gust_description'  => 'Some Text',
+        'Controller::class' => [
+            'name'        => 'Example',
+            'description' => 'Example',
+        ],
+        'auth_description'  => 'Example',
+        'gust_description'  => 'Example',
     ],
     'items'        => [
         'Controller::class' => [
-            'Method name' => 'Some Text',
+            'Method name' => 'Example',
         ],
     ],
     'descriptions' => [
         'Controller::class' => [
-            'Method name' => 'Some Text',
+            'Method name' => 'Example',
         ],
     ],
 ];
