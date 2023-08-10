@@ -10,9 +10,8 @@
 namespace Myth\LaravelTools\Console\Commands;
 
 use Myth\LaravelTools\Console\BaseCommand;
-use function getRouterPermissions;
 
-class DeployPermissionNamesCommand extends BaseCommand
+class CheckPermissionNamesCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
