@@ -161,8 +161,10 @@ return [
 
     /**
      * Name of lang files
+     * Example: ['file1', 'file2']
+     * Example: '*' for all
      */
-    'js_lang_command_files'         => ['attributes', 'choice'],
+    'js_lang_command_files'         => '*',
 
     /**
      * Permissions to skip
