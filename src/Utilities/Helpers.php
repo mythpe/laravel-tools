@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Utilities;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -93,5 +94,33 @@ return [
                 $c($disk->path($exportPath));
             }
         }
+    }
+
+    /**
+     * Check if model has date cast
+     * @param Model $model
+     * @param string $key
+     * @return bool
+     */
+    public static function hasDateCast(Model $model, string $key): bool
+    {
+        if ($model::CREATED_AT == $key || $model::UPDATED_AT == $key) {
+            return !0;
+        }
+        if (method_exists($model, 'getDeletedAtColumn') && $model->getDeletedAtColumn() == $key) {
+            return !0;
+        }
+        return $model->hasCast($key, ['date', 'datetime', 'custom_datetime', 'immutable_date', 'immutable_custom_datetime', 'immutable_datetime', 'timestamp']);
+    }
+
+    /**
+     * Check if model has numeric cast
+     * @param Model $model
+     * @param string $key
+     * @return bool
+     */
+    public static function hasNumericCast(Model $model, string $key): bool
+    {
+        return $model->hasCast($key, ['int', 'integer', 'real', 'float', 'double', 'decimal']);
     }
 }

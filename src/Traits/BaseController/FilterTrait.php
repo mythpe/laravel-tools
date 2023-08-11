@@ -10,10 +10,13 @@
 namespace Myth\LaravelTools\Traits\BaseController;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Models\BaseModel;
+use Myth\LaravelTools\Utilities\Helpers;
 
 trait FilterTrait
 {
@@ -94,7 +97,7 @@ trait FilterTrait
     }
 
     /**
-     * @param $builder
+     * @param Builder $builder
      * @param $column
      * @param $value
      *
@@ -103,10 +106,26 @@ trait FilterTrait
     protected function setFilterQuery($builder, $column, $value)
     {
         if (Schema::hasColumn($this->filterTable, $column)) {
+            $model = $builder->getModel();
             if (is_array($value)) {
-                $builder->whereIn($column, $value);
+                /** @var Model $model */
+                if (Helpers::hasDateCast($model, $column)) {
+                    $from = Carbon::make(($value['form'] ?? ($value[0] ?? null)));
+                    $to = Carbon::make(($value['to'] ?? ($value[1] ?? null)));
+                    $builder->whereDate($column, '>=', $from->min($to))->whereDate($column, '<=', $to->max($from));
+                } elseif (Helpers::hasNumericCast($model, $column)) {
+                    $from = ($value['form'] ?? ($value[0] ?? null));
+                    $to = ($value['to'] ?? ($value[1] ?? null));
+                    $builder->where($column, '>=', min($from, $to))->where($column, '<=', max($to, $from));
+                } else {
+                    $builder->whereIn($column, $value);
+                }
             } else {
-                $builder->where($column, '=', $value);
+                if (Helpers::hasDateCast($model, $column)) {
+                    $builder->whereDate($column, $value);
+                } else {
+                    $builder->where($column, '=', $value);
+                }
             }
         } else {
             $model = $builder->getModel();
