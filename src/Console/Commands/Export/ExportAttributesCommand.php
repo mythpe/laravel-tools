@@ -39,7 +39,6 @@ class ExportAttributesCommand extends BaseCommand
      */
     public function handle(): void
     {
-        $this->diskName = $this->option('disk');
         $appDisk = Storage::disk('app');
         $langDisk = Storage::disk('lang');
         $modelsFiles = $appDisk->allFiles('Models');
@@ -131,8 +130,7 @@ class ExportAttributesCommand extends BaseCommand
                 }
             }
         }
-        $outputOption = $this->option('output') ?: 'setup/deploy';
-        $outputPath = resource_path($outputOption);
+        $outputPath = $this->option('output') ?: 'resources/setup/deploy';
         Helpers::writeFile("attributes.php", $attributes, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
         Helpers::writeFile("choice.php", $choice, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
     }
