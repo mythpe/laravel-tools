@@ -59,7 +59,7 @@ class Helpers
         $isPhp = ($options['php'] ?? Str::endsWith($path, '.php'));
         $isDirectories = ($options['directories'] ?? !1);
         $directories = $isDirectories ? $contents : [$contents];
-        $storePath = ($options['export'] ?? '/resources/setup/deploy');
+        $storePath = ($options['output'] ?? resource_path('setup/deploy'));
         $year = now()->format('Y');
         $ext = $isPhp ? 'php' : 'json';
 

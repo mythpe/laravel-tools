@@ -7,7 +7,7 @@
  * Github: https://github.com/mythpe
  */
 
-namespace Myth\LaravelTools\Console\Commands;
+namespace Myth\LaravelTools\Console\Commands\Export;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -16,41 +16,44 @@ use Myth\LaravelTools\Models\BaseModel;
 use Myth\LaravelTools\Utilities\Helpers;
 use ReflectionClass;
 
-class ExportLocalesCommand extends BaseCommand
+class ExportAttributesCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'myth:export-locales';
+    protected $signature = 'myth:export-attributes {--o|output= : Output path inside resource path}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Get all attributes & constants of model';
+    protected $description = 'Export attributes & constants of model';
 
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
     public function handle(): void
     {
+        $this->diskName = $this->option('disk');
         $appDisk = Storage::disk('app');
-        $rootDisk = Storage::disk('root');
-        $files = $appDisk->allFiles('Models');
+        $langDisk = Storage::disk('lang');
+        $modelsFiles = $appDisk->allFiles('Models');
+
         $attributes = [];
         $choice = [];
-        foreach ($rootDisk->allDirectories('lang') as $directory) {
-            $f = pathinfo($rootDisk->path($directory), PATHINFO_FILENAME);
-            $attributes[$f] = [];
-            $choice[$f] = [];
+        $locales = $langDisk->allDirectories();
+        foreach ($locales as $locale) {
+            $l = pathinfo($locale, PATHINFO_FILENAME);
+            $attributes[$l] = [];
+            $choice[$l] = [];
         }
-        $locales = array_keys($attributes);
-        foreach ($files as $file) {
+
+        foreach ($modelsFiles as $file) {
             if (Str::contains($file, Str::afterLast(BaseModel::class, '\\'))) {
                 continue;
             }
@@ -128,8 +131,9 @@ class ExportLocalesCommand extends BaseCommand
                 }
             }
         }
-
-        Helpers::writeFile("attributes.php", $attributes, ['directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
-        Helpers::writeFile("choice.php", $choice, ['directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
+        $outputOption = $this->option('output') ?: 'setup/deploy';
+        $outputPath = resource_path($outputOption);
+        Helpers::writeFile("attributes.php", $attributes, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
+        Helpers::writeFile("choice.php", $choice, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
     }
 }
