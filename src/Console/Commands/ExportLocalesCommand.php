@@ -93,12 +93,12 @@ class ExportLocalesCommand extends BaseCommand
                     }
                 }
             }
-            $fillable = array_unique($fillable);
+            $fillable = collect($fillable)->filter(fn($v) => !Str::contains($v, ['pivot_', '_pivot', '_pivot_']))->values();
 
             foreach ($fillable as $attribute) {
-                if (Str::startsWith($attribute, 'pivot_') || Str::endsWith($attribute, '_pivot')) {
-                    continue;
-                }
+                // if (Str::startsWith($attribute, 'pivot_') || Str::endsWith($attribute, '_pivot')) {
+                // continue;
+                // }
                 foreach ($locales as $locale) {
                     $transKey = "attributes.{$attribute}";
                     $transValue = __($transKey, [], $locale);
@@ -130,6 +130,6 @@ class ExportLocalesCommand extends BaseCommand
         }
 
         Helpers::writeFile("attributes.php", $attributes, ['directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
-        Helpers::writeFile("choice.php", $attributes, ['directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
+        Helpers::writeFile("choice.php", $choice, ['directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
     }
 }

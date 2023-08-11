@@ -58,28 +58,39 @@ class Helpers
         $disk = Storage::disk('root');
         $isPhp = ($options['php'] ?? Str::endsWith($path, '.php'));
         $isDirectories = ($options['directories'] ?? !1);
-        $storePath = ($options['export'] ?? '/resources/setup/deploy/exported');
-        if ($isPhp) {
-            $directories = $isDirectories ? $contents : [$contents];
-            foreach ($directories as $dirKey => $dirValue) {
-                $exportPath = Str::finish("$storePath".($dirKey ? "/$dirKey" : '')."/{$path}", '.php');
-                $values = collect();
-                foreach ($dirValue as $k => $v) {
-                    $values->push("'$k' => '$v'");
+        $directories = $isDirectories ? $contents : [$contents];
+        $storePath = ($options['export'] ?? '/resources/setup/deploy');
+        $year = now()->format('Y');
+        $ext = $isPhp ? 'php' : 'json';
+
+        foreach ($directories as $dirKey => $dirValue) {
+            $content = '';
+            $exportPath = Str::finish($storePath.($dirKey ? "/$dirKey" : '')."/$path", ".$ext");
+            $values = collect();
+            foreach ($dirValue as $k => $v) {
+                if ($isPhp) {
+                    $values->push("\t'$k' => '$v'");
                 }
-                $php = <<<php
-<?php
+            }
+
+            if ($isPhp) {
+                $content = "<?php
+/*
+ * MyTh Ahmed Faiz Copyright © 2016-$year All rights reserved.
+ * Email: mythpe@gmail.com
+ * Mobile: +966590470092
+ * Website: https://www.4myth.com
+ * Github: https://github.com/mythpe
+ */
 
 return [
-\r{$values->implode(','.PHP_EOL)}
+{$values->implode(','.PHP_EOL)}
 ];
-php;
-
-                $disk->put($exportPath,
-                $php);
-                if (($c = ($options['callback'] ?? null)) && is_callable($c)) {
-                    $c($disk->path($exportPath));
-                }
+";
+            }
+            $disk->put($exportPath, $content);
+            if (($c = ($options['callback'] ?? null)) && is_callable($c)) {
+                $c($disk->path($exportPath));
             }
         }
     }
