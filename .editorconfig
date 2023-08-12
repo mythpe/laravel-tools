@@ -11,7 +11,7 @@ ij_formatter_off_tag = @formatter:off
 ij_formatter_on_tag = @formatter:on
 ij_formatter_tags_enabled = true
 ij_smart_tabs = false
-ij_visual_guides = none
+ij_visual_guides = 
 ij_wrap_on_typing = false
 
 [*.blade.php]
@@ -244,6 +244,7 @@ ij_typescript_prefer_explicit_types_function_expression_returns = false
 ij_typescript_prefer_explicit_types_function_returns = false
 ij_typescript_prefer_explicit_types_vars_fields = false
 ij_typescript_prefer_parameters_wrap = false
+ij_typescript_property_prefix = 
 ij_typescript_reformat_c_style_comments = false
 ij_typescript_space_after_colon = true
 ij_typescript_space_after_comma = true
@@ -424,6 +425,7 @@ ij_javascript_prefer_explicit_types_function_expression_returns = false
 ij_javascript_prefer_explicit_types_function_returns = false
 ij_javascript_prefer_explicit_types_vars_fields = false
 ij_javascript_prefer_parameters_wrap = false
+ij_javascript_property_prefix = 
 ij_javascript_reformat_c_style_comments = false
 ij_javascript_space_after_colon = true
 ij_javascript_space_after_comma = true
@@ -570,7 +572,7 @@ ij_php_copyright_weight = 28
 ij_php_deprecated_weight = 28
 ij_php_do_while_brace_force = never
 ij_php_else_if_style = as_is
-ij_php_else_on_new_line = false
+ij_php_else_on_new_line = true
 ij_php_example_weight = 28
 ij_php_extends_keyword_wrap = off
 ij_php_extends_list_wrap = off
@@ -785,7 +787,10 @@ ij_html_text_wrap = normal
 [{*.http,*.rest}]
 indent_size = 0
 ij_continuation_indent_size = 4
-ij_http request_call_parameters_wrap = normal
+ij_http-request_call_parameters_wrap = normal
+ij_http-request_method_parameters_wrap = split_into_lines
+ij_http-request_space_before_comma = true
+ij_http-request_spaces_around_assignment_operators = true
 
 [{*.markdown,*.md}]
 ij_markdown_force_one_space_after_blockquote_symbol = true
