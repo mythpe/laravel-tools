@@ -12,8 +12,8 @@ namespace Myth\LaravelTools\Providers;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Myth\LaravelTools\Console\Commands\CheckPermissionNamesCommand;
-use Myth\LaravelTools\Console\Commands\Export\ExportLanguageFilesCommand;
 use Myth\LaravelTools\Console\Commands\Export\ExportAttributesCommand;
+use Myth\LaravelTools\Console\Commands\Export\ExportLanguageFilesCommand;
 use Myth\LaravelTools\Console\Commands\MakeModelCommand;
 use Myth\LaravelTools\Console\Commands\PostmanCommand;
 

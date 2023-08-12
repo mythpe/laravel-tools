@@ -163,10 +163,12 @@ trait SortTrait
                 if ($hasColumn) {
                     if (array_key_exists($column, $this->orderByRawColumns)) {
                         $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) {$direction}");
-                    } else {
+                    }
+                    else {
                         $query->orderBy($column, $direction);
                     }
-                } elseif ($this->hasMapSortColumns($column)) {
+                }
+                elseif ($this->hasMapSortColumns($column)) {
                     //d(1);
                     $query->orderBy($this->getMapSortColumns($column), $direction);
                 }

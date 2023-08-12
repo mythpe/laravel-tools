@@ -297,9 +297,11 @@ html;
             if (!is_null($existsLine)) {
                 ++$existsLine;
                 $this->components->warn("<fg=red>$this->modelName</> found in line: {$existsLine}");
-            } elseif (is_null($commentIndex)) {
+            }
+            elseif (is_null($commentIndex)) {
                 $this->components->info("Add this comment [$comment] to automatically modify the file or add this line: [$replaceContent]");
-            } else {
+            }
+            else {
                 $before = array_slice($source, 0, $commentIndex + 1);
                 $after = array_slice($source, $commentIndex + 1);
                 $file = array_merge($before, [
@@ -335,15 +337,18 @@ html;
                 $choice = "lang/$locale/choice.php";
                 if (!$this->disk()->exists($choice)) {
                     $this->components->twoColumnDetail("<fg=red>$choice</> not exists", '<fg=red>Skipped</>');
-                } elseif (trans_has("choice.$pluralChoice")) {
+                }
+                elseif (trans_has("choice.$pluralChoice")) {
                     $this->components->twoColumnDetail("<fg=red>$pluralChoice</> Trans choice exists", '<fg=red>Skipped</>');
-                } else {
+                }
+                else {
                     $file = file($this->disk()->path($choice));
                     $lastCount = count($file) - 1;
                     $row = '    \''.$pluralChoice.'\' => \'';
                     if ($locale == 'ar') {
                         $row .= 'جمع|مفرد';
-                    } else {
+                    }
+                    else {
                         $row .= "$studlyWords|$pluralWords";
                     }
                     $row .= '\','.PHP_EOL;
@@ -367,14 +372,16 @@ html;
                 if (!trans_has("attributes.$attr")) {
                     $updated = !0;
                     $file[] = "    '$attr' => '$studlyWords',".PHP_EOL;
-                } else {
+                }
+                else {
                     $this->components->twoColumnDetail("<fg=red>$attr</> attribute exists", '<fg=red>Skipped</>');
                 }
 
                 if (!trans_has("attributes.$attrs")) {
                     $updated = !0;
                     $file[] = "    '$attrs' => '$pluralWords',".PHP_EOL;
-                } else {
+                }
+                else {
                     $this->components->twoColumnDetail("<fg=red>$attrs</> attribute exists", '<fg=red>Skipped</>');
                 }
 

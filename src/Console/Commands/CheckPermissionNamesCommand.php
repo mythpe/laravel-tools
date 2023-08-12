@@ -37,7 +37,7 @@ class CheckPermissionNamesCommand extends BaseCommand
     {
         $this->withProgressBar(getRouterPermissions(!1), function ($per) {
             app()->setLocale($this->option('locale'));
-            $p = app(config('4myth-tools.permission_class','\\App\\Models\\Permission'))->make($per);
+            $p = app(config('4myth-tools.permission_class', '\\App\\Models\\Permission'))->make($per);
             $this->newLine();
             if ($per['name'] == $p->name_to_string || !$p->name_to_string) {
                 $this->error($per);

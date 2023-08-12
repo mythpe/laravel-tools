@@ -174,12 +174,14 @@ trait CrudTrait
             $column = $this->latest;
             if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
                 $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) desc");
-            } else {
+            }
+            else {
                 if (is_array($this->latest)) {
                     foreach ($this->latest as $item) {
                         $query->latest($item);
                     }
-                } else {
+                }
+                else {
                     $query->latest($this->latest === !0 ? null : $this->latest);
                 }
             }
@@ -189,12 +191,14 @@ trait CrudTrait
             $column = $this->oldest;
             if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
                 $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) asc");
-            } else {
+            }
+            else {
                 if (is_array($this->oldest)) {
                     foreach ($this->oldest as $item) {
                         $query->oldest($item);
                     }
-                } else {
+                }
+                else {
                     $query->oldest($this->oldest === !0 ? null : $this->oldest);
                 }
             }

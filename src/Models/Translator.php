@@ -41,14 +41,6 @@ class Translator extends BaseModel
     ];
 
     /**
-     * @return MorphTo
-     */
-    public function translatable(): MorphTo
-    {
-        return $this->morphTo(config('4myth-tools.translator_morph'));
-    }
-
-    /**
      * Available Locales of translator
      * @return array
      */
@@ -74,6 +66,14 @@ class Translator extends BaseModel
     public static function getLocale(): string
     {
         return config('app.fallback_locale');
+    }
+
+    /**
+     * @return MorphTo
+     */
+    public function translatable(): MorphTo
+    {
+        return $this->morphTo(config('4myth-tools.translator_morph'));
     }
 
 }

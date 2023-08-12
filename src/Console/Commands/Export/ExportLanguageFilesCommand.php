@@ -51,7 +51,8 @@ class ExportLanguageFilesCommand extends BaseCommand
         foreach ($locales as $locale) {
             if ($configFiles == '*') {
                 $files = $langDisk->allFiles($locale);
-            } else {
+            }
+            else {
                 $files = collect($langDisk->allFiles($locale))->filter(fn($e) => in_array(pathinfo($e, PATHINFO_FILENAME), $configFiles))->values()->toArray();
             }
             foreach ($files as $file) {

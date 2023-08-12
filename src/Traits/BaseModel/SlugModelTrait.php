@@ -47,7 +47,8 @@ trait SlugModelTrait
                 }
             }
             return null;
-        } else {
+        }
+        else {
             $array = [static::class, $id];
             $s = encrypt(json_encode($array, JSON_UNESCAPED_UNICODE));
             return urlencode($s);

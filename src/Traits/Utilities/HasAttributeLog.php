@@ -65,10 +65,12 @@ trait HasAttributeLog
                 if (method_exists($model, 'isForceDeleting')) {
                     if ($model->isForceDeleting()) {
                         $model->attributeLogsWithTrashed()->forceDelete();
-                    } else {
+                    }
+                    else {
                         $model->attributeLogs()->delete();
                     }
-                } else {
+                }
+                else {
                     $model->attributeLogsWithTrashed()->forceDelete();
                 }
             }

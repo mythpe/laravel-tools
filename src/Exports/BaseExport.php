@@ -58,7 +58,8 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
         foreach ($this->headers as $header) {
             if (is_array($header)) {
                 $value = ($header['text'] ?? ($header['label'] ?? ($header['field'] ?? ($header['name'] ?? ''))));
-            } else {
+            }
+            else {
                 $value = trans_has("attributes.$header") ? __("attributes.$header") : $header;
             }
             if ($value == 'control') {

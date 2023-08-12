@@ -78,16 +78,19 @@ class BaseCommand extends Command
                     $w = 400;
                     $h = (int) floor($w * $r);
                     $src = "https://picsum.photos/id/$random/$w/$h";
-                } elseif (Str::startsWith($src, ($r = 'r:'))) {
+                }
+                elseif (Str::startsWith($src, ($r = 'r:'))) {
                     $array = explode(',', Str::after($src, $r));
                     $r = explode('/', $array[0]);
                     $r = $r[0] / $r[1];
                     $w = $array[1];
                     $h = (int) floor($w * $r);
                     $src = "https://picsum.photos/id/$random/$w/$h";
-                } elseif (is_array($src)) {
+                }
+                elseif (is_array($src)) {
                     $src = "https://picsum.photos/id/$random/$src[0]/".($src[1] ?? $src[0]);
-                } elseif (is_string($src) && Str::startsWith($src, '/')) {
+                }
+                elseif (is_string($src) && Str::startsWith($src, '/')) {
                     $src = base_path($src);
                 }
                 $model->addModelMedia($src);
@@ -174,11 +177,13 @@ class BaseCommand extends Command
             if (!$found) {
                 if (Schema::hasTable(($t = 'c_'.Str::snake(Str::plural($originalTable))))) {
                     $this->doTruncate($t);
-                } else {
+                }
+                else {
                     $this->components->error("Table: {$originalTable}. not found");
                 }
             }
-        } else {
+        }
+        else {
             $this->doTruncate($table);
         }
     }
@@ -242,12 +247,14 @@ class BaseCommand extends Command
             $this->insertImageFromUrl($model, $insert);
             //$this->echo("Push Data: $table");
             $this->pushData($model);
-        } else {
+        }
+        else {
             /** @var BaseModel $model */
             $model = $model->{$table}();
             if ($model instanceof Relation) {
                 $fill = Arr::only($insert, $model->getModel()->getFillable());
-            } else {
+            }
+            else {
                 $fill = Arr::only($insert, $model->getFillable());
             }
             $model = $model->create($fill);
@@ -288,10 +295,12 @@ class BaseCommand extends Command
             if (!$method || !method_exists($this, $method)) {
                 // $this->l($text, $method);
                 $this->components->info($text);
-            } else {
+            }
+            else {
                 $this->{$method}($text);
             }
-        } else {
+        }
+        else {
             if (!$this->echo) {
                 return;
             }

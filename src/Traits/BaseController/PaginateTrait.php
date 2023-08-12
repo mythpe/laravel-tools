@@ -101,7 +101,8 @@ trait PaginateTrait
                     $query->whereIn($query->getModel()->getKeyName(), $ids);
                 }
                 $items = $transformer::collection($query->get())->toArray($this->request);
-            } else {
+            }
+            else {
                 $items = $transformer::collection($query->whereIn('id', $items)->get())->toArray($this->request);
             }
 

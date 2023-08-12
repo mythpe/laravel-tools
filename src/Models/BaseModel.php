@@ -95,11 +95,13 @@ class BaseModel extends Authenticate implements HasMedia
         $string = "";
         if ($value) {
             $string = $value;
-        } else {
+        }
+        else {
             $attr = locale_attribute();
             if ($this->isFillable($attr)) {
                 $string = $this->{$attr};
-            } elseif (method_exists($this, 'getNameColumn') && $this->getNameColumn() != 'name') {
+            }
+            elseif (method_exists($this, 'getNameColumn') && $this->getNameColumn() != 'name') {
                 $string = $this->{$this->getNameColumn()};
             }
         }

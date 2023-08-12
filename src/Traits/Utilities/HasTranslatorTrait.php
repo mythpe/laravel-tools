@@ -64,7 +64,7 @@ trait HasTranslatorTrait
             if (method_exists($model, 'autoTranslation') && $model->autoTranslation()) {
                 $model->translatedAttributes = $model->translateAttributes();
                 foreach ($model->translatedAttributes as $k => $v) {
-                    if($v) {
+                    if ($v) {
                         $model->setAttribute($k, $v);
                         $model->append($k);
                     }

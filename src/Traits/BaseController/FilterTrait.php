@@ -60,7 +60,8 @@ trait FilterTrait
                     $map = $this->getMapFilterColumns($column);
                     if (is_string($map)) {
                         $builder = $builder->{$map}($value);
-                    } else {
+                    }
+                    else {
                         $method = ($map[0] ?? 'where');
                         $column = ($map[1] ?? $column);
                         $operator = ($map[2] ?? '=');
@@ -68,7 +69,8 @@ trait FilterTrait
                         $value = strtolower($operator) == 'like' ? "%{$value}%" : $value;
                         $builder = $builder->{$method}($column, $operator, $value, $boolean);
                     }
-                } else {
+                }
+                else {
                     $builder = $this->setFilterQuery($builder, $column, $value);
                 }
             }
@@ -113,21 +115,26 @@ trait FilterTrait
                     $from = Carbon::make(($value['form'] ?? ($value[0] ?? null)));
                     $to = Carbon::make(($value['to'] ?? ($value[1] ?? null)));
                     $builder->whereDate($column, '>=', $from->min($to))->whereDate($column, '<=', $to->max($from));
-                } elseif (Helpers::hasNumericCast($model, $column)) {
+                }
+                elseif (Helpers::hasNumericCast($model, $column)) {
                     $from = ($value['form'] ?? ($value[0] ?? null));
                     $to = ($value['to'] ?? ($value[1] ?? null));
                     $builder->where($column, '>=', min($from, $to))->where($column, '<=', max($to, $from));
-                } else {
+                }
+                else {
                     $builder->whereIn($column, $value);
                 }
-            } else {
+            }
+            else {
                 if (Helpers::hasDateCast($model, $column)) {
                     $builder->whereDate($column, $value);
-                } else {
+                }
+                else {
                     $builder->where($column, '=', $value);
                 }
             }
-        } else {
+        }
+        else {
             $model = $builder->getModel();
             $name = Str::beforeLast($column, '_id');
             $camel = ucfirst(Str::camel($name));

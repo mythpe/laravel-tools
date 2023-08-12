@@ -335,7 +335,8 @@ class Postman
                             }
                             if ($hasChild) {
                                 continue;
-                            } else {
+                            }
+                            else {
                                 $formDataKey .= "[0]";
                             }
                         }
@@ -351,15 +352,19 @@ class Postman
                     if ($isFile) {
                         $type = "file";
                         $value = "";
-                    } elseif (!$value) {
+                    }
+                    elseif (!$value) {
                         if ($isMobile) {
                             $numerify = config('4myth-tools.postman.fake_mobile') ?: '05########';
                             $value = fake()->numerify($numerify);
-                        } elseif ($isEmail) {
+                        }
+                        elseif ($isEmail) {
                             $value = fake()->companyEmail();
-                        } elseif (Str::contains($key, ['name', '_name'])) {
+                        }
+                        elseif (Str::contains($key, ['name', '_name'])) {
                             $value = fake()->name;
-                        } elseif (Str::endsWith($key, '_id') || $isNumeric) {
+                        }
+                        elseif (Str::endsWith($key, '_id') || $isNumeric) {
                             $value = "1";
                         }
                     }
@@ -374,7 +379,8 @@ class Postman
                     ];
                     if ($isPost) {
                         $formData[] = $methodData;
-                    } else {
+                    }
+                    else {
                         if (!$isGeneralAction) {
                             $query[] = $methodData;
                         }
@@ -457,9 +463,11 @@ class Postman
 
                 if (trans_has(($r = static::ITEMS_KEY.".$controllerClassName.$actionName"), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
-                } elseif (trans_has(($r = "replace.$itemArName"), 'ar')) {
+                }
+                elseif (trans_has(($r = "replace.$itemArName"), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
-                } elseif (trans_has(($r = "global.$itemArName"), 'ar')) {
+                }
+                elseif (trans_has(($r = "global.$itemArName"), 'ar')) {
                     $itemName .= ' - '.trim(__($r, ['name' => '']));
                 }
 
@@ -529,13 +537,15 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 // Folder name
                 if (trans_has($k = static::FOLDER_KEY.".$controllerClassName.name")) {
                     $folderName = __($k, ['controller' => $controllerName]);
-                } else if (trans_has($k = "choice.$choiceName")) {
+                }
+                else if (trans_has($k = "choice.$choiceName")) {
                     $folderName = trans_choice("choice.$choiceName", 2, [], 'en').' - '.trans_choice("choice.$choiceName", 2, [], 'ar');
                 }
 
                 if (trans_has($k = static::FOLDER_KEY.".$controllerClassName.description")) {
                     $folderDescription .= __($k, ['controller' => $controllerName]);
-                } elseif (trans_has($k = static::FOLDER_KEY.".$controllerClassName")) {
+                }
+                elseif (trans_has($k = static::FOLDER_KEY.".$controllerClassName")) {
                     $folderTrans = __($k);
                     if (!is_array($folderTrans)) {
                         $folderDescription .= $folderTrans;
@@ -551,7 +561,8 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                         ];
                     }
                     $authCollection[$folderName]['item'][] = $item;
-                } else {
+                }
+                else {
                     if (!array_key_exists($folderName, $gustCollection)) {
                         $gustCollection[$folderName] = [
                             'name'        => $folderName,
@@ -795,9 +806,11 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
         foreach ($rules as $k => $rule) {
             if ($rule instanceof Unique) {
                 $rules[$k] = "unique";
-            } elseif ($rule instanceof Exists || $rule instanceof Password) {
+            }
+            elseif ($rule instanceof Exists || $rule instanceof Password) {
                 $rules[$k] = null;
-            } elseif ($rule instanceof Rule) {
+            }
+            elseif ($rule instanceof Rule) {
                 $rules[$k] = class_basename($rule);
             }
         }
@@ -824,7 +837,8 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             $attr = $attribute;
             if (Str::contains($attr, '*.') && (trans_has("attributes.$attr", 'ar') || trans_has("attributes.$attr", 'en'))) {
                 $attr = Str::afterLast($attribute, '.');
-            } else {
+            }
+            else {
                 $attr = Str::before($attribute, '.');
             }
             $k = "attributes.$attr";
@@ -857,7 +871,8 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
         if (array_key_exists($key, $examples)) {
             $v = $examples[$key];
             $str = is_array($v) ? ($v['value'] ?? '') : $v;
-        } else {
+        }
+        else {
             foreach ($examples as $example) {
                 if ($key == ($example['key'] ?? null)) {
                     $str = ($example['value'] ?? '');
@@ -878,7 +893,8 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     {
         if (array_key_exists($key, $examples)) {
             return !0;
-        } else {
+        }
+        else {
             foreach ($examples as $example) {
                 if ($key == ($example['key'] ?? null)) {
                     return !0;
@@ -1207,7 +1223,8 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
         if (array_key_exists($key, $examples)) {
             $v = $examples[$key];
             $str = is_array($v) ? ($v['description'] ?? '') : $v;
-        } else {
+        }
+        else {
             foreach ($examples as $example) {
                 if ($key == ($example['key'] ?? null)) {
                     $str = ($example['description'] ?? '');

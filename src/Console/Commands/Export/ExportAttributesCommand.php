@@ -125,7 +125,8 @@ class ExportAttributesCommand extends BaseCommand
                 $singular = str_replace('-', ' ', Str::singular(ucwords(Str::kebab($class_basename), '-')));
                 if ($locale == 'ar') {
                     $choice[$locale][$key] = "$plural|$singular";
-                } else {
+                }
+                else {
                     $choice[$locale][$key] = "$singular|$plural";
                 }
             }

@@ -413,7 +413,8 @@ if (!function_exists('hijri')) {
                 $day = strpos("$date", "$year") === 0 && isset($ex[2]) ? $ex[2] : 1;
 
                 $date = Hijri::convertToGregorian($day, $month, $year);
-            } else {
+            }
+            else {
                 $date = $temp;
             }
         }
