@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Models\BaseModel;
-use Myth\LaravelTools\Models\Translator;
 use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
 use Myth\LaravelTools\Utilities\Helpers;
 
@@ -190,7 +189,7 @@ trait SearchTrait
                             //    }
                             //}
 
-                            if (Str::endsWith($column, '_id') && !is_numeric($words)) {
+                            if (Str::endsWith($column, '_id')) {
                                 // d($words,$column);
                                 $str = Str::beforeLast($column, '_id');
                                 $relations = array_unique([
@@ -205,9 +204,17 @@ trait SearchTrait
                                         && method_exists($relationModel, 'getNameColumn')
                                         && Schema::hasColumn($relationModel->getTable(), ($c = $relationModel->getNameColumn()))
                                     ) {
-                                        $builder->orWhere(function (Builder $builder) use ($relation, $c, $words) {
-                                            $builder->whereHas($relation, function (Builder $builder) use ($c, $words) {
+                                        $builder->orWhere(function (Builder $builder) use ($relationModel, $relation, $c, $words) {
+                                            $builder->whereHas($relation, function (Builder $builder) use ($relationModel, $c, $words) {
+                                                // d($c, $words);
                                                 $builder->where($c, 'LIKE', "%{$words}%");
+                                                if (Helpers::hasTrait($relationModel, HasTranslatorTrait::class)) {
+                                                    $availableAttributes = $relationModel->availableTranslationAttributes();
+                                                    if (in_array($c, $availableAttributes)) {
+                                                        $builder->orWhere(fn(Builder $t) => $t->whereHas('translator', fn($m) => $m->where('attribute', $c)->where('value', 'LIKE', "%$words%")));
+                                                    }
+                                                }
+
                                             });
                                         });
                                     }
@@ -237,7 +244,11 @@ trait SearchTrait
                             } elseif ($column == 'id' && is_numeric($words)) {
                                 $builder->where($column, '=', (int) $words);
                             } else {
-                                $builder->orWhere($column, 'LIKE', "%{$words}%");
+                                if (Schema::hasColumn($this->searchTable, $column)) {
+                                    $builder->orWhere($column, 'LIKE', "%{$words}%");
+                                } else {
+                                    // d($column);
+                                }
                                 if (Helpers::hasTrait($model, HasTranslatorTrait::class)) {
                                     $availableAttributes = $model->availableTranslationAttributes();
                                     if (in_array($column, $availableAttributes)) {
@@ -248,7 +259,7 @@ trait SearchTrait
                         }
                     }
                 } else {
-                    //d($words);
+                    // d($words);
                     $builder->orWhere(function (Builder $builder) use ($column, $words) {
                         return $builder->{$column}($words);
                     });
