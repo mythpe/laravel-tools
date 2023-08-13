@@ -114,4 +114,31 @@ class ApiResource extends JsonResource
         ksort($data);
         return $this->mainResourceKeys($id, $label, $data);
     }
+
+    /**
+     * @param bool $value
+     * @return void
+     */
+    public static function setNormalMode(bool $value): void
+    {
+        static::$normalMode = $value;
+    }
+
+    /**
+     * @param bool $value
+     * @return void
+     */
+    public static function setShowMode(bool $value): void
+    {
+        static::$showMode = $value;
+    }
+
+    /**
+     * @param bool $value
+     * @return void
+     */
+    public static function setUpdateMode(bool $value): void
+    {
+        static::$updateMode = $value;
+    }
 }

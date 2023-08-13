@@ -15,6 +15,24 @@ use Myth\LaravelTools\Http\Resources\ApiResource;
 
 class {modelName}Resource extends ApiResource
 {
+    /**
+     *  Is update mode
+     * @var bool
+     */
+    static bool $updateMode = !1;
+
+    /**
+     *  Is show mode
+     * @var bool
+     */
+    static bool $showMode = !1;
+
+    /**
+     *  Is normal mode
+     * @var bool
+     */
+    static bool $normalMode = !1;
+
     /** @var Model */
     public $resource;
 
@@ -26,7 +44,7 @@ class {modelName}Resource extends ApiResource
      */
     public function transformer(Request $request: array
     {
-        return [];
+        // return [];
         $model = $this->resource;
         return $this->transformModel([{resource}
         ]);
