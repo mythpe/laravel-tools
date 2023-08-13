@@ -16,23 +16,6 @@ use Illuminate\Support\Arr;
 
 class ApiResource extends JsonResource
 {
-    /**
-     *  Is update mode
-     * @var bool
-     */
-    static bool $updateMode = !1;
-
-    /**
-     *  Is show mode
-     * @var bool
-     */
-    static bool $showMode = !1;
-
-    /**
-     *  Is normal mode
-     * @var bool
-     */
-    static bool $normalMode = !1;
 
     /**
      * @param Request $request
@@ -97,48 +80,12 @@ class ApiResource extends JsonResource
         $id = $model->id;
         $label = $model->name;
         $fillable = $model->only($model->getFillable());
-        // if (method_exists($model, 'autoTranslation') && $model->autoTranslation()) {
-        //     $fillable = array_merge($fillable, $model->getTranslatedAttributes());
-        // }
         if (method_exists($model, 'getAppends')) {
             $appends = $model->getAppends();
             $fillable = array_merge($fillable, $model->only($appends));
         }
         $data = array_merge(Arr::except($fillable, $model->getHidden()), $merge);
-        // if (!array_key_exists('name', $data) && array_key_exists(($k = locale_attribute()), $data)) {
-        //     $data['name'] = $data[$k];
-        // }
-        // if (!array_key_exists('description', $data) && array_key_exists(($k = locale_attribute('description')), $data)) {
-        //     $data['description'] = $data[$k];
-        // }
         ksort($data);
         return $this->mainResourceKeys($id, $label, $data);
-    }
-
-    /**
-     * @param bool $value
-     * @return void
-     */
-    public static function setNormalMode(bool $value): void
-    {
-        static::$normalMode = $value;
-    }
-
-    /**
-     * @param bool $value
-     * @return void
-     */
-    public static function setShowMode(bool $value): void
-    {
-        static::$showMode = $value;
-    }
-
-    /**
-     * @param bool $value
-     * @return void
-     */
-    public static function setUpdateMode(bool $value): void
-    {
-        static::$updateMode = $value;
     }
 }
