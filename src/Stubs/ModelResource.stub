@@ -9,6 +9,7 @@
 
 namespace App\Http\Resources{namespace};
 
+use Illuminate\Http\Request;
 use App\Models\{model} as Model;
 use Myth\LaravelTools\Http\Resources\ApiResource;
 
@@ -20,9 +21,10 @@ class {modelName}Resource extends ApiResource
     /**
      * Transform the resource into an array.
      *
+     * @param Request $request
      * @return array
      */
-    public function transformer(): array
+    public function transformer(Request $request: array
     {
         return [];
         $model = $this->resource;
