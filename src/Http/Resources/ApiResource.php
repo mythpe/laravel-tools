@@ -17,6 +17,24 @@ use Illuminate\Support\Arr;
 class ApiResource extends JsonResource
 {
     /**
+     *  Is update mode
+     * @var bool
+     */
+    static bool $updateMode = !1;
+
+    /**
+     *  Is show mode
+     * @var bool
+     */
+    static bool $showMode = !1;
+
+    /**
+     *  Is normal mode
+     * @var bool
+     */
+    static bool $normalMode = !1;
+
+    /**
      * @param Request $request
      *
      * @return array
@@ -41,10 +59,12 @@ class ApiResource extends JsonResource
     }
 
     /**
+     * Transform the resource into an array.
+     *
      * @param Request $request
      * @return array
      */
-    public function transformer(): array
+    public function transformer(Request $request): array
     {
         return $this->transformModel();
     }
