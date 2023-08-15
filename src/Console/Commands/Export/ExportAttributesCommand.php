@@ -142,26 +142,38 @@ class ExportAttributesCommand extends BaseCommand
                 }
             }
             $fillable = collect($fillable)->filter(fn($v) => !Str::contains($v, ['pivot_', '_pivot', '_pivot_']))->values();
-
+            $cashAttrs = [
+                'ar' => require __DIR__.'/../../../lang/ar/attributes.php',
+                'en' => require __DIR__.'/../../../lang/en/attributes.php',
+            ];
+            $cashChoice = [
+                'ar' => require __DIR__.'/../../../lang/ar/choice.php',
+                'en' => require __DIR__.'/../../../lang/en/choice.php',
+            ];
             foreach ($fillable as $attribute) {
                 foreach ($locales as $locale) {
-                    $transKey = "attributes.{$attribute}";
-                    $transHas = trans_has($transKey, $locale);
-                    $transValue = __($transKey, [], $locale);
-                    $hasFrom = Str::startsWith($attribute, 'from_');
-                    $hasTo = Str::startsWith($attribute, 'to_');
-                    $k = Str::after($attribute, '_');
-                    if (($hasFrom || $hasTo) && !Str::contains($transValue, __("attributes.$k", [], $locale), !0)) {
-                        if ($locale == 'ar') {
-                            $transValue = sprintf(__("attributes.$k", [], $locale).' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
-                        }
-                        else {
-                            $transValue = sprintf('%s '.__("attributes.$k", [], $locale), $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
-                        }
+                    if (isset($cashAttrs[$locale][$attribute])) {
+                        $transValue = $cashAttrs[$locale][$attribute];
                     }
+                    else {
+                        $transKey = "attributes.{$attribute}";
+                        $transHas = trans_has($transKey, $locale);
+                        $transValue = __($transKey, [], $locale);
+                        $hasFrom = Str::startsWith($attribute, 'from_');
+                        $hasTo = Str::startsWith($attribute, 'to_');
+                        $k = Str::after($attribute, '_');
+                        if (($hasFrom || $hasTo) && !Str::contains($transValue, __("attributes.$k", [], $locale), !0)) {
+                            if ($locale == 'ar') {
+                                $transValue = sprintf(__("attributes.$k", [], $locale).' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
+                            }
+                            else {
+                                $transValue = sprintf('%s '.__("attributes.$k", [], $locale), $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
+                            }
+                        }
 
-                    if (!$transHas || $transValue == $transKey) {
-                        $transValue = ucfirst(str_replace('_', ' ', ucwords(Str::snake(Str::endsWith($transValue, '_id') ? Str::beforeLast($attribute, '_id') : $attribute), '_')));
+                        if (!$transHas || $transValue == $transKey) {
+                            $transValue = ucfirst(str_replace('_', ' ', ucwords(Str::snake(Str::endsWith($transValue, '_id') ? Str::beforeLast($attribute, '_id') : $attribute), '_')));
+                        }
                     }
                     $attributes[$locale][$attribute] = $transValue;
                     ksort($attributes[$locale]);
@@ -176,6 +188,10 @@ class ExportAttributesCommand extends BaseCommand
 
                 foreach ($withChoice as $v) {
                     if (__("choice.$v", [], $locale) != $v) {
+                        if (isset($cashChoice[$locale][$v])) {
+                            $choice[$locale][$v] = $cashChoice[$locale][$v];
+                            continue;
+                        }
                         $choice[$locale][$v] = __("choice.$v", [], $locale);
                         continue;
                     }
@@ -190,6 +206,11 @@ class ExportAttributesCommand extends BaseCommand
                     }
                 }
 
+                if (isset($cashChoice[$locale][$key])) {
+                    $choice[$locale][$key] = $cashChoice[$locale][$key];
+                    continue;
+                }
+
                 if (__($k, [], $locale) != $k) {
                     $choice[$locale][$key] = __($k, [], $locale);
                     continue;
@@ -201,6 +222,9 @@ class ExportAttributesCommand extends BaseCommand
                 }
                 else {
                     $choice[$locale][$key] = "$singular|$plural";
+                }
+                if(isset($cashChoice[$locale])){
+                    $choice[$locale] = array_merge($cashChoice[$locale],$choice[$locale]);
                 }
             }
         }
