@@ -151,7 +151,7 @@ class ExportAttributesCommand extends BaseCommand
                     $hasFrom = Str::startsWith($attribute, 'from_');
                     $hasTo = Str::startsWith($attribute, 'to_');
                     $k = Str::after($attribute, '_');
-                    if (($hasFrom || $hasTo) && !$transHas && !Str::contains($transValue, __("attributes.$k", [], $locale), !0)) {
+                    if (($hasFrom || $hasTo) && !Str::contains($transValue, __("attributes.$k", [], $locale), !0)) {
                         if ($locale == 'ar') {
                             $transValue = sprintf(__("attributes.$k", [], $locale).' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
                         }
@@ -160,7 +160,7 @@ class ExportAttributesCommand extends BaseCommand
                         }
                     }
 
-                    if (!$transHas && $transValue == $transKey) {
+                    if (!$transHas || $transValue == $transKey) {
                         $transValue = ucfirst(str_replace('_', ' ', ucwords(Str::snake(Str::endsWith($transValue, '_id') ? Str::beforeLast($attribute, '_id') : $attribute), '_')));
                     }
                     $attributes[$locale][$attribute] = $transValue;
