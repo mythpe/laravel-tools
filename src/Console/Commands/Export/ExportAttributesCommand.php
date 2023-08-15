@@ -110,7 +110,7 @@ class ExportAttributesCommand extends BaseCommand
             }
 
             foreach ($fillable as $value) {
-                if (method_exists($model, 'hasCast') && !Str::endsWith($value, '_id') && (Helpers::hasDateCast($model, $value) || Helpers::hasNumericCast($model, $value))) {
+                if (method_exists($model, 'hasCast') && $value != 'id' && !Str::endsWith($value, '_id') && (Helpers::hasDateCast($model, $value) || Helpers::hasNumericCast($model, $value))) {
                     $fillable[] = "from_$value";
                     $fillable[] = "to_$value";
                 }
