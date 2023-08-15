@@ -46,6 +46,7 @@ class ExportAttributesCommand extends BaseCommand
 
         $attributes = [];
         $choice = [];
+        $withChoice = [];
         $locales = $langDisk->allDirectories();
         foreach ($locales as $locale) {
             $l = pathinfo($locale, PATHINFO_FILENAME);
@@ -76,6 +77,16 @@ class ExportAttributesCommand extends BaseCommand
             }
 
             $fillable = array_unique(array_merge($fillable, config('4myth-tools.export_attributes')));
+            $parents = explode('\\', $model::class);
+
+            if (!Str::contains(strtolower($model::class), 'pivot') && count($parents) > 3) {
+                unset($parents[count($parents) - 1]);
+                unset($parents[0]);
+                unset($parents[1]);
+                foreach ($parents as $v) {
+                    $withChoice[] = $v;
+                }
+            }
 
             $class_basename = class_basename($model);
             $classSnake = Str::snake($class_basename);
@@ -99,7 +110,7 @@ class ExportAttributesCommand extends BaseCommand
             }
 
             foreach ($fillable as $value) {
-                if (method_exists($model, 'hasCast') && $model->hasCast($value, ['datetime', 'double', 'float'])) {
+                if (method_exists($model, 'hasCast') && (Helpers::hasDateCast($model, $value) || Helpers::hasNumericCast($model, $value))) {
                     $fillable[] = "from_$value";
                     $fillable[] = "to_$value";
                 }
@@ -113,9 +124,6 @@ class ExportAttributesCommand extends BaseCommand
             $fillable = collect($fillable)->filter(fn($v) => !Str::contains($v, ['pivot_', '_pivot', '_pivot_']))->values();
 
             foreach ($fillable as $attribute) {
-                // if (Str::startsWith($attribute, 'pivot_') || Str::endsWith($attribute, '_pivot')) {
-                // continue;
-                // }
                 foreach ($locales as $locale) {
                     $transKey = "attributes.{$attribute}";
                     $transValue = __($transKey, [], $locale);
@@ -132,6 +140,23 @@ class ExportAttributesCommand extends BaseCommand
                 if (Str::contains($key, 'Pivot')) {
                     continue;
                 }
+
+                foreach ($withChoice as $v) {
+                    if (__("choice.$v", [], $locale) != $v) {
+                        $choice[$locale][$v] = __("choice.$v", [], $locale);
+                        continue;
+                    }
+
+                    $plural = str_replace('-', ' ', Str::plural(ucwords(Str::kebab($v), '-')));
+                    $singular = str_replace('-', ' ', Str::singular(ucwords(Str::kebab($v), '-')));
+                    if ($locale == 'ar') {
+                        $choice[$locale][$v] = "$plural|$singular";
+                    }
+                    else {
+                        $choice[$locale][$v] = "$singular|$plural";
+                    }
+                }
+
                 if (__($k, [], $locale) != $k) {
                     $choice[$locale][$key] = __($k, [], $locale);
                     continue;
@@ -146,6 +171,7 @@ class ExportAttributesCommand extends BaseCommand
                 }
             }
         }
+
         $outputPath = $this->option('output') ?: 'resources/setup/deploy';
         Helpers::writeFile("attributes.php", $attributes, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
         Helpers::writeFile("choice.php", $choice, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);

@@ -69,7 +69,7 @@ class PostmanCommand extends BaseCommand
             if ($locale) {
                 $postman->setLocale($locale);
             }
-
+            $postman->command = $this;
             $postman->documentation();
             $this->components->info("File created: <fg=green>{$postman->getFilePath()}</>");
         });

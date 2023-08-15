@@ -33,8 +33,7 @@ return [
     */
     'support'                       => [
         'username' => 'support',
-        'name_ar'  => 'Support',
-        'name_en'  => 'Support',
+        'name'     => 'Support',
         'email'    => 'mythpe@gmail.com',
         'mobile'   => '0590470092',
     ],
@@ -170,7 +169,7 @@ return [
      * Attributes will be exported
      * @uses ExportAttributesCommand::class
      */
-    'export_attributes'             => ['current_password', 'new_password', 'new_password_confirmation', 'password_confirmation', 'login_id', 'control', 'avatar', 'avatar_url'],
+    'export_attributes'             => ['current_password', 'new_password', 'new_password_confirmation', 'password_confirmation', 'login_id', 'control', 'avatar', 'avatar_url', 'tax'],
 
     /**
      * Permissions to skip
@@ -193,11 +192,11 @@ return [
 
     'auth_guard' => null,
 
-    'user_class' => '\\App\\Models\\User',
+    'user_class' => 'App\Models\User',
 
-    'setting_class' => '\\App\\Models\\Setting',
+    'setting_class' => 'App\Models\Setting',
 
-    'permission_class' => '\\App\\Models\\Permission',
+    'permission_class' => 'App\Models\Permission',
 
     'attribute_log_class' => AttributeLog::class,
 

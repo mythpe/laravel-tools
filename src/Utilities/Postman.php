@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Exists;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
+use Myth\LaravelTools\Console\BaseCommand;
 
 class Postman
 {
@@ -27,42 +28,37 @@ class Postman
      * @var string
      */
     const DESCRIPTION_KEY = 'postman.description';
-
     /**
      * Name on translation key.
      *
      * @var string
      */
     const AUTH_DESCRIPTION_KEY = 'postman.folder.auth_description';
-
     /**
      * Name on translation key.
      *
      * @var string
      */
     const GUST_DESCRIPTION_KEY = 'postman.folder.gust_description';
-
     /**
      * Name on translation key.
      *
      * @var string
      */
     const FOLDER_KEY = 'postman.folder';
-
     /**
      * Name on translation key
      *
      * @var string
      */
     const ITEMS_KEY = 'postman.items';
-
     /**
      * Name on translation key
      *
      * @var string
      */
     const DESCRIPTIONS_KEY = 'postman.descriptions';
-
+    public BaseCommand | null $command = null;
     /**
      * Variables will insert to postman
      *
@@ -549,6 +545,15 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                     $folderTrans = __($k);
                     if (!is_array($folderTrans)) {
                         $folderDescription .= $folderTrans;
+                    }
+                }
+
+                if ($this->command) {
+                    if ($folderName == $controllerName) {
+                        $this->command->components->info("No Folder name: $folderName");
+                    }
+                    if ($itemName == $requestName) {
+                        $this->command->components->info("No Item name: $itemName");
                     }
                 }
 
