@@ -167,6 +167,12 @@ return [
     'js_lang_command_files'         => '*',
 
     /**
+     * Attributes will be exported
+     * @uses ExportAttributesCommand::class
+     */
+    'export_attributes'             => ['current_password', 'new_password', 'password_confirmation', 'control'],
+
+    /**
      * Permissions to skip
      */
     'skip_permission_ends_with'     => ['.', '.allIndex', '.indexResource'],

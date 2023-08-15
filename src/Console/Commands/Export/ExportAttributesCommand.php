@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Console\Commands\Export;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Console\BaseCommand;
@@ -61,6 +62,20 @@ class ExportAttributesCommand extends BaseCommand
             /** @var BaseModel $model */
             $model = app("\App\\{$c}");
             $fillable = method_exists($model, 'getFillable') ? $model->getFillable() : [];
+
+            if (method_exists($model, 'getAppends')) {
+                $fillable = array_unique(array_merge($fillable, $model->getAppends()));
+            }
+
+            if (method_exists($model, 'getHidden')) {
+                $fillable = array_unique(array_merge($fillable, $model->getHidden()));
+            }
+
+            if (method_exists($model, 'getModelTable')) {
+                $fillable = array_unique(array_merge($fillable, Schema::getColumnListing($model::getModelTable())));
+            }
+
+            $fillable = array_unique(array_merge($fillable, config('4myth-tools.export_attributes')));
 
             $class_basename = class_basename($model);
             $classSnake = Str::snake($class_basename);
