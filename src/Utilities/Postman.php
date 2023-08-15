@@ -58,7 +58,10 @@ class Postman
      * @var string
      */
     const DESCRIPTIONS_KEY = 'postman.descriptions';
+    /** @var BaseCommand|null command alias */
     public BaseCommand | null $command = null;
+    /** @var array callback of command */
+    public array $withCommand = [];
     /**
      * Variables will insert to postman
      *
@@ -203,7 +206,8 @@ class Postman
         $routes = Route::getRoutes()->getRoutes();
         $header = $this->getHeaders();
         $domain = "{{{$this->getUrlVariableName()}}}";
-
+        $warningFolders = [];
+        $warningItems = [];
         foreach ($routes as $route) {
             $action = $route->getAction();
             $middleware = $action['middleware'] ?? [];
@@ -549,11 +553,15 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 }
 
                 if ($this->command) {
-                    if ($folderName == $controllerName) {
-                        $this->command->getComponents()->info("No Folder name: $folderName");
+                    if ($folderName == $controllerName && !in_array($folderName, $warningFolders)) {
+                        $this->command->getComponents()->error("No Folder name: $folderName");
+                        $warningFolders[] = $folderName;
+                        $this->withCommand[0] = fn() => $warningFolders;
                     }
-                    if ($itemName == $requestName) {
-                        $this->command->getComponents()->info("No Item name: $itemName");
+                    if ($itemName == $requestName && !in_array($itemName, $warningItems)) {
+                        $this->command->getComponents()->error("No Item name: $itemName");
+                        $warningItems[] = $actionName;
+                        $this->withCommand[1] = fn() => $warningItems;
                     }
                 }
 

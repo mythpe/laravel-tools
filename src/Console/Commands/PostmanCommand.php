@@ -40,7 +40,7 @@ class PostmanCommand extends BaseCommand
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $this->components->task("Start documentation", function () {
             $postman = new Postman();
@@ -71,6 +71,11 @@ class PostmanCommand extends BaseCommand
             }
             $postman->command = $this;
             $postman->documentation();
+            if (count($postman->withCommand) > 0) {
+                foreach ($postman->withCommand as $c) {
+                    $this->getComponents()->error(json_encode(array_unique($c($this))));
+                }
+            }
             $this->components->info("File created: <fg=green>{$postman->getFilePath()}</>");
         });
     }
