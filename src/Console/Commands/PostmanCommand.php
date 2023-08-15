@@ -69,7 +69,7 @@ class PostmanCommand extends BaseCommand
             if ($locale) {
                 $postman->setLocale($locale);
             }
-            $postman->command = $this;
+            // $postman->command = $this;
             $postman->documentation();
             if (count($postman->withCommand) > 0) {
                 foreach ($postman->withCommand as $c) {
