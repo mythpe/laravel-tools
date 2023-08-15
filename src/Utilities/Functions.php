@@ -381,7 +381,7 @@ if (!function_exists('trans_has')) {
      *
      * @return bool
      */
-    function trans_has(string $key, ?string $locale = null, bool $fallback = true): bool
+    function trans_has(string $key, ?string $locale = null, bool $fallback = !1): bool
     {
         return app('translator')->has($key, $locale, $fallback);
     }
