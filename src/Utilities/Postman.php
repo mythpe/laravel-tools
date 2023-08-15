@@ -550,10 +550,10 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
 
                 if ($this->command) {
                     if ($folderName == $controllerName) {
-                        $this->command->components->info("No Folder name: $folderName");
+                        $this->command->getComponents()->info("No Folder name: $folderName");
                     }
                     if ($itemName == $requestName) {
-                        $this->command->components->info("No Item name: $itemName");
+                        $this->command->getComponents()->info("No Item name: $itemName");
                     }
                 }
 

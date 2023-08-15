@@ -11,6 +11,7 @@ namespace Myth\LaravelTools\Console;
 
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Console\View\Components\Factory;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -100,6 +101,14 @@ class BaseCommand extends Command
                 $this->components->error($exception);
             }
         }
+    }
+
+    /**
+     * @return Factory
+     */
+    public function getComponents(): Factory
+    {
+        return $this->components;
     }
 
     /**
