@@ -170,7 +170,7 @@ return [
      * Attributes will be exported
      * @uses ExportAttributesCommand::class
      */
-    'export_attributes'             => ['current_password', 'new_password', 'password_confirmation', 'control'],
+    'export_attributes'             => ['current_password', 'new_password', 'new_password_confirmation', 'password_confirmation', 'login_id', 'control', 'avatar', 'avatar_url'],
 
     /**
      * Permissions to skip
