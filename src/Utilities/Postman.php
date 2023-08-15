@@ -552,17 +552,15 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                     }
                 }
 
-                if ($this->command) {
-                    if ($folderName == $controllerName && !in_array($folderName, $warningFolders)) {
-                        $this->command->getComponents()->error("No Folder name: $folderName");
-                        $warningFolders[] = $folderName;
-                        $this->withCommand[0] = fn() => $warningFolders;
-                    }
-                    if ($itemName == $requestName && !in_array($itemName, $warningItems)) {
-                        $this->command->getComponents()->error("No Item name: $itemName");
-                        $warningItems[] = $actionName;
-                        $this->withCommand[1] = fn() => $warningItems;
-                    }
+                if ($folderName == $controllerName && !in_array($folderName, $warningFolders)) {
+                    $this->command?->getComponents()->error("No Folder name: $folderName");
+                    $warningFolders[] = $folderName;
+                    $this->withCommand[0] = fn() => $warningFolders;
+                }
+                if ($itemName == $requestName && !in_array($itemName, $warningItems)) {
+                    $this->command?->getComponents()->error("No Item name: $itemName");
+                    $warningItems[] = $actionName;
+                    $this->withCommand[1] = fn() => $warningItems;
                 }
 
                 if ($auth) {
