@@ -181,6 +181,10 @@ return [
         'tax',
         'status',
         'inactive',
+        'name_ar',
+        'name_en',
+        'description_ar',
+        'description_en',
     ],
 
     /**
