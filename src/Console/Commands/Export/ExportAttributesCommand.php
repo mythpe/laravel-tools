@@ -206,6 +206,10 @@ class ExportAttributesCommand extends BaseCommand
                     }
                 }
 
+                if (isset($cashChoice[$locale])) {
+                    $choice[$locale] = array_merge($cashChoice[$locale], $choice[$locale]);
+                }
+
                 if (isset($cashChoice[$locale][$key])) {
                     $choice[$locale][$key] = $cashChoice[$locale][$key];
                     continue;
@@ -222,9 +226,6 @@ class ExportAttributesCommand extends BaseCommand
                 }
                 else {
                     $choice[$locale][$key] = "$singular|$plural";
-                }
-                if(isset($cashChoice[$locale])){
-                    $choice[$locale] = array_merge($cashChoice[$locale],$choice[$locale]);
                 }
             }
         }
