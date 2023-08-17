@@ -25,11 +25,23 @@ trait AttachmentsTrait
     {
         $request = $this->request;
         $request->validate($this->_uploadAttachmentsRules());
-        $attachmentType = $request->input('attachment_type', '');
-        $description = trans_has(($c = "attributes.$attachmentType")) ? $c : $attachmentType;
-        $collection = request('collection', $model::$mediaAttachmentsCollection);
+
+        $attachmentType = $request->input('attachment_type', null);
+        $attachmentType = $attachmentType ? (trans_has(($c = "attributes.$attachmentType"), null, !0) ? $c : $attachmentType) : null;
+
+        $description = $request->input('description', null);
+        $description = $description ? (trans_has(($c = "attributes.$description"), null, !0) ? $c : $description) : null;
+
+        $collection = $request->input('collection', $model::$mediaAttachmentsCollection);
         try {
-            $media = $model->addAttachment('attachment', $description, $collection, ['user_id' => auth(config('4myth-tools.auth_guard'))->id()]);
+            $opts = [];
+            if ($id = auth(config('4myth-tools.auth_guard'))->id()) {
+                $opts['user_id'] = $id;
+            }
+            if ($id = $request->input('attachment_type_id')) {
+                $opts['attachment_type_id'] = $id;
+            }
+            $media = $model->addAttachment('attachment', $description, $collection, $opts);
             if ($request->input('return') == 'current') {
                 $resource = config('4myth-tools.media_resource_class');
                 return $this->resource($resource::make($media));
@@ -51,12 +63,18 @@ trait AttachmentsTrait
         ];
     }
 
+    /**
+     * @param BaseModel $model
+     * @return mixed
+     */
     public function getModelAttachmentsMedia(&$model)
     {
         $model->refresh();
-        $collection = request('collection', $model::$mediaAttachmentsCollection);
+        $request = $this->request;
+        $collection = $request->input('collection', $model::$mediaAttachmentsCollection);
         $resource = config('4myth-tools.media_resource_class');
-        return $resource::collection($model->getMedia($collection));
+        $media = $request->input('return') != 'all' ? $model->getMedia($collection)->sortByDesc('order_column') : $model->media()->latest('order_column')->get();
+        return $resource::collection($media);
     }
 
     /**

@@ -231,10 +231,17 @@ trait HasMediaTrait
      * @throws FileDoesNotExist
      * @throws FileIsTooBig
      */
-    public function addAttachment(string $requestKey, string $description = null, string $collection = null, array $properties = []): Media
+    public function addAttachment(string $requestKey, ?string $description = null, ?string $collection = null, array $properties = []): Media
     {
         $collection = $collection ?: static::$mediaAttachmentsCollection;
-        $customProperties = array_merge(['description' => $description, 'user_id' => ($properties['user_id'] ?? null)], $properties);
-        return $this->addMediaFromRequest($requestKey)->withCustomProperties($customProperties)->toMediaCollection($collection);
+        $user = $properties['user_id'] ?? null;
+        if ($description && !($properties['description'] ?? null)) {
+            $properties['description'] = $description;
+        }
+        if ($user && !($properties['user_id'] ?? null)) {
+            $properties['user_id'] = $user;
+        }
+
+        return $this->addMediaFromRequest($requestKey)->withCustomProperties($properties)->toMediaCollection($collection);
     }
 }
