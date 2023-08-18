@@ -7,6 +7,10 @@
  * Github: https://github.com/mythpe
  */
 
+
+/**
+ * @property {modelName} {modelCamelName}
+ */
 namespace App\Traits\BelongsTo;
 
 use App\Models\{model} as Model;
