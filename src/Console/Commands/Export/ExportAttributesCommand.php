@@ -25,7 +25,13 @@ class ExportAttributesCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'myth:export-attributes {--o|output= : Output path inside resource path}';
+    protected $signature = 'myth:export-attributes
+{--o|output= : Output path inside resource path}
+{--t|to : Insert to_ keys to exported data}
+{--f|from : Insert from_ keys to exported data}
+{--w|with : Export attributes with exists files}
+{--e|export : Export file to lang}
+';
 
     /**
      * The console command description.
@@ -49,12 +55,25 @@ class ExportAttributesCommand extends BaseCommand
         $choice = [];
         $withChoice = [];
         $locales = $langDisk->allDirectories();
+        $toOption = $this->option('to');
+        $fromOption = $this->option('from');
+        $withOption = $this->option('with');
+        $exportOption = $this->option('export');
+
+        $cacheAttrs = [
+            'ar' => require __DIR__.'/../../../lang/ar/attributes.php',
+            'en' => require __DIR__.'/../../../lang/en/attributes.php',
+        ];
+        $cacheChoice = [
+            'ar' => require __DIR__.'/../../../lang/ar/choice.php',
+            'en' => require __DIR__.'/../../../lang/en/choice.php',
+        ];
+
         foreach ($locales as $locale) {
             $l = pathinfo($locale, PATHINFO_FILENAME);
             $attributes[$l] = [];
             $choice[$l] = [];
         }
-
         foreach ($modelsFiles as $file) {
             if (Str::contains($file, Str::afterLast(BaseModel::class, '\\'))) {
                 continue;
@@ -63,7 +82,11 @@ class ExportAttributesCommand extends BaseCommand
             $c = str_replace(['/', '\\\\'], '\\', $c);
             /** @var BaseModel $model */
             $model = app("\App\\{$c}");
-            $fillable = method_exists($model, 'getFillable') ? $model->getFillable() : [];
+            $fillable = [];
+
+            if (method_exists($model, 'getFillable')) {
+                $fillable = array_unique(array_merge($fillable, $model->getFillable()));
+            }
 
             if (method_exists($model, 'getAppends')) {
                 $fillable = array_unique(array_merge($fillable, $model->getAppends()));
@@ -73,8 +96,8 @@ class ExportAttributesCommand extends BaseCommand
                 $fillable = array_unique(array_merge($fillable, $model->getHidden()));
             }
 
-            if (method_exists($model, 'getModelTable')) {
-                $fillable = array_unique(array_merge($fillable, Schema::getColumnListing($model::getModelTable())));
+            if (method_exists($model, 'getTable')) {
+                $fillable = array_unique(array_merge($fillable, Schema::getColumnListing($model->getTable())));
             }
 
             $fillable = array_unique(array_merge($fillable, config('4myth-tools.export_attributes')));
@@ -88,23 +111,21 @@ class ExportAttributesCommand extends BaseCommand
                     $withChoice[] = $v;
                 }
             }
-
             foreach ($controllersFiles as $controller) {
-                try {
-                    $c = app('App\\'.Str::before(str_replace('/', '\\', $controller), '.php'));
-                    if (!$c instanceof Controller) {
-                        continue;
-                    }
-                    $r = new \ReflectionClass($c);
-                    foreach ($r->getMethods() as $method) {
-                        if (!Str::startsWith($method->getName(), '_') || $method->getReturnType() != 'array') {
-                            continue;
-                        }
-                        $fillable = array_unique(array_merge($fillable, array_keys($c->{$method->getName()}())));
-                    }
+                $fileName = 'App\\'.Str::before(str_replace('/', '\\', $controller), '.php');
+                if (!class_exists($fileName)) {
+                    continue;
                 }
-                catch (\Exception $exception) {
-                    // d($exception);
+                $c = app($fileName);
+                if (!$c instanceof Controller) {
+                    continue;
+                }
+                $r = new \ReflectionClass($c);
+                foreach ($r->getMethods() as $method) {
+                    $methodName = $method->getName();
+                    if (starts_with($methodName, '_') && $method->getReturnType() == 'array') {
+                        $fillable = array_unique(array_merge($fillable, array_keys($c->{$methodName}())));
+                    }
                 }
             }
 
@@ -118,7 +139,6 @@ class ExportAttributesCommand extends BaseCommand
             // Customizing
             if ($class_basename == 'Setting' && method_exists($model, 'getAll')) {
                 $fillable = array_merge($fillable, array_keys($model::getAll()));
-                // d($fillable);
             }
 
             $class_reflex = new ReflectionClass($model);
@@ -129,54 +149,101 @@ class ExportAttributesCommand extends BaseCommand
                 }
             }
 
+            $sortArray = [];
             foreach ($fillable as $value) {
-                if (method_exists($model, 'hasCast') && $value != 'id' && !Str::endsWith($value, '_id') && (Helpers::hasDateCast($model, $value) || Helpers::hasNumericCast($model, $value))) {
-                    $fillable[] = "from_$value";
-                    $fillable[] = "to_$value";
+                if ($value != 'id' && !ends_with($value, '_id')) {
+                    if ($fromOption && (Helpers::hasDateCast($model, $value) || Helpers::hasNumericCast($model, $value))) {
+                        $fillable[] = "from_$value";
+                    }
+                    if ($toOption && (Helpers::hasDateCast($model, $value) || Helpers::hasNumericCast($model, $value))) {
+                        $fillable[] = "to_$value";
+                    }
                 }
+                // insert attributes by locale. 'name_{locale}'
                 foreach ($locales as $locale) {
-                    if (Str::endsWith($value, ($last = "_$locale"))) {
+                    if (ends_with($value, ($last = "_$locale"))) {
                         $fillable[] = Str::beforeLast($value, $last);
                         break;
                     }
                 }
             }
-            $fillable = collect($fillable)->filter(fn($v) => !Str::contains($v, ['pivot_', '_pivot', '_pivot_']))->values();
-            $cashAttrs = [
-                'ar' => require __DIR__.'/../../../lang/ar/attributes.php',
-                'en' => require __DIR__.'/../../../lang/en/attributes.php',
-            ];
-            $cashChoice = [
-                'ar' => require __DIR__.'/../../../lang/ar/choice.php',
-                'en' => require __DIR__.'/../../../lang/en/choice.php',
-            ];
-            foreach ($fillable as $attribute) {
-                foreach ($locales as $locale) {
-                    if (isset($cashAttrs[$locale][$attribute])) {
-                        $transValue = $cashAttrs[$locale][$attribute];
+            $fillable = collect($fillable)->unique()->filter(fn($v) => !Str::contains($v, ['pivot_', '_pivot', '_pivot_']))->values()->toArray();
+            sort($fillable);
+            $temp = [];
+            foreach ($fillable as $k => $value) {
+                $hasFrom = starts_with($value, 'from_');
+                $hasTo = starts_with($value, 'to_');
+                $strBeforeToFrom = Str::after($value, '_');
+                // Sort
+                if (($hasFrom || $hasTo) && in_array($strBeforeToFrom, $fillable)) {
+                    $attributeKey = "{$strBeforeToFrom}_{$value}";
+                    $sortArray[$attributeKey] = $value;
+                    $temp[$k] = $attributeKey;
+                }
+                else {
+                    $temp[$k] = $value;
+                }
+            }
+            $fillable = $temp;
+            sort($fillable);
+            // dd($fillable);
+
+            foreach ($locales as $locale) {
+                foreach ($fillable as $attribute) {
+                    if (isset($sortArray[$attribute])) {
+                        $attribute = $sortArray[$attribute];
                     }
-                    else {
-                        $transKey = "attributes.{$attribute}";
-                        $transHas = trans_has($transKey, $locale);
+                    $transKey = "attributes.$attribute";
+                    $transHas = trans_has($transKey, $locale);
+                    $defualtTrans = strlen($attribute) > 2 ? ucfirst(str_replace('_', ' ', ucwords(Str::snake(ends_with($attribute, '_id') ? Str::beforeLast($attribute, '_id') : $attribute), '_'))) : strtoupper($attribute);
+                    $transValue = $defualtTrans;
+                    if ($transHas) {
                         $transValue = __($transKey, [], $locale);
-                        $hasFrom = Str::startsWith($attribute, 'from_');
-                        $hasTo = Str::startsWith($attribute, 'to_');
-                        $k = Str::after($attribute, '_');
-                        if (($hasFrom || $hasTo) && !Str::contains($transValue, __("attributes.$k", [], $locale), !0)) {
+                    }
+                    elseif (isset($cacheAttrs[$locale][$attribute])) {
+                        $transValue = $cacheAttrs[$locale][$attribute];
+                    }
+                    $hasFrom = starts_with($attribute, 'from_');
+                    $hasTo = starts_with($attribute, 'to_');
+                    $strBeforeToFrom = Str::after($attribute, '_');
+                    if ($hasFrom || $hasTo) {
+                        if (trans_has($t = "attributes.$strBeforeToFrom", $locale) && !Str::contains($transValue, $v = __($t, [], $locale))) {
                             if ($locale == 'ar') {
-                                $transValue = sprintf(__("attributes.$k", [], $locale).' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
+                                $transValue = sprintf($v.' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
                             }
                             else {
-                                $transValue = sprintf('%s '.__("attributes.$k", [], $locale), $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
+                                $transValue = sprintf('%s '.$v, $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
                             }
                         }
-
-                        if (!$transHas || $transValue == $transKey) {
-                            $transValue = ucfirst(str_replace('_', ' ', ucwords(Str::snake(Str::endsWith($transValue, '_id') ? Str::beforeLast($attribute, '_id') : $attribute), '_')));
+                        elseif (isset($cacheAttrs[$locale][$attribute])) {
+                            $transValue = $cacheAttrs[$locale][$attribute];
                         }
                     }
+                    // No value set from cache
+                    if ($transValue == $defualtTrans && isset($cacheAttrs[$locale][$attribute])) {
+                        $transValue = $cacheAttrs[$locale][$attribute];
+                    }
+
                     $attributes[$locale][$attribute] = $transValue;
-                    ksort($attributes[$locale]);
+                }
+
+                if (!empty($sortArray)) {
+                    $temp = [];
+                    foreach ($attributes[$locale] as $k => $v) {
+                        if (isset($sortArray[$k])) {
+                            $temp[$sortArray[$k]] = $v;
+                        }
+                        else {
+                            $temp[$k] = $v;
+                        }
+                    }
+                    $attributes[$locale] = $temp;
+                }
+
+                if ($withOption) {
+                    $localeFile = include lang_path("$locale/attributes.php");
+                    $withFillable = array_keys($localeFile);
+                    $attributes[$locale] = array_merge($attributes[$locale],$localeFile);
                 }
             }
             $key = Str::plural($classPascal);
@@ -188,8 +255,8 @@ class ExportAttributesCommand extends BaseCommand
 
                 foreach ($withChoice as $v) {
                     if (__("choice.$v", [], $locale) != $v) {
-                        if (isset($cashChoice[$locale][$v])) {
-                            $choice[$locale][$v] = $cashChoice[$locale][$v];
+                        if (isset($cacheChoice[$locale][$v])) {
+                            $choice[$locale][$v] = $cacheChoice[$locale][$v];
                             continue;
                         }
                         $choice[$locale][$v] = __("choice.$v", [], $locale);
@@ -206,12 +273,12 @@ class ExportAttributesCommand extends BaseCommand
                     }
                 }
 
-                if (isset($cashChoice[$locale])) {
-                    $choice[$locale] = array_merge($cashChoice[$locale], $choice[$locale]);
+                if (isset($cacheChoice[$locale])) {
+                    $choice[$locale] = array_merge($cacheChoice[$locale], $choice[$locale]);
                 }
 
-                if (isset($cashChoice[$locale][$key])) {
-                    $choice[$locale][$key] = $cashChoice[$locale][$key];
+                if (isset($cacheChoice[$locale][$key])) {
+                    $choice[$locale][$key] = $cacheChoice[$locale][$key];
                     continue;
                 }
 
@@ -233,5 +300,9 @@ class ExportAttributesCommand extends BaseCommand
         $outputPath = $this->option('output') ?: 'resources/setup/deploy';
         Helpers::writeFile("attributes.php", $attributes, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
         Helpers::writeFile("choice.php", $choice, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
+
+        if($this->option('export')){
+            $this->call('myth:export-lang');
+        }
     }
 }
