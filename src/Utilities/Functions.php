@@ -17,6 +17,23 @@ use Illuminate\Support\Facades\Route as Router;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+if (!function_exists('mythAllowHeaders')) {
+    /**
+     * @param int $code
+     *
+     * @return void
+     */
+    function mythAllowHeaders(int $code = 600): void
+    {
+        if (!app()->runningInConsole() || !app()->runningUnitTests()) {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+            http_response_code($code);
+        }
+    }
+}
+
 if (!function_exists('to_number_format')) {
     /**
      * @param float|int|string $number
@@ -73,10 +90,7 @@ if (!function_exists('d')) {
     function d(...$args): void
     {
         if (!app()->runningInConsole() && !app()->runningUnitTests()) {
-            header('Access-Control-Allow-Origin: *');
-            header('Access-Control-Allow-Methods: *');
-            header('Access-Control-Allow-Headers: *');
-            http_response_code(600);
+            mythAllowHeaders();
         }
         //$debug = @debug_backtrace();
         //$call = current($debug);
@@ -653,23 +667,6 @@ if (!function_exists('isKsaMobile')) {
             return Str::startsWith($mobile, 966) && strlen($mobile) == 12 || Str::startsWith($mobile, 5) && strlen($mobile) == 9;
         }
         return !1;
-    }
-}
-
-if (!function_exists('mythAllowHeaders')) {
-    /**
-     * @param int $code
-     *
-     * @return never
-     */
-    function mythAllowHeaders(int $code = 600): void
-    {
-        if (!app()->runningInConsole() || !app()->runningUnitTests()) {
-            header('Access-Control-Allow-Origin: *');
-            header('Access-Control-Allow-Methods: *');
-            header('Access-Control-Allow-Headers: *');
-            http_response_code($code);
-        }
     }
 }
 
