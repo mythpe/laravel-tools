@@ -41,6 +41,9 @@ trait AttachmentsTrait
             if ($id = $request->input('attachment_type_id')) {
                 $opts['attachment_type_id'] = $id;
             }
+            if ($attachmentType) {
+                $opts['attachment_type'] = $attachmentType;
+            }
             $media = $model->addAttachment('attachment', $description, $collection, $opts);
             if ($request->input('return') == 'current') {
                 $resource = config('4myth-tools.media_resource_class');
@@ -48,6 +51,7 @@ trait AttachmentsTrait
             }
         }
         catch (Exception $exception) {
+            return $this->errorResponse($exception->getMessage());
         }
         return $this->resource($this->getModelAttachmentsMedia($model), __("messages.uploaded_success"));
     }
