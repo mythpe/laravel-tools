@@ -185,6 +185,13 @@ return [
         'name_en',
         'description_ar',
         'description_en',
+        'subject',
+        'subject_ar',
+        'subject_en',
+        'content',
+        'content_ar',
+        'content_en',
+        'date',
     ],
 
     /**
