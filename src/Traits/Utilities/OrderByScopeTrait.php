@@ -16,7 +16,7 @@ trait OrderByScopeTrait
     public static function bootOrderByScopeTrait(): void
     {
         $columns = static::getScopeOrderByColumns();
-        if (!in_array(request()->input('fdt'), ['i', 'e', 's', 'u', 'd'])) {
+        if (!in_array(request()->input('fdt'), ['i', 'e', 'u', 'c', 's', 'd'])) {
             self::addGlobalScope(OrderByScope::make($columns, self::scopeOrderByDirection()));
         }
     }
