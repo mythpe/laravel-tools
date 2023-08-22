@@ -16,6 +16,8 @@ use Myth\LaravelTools\Models\BaseModel;
 
 trait AttachmentsTrait
 {
+    static string $returnTypeKey = 'return';
+
     /**
      * @param BaseModel|Builder $model
      *
@@ -24,28 +26,29 @@ trait AttachmentsTrait
     public function uploadAttachments($model): JsonResponse
     {
         $request = $this->request;
-        $request->validate($this->_uploadAttachmentsRules());
-
-        $attachmentType = $request->input('attachment_type', null);
-        $attachmentType = $attachmentType ? (trans_has(($c = "attributes.$attachmentType"), null, !0) ? $c : $attachmentType) : null;
+        $rules = $this->_uploadAttachmentsRules();
+        $request->validate($rules);
+        $collection = $request->input('collection', $model::$mediaAttachmentsCollection);
 
         $description = $request->input('description', null);
         $description = $description ? (trans_has(($c = "attributes.$description"), null, !0) ? $c : $description) : null;
 
-        $collection = $request->input('collection', $model::$mediaAttachmentsCollection);
         try {
-            $opts = [];
+            $mediaClass = config('media-library.media_model');
+            $_media = new $mediaClass();
+            $opts = $request->only($_media->getFillable());
+            foreach ($this->_uploadAttachmentsProperties() as $key) {
+                if ($v = $request->input($key, $opts[$key] ?? null)) {
+                    $opts[$key] = $v;
+                }
+            }
+
             if ($id = auth(config('4myth-tools.auth_guard'))->id()) {
                 $opts['user_id'] = $id;
             }
-            if ($id = $request->input('attachment_type_id')) {
-                $opts['attachment_type_id'] = $id;
-            }
-            if ($attachmentType) {
-                $opts['attachment_type'] = $attachmentType;
-            }
+
             $media = $model->addAttachment('attachment', $description, $collection, $opts);
-            if ($request->input('return') == 'current') {
+            if ($request->input(static::$returnTypeKey) == 'current') {
                 $resource = config('4myth-tools.media_resource_class');
                 return $this->resource($resource::make($media));
             }
@@ -68,6 +71,14 @@ trait AttachmentsTrait
     }
 
     /**
+     * @return array<int,string>
+     */
+    public function _uploadAttachmentsProperties(): array
+    {
+        return [];
+    }
+
+    /**
      * @param BaseModel $model
      * @return mixed
      */
@@ -77,8 +88,10 @@ trait AttachmentsTrait
         $request = $this->request;
         $collection = $request->input('collection', $model::$mediaAttachmentsCollection);
         $resource = config('4myth-tools.media_resource_class');
-        $media = $request->input('return') != 'all' ? $model->getMedia($collection)->sortByDesc('order_column') : $model->media()->latest('order_column')->get();
-        return $resource::collection($media);
+        $all = $request->input(static::$returnTypeKey) == 'all';
+        $media = $model->media()->when($all, fn(Builder $b) => $b->where(['collection_name' => $collection]))->latest('order_column');
+        // $media =  ? $model->getMedia($collection)->sortByDesc('order_column') : $model->media()->latest('order_column')->get();
+        return $resource::collection($media->get());
     }
 
     /**

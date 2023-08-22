@@ -235,13 +235,26 @@ trait HasMediaTrait
     {
         $collection = $collection ?: static::$mediaAttachmentsCollection;
         $user = $properties['user_id'] ?? null;
-        if ($description && !($properties['description'] ?? null)) {
-            $properties['description'] = $description;
-        }
-        if ($user && !($properties['user_id'] ?? null)) {
+        if ($user && !isset($properties['user_id'])) {
             $properties['user_id'] = $user;
         }
+        if ($description && !isset($properties['description'])) {
+            $properties['description'] = $description;
+        }
+        $mediaClass = config('media-library.media_model');
+        $_media = new $mediaClass();
+        $fillable = $_media->getFillable();
+        $fill = [];
+        foreach ($fillable as $k) {
+            if ($v = $properties[$k]) {
+                $fill[$k] = $v;
+            }
+            unset($properties[$k]);
+        }
 
-        return $this->addMediaFromRequest($requestKey)->withCustomProperties($properties)->toMediaCollection($collection);
+        $media = $this->addMediaFromRequest($requestKey)->withCustomProperties($properties)->toMediaCollection($collection);
+        $fill = array_merge($fill, request()->only($media->getFillable()));
+        !empty($fill) && $media->fill($fill)->save();
+        return $media;
     }
 }
