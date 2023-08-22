@@ -228,6 +228,7 @@ class Postman
             $controllerName = ucwords($controllerName, '-');
             $controllerName = trim(str_ireplace('-', ' ', $controllerName));
             $actionName = $route->getActionMethod();
+            $routeName = Str::afterLast($route->getName(), '.');
             $isGeneralAction = in_array(strtolower($actionName), ['index', 'view', 'show', 'update', 'edit', 'store', 'create', 'destroy'], !0);
             $requestName = ucfirst(str_ireplace(['-', '\s+'], ' ', Str::kebab($actionName)));
 
@@ -451,24 +452,34 @@ class Postman
                 }
 
                 $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
-                $itemName = $requestName;
+                $defaultItemName = $requestName;
+                $transAttrs = ['name' => $routeName ?: '', 'action' => $actionName, 'controller' => $controllerName];
+
+                $itemName = $defaultItemName;
+
                 $itemArName = $actionName;
                 if (in_array($actionName, ['index', 'allIndex', 'indexActiveOnly'])) {
                     $itemArName = 'index';
                     $itemName = 'Index';
                 }
+
                 if (strtolower($itemName) == 'index') {
                     $itemName = 'List';
                 }
-
-                if (trans_has(($r = static::ITEMS_KEY.".$controllerClassName.$actionName"), 'ar')) {
-                    $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
+                if (trans_has($r = static::ITEMS_KEY.".$controllerClassName.$actionName", 'ar')) {
+                    $itemName .= ' - '.trim(__($r, $transAttrs));
                 }
-                elseif (trans_has(($r = "replace.$itemArName"), 'ar')) {
-                    $itemName .= ' - '.trim(__($r, ['name' => '', 'action' => $actionName, 'controller' => $controllerName]));
+                elseif (trans_has($r = "permissions.{$route->getName()}", 'ar')) {
+                    $itemName .= ' - '.trim(__($r, $transAttrs));
                 }
-                elseif (trans_has(($r = "global.$itemArName"), 'ar')) {
-                    $itemName .= ' - '.trim(__($r, ['name' => '']));
+                elseif ($routeName && trans_has($r = static::ITEMS_KEY.".$controllerClassName.$routeName", 'ar')) {
+                    $itemName .= ' - '.trim(__($r, $transAttrs));
+                }
+                elseif (trans_has($r = "replace.$itemArName", 'ar')) {
+                    $itemName .= ' - '.trim(__($r, $transAttrs));
+                }
+                elseif (trans_has($r = "global.$itemArName", 'ar')) {
+                    $itemName .= ' - '.trim(__($r, $transAttrs));
                 }
 
                 $requestDescriptionMethod = "_{$actionName}Description";
@@ -557,9 +568,9 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                     $warningFolders[] = $folderName;
                     $this->withCommand[0] = fn() => $warningFolders;
                 }
-                if ($itemName == $requestName && !in_array($itemName, $warningItems)) {
+                if ($itemName == $defaultItemName && !in_array($wname = ucfirst(Str::camel($controllerName)).".$actionName", $warningItems)) {
                     $this->command?->getComponents()->error("No Item name: $itemName");
-                    $warningItems[] = $actionName;
+                    $warningItems[] = $wname;
                     $this->withCommand[1] = fn() => $warningItems;
                 }
 
