@@ -61,10 +61,8 @@ trait SearchTrait
      */
     public function parseColumn($str, bool $camel = !1): string
     {
-        if (!$camel) {
-            return Str::snake(Str::beforeLast($str, '_id'));
-        }
-        return Str::endsWith($str, 'Id') ? Str::camel(Str::beforeLast($str, 'Id')) : $str;
+        $v = Str::beforeLast($str, '_id');
+        return $camel ? Str::camel($v) : Str::snake($v);
     }
 
     /**
@@ -195,7 +193,7 @@ trait SearchTrait
                                         // d($c, $words);
                                         $builder->where($c, 'LIKE', "%{$words}%");
                                         if (Helpers::hasTrait($relationModel, HasTranslatorTrait::class)) {
-                                            $availableAttributes = $relationModel->availableTranslationAttributes();
+                                            $availableAttributes = $relationModel->translatorAttributes();
                                             if (in_array($c, $availableAttributes)) {
                                                 $builder->orWhere(fn(Builder $t) => $t->whereHas('translator', fn($m) => $m->where('attribute', $c)->where('value', 'LIKE', "%$words%")));
                                             }
@@ -236,7 +234,7 @@ trait SearchTrait
                             $builder->orWhere($column, 'LIKE', "%{$words}%");
 
                             if (Helpers::hasTrait($model, HasTranslatorTrait::class)) {
-                                $availableAttributes = $model->availableTranslationAttributes();
+                                $availableAttributes = $model->translatorAttributes();
                                 if (in_array($column, $availableAttributes)) {
                                     $builder->orWhere(fn(Builder $t) => $t->whereHas('translator', fn($m) => $m->where('attribute', $column)->where('value', 'LIKE', "%$words%")));
                                 }

@@ -204,7 +204,7 @@ html;
             $class_use .= 'use \Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
 ';
             $class_methods .= "
-    public static function availableTranslationAttributes(): array
+    public static function translatorAttributes(): array
     {
         return ['name',];
     }
