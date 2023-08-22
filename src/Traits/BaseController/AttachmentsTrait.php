@@ -89,8 +89,7 @@ trait AttachmentsTrait
         $collection = $request->input('collection', $model::$mediaAttachmentsCollection);
         $resource = config('4myth-tools.media_resource_class');
         $all = $request->input(static::$returnTypeKey) == 'all';
-        $media = $model->media()->when($all, fn(Builder $b) => $b->where(['collection_name' => $collection]))->latest('order_column');
-        // $media =  ? $model->getMedia($collection)->sortByDesc('order_column') : $model->media()->latest('order_column')->get();
+        $media = $model->media()->when(!$all, fn(Builder $b) => $b->where(['collection_name' => $collection]))->latest('order_column');
         return $resource::collection($media->get());
     }
 
