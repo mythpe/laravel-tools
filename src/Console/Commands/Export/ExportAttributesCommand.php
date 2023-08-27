@@ -27,9 +27,9 @@ class ExportAttributesCommand extends BaseCommand
      */
     protected $signature = 'myth:export-attributes
 {--o|output= : Output path inside resource path}
-{--t|to : Insert to_ keys to exported data}
-{--f|from : Insert from_ keys to exported data}
-{--w|with : Export attributes with exists files}
+{--t|to : Do not Insert to_ keys to exported data}
+{--f|from : Do not  Insert from_ keys to exported data}
+{--w|with : Do not  Export attributes with exists files}
 {--e|export : Export file to lang}
 ';
 
@@ -55,9 +55,9 @@ class ExportAttributesCommand extends BaseCommand
         $choice = [];
         $withChoice = [];
         $locales = $langDisk->allDirectories();
-        $toOption = $this->option('to');
-        $fromOption = $this->option('from');
-        $withOption = $this->option('with');
+        $toOption = !$this->option('to');
+        $fromOption = !$this->option('from');
+        $withOption = !$this->option('with');
         $exportOption = $this->option('export');
 
         $cacheAttrs = [
@@ -243,7 +243,7 @@ class ExportAttributesCommand extends BaseCommand
                 if ($withOption) {
                     $localeFile = include lang_path("$locale/attributes.php");
                     $withFillable = array_keys($localeFile);
-                    $attributes[$locale] = array_merge($attributes[$locale],$localeFile);
+                    $attributes[$locale] = array_merge($attributes[$locale], $localeFile);
                 }
             }
             $key = Str::plural($classPascal);
@@ -254,12 +254,12 @@ class ExportAttributesCommand extends BaseCommand
                 }
 
                 foreach ($withChoice as $v) {
-                    if (__("choice.$v", [], $locale) != $v) {
+                    if (trans_has($i = "choice.$v", $locale)) {
                         if (isset($cacheChoice[$locale][$v])) {
                             $choice[$locale][$v] = $cacheChoice[$locale][$v];
                             continue;
                         }
-                        $choice[$locale][$v] = __("choice.$v", [], $locale);
+                        $choice[$locale][$v] = __($i, [], $locale);
                         continue;
                     }
 
@@ -279,29 +279,55 @@ class ExportAttributesCommand extends BaseCommand
 
                 if (isset($cacheChoice[$locale][$key])) {
                     $choice[$locale][$key] = $cacheChoice[$locale][$key];
-                    continue;
                 }
 
-                if (__($k, [], $locale) != $k) {
+                // if (__($k, [], $locale) != $k) {
+                if (!$choice[$locale][$key] && trans_has($k, $locale)) {
                     $choice[$locale][$key] = __($k, [], $locale);
-                    continue;
-                }
-                $plural = str_replace('-', ' ', Str::plural(ucwords(Str::kebab($class_basename), '-')));
-                $singular = str_replace('-', ' ', Str::singular(ucwords(Str::kebab($class_basename), '-')));
-                if ($locale == 'ar') {
-                    $choice[$locale][$key] = "$plural|$singular";
                 }
                 else {
-                    $choice[$locale][$key] = "$singular|$plural";
+                    $plural = str_replace('-', ' ', Str::plural(ucwords(Str::kebab($class_basename), '-')));
+                    $singular = str_replace('-', ' ', Str::singular(ucwords(Str::kebab($class_basename), '-')));
+                    if ($locale == 'ar') {
+                        $choice[$locale][$key] = "$plural|$singular";
+                    }
+                    else {
+                        $choice[$locale][$key] = "$singular|$plural";
+                    }
                 }
+                $choiceLang = is_file($p = lang_path("$locale/choice.php")) ? include $p : [];
+                $choice[$locale] = array_merge($choice[$locale], $choiceLang);
+                ksort($choice[$locale]);
             }
         }
-
         $outputPath = $this->option('output') ?: 'resources/setup/deploy';
-        Helpers::writeFile("attributes.php", $attributes, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
-        Helpers::writeFile("choice.php", $choice, ['output' => $outputPath, 'directories' => !0, 'callback' => fn($e) => $this->components->info("Put file [$e]")]);
+        $callback = function ($exportedPath) use ($outputPath) {
+            if ($this->option('export')) {
+                $from = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
+                $to = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
+                $to = lang_path(trim(str_ireplace($outputPath, '', $to), '/\\'));
+                $to = trim(str_ireplace(base_path(), '', $to), '/\\');
+                $disk = Storage::disk('root');
+                $disk->copy($from, $to);
+                $to = str_ireplace('/', '\\', $to);
+                $this->components->info("Copy File [$to]");
+            }
+            $exportedPath = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
+            $exportedPath = trim(str_ireplace('/', '\\', $exportedPath), '/\\');
+            $this->components->info("Export file [$exportedPath]");
+        };
+        Helpers::writeFile("attributes.php", $attributes, [
+            'output'      => $outputPath,
+            'directories' => !0,
+            'callback'    => $callback,
+        ]);
+        Helpers::writeFile("choice.php", $choice, [
+            'output'      => $outputPath,
+            'directories' => !0,
+            'callback'    => $callback,
+        ]);
 
-        if($this->option('export')){
+        if ($this->option('export')) {
             $this->call('myth:export-lang');
         }
     }

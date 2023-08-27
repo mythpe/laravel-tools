@@ -39,7 +39,7 @@ class ExportLanguageFilesCommand extends BaseCommand
     public function handle(): void
     {
         $this->applyCustomStyle();
-        $this->info('Start deploy');
+        $this->info('Start Export');
         $langDisk = Storage::disk('lang');
         $this->diskName = $this->option('disk');
         $outputDisk = $this->disk();
@@ -70,7 +70,10 @@ class ExportLanguageFilesCommand extends BaseCommand
                 }
                 $path = "$dir/$locale/$fileName.json";
                 $outputDisk->put($path, $data->toJson(JSON_UNESCAPED_UNICODE));
-                $this->components->info($outputDisk->path($path));
+                $o = str_ireplace(base_path(), '', $outputDisk->path($path));
+                $o = str_ireplace('/', '\\', $o);
+                $o = trim($o, '/\\');
+                $this->components->info("JSON: [$o]");
             }
         }
     }
