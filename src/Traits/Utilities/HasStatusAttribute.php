@@ -28,7 +28,7 @@ trait HasStatusAttribute
             'id'    => $id,
             'value' => $id,
             'label' => $text,
-        ])->sortBy('label')->values();
+        ])->values();
     }
 
     /**
