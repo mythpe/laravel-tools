@@ -246,7 +246,7 @@ trait HasMediaTrait
         $fillable = $_media->getFillable();
         $fill = [];
         foreach ($fillable as $k) {
-            if ($v = $properties[$k]) {
+            if (isset($properties[$k]) && ($v = $properties[$k])) {
                 $fill[$k] = $v;
             }
             unset($properties[$k]);
