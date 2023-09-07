@@ -173,7 +173,7 @@ trait SearchTrait
                             });
                         }
                     }
-                    elseif (Str::endsWith($column, '_id') && (method_exists($model, $this->parseColumn($column)) || method_exists($model, $this->parseColumn($column, !0)))) {
+                    elseif (!is_numeric($words) && Str::endsWith($column, '_id') && (method_exists($model, $this->parseColumn($column)) || method_exists($model, $this->parseColumn($column, !0)))) {
                         // d($words,$column);
                         $str = Str::beforeLast($column, '_id');
                         $relations = array_unique([
