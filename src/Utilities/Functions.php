@@ -592,9 +592,8 @@ if (!function_exists('getRouterPermissions')) {
         $auth = [];
         $codes = [];
         foreach ($routes as $route) {
-            $name = $route->getName() ?: '';
-            $code = $name;
-            if (Str::endsWith($name, config('4myth-tools.skip_permission_ends_with', []))) {
+            $code = $route->getName() ?: '';
+            if (Str::endsWith($code, config('4myth-tools.skip_permission_ends_with', []))) {
                 continue;
             }
             $action = $route->getAction();
@@ -616,7 +615,7 @@ if (!function_exists('getRouterPermissions')) {
 
             if (!array_key_exists($code, $auth)) {
                 $auth[$code] = [
-                    'name' => $name,
+                    'name' => $code,
                     'code' => $code,
                 ];
                 $codes[] = $code;
