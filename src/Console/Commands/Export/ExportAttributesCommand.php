@@ -80,8 +80,12 @@ class ExportAttributesCommand extends BaseCommand
             }
             $c = Str::beforeLast($file, '.php');
             $c = str_replace(['/', '\\\\'], '\\', $c);
+            $namespace = "\App\\{$c}";
+            if (!class_exists($namespace)) {
+                continue;
+            }
             /** @var BaseModel $model */
-            $model = app("\App\\{$c}");
+            $model = app($namespace);
             $fillable = [];
 
             if (method_exists($model, 'getFillable')) {
