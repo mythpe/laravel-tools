@@ -27,12 +27,6 @@ class Postman
      *
      * @var string
      */
-    const DESCRIPTION_KEY = 'postman.description';
-    /**
-     * Name on translation key.
-     *
-     * @var string
-     */
     const AUTH_DESCRIPTION_KEY = 'postman.folder.auth_description';
     /**
      * Name on translation key.
@@ -143,16 +137,25 @@ class Postman
     public function __construct()
     {
         $this->domain = config('app.url');
-        $this->collectionId = config('4myth-tools.postman.postman_id');
-        $this->exporterId = config('4myth-tools.postman.exporter_id');
-        $this->locale = config('app.locale', 'ar');
-        $this->collectionName = config('4myth-tools.postman.collection_name') ?: config('app.name');
-        $this->fileName = Str::finish(config('4myth-tools.postman.file_name', 'postman-collection'), '.json');
-        $this->middlewareName = config('4myth-tools.postman.middleware_name', 'postman');
-        $this->localeHeaderVariableName = config('4myth-tools.postman.locale_header_variable_name', 'App-Locale');
-        $this->localeVariableName = config('4myth-tools.postman.locale_variable_name', 'locale');
-        $this->tokenVariableName = config('4myth-tools.postman.token_variable_name', 'token');
-        $this->urlVariableName = config('4myth-tools.postman.url_variable_name', 'url');
+        $this->collectionId = self::config('postman_id');
+        $this->exporterId = self::config('exporter_id');
+        $this->locale = self::config('app.locale', 'ar');
+        $this->collectionName = self::config('collection_name') ?: config('app.name');
+        $this->fileName = Str::finish(self::config('file_name', 'postman-collection'), '.json');
+        $this->middlewareName = self::config('middleware_name', 'postman');
+        $this->localeHeaderVariableName = self::config('locale_header_variable_name', 'App-Locale');
+        $this->localeVariableName = self::config('locale_variable_name', 'locale');
+        $this->tokenVariableName = self::config('token_variable_name', 'token');
+        $this->urlVariableName = self::config('url_variable_name', 'url');
+    }
+
+    /**
+     * @param $key
+     * @param $default
+     */
+    public static function config($key, $default = null)
+    {
+        return config("4myth-tools.postman.$key", $default);
     }
 
     /**
@@ -244,7 +247,6 @@ class Postman
                     }
                 }
             }
-
             foreach ($route->methods as $method) {
                 if (in_array($method, ['HEAD', 'PATCH'])) {
                     continue;
@@ -453,34 +455,46 @@ class Postman
 
                 $choiceName = ucfirst(Str::camel(Str::plural($controllerName)));
                 $defaultItemName = $requestName;
-                $transAttrs = ['name' => $routeName ?: '', 'action' => $actionName, 'controller' => $controllerName];
+                $transAttrs = [
+                    'name'       => $routeName ? $this->choice($choiceName, 1) : '',
+                    'action'     => $actionName,
+                    'controller' => $controllerName,
+                    'default'    => $defaultItemName,
+                ];
 
                 $itemName = $defaultItemName;
-
                 $itemArName = $actionName;
                 if (in_array($actionName, ['index', 'allIndex', 'indexActiveOnly'])) {
                     $itemArName = 'index';
                     $itemName = 'Index';
                 }
-
+                // d($controllerClassName, $actionName);
                 if (strtolower($itemName) == 'index') {
                     $itemName = 'List';
                 }
-                if (trans_has($r = static::ITEMS_KEY.".$controllerClassName.$actionName", 'ar')) {
-                    $itemName .= ' - '.trim(__($r, $transAttrs));
+
+                if ($this->trans_has($k = "items.$controllerClassName.$actionName")) {
+                    $itemName = $this->trans($k, $transAttrs);
                 }
-                elseif (trans_has($r = "permissions.{$route->getName()}", 'ar')) {
-                    $itemName .= ' - '.trim(__($r, $transAttrs));
-                }
-                elseif ($routeName && trans_has($r = static::ITEMS_KEY.".$controllerClassName.$routeName", 'ar')) {
-                    $itemName .= ' - '.trim(__($r, $transAttrs));
-                }
-                elseif (trans_has($r = "replace.$itemArName", 'ar')) {
-                    $itemName .= ' - '.trim(__($r, $transAttrs));
-                }
-                elseif (trans_has($r = "global.$itemArName", 'ar')) {
-                    $itemName .= ' - '.trim(__($r, $transAttrs));
-                }
+
+                // dd($itemName, $k);
+                // if (trans_has($r = static::ITEMS_KEY.".$controllerClassName.$actionName", 'ar')) {
+                //     $itemName .= ' - '.trim(__($r, $transAttrs));
+                // }
+                // elseif ($routeName && trans_has($r = static::ITEMS_KEY.".$controllerClassName.$routeName", 'ar')) {
+                //     $itemName .= ' - '.trim(__($r, $transAttrs));
+                // }
+                // elseif (trans_has($r = "permissions.{$route->getName()}", 'ar')) {
+                //     $itemName .= ' - '.trim(__($r, $transAttrs));
+                // }
+                // elseif (trans_has($r = "replace.$itemArName", 'ar')) {
+                //     // dd($itemArName);
+                //     $itemName .= ' - '.trim(__($r, $transAttrs));
+                // }
+                // elseif (trans_has($r = "global.$itemArName", 'ar')) {
+                //     $itemName .= ' - '.trim(__($r, $transAttrs));
+                // }
+                // d($itemName);
 
                 $requestDescriptionMethod = "_{$actionName}Description";
                 $requestDescription = '';
@@ -496,8 +510,8 @@ class Postman
                 if (!$requestDescription && $isGeneralAction) {
                     try {
                         $name = $controllerName;
-                        if (trans_has($k = "choice.$choiceName")) {
-                            $name = trans_choice($k, 2);
+                        if ($this->trans_has($choiceName)) {
+                            $name = $this->choice($choiceName, 2);
                         }
                         $requestDescription = __("replace.$actionName", ['name' => $name]);
                     }
@@ -543,23 +557,28 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                         ],
                     ];
                 }
-                $folderName = $controllerName;
+                // $folderName = $controllerName;
+                $folderName = "Default Name";
                 $folderDescription = '';
+                $transAttrs = ['default' => $controllerName];
+
                 // Folder name
-                if (trans_has($k = static::FOLDER_KEY.".$controllerClassName.name")) {
-                    $folderName = __($k, ['controller' => $controllerName]);
+                if ($this->trans_has($k = "folder.$controllerClassName.name")) {
+                    $folderName = $this->trans($k, $transAttrs);
                 }
                 else if (trans_has($k = "choice.$choiceName")) {
-                    $folderName = trans_choice("choice.$choiceName", 2, [], 'en').' - '.trans_choice("choice.$choiceName", 2, [], 'ar');
+                    $folderName = trans_choice($k, 2, [], 'en');
+                    $ar = trans_choice($k, 2, [], 'ar');
+                    $folderName .= ($folderName && $ar ? ' - ' : '').($ar ? $ar : '');
                 }
 
-                if (trans_has($k = static::FOLDER_KEY.".$controllerClassName.description")) {
-                    $folderDescription .= __($k, ['controller' => $controllerName]);
-                }
-                elseif (trans_has($k = static::FOLDER_KEY.".$controllerClassName")) {
-                    $folderTrans = __($k);
-                    if (!is_array($folderTrans)) {
-                        $folderDescription .= $folderTrans;
+                // Folder Description
+                if ($this->trans_has($k = "folder.$controllerClassName.description")) {
+                    if ($en = $this->trans($k, $transAttrs, 'en')) {
+                        $folderDescription .= ($folderDescription ? PHP_EOL : '').$en;
+                    }
+                    if ($ar = $this->trans($k, $transAttrs, 'ar')) {
+                        $folderDescription .= ($folderDescription ? PHP_EOL : '').$ar;
                     }
                 }
 
@@ -601,6 +620,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
                 //    'route' => $route,
                 //];
             }
+            // dd(3);
         }
 
         ksort($authCollection);
@@ -1111,14 +1131,13 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
     public function getDescription(): string
     {
         $description = '';
-        if (trans_has(static::DESCRIPTION_KEY)) {
-            $description .= (__(static::DESCRIPTION_KEY, [
+        if (trans_has($t = 'postman.description')) {
+            $description .= (__($t, [
                 'name' => config('.app.name'),
                 'year' => now()->format("Y"),
             ]) ?: '');
         }
-        $description .= PHP_EOL."Powered by MyTh All rights reserved.";
-        return $description;
+        return $description.PHP_EOL."Powered by MyTh All rights reserved.";
     }
 
     /**
@@ -1255,5 +1274,25 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             }
         }
         return (string) $str;
+    }
+
+    public function __($key = null, $replace = [], $locale = null)
+    {
+        return __($key, $replace, $locale ?: $this->getLocale());
+    }
+
+    public function trans($key = null, $replace = [], $locale = null)
+    {
+        return __("postman.$key", $replace, $locale ?: $this->getLocale());
+    }
+
+    public function choice($key, $number, array $replace = [], $locale = null)
+    {
+        return trans_choice("choice.$key", $number, $replace, $locale ?: $this->getLocale());
+    }
+
+    public function trans_has(string $key, bool $fallback = !1, $locale = null)
+    {
+        return trans_has("postman.$key", $locale ?: $this->getLocale(), $fallback);
     }
 }
