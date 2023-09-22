@@ -251,8 +251,8 @@ trait HasMediaTrait
             }
             unset($properties[$k]);
         }
-
-        $media = $this->addMediaFromRequest($requestKey)->withCustomProperties($properties)->toMediaCollection($collection);
+        $media = is_file($requestKey) ? (Str::startsWith($requestKey, base_path()) ? $this->copyMedia($requestKey) : $this->addMedia($requestKey)) : $this->addMediaFromRequest($requestKey);
+        $media = $media->withCustomProperties($properties)->toMediaCollection($collection);
         $fill = array_merge($fill, request()->only($media->getFillable()));
         !empty($fill) && $media->fill($fill)->save();
         return $media;
