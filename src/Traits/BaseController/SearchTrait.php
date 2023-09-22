@@ -227,12 +227,11 @@ trait SearchTrait
 
                     }
                     elseif (Schema::hasColumn($this->searchTable, $column)) {
-                        if ($column == 'id' && is_numeric($words)) {
+                        if (($column == 'id' && is_numeric($words)) || (ends_with($column, '_id') && is_numeric($words))) {
                             $builder->orWhere($column, '=', (int) $words);
                         }
                         else {
                             $builder->orWhere($column, 'LIKE', "%{$words}%");
-
                             if (Helpers::hasTrait($model, HasTranslatorTrait::class)) {
                                 $availableAttributes = $model->translatorAttributes();
                                 if (in_array($column, $availableAttributes)) {
