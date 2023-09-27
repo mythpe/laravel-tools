@@ -9,7 +9,7 @@
 
 
 /**
- * @property {modelName} {modelCamelName}
+ * @property Model {modelCamelName}
  */
 namespace App\Traits\BelongsTo;
 
