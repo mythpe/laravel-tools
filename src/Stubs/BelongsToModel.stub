@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property Model {modelCamelName}
+ * @property Model ${modelCamelName}
  */
 trait BelongsTo{modelName}
 {
