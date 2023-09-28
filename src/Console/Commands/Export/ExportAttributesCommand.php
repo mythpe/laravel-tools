@@ -124,7 +124,7 @@ class ExportAttributesCommand extends BaseCommand
                 if (!$c instanceof Controller) {
                     continue;
                 }
-                $r = new \ReflectionClass($c);
+                $r = new ReflectionClass($c);
                 foreach ($r->getMethods() as $method) {
                     $methodName = $method->getName();
                     if (starts_with($methodName, '_') && $method->getReturnType() == 'array') {
