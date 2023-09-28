@@ -7,10 +7,6 @@
  * Github: https://github.com/mythpe
  */
 
-
-/**
- * @property Model {modelCamelName}
- */
 namespace App\Traits\BelongsTo;
 
 use App\Models\{model} as Model;
@@ -18,6 +14,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property Model {modelCamelName}
+ */
 trait BelongsTo{modelName}
 {
 
