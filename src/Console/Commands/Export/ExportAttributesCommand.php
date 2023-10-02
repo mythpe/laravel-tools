@@ -284,7 +284,9 @@ class ExportAttributesCommand extends BaseCommand
                 if (isset($cacheChoice[$locale][$key])) {
                     $choice[$locale][$key] = $cacheChoice[$locale][$key];
                 }
-
+                if (!isset($choice[$locale][$key])) {
+                    $choice[$locale][$key] = null;
+                }
                 // if (__($k, [], $locale) != $k) {
                 if (!$choice[$locale][$key] && trans_has($k, $locale)) {
                     $choice[$locale][$key] = __($k, [], $locale);
