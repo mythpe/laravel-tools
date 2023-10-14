@@ -75,6 +75,34 @@ class BaseModel extends Authenticate implements HasMedia
     }
 
     /**
+     * @param string $key
+     * @param array $options
+     * @return \Illuminate\Support\Collection
+     */
+    public static function langToCollection(string $key, array $options = [])
+    {
+        $codes = __($key);
+        $values = [];
+        $labels = $options['labels'] ?? [];
+        $ids = $options['ids'] ?? [];
+        foreach ($codes as $value => $name) {
+            $code = [
+                'value' => $value,
+                'label' => $name,
+            ];
+            foreach ($labels as $label) {
+                $code[$label] = $name;
+            }
+            foreach ($ids as $id) {
+                $code[$id] = $value;
+            }
+
+            $values[] = $code;
+        }
+        return collect($values);
+    }
+
+    /**
      * Make attributes hidden fro array
      * @return string[]
      */
