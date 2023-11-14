@@ -122,6 +122,18 @@ trait FilterTrait
                     $builder->where($column, '>=', min($from, $to))->where($column, '<=', max($to, $from));
                 }
                 else {
+                    if (is_array($value[0] ?? null)) {
+                        $found = null;
+                        foreach (['id', 'value', 'key'] as $key) {
+                            if (array_key_exists($key, $value[0])) {
+                                $found = $key;
+                                break;
+                            }
+                        }
+                        if (!is_null($found)) {
+                            $value = collect($value)->pluck($found)->toArray();
+                        }
+                    }
                     $builder->whereIn($column, $value);
                 }
             }
