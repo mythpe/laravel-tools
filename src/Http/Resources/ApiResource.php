@@ -61,11 +61,15 @@ class ApiResource extends JsonResource
      */
     public function mainResourceKeys(string | int | null $id = null, string | int | null $label = null, array $merge = []): array
     {
-        return array_merge([
+        $main = [
             "id"    => $id,
             "value" => $id,
             "label" => $label,
-        ], $merge);
+        ];
+        if (config('4myth-tools.transformer.append_text')) {
+            $main['text'] = $label;
+        }
+        return array_merge($main, $merge);
     }
 
     /**

@@ -229,4 +229,7 @@ return [
 
     'translator_morph' => 'translatable',
 
+    'transformer' => [
+        'append_text' => !1,
+    ],
 ];
