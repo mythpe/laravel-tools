@@ -286,7 +286,7 @@ html;
             $this->newLine();
 
             // Get Source
-            $source = file($this->disk()->path($path));
+            $source = file(str_replace('\\', '/', $this->disk()->path($path)));
             $commentIndex = null;
             $existsLine = null;
             foreach ($source as $k => $line) {

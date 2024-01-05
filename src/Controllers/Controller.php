@@ -19,6 +19,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Myth\LaravelTools\Traits\BaseController\ApplyQueryTrait;
 use Myth\LaravelTools\Traits\BaseController\AttachmentsTrait;
 use Myth\LaravelTools\Traits\BaseController\CrudTrait;
 use Myth\LaravelTools\Traits\BaseController\EventsTrait;
@@ -34,7 +35,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    use CrudTrait, EventsTrait, SearchTrait, RulesTrait, SortTrait, PaginateTrait, FilterTrait, AttachmentsTrait;
+    use CrudTrait, EventsTrait, SearchTrait, RulesTrait, SortTrait, PaginateTrait, FilterTrait, AttachmentsTrait, ApplyQueryTrait;
 
     /**
      * Model Relations

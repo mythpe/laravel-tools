@@ -60,13 +60,6 @@ trait CrudTrait
     public array $withCount = [];
 
     /**
-     * Range parameters to validation if equal 0 remove it
-     *
-     * @var array
-     */
-    public array $validationRangeParameters = [];
-
-    /**
      * The key of request to load model relations
      *
      * @var string
@@ -119,6 +112,7 @@ trait CrudTrait
      * @var array
      */
     protected array $checkBeforeDestroy = [];
+
     /**
      * Auto save model image after saved event
      * @var bool
@@ -478,37 +472,6 @@ trait CrudTrait
     }
 
     /**
-     * Check from request parameters range (from-to) if equal 0 remove it.
-     *
-     * @return void
-     */
-    public function validateRangeRangeParameters(): void
-    {
-        if (count($this->validationRangeParameters) < 1) {
-            return;
-        }
-
-        $filter = $this->request->input('filter', []);
-        if ($this->request->has('filter') && !is_array($filter)) {
-            $filter = json_decode($filter, !0);
-        }
-        if (!is_array($filter)) {
-            return;
-        }
-        foreach ($this->validationRangeParameters as $name) {
-            $from = "from_{$name}";
-            $to = "to_{$name}";
-            if (array_key_exists($from, $filter) && !$filter[$from]) {
-                unset($filter[$from]);
-            }
-            if (array_key_exists($to, $filter) && !$filter[$to]) {
-                unset($filter[$to]);
-            }
-            $this->request->merge(['filter' => $filter]);
-        }
-    }
-
-    /**
      * @return array
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -536,21 +499,5 @@ trait CrudTrait
             return $this->request->route()?->parameter($name) ?: new static::$controllerModel;
         }
         return $model;
-    }
-
-    /**
-     * @param Builder|mixed $builder
-     *
-     * @return Builder|mixed
-     */
-    protected function apply($builder = null)
-    {
-        if ($builder) {
-            $this->validateRangeRangeParameters();
-            $builder = $this->sortQuery($builder);
-            $builder = $this->searchQuery($builder);
-            $builder = $this->filerQuery($builder);
-        }
-        return $builder;
     }
 }
