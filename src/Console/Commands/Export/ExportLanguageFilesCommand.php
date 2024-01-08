@@ -22,7 +22,8 @@ class ExportLanguageFilesCommand extends BaseCommand
     protected $signature = 'myth:export-lang
 {--f|flip : File choice files}
 {--o|output=deploy : Output path}
-{--d|disk=setup : Output Disk}';
+{--d|disk=setup : Output Disk}
+{--F|files=* : Files with export}';
 
     /**
      * The console command description.
@@ -44,7 +45,10 @@ class ExportLanguageFilesCommand extends BaseCommand
         $this->diskName = $this->option('disk');
         $outputDisk = $this->disk();
         $locales = $langDisk->allDirectories();
-        $configFiles = config('4myth-tools.js_lang_command_files', '*');
+        $configFiles = $this->option('files', '*');
+        if (empty($configFiles)) {
+            $configFiles = config('4myth-tools.js_lang_command_files', '*');
+        }
         // $configFiles = '*';
         $dir = $this->option('output');
         $flipChoiceFiles = $this->option('flip');
