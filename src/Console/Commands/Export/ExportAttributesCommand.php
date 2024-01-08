@@ -29,9 +29,9 @@ class ExportAttributesCommand extends BaseCommand
 {--o|output= : Output path inside resource path}
 {--t|to : Do not Insert to_ keys to exported data}
 {--f|from : Do not  Insert from_ keys to exported data}
-{--w|with : Do not  Export attributes with exists files}
-{--d|deploy : use Language Files Command }
-{--e|export : Export file to lang}
+{--n|new : Make new export and do not  export attributes with exists files}
+{--d|deploy : Use Language Files Command }
+{--s|save : save files to lang directories}
 ';
 
     /**
@@ -58,8 +58,8 @@ class ExportAttributesCommand extends BaseCommand
         $locales = $langDisk->allDirectories();
         $toOption = !$this->option('to');
         $fromOption = !$this->option('from');
-        $withOption = !$this->option('with');
-        $exportOption = $this->option('export');
+        $newOption = $this->option('new');
+        $saveOption = $this->option('save');
         $deployOption = $this->option('deploy');
 
         $cacheAttrs = [
@@ -253,7 +253,7 @@ class ExportAttributesCommand extends BaseCommand
                     $attributes[$locale] = $temp;
                 }
 
-                if ($withOption) {
+                if (!$newOption) {
                     $localeFile = include lang_path("$locale/attributes.php");
                     $withFillable = array_keys($localeFile);
                     $attributes[$locale] = array_merge($attributes[$locale], $localeFile);
@@ -316,8 +316,8 @@ class ExportAttributesCommand extends BaseCommand
             }
         }
         $outputPath = $this->option('output') ?: 'resources/setup/deploy';
-        $callback = function ($exportedPath) use ($outputPath, $exportOption) {
-            if ($exportOption) {
+        $callback = function ($exportedPath) use ($outputPath, $saveOption) {
+            if ($saveOption) {
                 $from = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
                 $to = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
                 $to = lang_path(trim(str_ireplace($outputPath, '', $to), '/\\'));
