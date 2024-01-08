@@ -29,7 +29,7 @@ class ExportAttributesCommand extends BaseCommand
 {--o|output= : Output path inside resource path}
 {--t|to : Do not Insert to_ keys to exported data}
 {--f|from : Do not  Insert from_ keys to exported data}
-{--n|new : Make new export and do not  export attributes with exists files}
+{--N|new : Make new export and do not  export attributes with exists files}
 {--d|deploy : Use Language Files Command }
 {--s|save : save files to lang directories}
 ';
