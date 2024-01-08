@@ -13,7 +13,7 @@ use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Myth\LaravelTools\Console\Commands\CheckPermissionNamesCommand;
 use Myth\LaravelTools\Console\Commands\Export\ExportAttributesCommand;
-use Myth\LaravelTools\Console\Commands\Export\ExportLanguageFilesCommand;
+use Myth\LaravelTools\Console\Commands\Export\ExportLanguageCommand;
 use Myth\LaravelTools\Console\Commands\MakeModelCommand;
 use Myth\LaravelTools\Console\Commands\PostmanCommand;
 
@@ -81,7 +81,7 @@ class ServiceProvider extends BaseServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 PostmanCommand::class,
-                ExportLanguageFilesCommand::class,
+                ExportLanguageCommand::class,
                 MakeModelCommand::class,
                 CheckPermissionNamesCommand::class,
                 ExportAttributesCommand::class,

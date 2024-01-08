@@ -30,6 +30,7 @@ class ExportAttributesCommand extends BaseCommand
 {--t|to : Do not Insert to_ keys to exported data}
 {--f|from : Do not  Insert from_ keys to exported data}
 {--w|with : Do not  Export attributes with exists files}
+{--d|deploy : use Language Files Command }
 {--e|export : Export file to lang}
 ';
 
@@ -59,6 +60,7 @@ class ExportAttributesCommand extends BaseCommand
         $fromOption = !$this->option('from');
         $withOption = !$this->option('with');
         $exportOption = $this->option('export');
+        $deployOption = $this->option('deploy');
 
         $cacheAttrs = [
             'ar' => require __DIR__.'/../../../lang/ar/attributes.php',
@@ -314,8 +316,8 @@ class ExportAttributesCommand extends BaseCommand
             }
         }
         $outputPath = $this->option('output') ?: 'resources/setup/deploy';
-        $callback = function ($exportedPath) use ($outputPath) {
-            if ($this->option('export')) {
+        $callback = function ($exportedPath) use ($outputPath, $exportOption) {
+            if ($exportOption) {
                 $from = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
                 $to = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
                 $to = lang_path(trim(str_ireplace($outputPath, '', $to), '/\\'));
@@ -340,7 +342,7 @@ class ExportAttributesCommand extends BaseCommand
             'callback'    => $callback,
         ]);
 
-        if ($this->option('export')) {
+        if ($deployOption) {
             $this->call('myth:export-lang');
         }
     }

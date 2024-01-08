@@ -12,7 +12,7 @@ namespace Myth\LaravelTools\Console\Commands\Export;
 use Illuminate\Support\Facades\Storage;
 use Myth\LaravelTools\Console\BaseCommand;
 
-class ExportLanguageFilesCommand extends BaseCommand
+class ExportLanguageCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
