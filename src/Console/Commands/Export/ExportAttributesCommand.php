@@ -53,7 +53,7 @@ class ExportAttributesCommand extends BaseCommand
         $controllersFiles = $appDisk->allFiles('Http/Controllers');
         $attributes = [];
         $choice = [];
-        $withChoice = [];
+        $additionalChoice = [];
         $locales = $langDisk->allDirectories();
         $toOption = !$this->option('to');
         $fromOption = !$this->option('from');
@@ -74,10 +74,14 @@ class ExportAttributesCommand extends BaseCommand
             $attributes[$l] = [];
             $choice[$l] = [];
         }
+        $modelsFiles = collect($modelsFiles)->filter(fn($name) => !Str::contains($name, Str::afterLast(BaseModel::class, '\\'))
+            && !Str::contains($name, ['/Pivots/'])
+        );
+        // d($modelsFiles);
         foreach ($modelsFiles as $file) {
-            if (Str::contains($file, Str::afterLast(BaseModel::class, '\\'))) {
-                continue;
-            }
+            // if (Str::contains($file, Str::afterLast(BaseModel::class, '\\'))) {
+            //     continue;
+            // }
             $c = Str::beforeLast($file, '.php');
             $c = str_replace(['/', '\\\\'], '\\', $c);
             $namespace = "\App\\{$c}";
@@ -107,14 +111,17 @@ class ExportAttributesCommand extends BaseCommand
             $fillable = array_unique(array_merge($fillable, config('4myth-tools.export_attributes')));
             $parents = explode('\\', $model::class);
 
-            if (!Str::contains(strtolower($model::class), 'pivot') && count($parents) > 3) {
+            if (count($parents) > 3) {
                 unset($parents[count($parents) - 1]);
                 unset($parents[0]);
                 unset($parents[1]);
                 foreach ($parents as $v) {
-                    $withChoice[] = $v;
+                    $additionalChoice[] = $v;
                 }
             }
+
+            // d($controllersFiles);
+
             foreach ($controllersFiles as $controller) {
                 $fileName = 'App\\'.Str::before(str_replace('/', '\\', $controller), '.php');
                 if (!class_exists($fileName)) {
@@ -132,7 +139,7 @@ class ExportAttributesCommand extends BaseCommand
                     }
                 }
             }
-
+            $fillable = array_filter($fillable, fn($value) => !is_numeric($value));
             $class_basename = class_basename($model);
             $classSnake = Str::snake($class_basename);
             $classCamel = Str::camel($class_basename);
@@ -257,7 +264,7 @@ class ExportAttributesCommand extends BaseCommand
                     continue;
                 }
 
-                foreach ($withChoice as $v) {
+                foreach ($additionalChoice as $v) {
                     if (trans_has($i = "choice.$v", $locale)) {
                         if (isset($cacheChoice[$locale][$v])) {
                             $choice[$locale][$v] = $cacheChoice[$locale][$v];
