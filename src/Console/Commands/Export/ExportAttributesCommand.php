@@ -30,6 +30,7 @@ class ExportAttributesCommand extends BaseCommand
 {--t|to : Do not Insert to_ keys to exported data}
 {--f|from : Do not  Insert from_ keys to exported data}
 {--N|new : Make new export and do not  export attributes with exists files}
+{--D|delete : Delete exported files}
 {--d|deploy : Use Language Files Command }
 {--s|save : save files to lang directories}
 ';
@@ -317,19 +318,25 @@ class ExportAttributesCommand extends BaseCommand
         }
         $outputPath = $this->option('output') ?: 'resources/setup/deploy';
         $callback = function ($exportedPath) use ($outputPath, $saveOption) {
+            $disk = Storage::disk('root');
             if ($saveOption) {
                 $from = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
                 $to = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
                 $to = lang_path(trim(str_ireplace($outputPath, '', $to), '/\\'));
                 $to = trim(str_ireplace(base_path(), '', $to), '/\\');
-                $disk = Storage::disk('root');
                 $disk->copy($from, $to);
                 $to = str_ireplace('/', '\\', $to);
-                $this->components->info("Copy File [$to]");
+                $t = $this->option('delete') ? ' & Delete ' : ' ';
+                $this->components->info("Copy{$t}File [$to]");
+                if ($this->option('delete')) {
+                    $disk->delete($from);
+                }
             }
-            $exportedPath = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
-            $exportedPath = trim(str_ireplace('/', '\\', $exportedPath), '/\\');
-            $this->components->info("Export file [$exportedPath]");
+            else {
+                $exportedPath = trim(str_ireplace(base_path(), '', $exportedPath), '/\\');
+                $exportedPath = trim(str_ireplace('/', '\\', $exportedPath), '/\\');
+                $this->components->info("Export file [$exportedPath]");
+            }
         };
         Helpers::writeFile("attributes.php", $attributes, [
             'output'      => $outputPath,
