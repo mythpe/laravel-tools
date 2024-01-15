@@ -164,6 +164,11 @@ trait CrudTrait
         $excelClass = ($args[2] ?? null);
 
         $this->isIndexActiveOnly && $query->activeOnly();
+
+        if (($r = $this->indexing($query))) {
+            return $r;
+        }
+        
         if ($this->latest) {
             $column = $this->latest;
             if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
@@ -196,10 +201,6 @@ trait CrudTrait
                     $query->oldest($this->oldest === !0 ? null : $this->oldest);
                 }
             }
-        }
-
-        if (($r = $this->indexing($query))) {
-            return $r;
         }
         $with = $this->with;
         /** @var Model $model */
