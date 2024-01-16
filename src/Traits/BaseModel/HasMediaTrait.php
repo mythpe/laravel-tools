@@ -32,6 +32,10 @@ trait HasMediaTrait
      */
     public static string $mediaAttachmentsCollection = 'attachments';
     /**
+     * @var bool
+     */
+    public bool $registerMediaConversionsUsingModelInstance = !0;
+    /**
      * Auto Responsive Images of media single collection
      *
      * @var bool

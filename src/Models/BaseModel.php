@@ -37,11 +37,6 @@ class BaseModel extends Authenticate implements HasMedia
     use HasMediaTrait;
     use SlugModelTrait;
 
-    /**
-     * @var bool
-     */
-    public bool $registerMediaConversionsUsingModelInstance = !0;
-
     public string $mythDateFormat = '';
 
 
