@@ -37,9 +37,6 @@ class BaseModel extends Authenticate implements HasMedia
     use HasMediaTrait;
     use SlugModelTrait;
 
-    public string $mythDateFormat = '';
-
-
     /**
      * @param array $attributes
      */
@@ -95,6 +92,18 @@ class BaseModel extends Authenticate implements HasMedia
             $values[] = $code;
         }
         return collect($values);
+    }
+
+    public static function getDaysOptions(): array
+    {
+        return collect(__('const.days'))->mapWithKeys(fn($v, $k) => [
+            $k => ['value' => $k, 'label' => $v,],
+        ])->values()->toArray();
+    }
+
+    public static function getDaysArray(): array
+    {
+        return array_keys(__('const.days'));
     }
 
     /**
