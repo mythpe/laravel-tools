@@ -1,7 +1,6 @@
 {
   "name": "4myth/laravel-tools",
   "description": "Tools of laravel framework",
-  "version": "1.0.0",
   "type": "library",
   "require": {
     "php": ">=8.2",
