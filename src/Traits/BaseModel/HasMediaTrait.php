@@ -10,7 +10,6 @@
 namespace Myth\LaravelTools\Traits\BaseModel;
 
 use Illuminate\Support\Str;
-use Spatie\Image\Exceptions\InvalidManipulation;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileCannotBeAdded;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
@@ -35,115 +34,105 @@ trait HasMediaTrait
      * @var bool
      */
     public bool $registerMediaConversionsUsingModelInstance = !0;
-    /**
-     * Auto Responsive Images of media single collection
-     *
-     * @var bool
-     */
-    public bool $singleMediaUsingResponsiveImages = !1;
-    /**
-     * Disabled auto media thumbnail
-     *
-     * @var bool
-     */
-    public bool $singleMediaUsingThumb = !1;
+
     /**
      * Name of media conversion to be used
-     *
-     * @var string
+     * Example: [conversionName => ['responsive' => true, 'width' => 100, 'height' => 100, 'collection' => ['avatar']]]
+     * Example: ['conversion1', 'conversion2']: will use getMediaPerformOnCollections method
+     * @return array<string|int,string|array>
      */
-    public string $singleMediaThumbName = 'thumb';
-    /**
-     * media single collection thumb width
-     *
-     * @var int
-     */
-    public int $singleMediaThumbWidth = 250;
-    /**
-     * media single collection thumb height
-     *
-     * @var int
-     */
-    public int $singleMediaThumbHeight = 250;
+    public static function getModelMediaConversions(): array
+    {
+        // return [static::$mediaSingleCollection];
+        // return [static::$mediaSingleCollection => ['responsive' => !0]];
+        return [];
+    }
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection(static::$mediaSingleCollection)->withResponsiveImagesIf($this->singleMediaUsingResponsiveImages)->singleFile();
+        $this->addMediaCollection(static::$mediaSingleCollection)->singleFile();
     }
 
     /**
-     * @throws InvalidManipulation
+     * @param Media|null $media
+     * @return void
      */
     public function registerMediaConversions(Media $media = null): void
     {
-        if ($this->singleMediaUsingThumb) {
-            $this->addMediaConversion($this->singleMediaThumbName)
-                ->performOnCollections($this->getSingleMediaThumbPerformOnCollections())
-                ->width($this->singleMediaThumbWidth)
-                ->height($this->singleMediaThumbHeight);
+        $defCollections = $this->getMediaPerformOnCollections();
+        foreach (static::getModelMediaConversions() as $name => $options) {
+            $conversionName = is_array($options) ? $name : $options;
+            $width = is_array($options) ? ($options['width'] ?? null) : null;
+            $height = is_array($options) ? ($options['height'] ?? null) : null;
+            $collection = is_array($options) ? ($options['collection'] ?? $defCollections) : $defCollections;
+            $format = is_array($options) ? ($options['format'] ?? 'webp') : 'webp';
+            $conversion = $this->addMediaConversion($conversionName)->performOnCollections(...$collection);
+            $withResponsiveImages = is_array($options) ? ($options['responsive'] ?? !1) : !1;
+            if ($withResponsiveImages) {
+                $conversion->withResponsiveImages();
+            }
+            if ($width) {
+                $conversion->width($width);
+            }
+            if ($height) {
+                $conversion->width($height);
+            }
+            if ($format) {
+                $conversion->format($format);
+            }
         }
     }
 
     /**
-     * Name of collection to register with performOnCollections
+     * Name of collections to register with performOnCollections
      *
-     * @return string
+     * @return string[]
      */
-    public function getSingleMediaThumbPerformOnCollections(): string
+    public function getMediaPerformOnCollections(): array
     {
-        return static::$mediaSingleCollection;
+        return [static::$mediaSingleCollection];
     }
 
     /**
      * @param array|string[]|string|UploadedFile $files
      * @param null $collection
-     *
+     * @return Media[]
      * @throws FileCannotBeAdded
      * @throws FileDoesNotExist
      * @throws FileIsTooBig
      * @throws InvalidBase64Data
      */
-    public function addModelMedia($files, $collection = null): void
+    public function addModelMedia($files, $collection = null): array
     {
         if (!is_array($files)) {
             $files = [$files];
         }
-        //d($files);
+        $append = [];
         foreach ($files as $file) {
             if (!$file) {
                 continue;
             }
             if (is_string($file)) {
-                if (isBase64($file)) {
-                    $media = $this->addMediaFromBase64($file);
-                }
-                elseif (filter_var($file, FILTER_VALIDATE_URL)) {
+                if (filter_var($file, FILTER_VALIDATE_URL)) {
                     $media = $this->addMediaFromUrl($file);
                 }
+                elseif (is_file($file)) {
+                    $media = Str::startsWith($file, base_path()) ? $this->copyMedia($file) : $this->addMedia($file);
+                }
+                elseif (request()->hasFile($file)) {
+                    $media = $this->addMediaFromRequest($file);
+                }
                 else {
-                    $media = is_file($file) ? (Str::startsWith($file, base_path()) ? $this->copyMedia($file) : $this->addMedia($file)) : $this->addMediaFromRequest($file);
+                    // isBase64($file);
+                    $media = $this->addMediaFromBase64($file);
                 }
             }
             else {
                 $media = $this->addMedia($file);
             }
-            $media->toMediaCollection($collection ?: static::$mediaSingleCollection);
+            $append[] = $media->toMediaCollection($collection ?: static::$mediaSingleCollection);
         }
-    }
-
-    /**
-     * @param null $collection
-     * @param string $conversionName
-     *
-     * @return string|null
-     */
-    public function getModelThumbUrl($collection = null, string | null $conversionName = null): ?string
-    {
-        if ($this->singleMediaUsingThumb) {
-            $conversionName = $conversionName ?: $this->singleMediaThumbName;
-            return $this->getModelMediaUrl($collection, $conversionName);
-        }
-        return $this->getModelMediaUrl($collection, $conversionName ?: '');
+        return $append;
     }
 
     /**
@@ -180,14 +169,15 @@ trait HasMediaTrait
     public function getModelResponsiveUrls(string | null $collection = null): array
     {
         $srcset = [];
-        if ($this->singleMediaUsingResponsiveImages) {
-            $collection = $collection ?: static::$mediaSingleCollection;
-            $firstMedia = $this->getFirstMedia($collection);
-            foreach ($firstMedia->getResponsiveImageUrls() as $url) {
-                $a = explode('_', Str::beforeLast($url, '.'));
-                $srcset[] = $url." {$a[count($a) - 2]}w";
-            }
-        }
+        #Todo: Get responsive images
+        // if ($this->singleMediaUsingResponsiveImages) {
+        //     $collection = $collection ?: static::$mediaSingleCollection;
+        //     $firstMedia = $this->getFirstMedia($collection);
+        //     foreach ($firstMedia->getResponsiveImageUrls() as $url) {
+        //         $a = explode('_', Str::beforeLast($url, '.'));
+        //         $srcset[] = $url." {$a[count($a) - 2]}w";
+        //     }
+        // }
         return $srcset;
     }
 
