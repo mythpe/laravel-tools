@@ -1,52 +1,52 @@
 {
-  "name" : "4myth/laravel-tools",
-  "description" : "Tools of laravel framework",
-  "version" : "1.0.0",
-  "type" : "library",
-  "require" : {
-    "php" : ">=8.1",
-    "laravel/framework" : ">=8.0"
+  "name": "4myth/laravel-tools",
+  "description": "Tools of laravel framework",
+  "version": "1.0.0",
+  "type": "library",
+  "require": {
+    "php": ">=8.2",
+    "laravel/framework": ">=9.0"
   },
-  "require-dev" : {
-    "barryvdh/laravel-ide-helper" : "^2.12",
-    "fakerphp/faker" : "^1.9.1",
-    "laravel/pint" : "^1.0",
-    "laravel/sail" : "^1.0.1",
-    "mockery/mockery" : "^1.4.4",
-    "nunomaduro/collision" : "^6.1",
-    "phpunit/phpunit" : "^9.5.10",
-    "spatie/laravel-ignition" : "^1.0",
-    "spatie/laravel-medialibrary" : "^10.4",
-    "simplesoftwareio/simple-qrcode" : "~4",
-    "maatwebsite/excel" : "^3.1",
-    "ctwillie/expo-server-sdk-php" : "^2.0",
-    "geniusts/hijri-dates" : ">=1.0",
-    "akaunting/laravel-setting" : ">=1.0",
+  "require-dev": {
+    "barryvdh/laravel-ide-helper": "^2.13",
+    "fakerphp/faker": "^1.9.1",
+    "laravel/pint": "^1.0",
+    "laravel/sail": "^1.18",
+    "mockery/mockery": "^1.4.4",
+    "nunomaduro/collision": "^7.0",
+    "phpunit/phpunit": "^10.1",
+    "spatie/laravel-ignition": "^2.0",
+    "simplesoftwareio/simple-qrcode": "~4",
+    "maatwebsite/excel": "^3.1",
+    "ctwillie/expo-server-sdk-php": "^2.0",
+    "geniusts/hijri-dates": ">=1.0",
+    "akaunting/laravel-setting": ">=1.0",
     "bavix/laravel-wallet": "^9.6",
     "beyondcode/laravel-websockets": "^1.13",
-    "barryvdh/laravel-snappy": "^1.0@dev"
+    "barryvdh/laravel-snappy": "^1.0@dev",
+    "spatie/laravel-medialibrary": "^11.0.0"
   },
-  "license" : "MIT",
-  "autoload" : {
-    "psr-4" : {
-      "Myth\\LaravelTools\\" : "src/"
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Myth\\LaravelTools\\": "src/"
     },
-    "files" : [
+    "files": [
       "src/Utilities/Functions.php"
     ]
   },
-  "authors" : [
+  "authors": [
     {
-      "name" : "MyTh",
-      "email" : "mythpe@gmail.com"
+      "name": "MyTh",
+      "email": "mythpe@gmail.com"
     }
   ],
-  "extra" : {
-    "laravel" : {
-      "providers" : [
+  "extra": {
+    "laravel": {
+      "providers": [
         "Myth\\LaravelTools\\Providers\\ServiceProvider"
       ]
     }
   },
-  "minimum-stability" : "dev"
+  "minimum-stability": "dev"
 }
