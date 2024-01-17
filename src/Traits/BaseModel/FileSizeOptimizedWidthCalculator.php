@@ -10,9 +10,10 @@
 namespace Myth\LaravelTools\Traits\BaseModel;
 
 use Illuminate\Support\Collection;
+use Spatie\MediaLibrary\ResponsiveImages\WidthCalculator\WidthCalculator;
 use Spatie\MediaLibrary\Support\ImageFactory;
 
-class FileSizeOptimizedWidthCalculator
+class FileSizeOptimizedWidthCalculator implements WidthCalculator
 {
     public function calculateWidthsFromFile(string $imagePath): Collection
     {
