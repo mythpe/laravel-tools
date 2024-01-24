@@ -123,4 +123,27 @@ return [
     {
         return $model->hasCast($key, ['int', 'integer', 'real', 'float', 'double', 'decimal']);
     }
+
+    public static function columnBeforeLast($column, $last = [])
+    {
+        $last = array_unique(array_merge($last, [
+            '_to_string',
+            'ToString',
+            '_to_yes',
+            'ToYes',
+            '_to_number_format',
+            'toNumberFormat',
+            '_to_date_format',
+            'toDateFormat',
+            '_to_datetime_format',
+            'toDateTimeFormat',
+            'toDatetimeFormat',
+        ]));
+        foreach ($last as $c) {
+            if (Str::endsWith($column, $c)) {
+                return Str::beforeLast($column, $c);
+            }
+        }
+        return $column;
+    }
 }

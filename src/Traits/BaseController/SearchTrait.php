@@ -85,28 +85,33 @@ trait SearchTrait
             if ($columns && !is_array($columns)) {
                 $columns = explode(',', $columns);
             }
+            if ($columns == '*') {
+                $columns = null;
+            }
             if (is_array($columns) && !empty($columns)) {
-                foreach ($columns as $column) {
+                foreach ($columns as $key => $column) {
                     $insertNameColumns = !1;
-                    // if (is_array($header)) {
-                    //     $column = ($header['value'] ?? ($header['name'] ?? ($header['field'] ?? ($header['label'] ?? null))));
-                    //     if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
-                    //         $column = locale_attribute($nameAttribute);
-                    //         $insertNameColumns = !0;
-                    //     }
-                    //     foreach (['_to_string', 'ToString', '_to_yes', 'ToYes', '_to_number_format', 'toNumberFormat'] as $c) {
-                    //         if (Str::endsWith($column, $c)) {
-                    //             $column = Str::beforeLast($column, $c);
-                    //             break;
-                    //         }
-                    //     }
-                    // }
-                    // else {
-                    // $column = $header;
-                    if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
-                        $insertNameColumns = !0;
+                    if (is_array($column)) {
+                        $original = $column;
+                        $column = ($column['value'] ?? ($column['name'] ?? ($column['field'] ?? ($column['label'] ?? null))));
+                        if (!$column) {
+                            if (is_numeric($key)) {
+                                continue;
+                            }
+                            $column = $key;
+                        }
+
+                        if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
+                            $column = locale_attribute($nameAttribute);
+                            $insertNameColumns = !0;
+                        }
+                        $column = Helpers::columnBeforeLast($column);
                     }
-                    // }
+                    else {
+                        if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
+                            $insertNameColumns = !0;
+                        }
+                    }
                     // d($nameAttribute,$column,$insertNameColumns);
                     if ($insertNameColumns && ($locales = config('4myth-tools.locales'))) {
                         foreach ($locales as $l) {

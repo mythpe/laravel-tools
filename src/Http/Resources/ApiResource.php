@@ -16,6 +16,11 @@ use Illuminate\Support\Arr;
 
 class ApiResource extends JsonResource
 {
+    /** @var string Request key of items */
+    public static string $itemsRequestKey = 'items';
+    /** @var string Request key of headers */
+    public static string $headerItemsRequestKey = 'headerItems';
+
     /** @var bool Use auto transform attributes */
     public bool $auto = !0;
 
@@ -85,18 +90,29 @@ class ApiResource extends JsonResource
         $model = $this->resource;
         $id = $model->id;
         $label = $model->name;
-        if ($this->auto) {
-            $request = request();
-            $fdt = $request->input('fdt');
-            $data = [];
-            if ($fdt == 'i') {
-                d($request->keys());
-                $data = array_merge($data, [
-                    '',
-                ]);
-            }
-            return $this->mainResourceKeys($id, $label, $data);
-        }
+
+        // if ($this->auto) {
+        //     $request = request();
+        //     $fdt = $request->input('fdt');
+        //     if ($fdt == 'i') {
+        //         if (!($columns = $request->input(static::$headerItemsRequestKey))) {
+        //             $columns = '*';
+        //         }
+        //         if (!is_array($columns) && $columns != '*') {
+        //             $columns = explode(',', $columns);
+        //         }
+        //         if ($columns == '*') {
+        //             $columns = $model->getFillable();
+        //         }
+        //         mythAllowHeaders();
+        //         // dd($columns, $request->all());
+        //         dd($merge);
+        //         $merge = array_merge($merge, $model->only($columns));
+        //         d($request->keys());
+        //         $merge = array_merge($merge, []);
+        //     }
+        // }
+        // return $this->mainResourceKeys($id, $label, $merge);
 
         $fillable = $model->only($model->getFillable());
         if (method_exists($model, 'getAppends')) {
@@ -104,7 +120,7 @@ class ApiResource extends JsonResource
             $fillable = array_merge($fillable, $model->only($appends));
         }
         $data = array_merge(Arr::except($fillable, $model->getHidden()), $merge);
-        ksort($data);
+        // ksort($data);
         return $this->mainResourceKeys($id, $label, $data);
     }
 }

@@ -57,6 +57,13 @@ trait PaginateTrait
     public string $itemsPerPageKey = 'itemsPerPage';
 
     /**
+     * request key name
+     *
+     * @var string
+     */
+    public string $controlHeaderKey = 'control';
+
+    /**
      * Get class of export data
      *
      * @return string
@@ -91,8 +98,8 @@ trait PaginateTrait
         $modelName = Str::pluralStudly(class_basename($query->getModel()));
         $pageTitle = $request->input(($a = 'pageTitle')) ? $request->input($a) : (trans_has(($a = "choice.{$modelName}")) ? trans_choice($a, 2) : $modelName);
         if ($indexType == 'pdf' || $indexType == 'excel') {
-            $items = $request->input('items', []);
-            $headers = $request->input('headerItems', []);
+            $items = $request->input(ApiResource::$itemsRequestKey, []);
+            $headers = $request->input(ApiResource::$headerItemsRequestKey, []);
 
             if (!$items) {
                 $ids = $request->input('ids', []);
@@ -143,7 +150,7 @@ trait PaginateTrait
                 // return  $disk->get($fileName);
             }
             //d($headers, $items);
-            $headers = collect($headers)->filter(fn($v) => is_array($v) ? (($v['value'] ?? null) != 'control' && ($v['field'] ?? null) != 'control') : $v != 'control')->values()->toArray();
+            $headers = collect($headers)->filter(fn($v) => is_array($v) ? (($v['value'] ?? null) != $this->controlHeaderKey && ($v['field'] ?? null) != $this->controlHeaderKey) : $v != $this->controlHeaderKey)->values()->toArray();
             $compact = [
                 'headerItems' => $headers,
                 'items'       => $items,
