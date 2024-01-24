@@ -31,7 +31,7 @@ class ExportAttributesCommand extends BaseCommand
 {--f|from : Do not  Insert from_ keys to exported data}
 {--N|new : Make new export and do not  export attributes with exists files}
 {--D|delete : Delete exported files}
-{--d|deploy : Use Language Files Command }
+{--j|json : Use Language Files Command }
 {--s|save : save files to lang directories}
 ';
 
@@ -61,7 +61,7 @@ class ExportAttributesCommand extends BaseCommand
         $fromOption = !$this->option('from');
         $newOption = $this->option('new');
         $saveOption = $this->option('save');
-        $deployOption = $this->option('deploy');
+        $jsonOption = $this->option('json');
 
         $cacheAttrs = [
             'ar' => require __DIR__.'/../../../lang/ar/attributes.php',
@@ -349,7 +349,7 @@ class ExportAttributesCommand extends BaseCommand
             'callback'    => $callback,
         ]);
 
-        if ($deployOption) {
+        if ($jsonOption) {
             $this->call('myth:export-lang');
         }
     }
