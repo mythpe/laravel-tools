@@ -10,6 +10,7 @@
 namespace Myth\LaravelTools\Traits\BaseModel;
 
 use Illuminate\Support\Str;
+use Spatie\Image\Exceptions\InvalidManipulation;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileCannotBeAdded;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
@@ -56,6 +57,7 @@ trait HasMediaTrait
     /**
      * @param Media|null $media
      * @return void
+     * @throws InvalidManipulation
      */
     public function registerMediaConversions(Media $media = null): void
     {
