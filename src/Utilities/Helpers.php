@@ -147,7 +147,7 @@ return [
         return $column;
     }
 
-    public static function getDistance(?array $coordinateFrom = null, ?array $coordinateTo = null, int $earthRadius = 6371008): float | null
+    public static function getDistance(?array $coordinateFrom = null, ?array $coordinateTo = null, int $earthRadius = 6371, $precision = 2): float | null
     {
         if (!$coordinateFrom || !$coordinateTo) {
             return null;
@@ -168,6 +168,6 @@ return [
         $latDelta = $latTo - $latFrom;
         $lonDelta = $lonTo - $lonFrom;
         $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
-        return round(($angle * $earthRadius) / 1000, 2);
+        return round($angle * $earthRadius, $precision);
     }
 }
