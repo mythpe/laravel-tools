@@ -146,4 +146,28 @@ return [
         }
         return $column;
     }
+
+    public static function getDistance(?array $coordinateFrom = null, ?array $coordinateTo = null, int $earthRadius = 6371000): float | null
+    {
+        if (!$coordinateFrom || !$coordinateTo) {
+            return null;
+        }
+        $latitudeFrom = $coordinateFrom['latitude'] ?? null;
+        $longitudeFrom = $coordinateFrom['longitude'] ?? null;
+
+        $latitudeTo = $coordinateTo['latitude'] ?? null;
+        $longitudeTo = $coordinateTo['longitude'] ?? null;
+        if (!$latitudeFrom || !$longitudeFrom || !$latitudeTo || !$longitudeTo) {
+            return null;
+        }
+        // convert from degrees to radians
+        $latFrom = deg2rad($latitudeFrom);
+        $lonFrom = deg2rad($longitudeFrom);
+        $latTo = deg2rad($latitudeTo);
+        $lonTo = deg2rad($longitudeTo);
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+        return round(($angle * $earthRadius) / 1000, 2);
+    }
 }
