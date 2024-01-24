@@ -46,7 +46,7 @@ trait SearchTrait
     /**
      * @var string
      */
-    public string $headersRequestKey = 'searchColumns';
+    public string $searchColumnsRequestKey = 'searchColumns';
 
     /**
      * @var string
@@ -81,31 +81,32 @@ trait SearchTrait
         $this->searchTable = $model->getTable();
         $nameAttribute = 'name';
         if (!$this->customSearchColumns) {
-            // d($words, $model);
-            // d(1,$this->request->input($this->headersRequestKey));
-            if (($headers = $this->request->input($this->headersRequestKey)) && is_array($headers) && !empty($headers)) {
-                // d($headers);
-                foreach ($headers as $header) {
+            $columns = $this->request->input($this->searchColumnsRequestKey);
+            if ($columns && !is_array($columns)) {
+                $columns = explode(',', $columns);
+            }
+            if (is_array($columns) && !empty($columns)) {
+                foreach ($columns as $column) {
                     $insertNameColumns = !1;
-                    if (is_array($header)) {
-                        $column = ($header['value'] ?? ($header['name'] ?? ($header['field'] ?? ($header['label'] ?? null))));
-                        if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
-                            $column = locale_attribute($nameAttribute);
-                            $insertNameColumns = !0;
-                        }
-                        foreach (['_to_string', 'ToString', '_to_yes', 'ToYes', '_to_number_format', 'toNumberFormat'] as $c) {
-                            if (Str::endsWith($column, $c)) {
-                                $column = Str::beforeLast($column, $c);
-                                break;
-                            }
-                        }
+                    // if (is_array($header)) {
+                    //     $column = ($header['value'] ?? ($header['name'] ?? ($header['field'] ?? ($header['label'] ?? null))));
+                    //     if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
+                    //         $column = locale_attribute($nameAttribute);
+                    //         $insertNameColumns = !0;
+                    //     }
+                    //     foreach (['_to_string', 'ToString', '_to_yes', 'ToYes', '_to_number_format', 'toNumberFormat'] as $c) {
+                    //         if (Str::endsWith($column, $c)) {
+                    //             $column = Str::beforeLast($column, $c);
+                    //             break;
+                    //         }
+                    //     }
+                    // }
+                    // else {
+                    // $column = $header;
+                    if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
+                        $insertNameColumns = !0;
                     }
-                    else {
-                        $column = $header;
-                        if ($column == $nameAttribute && !$model->isFillable($column) && $model->isFillable(locale_attribute($nameAttribute))) {
-                            $insertNameColumns = !0;
-                        }
-                    }
+                    // }
                     // d($nameAttribute,$column,$insertNameColumns);
                     if ($insertNameColumns && ($locales = config('4myth-tools.locales'))) {
                         foreach ($locales as $l) {
@@ -118,8 +119,8 @@ trait SearchTrait
                                 $this->mergeSearchColumns($newCol);
                             }
                         }
-
                     }
+
                     if ($column) {
                         if (Schema::hasColumn($this->searchTable, $column)) {
                             $this->mergeSearchColumns($column);

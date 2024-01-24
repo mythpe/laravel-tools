@@ -16,6 +16,8 @@ use Illuminate\Support\Arr;
 
 class ApiResource extends JsonResource
 {
+    /** @var bool Use auto transform attributes */
+    public bool $auto = !0;
 
     /**
      * @param Request $request
@@ -83,6 +85,19 @@ class ApiResource extends JsonResource
         $model = $this->resource;
         $id = $model->id;
         $label = $model->name;
+        if ($this->auto) {
+            $request = request();
+            $fdt = $request->input('fdt');
+            $data = [];
+            if ($fdt == 'i') {
+                d($request->keys());
+                $data = array_merge($data, [
+                    '',
+                ]);
+            }
+            return $this->mainResourceKeys($id, $label, $data);
+        }
+
         $fillable = $model->only($model->getFillable());
         if (method_exists($model, 'getAppends')) {
             $appends = $model->getAppends();
