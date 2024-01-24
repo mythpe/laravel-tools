@@ -147,7 +147,7 @@ return [
         return $column;
     }
 
-    public static function getDistance(?array $coordinateFrom = null, ?array $coordinateTo = null, int $earthRadius = 6371000): float | null
+    public static function getDistance(?array $coordinateFrom = null, ?array $coordinateTo = null, int $earthRadius = 6371008): float | null
     {
         if (!$coordinateFrom || !$coordinateTo) {
             return null;
