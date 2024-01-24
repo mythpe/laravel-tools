@@ -59,8 +59,7 @@ trait HasGoogleMapAttribute
         }
         $lat = $this->latitude;
         $lng = $this->longitude;
-        //return $lat && $lng ? "https://maps.google.com/maps?q={$lat},{$lng}&hl=es&z=14&output=embed" : null;
-        return $lat && $lng ? "https://maps.google.com/maps?q=".urlencode("{$lat},{$lng}")."&hl=es&z=14&output=embed" : null;
+        return ($lat && $lng) ? "https://maps.google.com/maps?q=".urlencode("{$lat},{$lng}")."&hl=".app()->getLocale()."&z=14&output=embed" : null;
     }
 
     /**
