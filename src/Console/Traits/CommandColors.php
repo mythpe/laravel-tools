@@ -61,7 +61,7 @@ trait CommandColors
      */
     protected function text($str = '', $fg = 'default', $bg = 'default'): self
     {
-        $this->line("<fg={$fg};bg=${bg}>{$str}</>");
+        $this->line("<fg={$fg};bg={$bg}>{$str}</>");
         return $this;
     }
 

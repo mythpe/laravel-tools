@@ -168,7 +168,7 @@ trait CrudTrait
         if (($r = $this->indexing($query))) {
             return $r;
         }
-        
+
         if ($this->latest) {
             $column = $this->latest;
             if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
@@ -287,9 +287,9 @@ trait CrudTrait
      */
     public function insertModelImage(&$model)
     {
-        [$fileKey, $collection] = self::getInsertModelImageOptions();
+        [$fileKey, $collection] = static::getInsertModelImageOptions();
         $request = $this->request;
-        if ($request->input("${fileKey}_removed")) {
+        if ($request->input("{$fileKey}_removed")) {
             $model->clearMediaCollection($collection ?: 'default');
         }
         if ($request->hasFile($fileKey) || $request->input($fileKey)) {
