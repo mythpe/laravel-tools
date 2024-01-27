@@ -18,37 +18,42 @@ use Illuminate\Support\Str;
 class Logger
 {
     /** @var Filesystem|FilesystemAdapter */
-    public $disk;
+    public FilesystemAdapter | Filesystem $disk;
 
     /** @var string */
-    public $content;
+    public string $content;
 
     /** @var string */
-    public $fileName;
+    public string $fileName;
 
-    public function __construct(string $content, $fileName = null)
+    public function __construct(string | array | null $content, $fileName = null)
     {
         $this->disk = static::getDisk();
-        $this->content = $content;
+        $this->content = is_null($content) ? '' : (is_array($content) ? json_encode($content) : $content);
         $fileName = $fileName ?? Carbon::now()->format(config('4myth-tools.date_format.log'));
         $this->fileName = Str::finish($fileName, '.log');
     }
 
-    public static function getDisk()
+    public static function getDisk(): Filesystem
     {
         return Storage::disk('logs');
     }
 
-    public static function log(): self
+    /**
+     * @param string|array $content
+     * @param string|null $fileName
+     * @return self
+     */
+    public static function log(string | array $content, ?string $fileName = null): self
     {
         $static = new static(...func_get_args());
         $static->create();
         return $static;
     }
 
-    public function create()
+    public function create(): void
     {
-        $content = "[At ".Carbon::now()->format('H:i')."]:".PHP_EOL;
+        $content = "[At ".Carbon::now()->format('Y-m-d-H:i')."]:".PHP_EOL;
         $content .= $this->content;
         $this->disk->prepend($this->fileName, $content, PHP_EOL.'======End======'.PHP_EOL);
     }
