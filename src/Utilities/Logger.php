@@ -26,7 +26,11 @@ class Logger
     /** @var string */
     public string $fileName;
 
-    public function __construct(string | array | null $content, $fileName = null)
+    /**
+     * @param string|array|null $content
+     * @param string|null $fileName
+     */
+    public function __construct(string | array | null $content, ?string $fileName = null)
     {
         $this->disk = static::getDisk();
         $this->content = is_null($content) ? '' : (is_array($content) ? json_encode($content) : $content);
