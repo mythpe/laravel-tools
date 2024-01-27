@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticate;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Traits\BaseModel\HasMediaTrait;
 use Myth\LaravelTools\Traits\BaseModel\SlugModelTrait;
@@ -69,7 +70,7 @@ class BaseModel extends Authenticate implements HasMedia
     /**
      * @param string $key
      * @param array $options
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public static function langToCollection(string $key, array $options = [])
     {
