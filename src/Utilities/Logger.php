@@ -33,7 +33,7 @@ class Logger
     public function __construct(string | array | null $content, ?string $fileName = null)
     {
         $this->disk = static::getDisk();
-        $this->content = is_null($content) ? '' : (is_array($content) ? json_encode($content) : $content);
+        $this->content = is_null($content) ? '' : (is_array($content) ? json_encode($content, JSON_UNESCAPED_UNICODE) : $content);
         $fileName = $fileName ?? Carbon::now()->format(config('4myth-tools.date_format.log'));
         $this->fileName = Str::finish($fileName, '.log');
     }
