@@ -5,7 +5,6 @@
 >
 <head>
     @include('4myth-tools::partials.head')
-
     <link
         href="{{ asset("storage/vendor/4myth/pdf-style/app.css") }}"
         rel="stylesheet"
@@ -82,31 +81,30 @@
 
     window.arabicString = str => {
         try {
-            if(!str.toString().trim()) {
+            if (!str.toString().trim()) {
                 return str
             }
             // console.log(str);
             let nStr = str.toString().replace(/9/g, '٩').replace(/8/g, '٨').replace(/7/g, '٧').replace(/6/g, '٦').replace(/5/g, '٥').replace(/4/g, '٤').replace(/3/g, '٣').replace(/2/g, '٢').replace(/1/g, '١').replace(/0/g, '٠')
 
             // Fix Hijri Date
-            if(str.split('-').length === 3) {
+            if (str.split('-').length === 3) {
                 nStr = nStr.replace(/-/g, '/').replace(/\/٠/g, '/')
             }
             // console.log(nStr);
             return nStr
-        }
-        catch(e) {
+        } catch (e) {
 
         }
         return str
     }
     window.printWindow = () => {
-        if(!window.print) return
+        if (!window.print) return
         // alert(window.print())
         const inputClassName = 'd-print-none'
         const className = 'span-print'
         $(`.${className}`).remove()
-        $(':input.' + inputClassName).each(function() {
+        $(':input.' + inputClassName).each(function () {
             const elm = $(this)
             const span = $('<span></span>')
             span.attr('class', className)
@@ -122,23 +120,21 @@
         //   });
         // });
     }
-    window.goBack = function() {
-        if(window.opener) {
+    window.goBack = function () {
+        if (window.opener) {
             window.close()
-        }
-        else {
+        } else {
             location.href = '{{ redirect()->back()->getTargetUrl() }}'
         }
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('.arabic-string').each((i, v) => {
 
             let elm = $(v), e
-            if(elm.is('input')) {
+            if (elm.is('input')) {
                 elm.val(arabicString(elm.val()))
-            }
-            else {
+            } else {
                 elm.text(arabicString(elm.text()))
             }
             // (e = elm.text()) &&
