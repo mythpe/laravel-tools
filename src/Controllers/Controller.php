@@ -158,11 +158,11 @@ class Controller extends BaseController
      *
      * @return string|null
      */
-    protected function requiredRule($model = null): ?string
+    protected function requiredIfNew($model = null): ?string
     {
         $required = 'required';
         if (app()->runningInConsole()) {
-            return "required if new";
+            return "Required if new";
         }
         $model = $model ?? $this->getBindModel();
         if ($this->isSingle() || $model->exists) {
@@ -229,13 +229,13 @@ class Controller extends BaseController
     }
 
     /**
-     * Model attribute should not empty value
+     * Get value of attribute or model. first get value from request then from bind model
      *
      * @param $attribute
      *
      * @return null|mixed
      */
-    protected function attrValue($attribute)
+    protected function reqeustAttributeOrModelValue($attribute)
     {
         if (app()->runningInConsole()) {
             return null;
@@ -245,10 +245,10 @@ class Controller extends BaseController
 
     /**
      * @param string $locale
-     * @param mixed $default
-     * @return mixed|string
+     * @param string $default
+     * @return string
      */
-    protected function requiredByLocale(string $locale = 'ar', $default = 'nullable')
+    protected function requiredByLocale(string $locale = 'ar', string $default = 'nullable'): string
     {
         return config('app.fallback_locale') == $locale ? 'required' : $default;
     }
