@@ -70,6 +70,18 @@ interface Statusable
     /** @var string */
     const USED_STATUS = 'used';
 
+    /** @var string */
+    const PENDING_PAYMENT_STATUS = 'pending_payment';
+
+    /** @var string */
+    const RETURNED_STATUS = 'returned';
+
+    /** @var string */
+    const PARTIAL_RETURNED_STATUS = 'partial_returned';
+
+    /** @var string */
+    const PARTIAL_PAID_STATUS = 'partial_paid';
+
     /**
      * @return Collection
      */

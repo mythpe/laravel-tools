@@ -810,4 +810,160 @@ trait HasStatusAttribute
     {
         return $this->status == static::USED_STATUS;
     }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopePendingPaymentOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PENDING_PAYMENT_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeNotPendingPaymentOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PENDING_PAYMENT_STATUS);
+    }
+
+    /**
+     * @param bool $save
+     *
+     * @return void
+     */
+    public function setPendingPayment(bool $save = !0): void
+    {
+        $this->status = static::PENDING_PAYMENT_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPendingPayment(): bool
+    {
+        return $this->status == static::PENDING_PAYMENT_STATUS;
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeReturnedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::RETURNED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeNotReturnedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::RETURNED_STATUS);
+    }
+
+    /**
+     * @param bool $save
+     *
+     * @return void
+     */
+    public function setReturned(bool $save = !0): void
+    {
+        $this->status = static::RETURNED_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReturned(): bool
+    {
+        return $this->status == static::RETURNED_STATUS;
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopePartialReturnedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PARTIAL_RETURNED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeNotPartialReturnedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PARTIAL_RETURNED_STATUS);
+    }
+
+    /**
+     * @param bool $save
+     *
+     * @return void
+     */
+    public function setPartialReturned(bool $save = !0): void
+    {
+        $this->status = static::PARTIAL_RETURNED_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPartialReturned(): bool
+    {
+        return $this->status == static::PARTIAL_RETURNED_STATUS;
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopePartialPaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PARTIAL_PAID_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeNotPartialPaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PARTIAL_PAID_STATUS);
+    }
+
+    /**
+     * @param bool $save
+     *
+     * @return void
+     */
+    public function setPartialPaid(bool $save = !0): void
+    {
+        $this->status = static::PARTIAL_PAID_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPartialPaid(): bool
+    {
+        return $this->status == static::PARTIAL_PAID_STATUS;
+    }
 }
