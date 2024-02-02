@@ -16,6 +16,9 @@ use Illuminate\Support\Arr;
 
 class ApiResource extends JsonResource
 {
+    /** @var string Request key of static axios request */
+    const STATIC_REQUEST_KEY = 'staticRequest';
+
     /** @var string Request key of items */
     public static string $itemsRequestKey = 'items';
     /** @var string Request key of headers */
@@ -90,7 +93,16 @@ class ApiResource extends JsonResource
         $model = $this->resource;
         $id = $model->id;
         $label = $model->name;
-
+        if (request()->input(static::STATIC_REQUEST_KEY)) {
+            $result = [
+                'name_ar' => $model->name_ar,
+                'name_en' => $model->name_en,
+            ];
+            if (method_exists($model, static::STATIC_REQUEST_KEY)) {
+                $result = array_merge($result, $model->{static::STATIC_REQUEST_KEY}());
+            }
+            return $this->mainResourceKeys($id, $label, $result);
+        }
         // if ($this->auto) {
         //     $request = request();
         //     $fdt = $request->input('fdt');

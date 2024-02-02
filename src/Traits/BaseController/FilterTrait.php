@@ -45,11 +45,18 @@ trait FilterTrait
      *
      * @return Builder
      */
-    protected function filerQuery($builder, $filters = null)
+    protected function filerQuery($builder, $filters = null): mixed
     {
-        $filters = is_null($filters) ? $this->request->input($this->filterRequestKey) : $filters;
-        // d($filters);
-        if ($filters && is_array($filters)) {
+        $requestFilters = $this->request->input($this->filterRequestKey, []);
+        if ($requestFilters && !is_array($requestFilters)) {
+            $requestFilters = explode(',', $requestFilters);
+        }
+        $filters = $filters ?: [];
+        if ($filters && !is_array($filters)) {
+            $filters = explode(',', $filters);
+        }
+        $filters = array_merge($requestFilters, $filters);
+        if ($filters) {
             $model = $builder->getModel();
             $this->filterTable = $model->getTable();
             foreach ($filters as $column => $value) {
@@ -105,7 +112,7 @@ trait FilterTrait
      *
      * @return mixed
      */
-    protected function setFilterQuery($builder, $column, $value)
+    protected function setFilterQuery($builder, $column, $value): mixed
     {
         if (Schema::hasColumn($this->filterTable, $column)) {
             $model = $builder->getModel();
