@@ -56,6 +56,10 @@ trait HasStatusAttribute
             'unconfirmed',
             'unpaid',
             'used',
+            'pending_payment',
+            'returned',
+            'partial_returned',
+            'partial_paid',
         ];
     }
 
