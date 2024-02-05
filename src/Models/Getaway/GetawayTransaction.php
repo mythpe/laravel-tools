@@ -25,6 +25,7 @@ use Myth\LaravelTools\Models\BaseModel;
  * @property string $response_code
  * @property array $meta_data
  * @property ?string $description
+ * @property ?string $description_to_string
  * @property ?string $auth_code
  */
 class GetawayTransaction extends BaseModel

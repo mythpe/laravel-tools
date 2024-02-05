@@ -151,7 +151,12 @@ trait SortTrait
                 // }
                 if (($hasColumn || $hasScope) && !$emptyBaseOrder) {
                     $emptyBaseOrder = true;
-                    $query->getQuery()->orders = [];
+                    if ($query->getQuery() instanceof \Illuminate\Database\Query\Builder) {
+                        $query->getQuery()->orders = [];
+                    }
+                    if ($query->getQuery() instanceof \Illuminate\Database\Eloquent\Builder) {
+                        $query->getQuery()->getQuery()->orders = [];
+                    }
                 }
                 //$hasColumn && !$emptyBaseOrder && ($emptyBaseOrder = true);
                 //$emptyBaseOrder && ($query->getQuery()->orders = []);
@@ -179,7 +184,7 @@ trait SortTrait
                 }
             }
         }
-        //d($query->getQuery());
+        // d($query->getQuery());
         return $query;
     }
 
