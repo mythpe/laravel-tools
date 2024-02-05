@@ -364,4 +364,36 @@ class GetawayOrder extends BaseModel
     public function onRefund(GetawayTransaction $item, GetawayTransactionResult $transaction): void
     {
     }
+
+    public function refund(string | null $amount = null, ?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
+    {
+        if (!$this->reference_id) {
+            return new class extends GetawayTransactionResult {
+            };
+        }
+        $amount = $amount ?: $this->amount;
+        $action = config('4myth-getaway.actions.refund');
+        $transaction = GetawayApi::transaction($this->track_id, $amount, $this->email, $action, $this->reference_id, $metaData, $customer);
+        /** @var GetawayTransaction $item */
+        $item = $this->transactions()->create([
+            'transaction_id' => $transaction->tranid,
+            'action'         => $action,
+            'amount'         => $transaction->amount,
+            'result'         => $transaction->result,
+            'response_code'  => $transaction->responseCode,
+            'auth_code'      => $transaction->authcode,
+            'description'    => $description,
+            'meta_data'      => array_merge($transaction->request, [
+                'metaData' => array_merge($transaction->metaData(), $metaData),
+            ]),
+        ]);
+        if (method_exists($this, 'onRefund')) {
+            try {
+                $this->onRefund($item, $transaction);
+            }
+            catch (\Exception $exception) {
+            }
+        }
+        return $transaction;
+    }
 }
