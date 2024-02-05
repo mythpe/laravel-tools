@@ -27,6 +27,7 @@ use Myth\LaravelTools\Models\BaseModel;
  * @property ?string $description
  * @property ?string $description_to_string
  * @property ?string $auth_code
+ * @property GetawayOrder $order
  */
 class GetawayTransaction extends BaseModel
 {
@@ -173,12 +174,12 @@ class GetawayTransaction extends BaseModel
     {
         if (($d = $this->description) && trans_has($d, $this->order->language, !0)) {
             return __($d, [
-                'id'         => $this->order->id,
-                'payable_id' => $this->order->payable_id,
-                'name'       => $this->order->name,
-                'email'      => $this->order->email,
-                'mobile'     => $this->order->mobile,
-                'amount'     => $this->amount,
+                'id'           => $this->order->id,
+                'trackable_id' => $this->order->trackable_id,
+                'name'         => $this->order->name,
+                'email'        => $this->order->email,
+                'mobile'       => $this->order->mobile,
+                'amount'       => $this->amount,
             ]);
         }
         return $this->description;

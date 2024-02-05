@@ -38,6 +38,7 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property ?string $trackable_type
  * @property array $trackable_data
  * @property Carbon $date
+ * @property string $name
  * @property string $first_name
  * @property ?string $last_name
  * @property string $email
@@ -227,12 +228,12 @@ class GetawayOrder extends BaseModel
     {
         if (($d = $this->description) && trans_has($d, $this->language, !0)) {
             return __($d, [
-                'id'         => $this->id,
-                'payable_id' => $this->payable_id,
-                'name'       => $this->name,
-                'email'      => $this->email,
-                'mobile'     => $this->mobile,
-                'amount'     => $this->amount,
+                'id'           => $this->id,
+                'trackable_id' => $this->trackable_id,
+                'name'         => $this->name,
+                'email'        => $this->email,
+                'mobile'       => $this->mobile,
+                'amount'       => $this->amount,
             ]);
         }
         return $this->description;

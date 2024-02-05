@@ -14,6 +14,10 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use InvalidArgumentException;
 use Myth\LaravelTools\Models\Getaway\GetawayOrder;
 
+/**
+ * @property GetawayOrder $getawayOrder
+ * @property GetawayOrder[] $getawayOrders
+ */
 trait HasGetawayTrait
 {
     /**
@@ -41,49 +45,46 @@ trait HasGetawayTrait
     }
 
     /**
-     * @param array $data
-     * @param string|null $action
-     * @param string|null $amount
-     * @param string|null $referenceId
+     * @param array $attributes
      * @param array $metaData
      * @param array $trackableData
      * @return GetawayOrder
      */
-    public function createGetawayOrder(array $data = [], ?string $action = null, ?string $amount = null, ?string $referenceId = null, array $metaData = [], array $trackableData = []): GetawayOrder
+    public function createGetawayOrder(array $attributes, array $metaData = [], array $trackableData = []): GetawayOrder
     {
         if ($order = $this->getawayOrder) {
             return $order;
         }
-        $action = $action ?? static::getDefaultOrderAction();
+        $action = $attributes['action'] ?? static::getDefaultOrderAction();
+        $amount = $attributes['amount'] ?? '0.00';
         $actions = config('4myth-getaway.order_class', GetawayOrder::class)::getOrderActions();
         if (!in_array($action, $actions)) {
             throw new InvalidArgumentException('Invalid action argument. Must One Of '.implode(',', $actions));
         }
-        $amount = $amount ?? $this->amount;
-        $attributes = [
-            'reference_id'   => $referenceId,
-            'action'         => $action,
-            'status'         => 'initial',
-            'amount'         => $amount,
+        /** @var GetawayOrder $order */
+        $order = $this->getawayOrder()->create([
+            'reference_id'   => null,
+            'action'         => (string) $action,
+            'status'         => GetawayOrder::statuses('initial'),
+            'amount'         => (string) $amount,
             'meta_data'      => $metaData,
             'card_brand'     => null,
             'payment_type'   => null,
             'processed'      => !1,
             'paid_at'        => null,
             'trackable_data' => $trackableData,
-            'date'           => now(),
-            'first_name'     => $data['first_name'] ?? null,
-            'last_name'      => $data['last_name'] ?? null,
-            'email'          => $data['email'] ?? null,
-            'mobile'         => $data['mobile'] ?? null,
-            'address'        => $data['address'] ?? null,
-            'city'           => $data['city'] ?? null,
-            'state'          => $data['state'] ?? null,
-            'zip'            => $data['zip'] ?? null,
-            'language'       => $data['language'] ?? null,
-            'description'    => $data['description'] ?? null,
-        ];
-        $order = $this->getawayOrder()->create($attributes);
+            'date'           => $attributes['date'] ?? now(),
+            'first_name'     => $attributes['first_name'] ?? null,
+            'last_name'      => $attributes['last_name'] ?? null,
+            'email'          => $attributes['email'] ?? null,
+            'mobile'         => $attributes['mobile'] ?? null,
+            'address'        => $attributes['address'] ?? null,
+            'city'           => $attributes['city'] ?? null,
+            'state'          => $attributes['state'] ?? null,
+            'zip'            => $attributes['zip'] ?? null,
+            'language'       => $attributes['language'] ?? null,
+            'description'    => $attributes['description'] ?? null,
+        ]);
         return $order;
     }
 
