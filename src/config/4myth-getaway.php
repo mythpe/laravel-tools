@@ -131,7 +131,7 @@ return [
          * | Must have trackable data.
          * | without reference_id
          */
-        'initial-data' => 'initial-data',
+        'initial_data' => 'initial_data',
         /**
          * | The order is paid.
          */
