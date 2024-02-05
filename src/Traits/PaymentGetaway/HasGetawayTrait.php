@@ -29,7 +29,7 @@ trait HasGetawayTrait
      */
     public function getawayOrder(): MorphOne
     {
-        return $this->morphOne(config('4myth-getaway.order_class', GetawayOrder::class), config('4myth-getaway.order_class', 'trackable'))->oldest();
+        return $this->morphOne(config('4myth-getaway.order_class', GetawayOrder::class), config('4myth-getaway.morph_name', 'trackable'))->oldest();
     }
 
     /**
@@ -37,7 +37,7 @@ trait HasGetawayTrait
      */
     public function getawayOrders(): MorphMany
     {
-        return $this->morphMany(config('4myth-getaway.order_class', GetawayOrder::class), config('4myth-getaway.order_class', 'trackable'));
+        return $this->morphMany(config('4myth-getaway.order_class', GetawayOrder::class), config('4myth-getaway.morph_name', 'trackable'));
     }
 
     /**
