@@ -384,7 +384,7 @@ class GetawayOrder extends BaseModel
             'auth_code'      => $transaction->authcode,
             'description'    => $description,
             'meta_data'      => array_merge($transaction->request, [
-                'metaData' => array_merge($transaction->metaData(), $metaData),
+                'metaData' => array_merge($transaction->metaData(), $metaData ?: []),
             ]),
         ]);
         if (method_exists($this, 'onRefund')) {
