@@ -78,22 +78,22 @@ return [
      * | Actions of Transaction in API
      */
     'actions'             => [
-        'purchase'             => 1,
-        'refund'               => 2,
-        'authorization'        => 4,
-        'capture'              => 5,
-        'void_authorization '  => 9,
-        'transaction_inquiry ' => 10,
+        'purchase'            => 1,
+        'refund'              => 2,
+        'authorization'       => 4,
+        'capture'             => 5,
+        'void_authorization'  => 9,
+        'transaction_inquiry' => 10,
     ],
     /**
      * | Inquiry Types of Transaction in API
      */
     'inquiry_types'       => [
-        'purchase'            => 1,
-        'refund'              => 2,
-        'authorization'       => 4,
-        'capture'             => 5,
-        'void_authorization ' => 9,
+        'purchase'           => 1,
+        'refund'             => 2,
+        'authorization'      => 4,
+        'capture'            => 5,
+        'void_authorization' => 9,
     ],
     /**
      * | API Payment Types.Contains what is the payment type used for transaction.
