@@ -41,9 +41,8 @@ class ServiceProvider extends BaseServiceProvider
     public function boot(): void
     {
         // Configuration
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/4myth-tools.php', '4myth-tools'
-        );
+        $this->mergeConfigFrom(__DIR__.'/../config/4myth-tools.php', '4myth-tools');
+        $this->mergeConfigFrom(__DIR__.'/../config/4myth-getaway.php', '4myth-getaway');
 
         // Config
         $this->publishes([
