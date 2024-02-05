@@ -49,6 +49,6 @@ abstract class GetawayControllerApi
      */
     public function getTrackable(): ?Model
     {
-        return GetawayOrder::byTrackId($this->data->TrackId);
+        return config('4myth-getaway.order_class', GetawayOrder::class)::byTrackId($this->data->TrackId);
     }
 }

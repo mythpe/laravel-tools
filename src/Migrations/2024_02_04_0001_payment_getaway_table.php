@@ -21,8 +21,8 @@ return new class extends Migration {
 
     public function __construct()
     {
-        $this->order = GetawayOrder::getModelTable();
-        $this->transaction = GetawayTransaction::getModelTable();
+        $this->order = config('4myth-getaway.order_class', GetawayOrder::class)::getModelTable();
+        $this->transaction = config('4myth-getaway.transaction_class', GetawayTransaction::class)::getModelTable();
     }
 
     /**

@@ -29,7 +29,7 @@ trait HasGetawayTrait
      */
     public function getawayOrder(): MorphOne
     {
-        return $this->morphOne(GetawayOrder::class, 'trackable')->oldest();
+        return $this->morphOne(config('4myth-getaway.order_class', GetawayOrder::class), config('4myth-getaway.order_class', 'trackable'))->oldest();
     }
 
     /**
@@ -37,7 +37,7 @@ trait HasGetawayTrait
      */
     public function getawayOrders(): MorphMany
     {
-        return $this->morphMany(GetawayOrder::class, 'trackable');
+        return $this->morphMany(config('4myth-getaway.order_class', GetawayOrder::class), config('4myth-getaway.order_class', 'trackable'));
     }
 
     /**
@@ -51,14 +51,11 @@ trait HasGetawayTrait
      */
     public function createGetawayOrder(array $data = [], ?string $action = null, ?string $amount = null, ?string $referenceId = null, array $metaData = [], array $trackableData = []): GetawayOrder
     {
-        /** @var GetawayOrder $order */
         if ($order = $this->getawayOrder) {
-            // dd(4);
             return $order;
-            // dd($order);
         }
         $action = $action ?? static::getDefaultOrderAction();
-        $actions = GetawayOrder::getOrderActions();
+        $actions = config('4myth-getaway.order_class', GetawayOrder::class)::getOrderActions();
         if (!in_array($action, $actions)) {
             throw new InvalidArgumentException('Invalid action argument. Must One Of '.implode(',', $actions));
         }

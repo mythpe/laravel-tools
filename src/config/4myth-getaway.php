@@ -124,6 +124,10 @@ return [
      */
     'order_class'         => GetawayOrder::class,
     /**
+     * | Morph Name of Order.
+     */
+    'morph_name'          => 'trackable',
+    /**
      * | Class of Transaction.
      */
     'transaction_class'   => GetawayTransaction::class,
