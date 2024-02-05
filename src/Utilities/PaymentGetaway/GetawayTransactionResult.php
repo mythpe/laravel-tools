@@ -16,6 +16,13 @@ use Myth\LaravelTools\Traits\PaymentGetaway\HasMetadataTrait;
 abstract class GetawayTransactionResult
 {
     use GetawayHelpersTrait;
+    use HasMetadataTrait;
+
+    /**
+     * Request data
+     * @var array
+     */
+    public array $request = [];
 
     /**
      * @var Exception|null
@@ -160,14 +167,13 @@ abstract class GetawayTransactionResult
 
 
     /**
-     * @param array $request
+     * @param array $data
      */
 
-    use HasMetadataTrait;
-
-    public function __construct(array $request = [])
+    public function __construct(array $data = [])
     {
-        $this->fill($request);
-        $this->success = $this->responseCode == '000' || !is_null(($request['payid'] ?? null));
+        $this->fill($data);
+        $this->success = $this->responseCode == '000' || !is_null(($data['payid'] ?? null));
+        $this->request = $data;
     }
 }

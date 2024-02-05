@@ -18,6 +18,12 @@ abstract class GetawayRedirectResponse
     use HasMetadataTrait;
 
     /**
+     * Request data
+     * @var array
+     */
+    public array $request = [];
+
+    /**
      * @var string|null
      */
     public ?string $PaymentId = null;
@@ -111,5 +117,6 @@ abstract class GetawayRedirectResponse
     public function __construct(array $data = [])
     {
         $this->fill($data);
+        $this->request = $data;
     }
 }

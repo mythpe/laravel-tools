@@ -19,6 +19,12 @@ abstract class GetawayInquiryResult
     use HasMetadataTrait;
 
     /**
+     * Request data
+     * @var array
+     */
+    public array $request = [];
+
+    /**
      * @var Exception|null
      */
     public ?Exception $exception = null;
@@ -153,13 +159,14 @@ abstract class GetawayInquiryResult
     public ?string $metaData = null;
 
     /**
-     * @param array $request
+     * @param array $data
      */
-    public function __construct(array $request = [])
+    public function __construct(array $data = [])
     {
-        $this->fill($request);
-        $this->message = trans_has($k = '4myth-getaway.codes.'.($request['responseCode'] ?? '')) ? __($k) : config($k, ($request['result'] ?? ($request['message'] ?? null)));
+        $this->fill($data);
+        $this->message = trans_has($k = '4myth-getaway.codes.'.($data['responseCode'] ?? '')) ? __($k) : config($k, ($data['result'] ?? ($data['message'] ?? null)));
         $this->success = $this->responseCode == '000';
+        $this->request = $data;
     }
 
 }
