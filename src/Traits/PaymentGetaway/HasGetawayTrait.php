@@ -47,10 +47,9 @@ trait HasGetawayTrait
     /**
      * @param array $attributes
      * @param array $metaData
-     * @param array $trackableData
      * @return GetawayOrder
      */
-    public function createGetawayOrder(array $attributes, array $metaData = [], array $trackableData = []): GetawayOrder
+    public function createGetawayOrder(array $attributes, array $metaData = []): GetawayOrder
     {
         if ($order = $this->getawayOrder) {
             return $order;
@@ -72,7 +71,7 @@ trait HasGetawayTrait
             'payment_type'   => null,
             'processed'      => !1,
             'paid_at'        => null,
-            'trackable_data' => $trackableData,
+            'trackable_data' => [],
             'date'           => $attributes['date'] ?? now(),
             'first_name'     => $attributes['first_name'] ?? null,
             'last_name'      => $attributes['last_name'] ?? null,
