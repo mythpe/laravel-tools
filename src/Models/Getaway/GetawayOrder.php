@@ -25,6 +25,7 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property ?string $reference_id
  * @property ?string $track_id
  * @property string $action
+ * @property string $action_to_string
  * @property ?string $status
  * @property ?string $status_to_string
  * @property double $amount
@@ -136,19 +137,23 @@ class GetawayOrder extends BaseModel
     ];
 
     /**
-     * @return array
+     * @param string|null $key
+     * @return array|string|null
      */
-    public static function getOrderActions(): array
+    public static function getOrderActions(?string $key = null): array | string | null
     {
-        return config('4myth-getaway.actions', []);
+        $actions = config('4myth-getaway.actions', []);
+        return !is_null($key) ? ($actions[$key] ?? null) : $actions;
     }
 
     /**
-     * @return array
+     * @param string|null $key
+     * @return array|string|null
      */
-    public static function getOrderInquiryTypes(): array
+    public static function getOrderInquiryTypes(?string $key = null): array | string | null
     {
-        return config('4myth-getaway.inquiry_types', []);
+        $inquiryTypes = config('4myth-getaway.inquiry_types', []);
+        return !is_null($key) ? ($inquiryTypes[$key] ?? '') : $inquiryTypes;
     }
 
     /**
@@ -220,11 +225,8 @@ class GetawayOrder extends BaseModel
      */
     public function getDescriptionToStringAttribute(): ?string
     {
-        if (!$this->description) {
-            return $this->description;
-        }
-        if (trans_has($this->description, strtolower($this->language), !0)) {
-            return __($this->description, [
+        if (($d = $this->description) && trans_has($d, $this->language, !0)) {
+            return __($d, [
                 'id'         => $this->id,
                 'payable_id' => $this->payable_id,
                 'name'       => $this->name,
@@ -249,6 +251,19 @@ class GetawayOrder extends BaseModel
             return __($k);
         }
         return $this->status;
+    }
+
+    /**
+     * $this->action_to_string
+     * @return string
+     */
+    public function getActionToStringAttribute(): string
+    {
+        if (!$this->action) {
+            return '';
+        }
+        $value = (array_flip(static::getOrderActions())[$this->action] ?? $this->action) ?: $this->action;
+        return trans_has(($k = "const.getaway_actions.$value"), strtolower($this->language), !0) ? __($k) : $value;
     }
 
     /**

@@ -19,6 +19,7 @@ use Myth\LaravelTools\Models\BaseModel;
  * @property int $getaway_order_id
  * @property string $transaction_id
  * @property string $action
+ * @property string $action_to_string
  * @property double $amount
  * @property string $result
  * @property string $response_code
@@ -161,5 +162,37 @@ class GetawayTransaction extends BaseModel
     public function scopeTransactionInquiryOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.transaction_inquiry', 10));
+    }
+
+    /**
+     * $this->description_to_string
+     * @return ?string
+     */
+    public function getDescriptionToStringAttribute(): ?string
+    {
+        if (($d = $this->description) && trans_has($d, $this->order->language, !0)) {
+            return __($d, [
+                'id'         => $this->order->id,
+                'payable_id' => $this->order->payable_id,
+                'name'       => $this->order->name,
+                'email'      => $this->order->email,
+                'mobile'     => $this->order->mobile,
+                'amount'     => $this->amount,
+            ]);
+        }
+        return $this->description;
+    }
+
+    /**
+     * $this->action_to_string
+     * @return string
+     */
+    public function getActionToStringAttribute(): string
+    {
+        if (!$this->action) {
+            return '';
+        }
+        $value = (array_flip(GetawayOrder::getOrderActions())[$this->action] ?? $this->action) ?: $this->action;
+        return trans_has(($k = "const.getaway_actions.$value"), strtolower($this->order->language), !0) ? __($k) : $value;
     }
 }
