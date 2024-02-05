@@ -57,6 +57,7 @@ return new class extends Migration {
             $table->nullableMorphs('trackable');
             $table->json('trackable_data');
             $table->timestamp('date')->useCurrent();
+            $table->softDeletes();
             $table->timestamps();
         });
         Schema::create($this->transaction, function (Blueprint $table) {
@@ -70,6 +71,7 @@ return new class extends Migration {
             $table->string('auth_code')->nullable();
             $table->longText('description')->nullable();
             $table->json('meta_data');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

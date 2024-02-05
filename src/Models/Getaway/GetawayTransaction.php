@@ -10,6 +10,7 @@
 namespace Myth\LaravelTools\Models\Getaway;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Myth\LaravelTools\Models\BaseModel;
 
 /**
@@ -26,6 +27,8 @@ use Myth\LaravelTools\Models\BaseModel;
  */
 class GetawayTransaction extends BaseModel
 {
+    use SoftDeletes;
+    
     /**
      * The attributes that are mass assignable.
      *

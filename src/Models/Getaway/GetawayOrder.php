@@ -11,6 +11,7 @@ namespace Myth\LaravelTools\Models\Getaway;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -47,6 +48,8 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  */
 class GetawayOrder extends BaseModel
 {
+    use SoftDeletes;
+
     /**
      * The attributes that are mass assignable.
      *
