@@ -4,7 +4,8 @@
   "type": "library",
   "require": {
     "php": ">=8.2",
-    "laravel/framework": ">=9.0"
+    "laravel/framework": ">=9.0",
+    "ext-curl": "*"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.13",

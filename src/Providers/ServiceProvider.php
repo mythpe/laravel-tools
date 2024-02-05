@@ -47,7 +47,8 @@ class ServiceProvider extends BaseServiceProvider
 
         // Config
         $this->publishes([
-            __DIR__.'/../config/4myth-tools.php' => config_path('4myth-tools.php'),
+            __DIR__.'/../config/4myth-tools.php'   => config_path('4myth-tools.php'),
+            __DIR__.'/../config/4myth-getaway.php' => config_path('4myth-getaway.php'),
         ], '4myth-tools-config');
 
         // Migrations
