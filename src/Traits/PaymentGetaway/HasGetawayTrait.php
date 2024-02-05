@@ -80,6 +80,7 @@ trait HasGetawayTrait
             'city'           => $data['city'] ?? null,
             'state'          => $data['state'] ?? null,
             'zip'            => $data['zip'] ?? null,
+            'language'       => $data['language'] ?? null,
         ];
         $order = $this->getawayOrder()->create($attributes);
         return $order;
