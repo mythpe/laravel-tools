@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Models\Getaway;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Myth\LaravelTools\Models\BaseModel;
@@ -86,4 +87,79 @@ class GetawayTransaction extends BaseModel
         return $this->belongsTo(config('4myth-getaway.order_class', GetawayOrder::class), 'getaway_order_id');
     }
 
+    /**
+     * @param Builder $builder
+     * @param $value
+     * @return Builder
+     */
+    public function scopeByTransactionId(Builder $builder, $value): Builder
+    {
+        if (!is_array($value)) {
+            $value = explode(',', $value);
+        }
+        return $builder->whereIn('transaction_id', $value);
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeSuccessOnly(Builder $builder): Builder
+    {
+        return $builder->where('response_code', '=', '000');
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopePurchaseOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.purchase', 1));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeRefundOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.refund', 2));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeAuthorizationOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.authorization', 4));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeCaptureOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.capture', 5));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeVoidAuthorizationOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.void_authorization', 9));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeTransactionInquiryOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.transaction_inquiry', 10));
+    }
 }

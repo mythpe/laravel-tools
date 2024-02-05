@@ -361,10 +361,22 @@ class GetawayOrder extends BaseModel
         return GetawayApi::inquiry($this->reference_id, $this->track_id ?: $this->trackId(), $this->amount);
     }
 
+    /**
+     * @param GetawayTransaction $item
+     * @param GetawayTransactionResult $transaction
+     * @return void
+     */
     public function onRefund(GetawayTransaction $item, GetawayTransactionResult $transaction): void
     {
     }
 
+    /**
+     * @param string|null $amount
+     * @param string|null $description
+     * @param array|null $metaData
+     * @param array|null $customer
+     * @return GetawayTransactionResult
+     */
     public function refund(string | null $amount = null, ?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
     {
         if (!$this->reference_id) {
@@ -395,5 +407,13 @@ class GetawayOrder extends BaseModel
             }
         }
         return $transaction;
+    }
+
+    /**
+     * @return float
+     */
+    public function getOutstandingAmount(): float
+    {
+        return $this->amount - floatval($this->transactions()->refundOnly()->sum('amount') ?: 0);
     }
 }
