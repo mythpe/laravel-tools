@@ -358,6 +358,6 @@ class GetawayOrder extends BaseModel
             return new class extends GetawayInquiryResult {
             };
         }
-        return GetawayApi::inquiry($this->reference_id, $this->trackId(), $this->amount);
+        return GetawayApi::inquiry($this->reference_id, $this->track_id ?: $this->trackId(), $this->amount);
     }
 }
