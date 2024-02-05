@@ -57,7 +57,7 @@ abstract class GetawayInquiryResult
     public ?string $cardToken = null;
     public ?string $metaData = null;
 
-    public function __construct(array $request)
+    public function __construct(array $request = [])
     {
         $this->fill($request);
         $this->message = trans_has($k = '4myth-getaway.codes.'.($request['responseCode'] ?? '')) ? __($k) : config($k, ($request['result'] ?? ($request['message'] ?? null)));

@@ -18,6 +18,7 @@ use InvalidArgumentException;
 use Myth\LaravelTools\Models\BaseModel;
 use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayApi;
 use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayControllerApi;
+use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayInquiryResult;
 use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
 
 /**
@@ -340,5 +341,17 @@ class GetawayOrder extends BaseModel
         $this->processed = !0;
         $this->save();
         return $transaction;
+    }
+
+    /**
+     * @return GetawayInquiryResult
+     */
+    public function inquiry(): GetawayInquiryResult
+    {
+        if (!$this->reference_id) {
+            return new class extends GetawayInquiryResult {
+            };
+        }
+        return GetawayApi::inquiry($this->reference_id, $this->trackId(), $this->amount);
     }
 }

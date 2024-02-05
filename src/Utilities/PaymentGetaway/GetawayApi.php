@@ -155,7 +155,7 @@ class GetawayApi
     {
         $inquiryTypes = config('4myth-getaway.inquiry_types');
         if ($inquiryType && !in_array($inquiryType, $inquiryTypes)) {
-            throw new \InvalidArgumentException('Invalid Inquiry Type Must One Of '.implode(',', $inquiryTypes));
+            throw new InvalidArgumentException('Invalid Inquiry Type Must One Of '.implode(',', $inquiryTypes));
         }
         $data = [
             'transid'     => $transactionId,
@@ -172,7 +172,7 @@ class GetawayApi
         try {
             $result = $this->post($data);
         }
-        catch (\Exception $exception) {
+        catch (Exception $exception) {
             $result = ['exception' => $exception, 'message' => $exception->getMessage()];
         }
         return new class($result) extends GetawayInquiryResult {
