@@ -43,6 +43,7 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property ?string $zip
  * @property ?string $language
  * @property ?string $description
+ * @property ?string $description_to_string
  */
 class GetawayOrder extends BaseModel
 {
@@ -193,6 +194,25 @@ class GetawayOrder extends BaseModel
         $lastName = Str::after($value, ' ');
         $this->first_name = $firstName;
         $this->last_name = $lastName;
+    }
+
+    /**
+     * $this->description_to_string
+     * @return ?string
+     */
+    public function getDescriptionToStringAttribute(): ?string
+    {
+        if (trans_has($this->description, strtolower($this->language), !0)) {
+            return __($this->description, [
+                'id'         => $this->id,
+                'payable_id' => $this->payable_id,
+                'name'       => $this->name,
+                'email'      => $this->email,
+                'mobile'     => $this->mobile,
+                'amount'     => $this->amount,
+            ]);
+        }
+        return $this->description;
     }
 
     /**
