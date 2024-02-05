@@ -11,6 +11,7 @@ namespace Myth\LaravelTools\Utilities\PaymentGetaway;
 
 use Exception;
 use Myth\LaravelTools\Traits\PaymentGetaway\GetawayHelpersTrait;
+use Myth\LaravelTools\Traits\PaymentGetaway\HasMetadataTrait;
 
 abstract class GetawayTransactionResult
 {
@@ -161,6 +162,9 @@ abstract class GetawayTransactionResult
     /**
      * @param array $request
      */
+
+    use HasMetadataTrait;
+
     public function __construct(array $request = [])
     {
         $this->fill($request);

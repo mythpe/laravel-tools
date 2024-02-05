@@ -10,10 +10,12 @@
 namespace Myth\LaravelTools\Utilities\PaymentGetaway;
 
 use Myth\LaravelTools\Traits\PaymentGetaway\GetawayHelpersTrait;
+use Myth\LaravelTools\Traits\PaymentGetaway\HasMetadataTrait;
 
 abstract class GetawayRedirectResponse
 {
     use GetawayHelpersTrait;
+    use HasMetadataTrait;
 
     /**
      * @var string|null
@@ -109,17 +111,5 @@ abstract class GetawayRedirectResponse
     public function __construct(array $data = [])
     {
         $this->fill($data);
-    }
-
-    /**
-     * @return array
-     */
-    public function metaData(): array
-    {
-        if ($m = $this->metaData) {
-            $r = json_decode(base64_decode($m), !0);
-            return is_array($r) ? $r : [];
-        }
-        return [];
     }
 }

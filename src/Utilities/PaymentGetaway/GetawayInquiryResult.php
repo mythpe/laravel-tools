@@ -11,11 +11,16 @@ namespace Myth\LaravelTools\Utilities\PaymentGetaway;
 
 use Exception;
 use Myth\LaravelTools\Traits\PaymentGetaway\GetawayHelpersTrait;
+use Myth\LaravelTools\Traits\PaymentGetaway\HasMetadataTrait;
 
 abstract class GetawayInquiryResult
 {
     use GetawayHelpersTrait;
+    use HasMetadataTrait;
 
+    /**
+     * @var Exception|null
+     */
     public ?Exception $exception = null;
 
     /** @var bool Response is 000 */
@@ -26,37 +31,130 @@ abstract class GetawayInquiryResult
 
     /** @var string|null Message string from response */
     public ?string $result = null;
+    /**
+     * @var string|null
+     */
     public ?string $responseCode = null;
+    /**
+     * @var string|null
+     */
     public ?string $authcode = null;
+    /**
+     * @var string|null
+     */
     public ?string $tranid = null;
+    /**
+     * @var string|null
+     */
     public ?string $trackid = null;
+    /**
+     * @var string|null
+     */
     public ?string $udf1 = null;
+    /**
+     * @var string|null
+     */
     public ?string $udf2 = null;
+    /**
+     * @var string|null
+     */
     public ?string $udf3 = null;
+    /**
+     * @var string|null
+     */
     public ?string $udf4 = null;
+    /**
+     * @var string|null
+     */
     public ?string $udf = null;
+    /**
+     * @var string|null
+     */
     public ?string $rrn = null;
+    /**
+     * @var string|null
+     */
     public ?string $eci = null;
+    /**
+     * @var string|null
+     */
     public ?string $subscriptionId = null;
+    /**
+     * @var string|null
+     */
     public ?string $trandate = null;
+    /**
+     * @var string|null
+     */
     public ?string $tranType = null;
+    /**
+     * @var string|null
+     */
     public ?string $integrationModule = null;
+    /**
+     * @var string|null
+     */
     public ?string $integrationData = null;
+    /**
+     * @var string|null
+     */
     public ?string $payid = null;
+    /**
+     * @var string|null
+     */
     public ?string $targetUrl = null;
+    /**
+     * @var string|null
+     */
     public ?string $postData = null;
+    /**
+     * @var string|null
+     */
     public ?string $intUrl = null;
+    /**
+     * @var string|null
+     */
     public ?string $responseHash = null;
+    /**
+     * @var string|null
+     */
     public ?string $amount = null;
+    /**
+     * @var string|null
+     */
     public ?string $cardBrand = null;
+    /**
+     * @var string|null
+     */
     public ?string $maskedPAN = null;
+    /**
+     * @var string|null
+     */
     public ?string $linkBasedUrl = null;
+    /**
+     * @var string|null
+     */
     public ?string $sadadNumber = null;
+    /**
+     * @var string|null
+     */
     public ?string $billNumber = null;
+    /**
+     * @var string|null
+     */
     public ?string $paymentType = null;
+    /**
+     * @var string|null
+     */
     public ?string $cardToken = null;
+    /**
+     * @var string|null
+     */
     public ?string $metaData = null;
 
+    /**
+     * @param array $request
+     */
     public function __construct(array $request = [])
     {
         $this->fill($request);

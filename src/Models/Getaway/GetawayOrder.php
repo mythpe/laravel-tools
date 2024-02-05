@@ -360,4 +360,8 @@ class GetawayOrder extends BaseModel
         }
         return GetawayApi::inquiry($this->reference_id, $this->track_id ?: $this->trackId(), $this->amount);
     }
+
+    public function onRefund(GetawayTransaction $item, GetawayTransactionResult $transaction): void
+    {
+    }
 }
