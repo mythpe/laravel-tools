@@ -414,6 +414,6 @@ class GetawayOrder extends BaseModel
      */
     public function getOutstandingAmount(): float
     {
-        return $this->amount - floatval($this->transactions()->refundOnly()->sum('amount') ?: 0);
+        return $this->amount - floatval($this->transactions()->refundOnly()->successOnly()->sum('amount') ?: 0);
     }
 }
