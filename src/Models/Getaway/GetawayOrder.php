@@ -176,6 +176,15 @@ class GetawayOrder extends BaseModel
     }
 
     /**
+     * Make attributes hidden fro array
+     * @return string[]
+     */
+    public function defaultHiddenAttributes(): array
+    {
+        return array_merge(parent::defaultHiddenAttributes(), ['meta_data', 'trackable_data']);
+    }
+
+    /**
      * @param $value
      * @return string|null
      */

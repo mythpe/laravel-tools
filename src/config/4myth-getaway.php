@@ -96,6 +96,28 @@ return [
         'void_authorization ' => 9,
     ],
     /**
+     * | API Payment Types.Contains what is the payment type used for transaction.
+     * | Eg: CreditCard,DebitCard,ApplePay,STCPay
+     */
+    'payment_types'       => [
+        'credit_card' => 'DebitCard',
+        'debit_card'  => 'CreditCard',
+        'apple_pay'   => 'ApplePay',
+        'sadad'       => 'SADAD',
+        'stc_pay'     => 'STCPay',
+    ],
+    /**
+     * | API Card Brands.
+     * | Contains card brand used for transaction.
+     * | Eg: MADA,MASTER,VISA,AMEX
+     */
+    'card_brands'         => [
+        'mada'   => 'MADA',
+        'master' => 'MASTER',
+        'visa'   => 'VISA',
+        'amex'   => 'AMEX',
+    ],
+    /**
      * | Statuses of Order Class.
      */
     'statuses'            => [
