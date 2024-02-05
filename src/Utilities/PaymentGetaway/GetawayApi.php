@@ -16,7 +16,9 @@ use InvalidArgumentException;
 use Myth\LaravelTools\Utilities\Logger;
 
 /**
- *
+ * @method static GetawayInquiryResult inquiry(string $transactionId, string $trackId, string $amount, int | string | null $inquiryType)
+ * @method static GetawayTransactionResult transaction(int | string | Closure $trackId, string $amount, string $email, int $action, ?string $transId, ?array $metaData, ?array $customer)
+ * @method static bool validateResponseHash(string $transId, string $responseCode, string $amount, string $responseHash)
  */
 class GetawayApi
 {
@@ -137,6 +139,48 @@ class GetawayApi
     }
 
     /**
+     * @param string $transactionId This parameter is known as Transaction ID or PayID. It is received at First leg of JSON request for payment as 'payid'.
+     * @param string $trackId Reference generated at Merchant Side
+     * @param string $amount
+     * @param int|string|null $inquiryType One Of [1,2,4,5,9]
+     * | Description of Inquiry Type:
+     * | 1: [Purchase] Automatic Capture
+     * | 2: [Refund] Refund of Purchase or Captured Transaction
+     * | 4: [Authorization] Transaction is Authorised.
+     * | 5: [Capture] 2nd Leg of Authorised Transaction, The amount is Captured
+     * | 9: [Void Authorization] Cancel of Authorised Transaction
+     * @return GetawayInquiryResult
+     */
+    protected function inquiry(string $transactionId, string $trackId, string $amount, int | string | null $inquiryType = null): GetawayInquiryResult
+    {
+        $inquiryTypes = config('4myth-getaway.inquiry_types');
+        if ($inquiryType && !in_array($inquiryType, $inquiryTypes)) {
+            throw new \InvalidArgumentException('Invalid Inquiry Type Must One Of '.implode(',', $inquiryTypes));
+        }
+        $data = [
+            'transid'     => $transactionId,
+            'trackid'     => $trackId,
+            'terminalId'  => $this->terminalId,
+            'action'      => config('4myth-getaway.actions.transaction_inquiry'),
+            'merchantIp'  => $this->serverIp(),
+            'password'    => $this->password,
+            'currency'    => $this->currencyCode,
+            'amount'      => (string) $amount,
+            'requestHash' => $this->generateTransactionHash($trackId, $amount),
+            'udf1'        => $inquiryType,
+        ];
+        try {
+            $result = $this->post($data);
+        }
+        catch (\Exception $exception) {
+            $result = ['exception' => $exception, 'message' => $exception->getMessage()];
+        }
+        return new class($result) extends GetawayInquiryResult {
+
+        };
+    }
+
+    /**
      * @param int|string|Closure $trackId Reference generated at Merchant Side
      * @param string $amount
      * @param string $email
@@ -165,7 +209,7 @@ class GetawayApi
         try {
             $customer = $customer ?: [];
             // $metaData = array_merge($metaData ?: [], ['action' => $action]);
-            $metaData = array_merge($metaData ?: [], []);
+            // $metaData = $metaData ?: [];
             $fields = [
                 'trackid'       => $trackId,
                 'terminalId'    => $this->terminalId,
@@ -187,7 +231,7 @@ class GetawayApi
                 'udf1'          => '',
                 'udf2'          => $callbackUrl, // Callback URL
                 'udf3'          => $this->language, //Payment Page Language,
-                'metaData'      => json_encode($metaData, JSON_UNESCAPED_UNICODE),
+                'metaData'      => $metaData ? json_encode($metaData, JSON_UNESCAPED_UNICODE) : $metaData,
             ];
             // dd($fields);
             if ($transId) {
@@ -285,7 +329,7 @@ class GetawayApi
     }
 
     /**
-     * Generate a new Hash of inquiry
+     * Generate a Hash for secure response
      *
      * @param string $tranId trans id from UrWay
      * @param string $responseCode the code from response of transaction from UrWay
