@@ -220,6 +220,9 @@ class GetawayOrder extends BaseModel
      */
     public function getDescriptionToStringAttribute(): ?string
     {
+        if (!$this->description) {
+            return $this->description;
+        }
         if (trans_has($this->description, strtolower($this->language), !0)) {
             return __($this->description, [
                 'id'         => $this->id,
