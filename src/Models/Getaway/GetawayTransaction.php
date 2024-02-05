@@ -28,7 +28,7 @@ use Myth\LaravelTools\Models\BaseModel;
 class GetawayTransaction extends BaseModel
 {
     use SoftDeletes;
-    
+
     /**
      * The attributes that are mass assignable.
      *
