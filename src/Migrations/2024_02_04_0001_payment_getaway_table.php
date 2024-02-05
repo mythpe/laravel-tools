@@ -36,6 +36,7 @@ return new class extends Migration {
         Schema::create($this->order, function (Blueprint $table) {
             $table->id();
             $table->string('reference_id')->nullable();
+            $table->string('track_id')->nullable();
             $table->string('action');
             $table->string('status')->nullable();
             $table->double('amount', null, 2)->default(0.00);

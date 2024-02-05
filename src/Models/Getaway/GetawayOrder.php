@@ -23,6 +23,7 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
 
 /**
  * @property ?string $reference_id
+ * @property ?string $track_id
  * @property string $action
  * @property ?string $status
  * @property ?string $status_to_string
@@ -59,6 +60,7 @@ class GetawayOrder extends BaseModel
      */
     protected $fillable = [
         'reference_id',
+        'track_id',
         'action',
         'status',
         'amount',
@@ -90,6 +92,7 @@ class GetawayOrder extends BaseModel
      */
     protected $attributes = [
         'reference_id'   => null,
+        'track_id'       => null,
         'action'         => null,
         'status'         => null,
         'amount'         => 0.00,
@@ -121,6 +124,7 @@ class GetawayOrder extends BaseModel
      */
     protected $casts = [
         'reference_id'   => 'string',
+        'track_id'       => 'string',
         'action'         => 'string',
         'amount'         => 'decimal:2',
         'meta_data'      => 'array',
@@ -279,6 +283,7 @@ class GetawayOrder extends BaseModel
     }
 
     /**
+     * Generate new track id
      * @return string
      */
     public function trackId(): string
@@ -336,6 +341,7 @@ class GetawayOrder extends BaseModel
             $this->paid_at = now();
         }
         $this->status = static::statuses($paid ? 'paid' : 'failed');
+        $this->track_id = $controller->data->TrackId;
         $this->card_brand = $controller->data->cardBrand;
         $this->payment_type = $controller->data->PaymentType;
         $this->processed = !0;
