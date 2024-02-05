@@ -24,6 +24,7 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property ?string $reference_id
  * @property string $action
  * @property ?string $status
+ * @property ?string $status_to_string
  * @property double $amount
  * @property array $meta_data
  * @property ?string $card_brand
@@ -225,6 +226,21 @@ class GetawayOrder extends BaseModel
             ]);
         }
         return $this->description;
+    }
+
+    /**
+     * $this->status_to_string
+     * @return ?string
+     */
+    public function getStatusToStringAttribute(): ?string
+    {
+        if (!$this->status) {
+            return null;
+        }
+        if (trans_has(($k = "const.statuses.$this->status"), strtolower($this->language), !0)) {
+            return __($k);
+        }
+        return $this->status;
     }
 
     /**
