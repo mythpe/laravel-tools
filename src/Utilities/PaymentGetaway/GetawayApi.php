@@ -295,7 +295,7 @@ class GetawayApi
         $data = json_encode($fields, JSON_UNESCAPED_UNICODE);
         $this->lastRequest = [
             'url'  => $url,
-            'data' => $data,
+            'data' => $fields,
         ];
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
