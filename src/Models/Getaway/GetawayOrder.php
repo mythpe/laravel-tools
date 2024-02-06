@@ -378,7 +378,13 @@ class GetawayOrder extends BaseModel
         if ($transaction->payid && $transaction->payid != $this->reference_id) {
             $this->reference_id = $transaction->payid;
         }
-        $this->meta_data = array_merge($this->meta_data, $transaction->request);
+        $response = $transaction->request;
+        foreach (['terminalId', 'apiKey', 'password'] as $key => $value) {
+            if (array_key_exists($key, $response)) {
+                unset($response[$key]);
+            }
+        }
+        $this->meta_data = array_merge($this->meta_data, $response);
         if (!$transaction->success) {
             $this->status = static::statuses('un_successful');
         }
