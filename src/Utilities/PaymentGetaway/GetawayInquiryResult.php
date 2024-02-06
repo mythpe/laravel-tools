@@ -158,15 +158,20 @@ abstract class GetawayInquiryResult
      */
     public ?string $metaData = null;
 
+    /** @var GetawayApi|null */
+    public ?GetawayApi $api = null;
+
     /**
      * @param array $data
+     * @param GetawayApi|null $api
      */
-    public function __construct(array $data = [])
+    public function __construct(array $data = [], ?GetawayApi $api = null)
     {
         $this->fill($data);
         $this->message = trans_has($k = '4myth-getaway.codes.'.($data['responseCode'] ?? '')) ? __($k) : config($k, ($data['result'] ?? ($data['message'] ?? null)));
         $this->success = $this->responseCode == '000';
         $this->request = $data;
+        $this->api = $api;
     }
 
 }

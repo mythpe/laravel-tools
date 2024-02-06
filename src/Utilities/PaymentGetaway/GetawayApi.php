@@ -43,6 +43,9 @@ class GetawayApi
     /** @var string Language  AR|EN */
     private string $language = 'AR';
 
+    /** @var array Last Request */
+    private array $lastRequest = [];
+
     /**
      *
      */
@@ -175,7 +178,7 @@ class GetawayApi
         catch (Exception $exception) {
             $result = ['exception' => $exception, 'message' => $exception->getMessage()];
         }
-        return new class($result) extends GetawayInquiryResult {
+        return new class($result, $this) extends GetawayInquiryResult {
 
         };
     }
@@ -252,7 +255,7 @@ class GetawayApi
         if (config('4myth-getaway.enable_log', !1)) {
             Logger::log($result, $this->getLogName());
         }
-        return new class(array_merge($result, (array) $postResponse)) extends GetawayTransactionResult {
+        return new class(array_merge($result, (array) $postResponse), $this) extends GetawayTransactionResult {
         };
     }
 
@@ -290,6 +293,10 @@ class GetawayApi
     {
         $url = $this->getTransactionUrl();
         $data = json_encode($fields, JSON_UNESCAPED_UNICODE);
+        $this->lastRequest = [
+            'url'  => $url,
+            'data' => $data,
+        ];
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);

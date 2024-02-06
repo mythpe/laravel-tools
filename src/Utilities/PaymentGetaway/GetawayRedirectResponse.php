@@ -111,12 +111,17 @@ abstract class GetawayRedirectResponse
     /** @var string|null data string base64 encoded */
     public ?string $metaData = null;
 
+    /** @var GetawayApi|null */
+    public ?GetawayApi $api = null;
+
     /**
      * @param array $data
+     * @param GetawayApi|null $api
      */
-    public function __construct(array $data = [])
+    public function __construct(array $data = [], ?GetawayApi $api = null)
     {
         $this->fill($data);
         $this->request = $data;
+        $this->api = $api;
     }
 }
