@@ -260,7 +260,7 @@ class GetawayApi
      */
     private function getBaseUrl(?string $prefix = null): string
     {
-        $base = trim(config('4myth-getaway.base_url', [])[$this->isDevelopment() ? 'prod' : 'dev'] ?? '', '\/');
+        $base = trim(config('4myth-getaway.base_url', [])[!$this->isDevelopment() ? 'prod' : 'dev'] ?? '', '\/');
         return "$base".($prefix ? "/".trim($prefix, '\/') : '');
     }
 
