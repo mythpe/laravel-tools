@@ -149,7 +149,7 @@ return [
      * | Track Prefix of Order.
      * | Eg: Rfd-{$this->id}
      */
-    'order_track_prefix'  => 'RN-',
+    'order_track_prefix'  => '',
     /**
      * | Morph Name of Order.
      */
