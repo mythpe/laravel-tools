@@ -58,7 +58,7 @@ trait HasGetawayTrait
         }
         $action = $attributes['action'] ?? static::getDefaultOrderAction();
         $amount = $attributes['amount'] ?? '0.00';
-        $actions = config('4myth-getaway.transaction_class', GetawayTransaction::class)::getOrderActions();
+        $actions = config('4myth-getaway.transaction_class', GetawayTransaction::class)::getTransactionActions();
         if (!in_array($action, $actions)) {
             throw new InvalidArgumentException("Invalid action passed $action. Must One Of ".implode(',', $actions));
         }
