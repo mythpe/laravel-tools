@@ -31,6 +31,7 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property ?string $description
  * @property ?string $description_to_string
  * @property ?string $auth_code
+ * @property string $response_code_message
  * @property GetawayOrder $order
  */
 class GetawayTransaction extends BaseModel
@@ -270,5 +271,14 @@ class GetawayTransaction extends BaseModel
     public function canVoidRefund(): bool
     {
         return $this->action == GetawayOrder::getOrderActions('refund') && $this->isSuccess();
+    }
+
+    /**
+     * $this->response_code_message
+     * @return string
+     */
+    public function getResponseCodeMessageAttribute(): string
+    {
+        return config('4myth-getaway.codes.'.$this->response_code, $this->result) ?: '';
     }
 }
