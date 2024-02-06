@@ -465,16 +465,17 @@ class GetawayOrder extends BaseModel
     }
 
     /**
+     * @param string|null $inquiryType
      * @return GetawayInquiryResult
      */
-    public function inquiry(): GetawayInquiryResult
+    public function inquiry(?string $inquiryType = null): GetawayInquiryResult
     {
         /** @var GetawayTransaction $transaction */
         if (!($transaction = $this->transactions()->where('transaction_id', $this->reference_id)->first())) {
             return new class extends GetawayInquiryResult {
             };
         }
-        return $transaction->inquiry();
+        return $transaction->inquiry($inquiryType);
     }
 
     /**

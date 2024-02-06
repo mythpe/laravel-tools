@@ -132,12 +132,13 @@ class GetawayApi
      * @param string $transactionId This parameter is known as Transaction ID or PayID. It is received at First leg of JSON request for payment as 'payid'.
      * @param string $trackId Reference generated at Merchant Side
      * @param string $amount
-     * @param int|string|null $inquiryType One Of [1,2,4,5,9]
+     * @param ?string $inquiryType
      * @return GetawayInquiryResult
      */
-    protected function inquiry(string $transactionId, string $trackId, string $amount, int | string | null $inquiryType = null): GetawayInquiryResult
+    protected function inquiry(string $transactionId, string $trackId, string $amount, ?string $inquiryType = null): GetawayInquiryResult
     {
         $actions = config('4myth-getaway.actions');
+        $inquiryType = $inquiryType ? "$inquiryType" : null;
         if ($inquiryType && !in_array($inquiryType, $actions)) {
             throw new InvalidArgumentException('Invalid Inquiry Type Must One Of '.implode(',', $actions));
         }

@@ -74,14 +74,14 @@ return [
      * | Actions of Transaction in API
      */
     'actions'             => [
-        'purchase'            => 1,
-        'refund'              => 2,
-        'void_purchase'       => 3,
-        'authorization'       => 4,
-        'capture'             => 5,
-        'void_refund'         => 6,
-        'void_authorization'  => 9,
-        'transaction_inquiry' => 10,
+        'purchase'            => '1',
+        'refund'              => '2',
+        'void_purchase'       => '3',
+        'authorization'       => '4',
+        'capture'             => '5',
+        'void_refund'         => '6',
+        'void_authorization'  => '9',
+        'transaction_inquiry' => '10',
     ],
     /**
      * | API Payment Types.Contains what is the payment type used for transaction.
