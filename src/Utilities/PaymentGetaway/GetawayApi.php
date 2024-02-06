@@ -141,6 +141,9 @@ class GetawayApi
         if ($inquiryType && !in_array($inquiryType, $actions)) {
             throw new InvalidArgumentException('Invalid Inquiry Type Must One Of '.implode(',', $actions));
         }
+        $transactionId = (string) $transactionId;
+        $trackId = (string) $trackId;
+        $amount = (string) $amount;
         $data = [
             'transid'     => $transactionId,
             'trackid'     => $trackId,
@@ -164,7 +167,7 @@ class GetawayApi
     }
 
     /**
-     * @param int|string|Closure $trackId Reference generated at Merchant Side
+     * @param string|Closure $trackId Reference generated at Merchant Side
      * @param string $amount
      * @param string $email
      * @param int $action
@@ -174,7 +177,7 @@ class GetawayApi
      * @param array|null $customer
      * @return GetawayTransactionResult
      */
-    private function transaction(int | string | Closure $trackId, string $amount, string $email, int $action, ?string $transId = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
+    private function transaction(string | Closure $trackId, string $amount, string $email, int $action, ?string $transId = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
     {
         //Generate Track ID
         $trackId = is_callable($trackId) ? $trackId($this) : $trackId;

@@ -449,7 +449,6 @@ class GetawayOrder extends BaseModel
             'description'    => $this->description,
             'auth_code'      => $controller->data->AuthCode,
         ]);
-        // dd($transaction);
         $transaction->save();
         $this->meta_data = array_merge($this->meta_data, $controller->metaData);
         if ($paid = $controller->data->ResponseCode == '000') {
@@ -470,11 +469,12 @@ class GetawayOrder extends BaseModel
      */
     public function inquiry(): GetawayInquiryResult
     {
-        if (!$this->reference_id) {
+        /** @var GetawayTransaction $transaction */
+        if (!($transaction = $this->transactions()->where('transaction_id', $this->reference_id)->first())) {
             return new class extends GetawayInquiryResult {
             };
         }
-        return GetawayApi::inquiry($this->reference_id, $this->track_id ?: $this->trackId(), $this->amount);
+        return $transaction->inquiry();
     }
 
     /**
