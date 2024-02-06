@@ -210,7 +210,7 @@ class GetawayTransaction extends BaseModel
      */
     public function inquiry(): GetawayInquiryResult
     {
-        return GetawayApi::inquiry($this->transaction_id, $this->track_id, $this->amount, $this->action);
+        return GetawayApi::inquiry($this->order->reference_id, $this->track_id, $this->amount);
     }
 
     /**
