@@ -146,6 +146,11 @@ return [
      */
     'order_class'         => GetawayOrder::class,
     /**
+     * | Track Prefix of Order.
+     * | Eg: Rfd-{$this->id}
+     */
+    'order_track_prefix'  => 'RN-',
+    /**
      * | Morph Name of Order.
      */
     'morph_name'          => 'trackable',

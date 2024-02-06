@@ -175,7 +175,7 @@ class GetawayOrder extends BaseModel
      */
     public static function trackPrefix(): string
     {
-        return 'RN-';
+        return config('4myth-getaway.order_track_prefix', '');
     }
 
     /**
