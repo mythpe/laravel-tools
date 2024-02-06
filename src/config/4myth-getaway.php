@@ -151,6 +151,11 @@ return [
      */
     'order_track_prefix'  => '',
     /**
+     * | API Development Mode.
+     * | This for development, will use the url from config('4myth-getaway.base_url.dev').
+     */
+    'development'         => !1,
+    /**
      * | Morph Name of Order.
      */
     'morph_name'          => 'trackable',

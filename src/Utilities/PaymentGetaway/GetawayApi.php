@@ -34,11 +34,6 @@ class GetawayApi
         'country'      => null,
         'currencyCode' => null,
     ];
-    /**
-     * API Mode.
-     * @var bool
-     */
-    private bool $production = !1;
 
     /** @var string Language  AR|EN */
     private string $language = 'AR';
@@ -98,9 +93,6 @@ class GetawayApi
      */
     public function __get(string $name): mixed
     {
-        if ($name == 'production') {
-            return $this->production;
-        }
         if ($name == 'language') {
             return strtoupper($this->language);
         }
@@ -114,9 +106,6 @@ class GetawayApi
      */
     public function __set(string $name, $value): void
     {
-        if ($name == 'production') {
-            $this->production = (bool) $value;
-        }
         if ($name == 'language') {
             $def = 'ar';
             $value = !$value ? config('4myth-getaway.language', $def) : $value;
@@ -260,12 +249,20 @@ class GetawayApi
     }
 
     /**
+     * @return bool
+     */
+    private function isDevelopment(): bool
+    {
+        return (bool) config('4myth-getaway.development', !1);
+    }
+
+    /**
      * @param string|null $prefix
      * @return string
      */
     private function getBaseUrl(?string $prefix = null): string
     {
-        $base = trim(config('4myth-getaway.base_url', [])[$this->production ? 'prod' : 'dev'] ?? '', '\/');
+        $base = trim(config('4myth-getaway.base_url', [])[$this->isDevelopment() ? 'prod' : 'dev'] ?? '', '\/');
         return "$base".($prefix ? "/".trim($prefix, '\/') : '');
     }
 
