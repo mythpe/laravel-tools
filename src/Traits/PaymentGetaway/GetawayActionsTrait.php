@@ -38,6 +38,14 @@ trait GetawayActionsTrait
     /**
      * @return bool
      */
+    public function canInquiry(): bool
+    {
+        return $this->isSuccess();
+    }
+
+    /**
+     * @return bool
+     */
     public function isPurchase(): bool
     {
         return $this->action == config('4myth-getaway.actions.purchase');
