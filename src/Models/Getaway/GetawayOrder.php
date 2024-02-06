@@ -485,7 +485,7 @@ class GetawayOrder extends BaseModel
      * @param array|null $customer
      * @return GetawayTransactionResult
      */
-    public function refund(string | null $amount = null, ?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
+    public function refund(?string $amount = null, ?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
     {
         if (!$this->reference_id || !$this->isPaid()) {
             return new class extends GetawayTransactionResult {
@@ -497,7 +497,7 @@ class GetawayOrder extends BaseModel
         /** @var GetawayTransaction $item */
         $item = $this->transactions()->create([
             'transaction_id' => $transaction->tranid,
-            'track_id'       => $this->track_id,
+            'track_id'       => $transaction->trackid,
             'action'         => $action,
             'amount'         => $transaction->amount,
             'result'         => $transaction->result,

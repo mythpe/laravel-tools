@@ -172,10 +172,9 @@ class GetawayApi
      * @param string $amount
      * @param string $email
      * @param int $action
-     * @param string|null $transId Trans ID is required for all the transaction type except Purchase & Authorization.
-     * Trans ID should be the Pay ID generated in the first leg of Purchase & Authorization.
-     * @param array|null $metaData
-     * @param array|null $customer
+     * @param ?string $transId Trans ID is required for all the transaction type except Purchase & Authorization. Trans ID should be the Pay ID generated in the first leg of Purchase & Authorization.
+     * @param ?array $metaData
+     * @param ?array $customer
      * @return GetawayTransactionResult
      */
     private function transaction(string | Closure $trackId, string $amount, string $email, int $action, ?string $transId = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
