@@ -226,7 +226,7 @@ class GetawayTransaction extends BaseModel
         $amount = $amount ?: $this->amount;
         $action = config('4myth-getaway.actions.refund');
         $transaction = GetawayApi::transaction($this->track_id, $amount, $this->order->email, $action, $this->transaction_id, $metaData, $customer);
-        $this->transactions()->create([
+        $this->order->transactions()->create([
             'transaction_id' => $transaction->tranid,
             'track_id'       => $transaction->trackid,
             'action'         => $action,
@@ -235,7 +235,7 @@ class GetawayTransaction extends BaseModel
             'response_code'  => $transaction->responseCode,
             'auth_code'      => $transaction->authcode,
             'description'    => $description,
-            'meta_data'      => $metaData ?: [],
+            'meta_data'      => $transaction->request,
         ]);
         return $transaction;
     }
