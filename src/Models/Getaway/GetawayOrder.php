@@ -497,6 +497,7 @@ class GetawayOrder extends BaseModel
         /** @var GetawayTransaction $item */
         $item = $this->transactions()->create([
             'transaction_id' => $transaction->tranid,
+            'track_id'       => $this->track_id,
             'action'         => $action,
             'amount'         => $transaction->amount,
             'result'         => $transaction->result,
