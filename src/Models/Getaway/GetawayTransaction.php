@@ -239,4 +239,36 @@ class GetawayTransaction extends BaseModel
         ]);
         return $transaction;
     }
+
+    /**
+     * @param ?string $description
+     * @return GetawayTransactionResult
+     */
+    public function voidRefund(?string $description = null): GetawayTransactionResult
+    {
+        $action = config('4myth-getaway.actions.void_refund');
+        $transaction = GetawayApi::transaction($this->track_id, $this->amount, $this->order->email, $action, $this->transaction_id);
+        $this->order->transactions()->create([
+            'transaction_id' => $transaction->tranid,
+            'track_id'       => $transaction->trackid,
+            'action'         => $action,
+            'amount'         => $transaction->amount,
+            'result'         => $transaction->result,
+            'response_code'  => $transaction->responseCode,
+            'auth_code'      => $transaction->authcode,
+            'description'    => $description,
+            'meta_data'      => $transaction->request,
+        ]);
+        return $transaction;
+    }
+
+    public function isSuccess(): bool
+    {
+        return $this->response_code == '000';
+    }
+
+    public function canVoidRefund(): bool
+    {
+        return $this->action == GetawayOrder::getOrderActions('refund') && $this->isSuccess();
+    }
 }
