@@ -334,7 +334,7 @@ class GetawayOrder extends BaseModel
         if ($transaction->payid && $transaction->payid != $this->reference_id) {
             $this->reference_id = $transaction->payid;
         }
-        $this->meta_data = array_merge($this->meta_data, $transaction->toArray());
+        $this->meta_data = array_merge($this->meta_data, $transaction->request);
         $this->save();
         return $transaction;
     }
