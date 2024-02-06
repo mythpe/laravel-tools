@@ -323,7 +323,7 @@ class GetawayOrder extends BaseModel
         $email = $data['email'] ?? $this->email;
         $api = GetawayApi::instance();
         $api->language = $data['language'] ?? ($this->language ?: $api->language);
-        $transId = null;
+        $transId = $data['transaction_id'] ?? null;
         if ($this->isProcessed()) {
             return new class extends GetawayTransactionResult {
             };

@@ -96,4 +96,12 @@ trait HasGetawayTrait
         $this->getawayOrder?->update(['reference_id' => $id]);
     }
 
+    /**
+     * Check from order if is initiated or not, and has reference id
+     * @return bool
+     */
+    public function hasPendingOrder(): bool
+    {
+        return $this->getawayOrders()->where('status', GetawayOrder::statuses('initial'))->whereNotNull(['reference_id'])->exists();
+    }
 }

@@ -118,16 +118,9 @@ return [
      */
     'statuses'            => [
         /**
-         * | New Model with trackable Model.
-         * | without reference_id
+         * | New Model.
          */
         'initial'       => 'initial',
-        /**
-         * | New Model without trackable Model.
-         * | Must have trackable data.
-         * | without reference_id
-         */
-        'initial_data'  => 'initial_data',
         /**
          * | The order is paid.
          */
