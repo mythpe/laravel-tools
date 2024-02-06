@@ -216,24 +216,20 @@ class GetawayTransaction extends BaseModel
     /**
      * @param string|null $amount
      * @param string|null $description
-     * @param array|null $metaData
-     * @param array|null $customer
      * @return GetawayTransactionResult
      */
-    public function refund(?string $amount = null, ?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
+    public function refund(?string $amount = null, ?string $description = null): GetawayTransactionResult
     {
-        return $this->createTransaction(static::getRefundAction(), $amount, $description, $metaData, $customer);
+        return $this->createTransaction(static::getRefundAction(), $amount, $description);
     }
 
     /**
      * @param string|null $description
-     * @param array|null $metaData
-     * @param array|null $customer
      * @return GetawayTransactionResult
      */
-    public function voidRefund(?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
+    public function voidRefund(?string $description = null): GetawayTransactionResult
     {
-        return $this->createTransaction(static::getVoidRefundAction(), $this->amount, $description, $metaData, $customer);
+        return $this->createTransaction(static::getVoidRefundAction(), $this->amount, $description);
     }
 
     /**

@@ -218,8 +218,11 @@ class GetawayApi
                 'udf1'          => '',
                 'udf2'          => $callbackUrl, // Callback URL
                 'udf3'          => $this->language, //Payment Page Language,
-                'metaData'      => !empty($metaData) ? json_encode($metaData, JSON_UNESCAPED_UNICODE) : null,
+                // 'metaData'      => !empty($metaData) ? json_encode($metaData, JSON_UNESCAPED_UNICODE) : null,
             ];
+            if (!empty($metaData)) {
+                $fields['metaData'] = json_encode($metaData, JSON_UNESCAPED_UNICODE);
+            }
             if ($transId) {
                 $fields['transid'] = $transId;
             }
