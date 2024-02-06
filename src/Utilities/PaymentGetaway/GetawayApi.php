@@ -196,12 +196,13 @@ class GetawayApi
         if (!$transId && !in_array($action, [config('4myth-getaway.actions.purchase'), config('4myth-getaway.actions.authorization')])) {
             throw new InvalidArgumentException('transid is required for all the transaction type except Purchase and Authorization.');
         }
+        $amount = (string) $amount;
+        $action = (string) $action;
+        $trackId = (string) $trackId;
         try {
             $customer = $customer ?: [];
-            // $metaData = array_merge($metaData ?: [], ['action' => $action]);
-            // $metaData = $metaData ?: [];
             $fields = [
-                'trackid'       => (string) $trackId,
+                'trackid'       => $trackId,
                 'terminalId'    => $this->terminalId,
                 'customerEmail' => $email,
                 'First_name'    => $customer['first_name'] ?? null,
@@ -211,17 +212,17 @@ class GetawayApi
                 'State'         => $customer['state'] ?? null,
                 'Zip'           => $customer['zip'] ?? null,
                 'Phoneno'       => $customer['mobile'] ?? null,
-                'action'        => (string) $action,
+                'action'        => $action,
                 'merchantIp'    => $this->serverIp(),
                 'password'      => $this->password,
                 'currency'      => $this->currencyCode,
                 'country'       => $this->country,
-                'amount'        => "$amount",
+                'amount'        => $amount,
                 'requestHash'   => $this->generateTransactionHash($trackId, $amount),  //generated Hash
                 'udf1'          => '',
                 'udf2'          => $callbackUrl, // Callback URL
                 'udf3'          => $this->language, //Payment Page Language,
-                'metaData'      => $metaData ? json_encode($metaData, JSON_UNESCAPED_UNICODE) : $metaData,
+                'metaData'      => !empty($metaData) ? json_encode($metaData, JSON_UNESCAPED_UNICODE) : null,
             ];
             if ($transId) {
                 $fields['transid'] = $transId;
