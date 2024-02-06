@@ -329,7 +329,10 @@ class GetawayOrder extends BaseModel
             };
         }
 
-        $this->track_id = $trackId = $this->trackId();
+        $trackId = $this->trackId();
+        if (!$this->track_id) {
+            $this->track_id = $trackId;
+        }
         $transaction = $api->transaction($trackId, "$amount", $email, $action, $transId, $metaData, $customerData);
         if ($transaction->payid && $transaction->payid != $this->reference_id) {
             $this->reference_id = $transaction->payid;
