@@ -15,7 +15,7 @@ use InvalidArgumentException;
 
 /**
  * @method static GetawayInquiryResult inquiry(string $transactionId, string $trackId, string $amount, int | string | null $inquiryType)
- * @method static GetawayTransactionResult transaction(int | string | Closure $trackId, string $amount, string $email, int $action, ?string $transId, ?array $metaData, ?array $customer)
+ * @method static GetawayTransactionResult transaction(string | Closure $trackId, string $amount, string $email, string $action, ?string $transId, ?array $metaData, ?array $customer)
  * @method static bool validateResponseHash(string $transId, string $responseCode, string $amount, string $responseHash)
  */
 class GetawayApi
@@ -171,13 +171,13 @@ class GetawayApi
      * @param string|Closure $trackId Reference generated at Merchant Side
      * @param string $amount
      * @param string $email
-     * @param int $action
+     * @param string $action
      * @param ?string $transId Trans ID is required for all the transaction type except Purchase & Authorization. Trans ID should be the Pay ID generated in the first leg of Purchase & Authorization.
      * @param ?array $metaData
      * @param ?array $customer
      * @return GetawayTransactionResult
      */
-    private function transaction(string | Closure $trackId, string $amount, string $email, int $action, ?string $transId = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
+    private function transaction(string | Closure $trackId, string $amount, string $email, string $action, ?string $transId = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
     {
         //Generate Track ID
         $trackId = is_callable($trackId) ? $trackId($this) : $trackId;

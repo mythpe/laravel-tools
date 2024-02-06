@@ -217,17 +217,9 @@ class GetawayTransaction extends BaseModel
         return GetawayApi::inquiry($this->order->reference_id, $this->track_id, $this->amount, $inquiryType);
     }
 
-    /**
-     * @param string|null $amount
-     * @param string|null $description
-     * @param array|null $metaData
-     * @param array|null $customer
-     * @return GetawayTransactionResult
-     */
-    public function refund(?string $amount = null, ?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
+    public function createTransaction($action, ?string $amount = null, ?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
     {
         $amount = $amount ?: $this->amount;
-        $action = config('4myth-getaway.actions.refund');
         $transaction = GetawayApi::transaction($this->track_id, $amount, $this->order->email, $action, $this->transaction_id, $metaData, $customer);
         $this->order->transactions()->create([
             'transaction_id' => $transaction->tranid,
@@ -244,25 +236,35 @@ class GetawayTransaction extends BaseModel
     }
 
     /**
+     * @param string|null $amount
+     * @param string|null $description
+     * @param array|null $metaData
+     * @param array|null $customer
+     * @return GetawayTransactionResult
+     */
+    public function refund(?string $amount = null, ?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
+    {
+        return $this->createTransaction(static::getRefundAction(), $amount, $description, $metaData, $customer);
+    }
+
+    /**
+     * @param string|null $description
+     * @param array|null $metaData
+     * @param array|null $customer
+     * @return GetawayTransactionResult
+     */
+    public function voidRefund(?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
+    {
+        return $this->createTransaction(static::getVoidAuthorizationAction(), $this->amount, $description, $metaData, $customer);
+    }
+
+    /**
      * @param ?string $description
      * @return GetawayTransactionResult
      */
-    public function voidRefund(?string $description = null): GetawayTransactionResult
+    public function voidAuthorization(?string $description = null): GetawayTransactionResult
     {
-        $action = config('4myth-getaway.actions.void_refund');
-        $transaction = GetawayApi::transaction($this->track_id, $this->amount, $this->order->email, $action, $this->transaction_id);
-        $this->order->transactions()->create([
-            'transaction_id' => $transaction->tranid,
-            'track_id'       => $transaction->trackid,
-            'action'         => $action,
-            'amount'         => $transaction->amount,
-            'result'         => $transaction->result,
-            'response_code'  => $transaction->responseCode,
-            'auth_code'      => $transaction->authcode,
-            'description'    => $description,
-            'meta_data'      => $transaction->request,
-        ]);
-        return $transaction;
+        return $this->createTransaction(config('4myth-getaway.actions.void_authorization'), description : $description);
     }
 
     /**

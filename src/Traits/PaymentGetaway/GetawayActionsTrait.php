@@ -138,4 +138,44 @@ trait GetawayActionsTrait
     {
         return $this->isSuccess() && $this->isAuthorization();
     }
+
+    public function getPurchaseAction(): string
+    {
+        return config('4myth-getaway.actions.purchase', 1);
+    }
+
+    public function getRefundAction(): string
+    {
+        return config('4myth-getaway.actions.refund', 2);
+    }
+
+    public function getVoidPurchaseAction(): string
+    {
+        return config('4myth-getaway.actions.void_purchase', 3);
+    }
+
+    public function getAuthorizationAction(): string
+    {
+        return config('4myth-getaway.actions.authorization', 4);
+    }
+
+    public function getCaptureAction(): string
+    {
+        return config('4myth-getaway.actions.capture', 5);
+    }
+
+    public function getVoidRefundAction(): string
+    {
+        return config('4myth-getaway.actions.void_refund', 6);
+    }
+
+    public function getVoidAuthorizationAction(): string
+    {
+        return config('4myth-getaway.actions.void_authorization', 9);
+    }
+
+    public function getTransactionInquiryAction(): string
+    {
+        return config('4myth-getaway.actions.transaction_inquiry', 10);
+    }
 }
