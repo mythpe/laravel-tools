@@ -18,7 +18,7 @@ trait GetawayActionsTrait
      * @param string|null $key
      * @return array|string|null
      */
-    public static function getOrderActions(?string $key = null): array | string | null
+    public static function getTransactionActions(?string $key = null): array | string | null
     {
         $actions = config('4myth-getaway.actions', []);
         if (!array_key_exists($key, $actions)) {

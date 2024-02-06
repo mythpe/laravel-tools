@@ -333,7 +333,7 @@ class GetawayOrder extends BaseModel
         if (!$this->action) {
             return '';
         }
-        $value = (array_flip(GetawayTransaction::getOrderActions())[$this->action] ?? $this->action) ?: $this->action;
+        $value = (array_flip(GetawayTransaction::getTransactionActions())[$this->action] ?? $this->action) ?: $this->action;
         return trans_has(($k = "const.getaway_actions.$value"), strtolower($this->language), !0) ? __($k) : $value;
     }
 

@@ -204,7 +204,7 @@ class GetawayTransaction extends BaseModel
         if (!$this->action) {
             return '';
         }
-        $value = (array_flip(static::getOrderActions())[$this->action] ?? $this->action) ?: $this->action;
+        $value = (array_flip(static::getTransactionActions())[$this->action] ?? $this->action) ?: $this->action;
         return trans_has(($k = "const.getaway_actions.$value"), strtolower($this->order->language), !0) ? __($k) : $value;
     }
 
