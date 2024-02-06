@@ -150,8 +150,8 @@ class GetawayOrder extends BaseModel
     public static function statuses(?string $key = null): array | string
     {
         $statuses = config('4myth-getaway.statuses', []);
-        if (!array_key_exists($key, $statuses)) {
-            throw new InvalidArgumentException('Invalid key argument. Must One Of '.implode(',', array_keys($statuses)));
+        if ($key && !array_key_exists($key, $statuses)) {
+            throw new InvalidArgumentException("Invalid key passed $key. Must One Of ".implode(',', array_keys($statuses)));
         }
         return !is_null($key) ? $statuses[$key] : $statuses;
     }

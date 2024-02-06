@@ -60,7 +60,7 @@ trait HasGetawayTrait
         $amount = $attributes['amount'] ?? '0.00';
         $actions = config('4myth-getaway.transaction_class', GetawayTransaction::class)::getOrderActions();
         if (!in_array($action, $actions)) {
-            throw new InvalidArgumentException('Invalid action argument. Must One Of '.implode(',', $actions));
+            throw new InvalidArgumentException("Invalid action passed $action. Must One Of ".implode(',', $actions));
         }
         /** @var GetawayOrder $order */
         $order = $this->getawayOrder()->create([

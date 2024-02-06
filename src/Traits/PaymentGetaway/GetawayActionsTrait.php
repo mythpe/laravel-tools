@@ -21,8 +21,8 @@ trait GetawayActionsTrait
     public static function getTransactionActions(?string $key = null): array | string | null
     {
         $actions = config('4myth-getaway.actions', []);
-        if (!array_key_exists($key, $actions)) {
-            throw new \InvalidArgumentException('Invalid key argument. Must One Of '.implode(',', array_keys($actions)));
+        if ($key && !array_key_exists($key, $actions)) {
+            throw new \InvalidArgumentException("Invalid key passed $key. Must One Of ".implode(',', array_keys($actions)));
         }
         return !is_null($key) ? ($actions[$key] ?? null) : $actions;
     }

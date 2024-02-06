@@ -140,7 +140,7 @@ class GetawayApi
         $actions = config('4myth-getaway.actions');
         $inquiryType = $inquiryType ? "$inquiryType" : null;
         if ($inquiryType && !in_array($inquiryType, $actions)) {
-            throw new InvalidArgumentException('Invalid Inquiry Type Must One Of '.implode(',', $actions));
+            throw new InvalidArgumentException("Invalid Inquiry passed $inquiryType. Must One Of ".implode(',', $actions));
         }
         $transactionId = (string) $transactionId;
         $trackId = (string) $trackId;
