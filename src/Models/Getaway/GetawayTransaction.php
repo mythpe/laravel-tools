@@ -33,6 +33,8 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property ?string $description_to_string
  * @property ?string $auth_code
  * @property string $response_code_message
+ * @property bool $used
+ * @property string $used_to_string
  * @property GetawayOrder $order
  */
 class GetawayTransaction extends BaseModel
@@ -56,6 +58,7 @@ class GetawayTransaction extends BaseModel
         'meta_data',
         'description',
         'auth_code',
+        'used',
     ];
 
     /**
@@ -74,6 +77,7 @@ class GetawayTransaction extends BaseModel
         'meta_data'        => '[]',
         'description'      => null,
         'auth_code'        => null,
+        'used'             => !1,
     ];
 
     /**
@@ -90,6 +94,7 @@ class GetawayTransaction extends BaseModel
         'result'           => 'string',
         'response_code'    => 'string',
         'meta_data'        => 'array',
+        'used'             => 'bool',
     ];
 
     /**
@@ -120,60 +125,6 @@ class GetawayTransaction extends BaseModel
     public function scopeSuccessOnly(Builder $builder): Builder
     {
         return $builder->where('response_code', '=', '000');
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    public function scopePurchaseOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.purchase', 1));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    public function scopeRefundOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.refund', 2));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    public function scopeAuthorizationOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.authorization', 4));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    public function scopeCaptureOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.capture', 5));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    public function scopeVoidAuthorizationOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.void_authorization', 9));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    public function scopeTransactionInquiryOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.transaction_inquiry', 10));
     }
 
     /**
@@ -210,6 +161,15 @@ class GetawayTransaction extends BaseModel
     }
 
     /**
+     * $this->used_to_string
+     * @return string
+     */
+    public function getUsedToStringAttribute(): string
+    {
+        return $this->used_to_yes ?: '';
+    }
+
+    /**
      * @param string|null $inquiryType
      * @return GetawayInquiryResult
      */
@@ -222,17 +182,32 @@ class GetawayTransaction extends BaseModel
     {
         $amount = $amount ?: $this->amount;
         $transaction = GetawayApi::transaction($this->track_id, $amount, $this->order->email, $action, $this->transaction_id, $metaData, $customer);
-        $this->order->transactions()->create([
-            'transaction_id' => $transaction->tranid,
-            'track_id'       => $transaction->trackid,
-            'action'         => $action,
-            'amount'         => $transaction->amount,
-            'result'         => $transaction->result,
-            'response_code'  => $transaction->responseCode,
-            'auth_code'      => $transaction->authcode,
-            'description'    => $description,
-            'meta_data'      => $transaction->request,
-        ]);
+        $newUsed = !$transaction->success;
+        $isInquiry = $action == static::getTransactionInquiryAction();
+        if ($transaction->success) {
+            if (in_array($action, $this->actionsCantDoTransaction())) {
+                $newUsed = !0;
+            }
+        }
+        if (!$isInquiry) {
+            $this->order->transactions()->create([
+                'transaction_id' => $transaction->tranid,
+                'track_id'       => $transaction->trackid,
+                'action'         => $action,
+                'amount'         => $transaction->amount,
+                'result'         => $transaction->result,
+                'response_code'  => $transaction->responseCode,
+                'auth_code'      => $transaction->authcode,
+                'description'    => $description,
+                'meta_data'      => $transaction->request,
+                'used'           => $newUsed,
+            ]);
+            if ($transaction->success && in_array($action, $this->actionsCantDoTransaction())) {
+                $this->used = !0;
+                $this->save();
+                return $transaction;
+            }
+        }
         return $transaction;
     }
 

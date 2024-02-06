@@ -9,11 +9,19 @@
 
 namespace Myth\LaravelTools\Traits\PaymentGetaway;
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
- *
+ * @method static Builder purchaseOnly()
+ * @method static Builder refundOnly()
+ * @method static Builder authorizationOnly()
+ * @method static Builder captureOnly()
+ * @method static Builder voidAuthorizationOnly()
+ * @method static Builder transactionInquiryOnly()
  */
 trait GetawayActionsTrait
 {
+
     /**
      * @param string|null $key
      * @return array|string|null
@@ -25,6 +33,60 @@ trait GetawayActionsTrait
             throw new \InvalidArgumentException("Invalid key passed $key. Must One Of ".implode(',', array_keys($actions)));
         }
         return !is_null($key) ? ($actions[$key] ?? null) : $actions;
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopePurchaseOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.purchase', 1));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeRefundOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.refund', 2));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeAuthorizationOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.authorization', 4));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeCaptureOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.capture', 5));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeVoidAuthorizationOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.void_authorization', 9));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeTransactionInquiryOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.transaction_inquiry', 10));
     }
 
     /**
@@ -147,43 +209,75 @@ trait GetawayActionsTrait
         return $this->isSuccess() && $this->isAuthorization();
     }
 
+    /**
+     * @return string
+     */
     public function getPurchaseAction(): string
     {
         return config('4myth-getaway.actions.purchase', 1);
     }
 
+    /**
+     * @return string
+     */
     public function getRefundAction(): string
     {
         return config('4myth-getaway.actions.refund', 2);
     }
 
+    /**
+     * @return string
+     */
     public function getVoidPurchaseAction(): string
     {
         return config('4myth-getaway.actions.void_purchase', 3);
     }
 
+    /**
+     * @return string
+     */
     public function getAuthorizationAction(): string
     {
         return config('4myth-getaway.actions.authorization', 4);
     }
 
+    /**
+     * @return string
+     */
     public function getCaptureAction(): string
     {
         return config('4myth-getaway.actions.capture', 5);
     }
 
+    /**
+     * @return string
+     */
     public function getVoidRefundAction(): string
     {
         return config('4myth-getaway.actions.void_refund', 6);
     }
 
+    /**
+     * @return string
+     */
     public function getVoidAuthorizationAction(): string
     {
         return config('4myth-getaway.actions.void_authorization', 9);
     }
 
+    /**
+     * @return string
+     */
     public function getTransactionInquiryAction(): string
     {
         return config('4myth-getaway.actions.transaction_inquiry', 10);
+    }
+
+    /**
+     * @return array
+     */
+    public function actionsCantDoTransaction(): array
+    {
+        return [static::getVoidAuthorizationAction(), static::getVoidPurchaseAction(), static::getVoidRefundAction()];
     }
 }

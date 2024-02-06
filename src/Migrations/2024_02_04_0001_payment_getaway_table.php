@@ -73,6 +73,7 @@ return new class extends Migration {
             $table->string('auth_code')->nullable();
             $table->longText('description')->nullable();
             $table->json('meta_data');
+            $table->boolean('used')->default(!1);
             $table->softDeletes();
             $table->timestamps();
         });
