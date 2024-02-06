@@ -24,11 +24,11 @@ abstract class GetawayControllerApi
     public array $metaData = [];
 
     /**
-     * @param array $data
+     *
      */
-    public function __construct(array $data = [])
+    public function __construct()
     {
-        $this->data = new class($data) extends GetawayRedirectResponse {
+        $this->data = new class(request()->all()) extends GetawayRedirectResponse {
         };
         $this->metaData = $this->data->metaData();
     }

@@ -80,9 +80,9 @@ class GetawayApi
         return null;
     }
 
-    public static function getawayController(Request $request): GetawayControllerApi
+    public static function getawayController(): GetawayControllerApi
     {
-        return new class($request) extends GetawayControllerApi {
+        return new class extends GetawayControllerApi {
         };
     }
 
