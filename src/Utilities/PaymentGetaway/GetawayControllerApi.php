@@ -11,7 +11,6 @@ namespace Myth\LaravelTools\Utilities\PaymentGetaway;
 
 use Illuminate\Database\Eloquent\Model;
 use Myth\LaravelTools\Models\Getaway\GetawayOrder;
-use Myth\LaravelTools\Utilities\Logger;
 
 abstract class GetawayControllerApi
 {
@@ -32,7 +31,6 @@ abstract class GetawayControllerApi
         $this->data = new class($data) extends GetawayRedirectResponse {
         };
         $this->metaData = $this->data->metaData();
-        Logger::log($data, 'urway/process-payment/'.date('Y-m-d'));
     }
 
     /**

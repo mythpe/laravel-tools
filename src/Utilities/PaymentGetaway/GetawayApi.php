@@ -315,7 +315,7 @@ class GetawayApi
      */
     private function getLogName(): string
     {
-        return config('4myth-getaway.folder_log_name')."/".now()->format('Ymd').'.log';
+        return config('4myth-getaway.folder_log_name')."/".date('Ymd').'.log';
     }
 
     /**
