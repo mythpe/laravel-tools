@@ -13,7 +13,6 @@ use Closure;
 use Exception;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
-use Myth\LaravelTools\Utilities\Logger;
 
 /**
  * @method static GetawayInquiryResult inquiry(string $transactionId, string $trackId, string $amount, int | string | null $inquiryType)
@@ -167,8 +166,7 @@ class GetawayApi
         catch (Exception $exception) {
             $result = ['exception' => $exception, 'message' => $exception->getMessage()];
         }
-        return new class($result, $this) extends GetawayInquiryResult {
-
+        return new class($result) extends GetawayInquiryResult {
         };
     }
 
@@ -240,10 +238,11 @@ class GetawayApi
         if (($payId = $postResponse['payid'] ?? null) && ($targetUrl = $postResponse['targetUrl'] ?? null)) {
             $result['payment_target_url'] = "{$targetUrl}?paymentid={$payId}";
         }
-        if (config('4myth-getaway.enable_log', !1)) {
-            Logger::log($result, $this->getLogName());
+
+        if (!is_array($postResponse)) {
+            $postResponse = [];
         }
-        return new class(array_merge($result, (array) $postResponse), $this) extends GetawayTransactionResult {
+        return new class(array_merge($result, $postResponse)) extends GetawayTransactionResult {
         };
     }
 

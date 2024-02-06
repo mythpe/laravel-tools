@@ -47,10 +47,6 @@ return [
      */
     'callback_route_name' => '4myth-getaway.processPayment',
     /**
-     * | Enable Log in API.
-     */
-    'enable_log'          => !0,
-    /**
      * | Name of folder to store log
      */
     'folder_log_name'     => 'getaway',

@@ -165,19 +165,14 @@ abstract class GetawayTransactionResult
      */
     public ?string $cardToken = null;
 
-    /** @var GetawayApi|null */
-    public ?GetawayApi $api = null;
-
 
     /**
      * @param array $data
-     * @param GetawayApi|null $api
      */
-    public function __construct(array $data = [], ?GetawayApi $api = null)
+    public function __construct(array $data = [])
     {
         $this->fill($data);
         $this->success = $this->responseCode == '000' || !is_null(($data['payid'] ?? null));
         $this->request = $data;
-        $this->api = $api;
     }
 }
