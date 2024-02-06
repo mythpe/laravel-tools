@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use InvalidArgumentException;
 use Myth\LaravelTools\Models\Getaway\GetawayOrder;
+use Myth\LaravelTools\Models\Getaway\GetawayTransaction;
+use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
 
 /**
  * @property GetawayOrder $getawayOrder
@@ -103,5 +105,14 @@ trait HasGetawayTrait
     public function hasPendingOrder(): bool
     {
         return $this->getawayOrders()->where('status', GetawayOrder::statuses('initial'))->whereNotNull(['reference_id'])->exists();
+    }
+
+    /**
+     * @param GetawayTransaction $item
+     * @param GetawayTransactionResult $transaction
+     * @return void
+     */
+    public function onRefund(GetawayTransaction $item, GetawayTransactionResult $transaction): void
+    {
     }
 }

@@ -11,7 +11,6 @@ namespace Myth\LaravelTools\Utilities\PaymentGetaway;
 
 use Closure;
 use Exception;
-use Illuminate\Http\Request;
 use InvalidArgumentException;
 
 /**
@@ -134,19 +133,13 @@ class GetawayApi
      * @param string $trackId Reference generated at Merchant Side
      * @param string $amount
      * @param int|string|null $inquiryType One Of [1,2,4,5,9]
-     * | Description of Inquiry Type:
-     * | 1: [Purchase] Automatic Capture
-     * | 2: [Refund] Refund of Purchase or Captured Transaction
-     * | 4: [Authorization] Transaction is Authorised.
-     * | 5: [Capture] 2nd Leg of Authorised Transaction, The amount is Captured
-     * | 9: [Void Authorization] Cancel of Authorised Transaction
      * @return GetawayInquiryResult
      */
     protected function inquiry(string $transactionId, string $trackId, string $amount, int | string | null $inquiryType = null): GetawayInquiryResult
     {
-        $inquiryTypes = config('4myth-getaway.inquiry_types');
-        if ($inquiryType && !in_array($inquiryType, $inquiryTypes)) {
-            throw new InvalidArgumentException('Invalid Inquiry Type Must One Of '.implode(',', $inquiryTypes));
+        $actions = config('4myth-getaway.actions');
+        if ($inquiryType && !in_array($inquiryType, $actions)) {
+            throw new InvalidArgumentException('Invalid Inquiry Type Must One Of '.implode(',', $actions));
         }
         $data = [
             'transid'     => $transactionId,
@@ -156,7 +149,7 @@ class GetawayApi
             'merchantIp'  => $this->serverIp(),
             'password'    => $this->password,
             'currency'    => $this->currencyCode,
-            'amount'      => (string) $amount,
+            'amount'      => $amount,
             'requestHash' => $this->generateTransactionHash($trackId, $amount),
             'udf1'        => $inquiryType,
         ];

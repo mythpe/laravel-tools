@@ -51,6 +51,7 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property ?string $language
  * @property ?string $description
  * @property ?string $description_to_string
+ * @property ?BaseModel $trackable
  * @method static Builder initialOnly()
  * @method static Builder paidOnly()
  * @method static Builder failedOnly()
@@ -154,16 +155,6 @@ class GetawayOrder extends BaseModel
 
     /**
      * @param string|null $key
-     * @return array|string|null
-     */
-    public static function getOrderInquiryTypes(?string $key = null): array | string | null
-    {
-        $inquiryTypes = config('4myth-getaway.inquiry_types', []);
-        return !is_null($key) ? ($inquiryTypes[$key] ?? '') : $inquiryTypes;
-    }
-
-    /**
-     * @param string|null $key
      * @return array|string
      */
     public static function statuses(?string $key = null): array | string
@@ -190,6 +181,36 @@ class GetawayOrder extends BaseModel
     public static function byTrackId(string $value): ?self
     {
         return self::query()->find(Str::afterLast($value, static::trackPrefix()));
+    }
+
+    public function isInitial(): bool
+    {
+        return $this->status == static::statuses('initial');
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->status == static::statuses('paid');
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->status == static::statuses('failed');
+    }
+
+    public function isUnSuccessful(): bool
+    {
+        return $this->status == static::statuses('un_successful');
+    }
+
+    public function isRefunded(): bool
+    {
+        return $this->status == static::statuses('refunded');
+    }
+
+    public function isPartialRefund(): bool
+    {
+        return $this->status == static::statuses('partial_refund');
     }
 
     /**
@@ -226,6 +247,24 @@ class GetawayOrder extends BaseModel
     public function scopeUnSuccessfulOnly(Builder $builder): Builder
     {
         return $builder->where('status', '=', static::statuses('un_successful'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeRefundedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('refunded'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopePartialRefundOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('partial_refund'));
     }
 
     /**
@@ -401,6 +440,7 @@ class GetawayOrder extends BaseModel
         /** @var GetawayTransaction $transaction */
         $transaction = $this->transactions()->make([
             'transaction_id' => $controller->data->TranId,
+            'track_id'       => $controller->data->TrackId,
             'action'         => $this->action,
             'amount'         => $controller->data->amount,
             'result'         => $controller->data->Result,
@@ -416,6 +456,7 @@ class GetawayOrder extends BaseModel
             $this->paid_at = now();
         }
         $this->status = static::statuses($paid ? 'paid' : 'failed');
+        $this->reference_id = $controller->data->PaymentId;
         $this->track_id = $controller->data->TrackId;
         $this->card_brand = $controller->data->cardBrand;
         $this->payment_type = $controller->data->PaymentType;
@@ -437,15 +478,6 @@ class GetawayOrder extends BaseModel
     }
 
     /**
-     * @param GetawayTransaction $item
-     * @param GetawayTransactionResult $transaction
-     * @return void
-     */
-    public function onRefund(GetawayTransaction $item, GetawayTransactionResult $transaction): void
-    {
-    }
-
-    /**
      * @param string|null $amount
      * @param string|null $description
      * @param array|null $metaData
@@ -454,7 +486,7 @@ class GetawayOrder extends BaseModel
      */
     public function refund(string | null $amount = null, ?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
     {
-        if (!$this->reference_id) {
+        if (!$this->reference_id || !$this->isPaid()) {
             return new class extends GetawayTransactionResult {
             };
         }
@@ -474,9 +506,13 @@ class GetawayOrder extends BaseModel
                 'metaData' => array_merge($transaction->metaData(), $metaData ?: []),
             ]),
         ]);
-        if (method_exists($this, 'onRefund')) {
+        if ($transaction->success) {
+            $this->status = $amount == $this->amount ? static::statuses('refunded') : static::statuses('partial_refund');
+            $this->save();
+        }
+        if ($this->trackable && method_exists($this->trackable, 'onRefund')) {
             try {
-                $this->onRefund($item, $transaction);
+                $this->trackable->onRefund($item, $transaction);
             }
             catch (\Exception $exception) {
             }

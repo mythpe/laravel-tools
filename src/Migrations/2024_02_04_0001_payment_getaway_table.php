@@ -64,7 +64,8 @@ return new class extends Migration {
         Schema::create($this->transaction, function (Blueprint $table) {
             $table->id();
             $table->foreignId('getaway_order_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('transaction_id')->nullable();
+            $table->string('transaction_id');
+            $table->string('track_id');
             $table->string('action');
             $table->double('amount', null, 2)->default(0.00);
             $table->string('result')->nullable();

@@ -13,11 +13,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Myth\LaravelTools\Models\BaseModel;
+use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayApi;
+use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayInquiryResult;
+use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
 
 /**
  *
  * @property int $getaway_order_id
  * @property string $transaction_id
+ * @property string $track_id
  * @property string $action
  * @property string $action_to_string
  * @property double $amount
@@ -41,6 +45,7 @@ class GetawayTransaction extends BaseModel
     protected $fillable = [
         'getaway_order_id',
         'transaction_id',
+        'track_id',
         'action',
         'amount',
         'result',
@@ -58,6 +63,7 @@ class GetawayTransaction extends BaseModel
     protected $attributes = [
         'getaway_order_id' => null,
         'transaction_id'   => null,
+        'track_id'         => null,
         'action'           => null,
         'amount'           => 0.00,
         'result'           => null,
@@ -75,6 +81,7 @@ class GetawayTransaction extends BaseModel
     protected $casts = [
         'getaway_order_id' => 'int',
         'transaction_id'   => 'string',
+        'track_id'         => 'string',
         'action'           => 'string',
         'amount'           => 'decimal:2',
         'result'           => 'string',
@@ -196,5 +203,23 @@ class GetawayTransaction extends BaseModel
         }
         $value = (array_flip(GetawayOrder::getOrderActions())[$this->action] ?? $this->action) ?: $this->action;
         return trans_has(($k = "const.getaway_actions.$value"), strtolower($this->order->language), !0) ? __($k) : $value;
+    }
+
+    /**
+     * @return GetawayInquiryResult
+     */
+    public function inquiry(): GetawayInquiryResult
+    {
+        return GetawayApi::inquiry($this->transaction_id, $this->track_id, $this->amount, $this->action);
+    }
+
+    /**
+     * @param string|null $amount
+     * @return GetawayTransactionResult
+     */
+    public function refund(?string $amount = null): GetawayTransactionResult
+    {
+        $amount = $amount ?: $this->amount;
+        return GetawayApi::transaction($this->track_id, $amount, $this->order->email, config('4myth-getaway.actions.refund'), $this->transaction_id);
     }
 }

@@ -76,20 +76,12 @@ return [
     'actions'             => [
         'purchase'            => 1,
         'refund'              => 2,
+        'void_purchase'       => 3,
         'authorization'       => 4,
         'capture'             => 5,
+        'void_refund'         => 6,
         'void_authorization'  => 9,
         'transaction_inquiry' => 10,
-    ],
-    /**
-     * | Inquiry Types of Transaction in API
-     */
-    'inquiry_types'       => [
-        'purchase'           => 1,
-        'refund'             => 2,
-        'authorization'      => 4,
-        'capture'            => 5,
-        'void_authorization' => 9,
     ],
     /**
      * | API Payment Types.Contains what is the payment type used for transaction.
@@ -120,19 +112,27 @@ return [
         /**
          * | New Model.
          */
-        'initial'       => 'initial',
+        'initial'        => 'initial',
         /**
          * | The order is paid.
          */
-        'paid'          => 'paid',
+        'paid'           => 'paid',
         /**
          * | The order is failed process.
          */
-        'failed'        => 'failed',
+        'failed'         => 'failed',
         /**
-         * | the transaction is unsuccessful.
+         * | The Transaction is unsuccessful.
          */
-        'un_successful' => 'UnSuccessful',
+        'un_successful'  => 'UnSuccessful',
+        /**
+         * | The Transaction is refunded.
+         */
+        'refunded'       => 'refunded',
+        /**
+         * | The Transaction is partial refund.
+         */
+        'partial_refund' => 'partial_refund',
     ],
     /**
      * | Class of Order.
