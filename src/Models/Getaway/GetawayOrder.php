@@ -318,7 +318,7 @@ class GetawayOrder extends BaseModel
         if (!$this->status) {
             return null;
         }
-        if (trans_has(($k = "const.statuses.$this->status"), strtolower($this->language), !0)) {
+        if (trans_has(($k = "const.statuses.".Str::snake($this->status)), strtolower($this->language), !0)) {
             return __($k);
         }
         return $this->status;

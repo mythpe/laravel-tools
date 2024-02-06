@@ -12,6 +12,7 @@ namespace Myth\LaravelTools\Models\Getaway;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Myth\LaravelTools\Models\BaseModel;
 use Myth\LaravelTools\Traits\PaymentGetaway\GetawayActionsTrait;
 use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayApi;
@@ -27,6 +28,7 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property string $action_to_string
  * @property double $amount
  * @property string $result
+ * @property string $result_to_string
  * @property string $response_code
  * @property array $meta_data
  * @property ?string $description
@@ -231,7 +233,7 @@ class GetawayTransaction extends BaseModel
      */
     public function voidRefund(?string $description = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
     {
-        return $this->createTransaction(static::getVoidAuthorizationAction(), $this->amount, $description, $metaData, $customer);
+        return $this->createTransaction(static::getVoidRefundAction(), $this->amount, $description, $metaData, $customer);
     }
 
     /**
@@ -244,11 +246,25 @@ class GetawayTransaction extends BaseModel
     }
 
     /**
+     * $this->result_to_string
+     * @return string
+     */
+    public function getResultToStringAttribute(): string
+    {
+        return trans_has($k = 'const.statuses.'.Str::snake($this->result)) ? __($k) : $this->result;
+    }
+
+    /**
      * $this->response_code_message
      * @return string
      */
     public function getResponseCodeMessageAttribute(): string
     {
         return config('4myth-getaway.codes.'.$this->response_code, $this->result) ?: '';
+    }
+
+    public function isUsed(): bool
+    {
+        return $this->used;
     }
 }

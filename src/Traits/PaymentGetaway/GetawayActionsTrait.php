@@ -100,14 +100,6 @@ trait GetawayActionsTrait
     /**
      * @return bool
      */
-    public function canInquiry(): bool
-    {
-        return $this->isSuccess();
-    }
-
-    /**
-     * @return bool
-     */
     public function isPurchase(): bool
     {
         return $this->action == config('4myth-getaway.actions.purchase');
@@ -172,9 +164,17 @@ trait GetawayActionsTrait
     /**
      * @return bool
      */
+    public function canInquiry(): bool
+    {
+        return $this->isSuccess();
+    }
+
+    /**
+     * @return bool
+     */
     public function canVoidRefund(): bool
     {
-        return $this->isSuccess() && $this->isRefund();
+        return !$this->isUsed() && $this->isSuccess() && $this->isRefund();
     }
 
     /**
@@ -182,7 +182,7 @@ trait GetawayActionsTrait
      */
     public function canRefund(): bool
     {
-        return $this->isSuccess() && $this->isPurchase();
+        return !$this->isUsed() && $this->isSuccess() && ($this->isPurchase() || $this->isCapture());
     }
 
     /**
@@ -190,7 +190,7 @@ trait GetawayActionsTrait
      */
     public function canVoidPurchase(): bool
     {
-        return $this->isSuccess() && $this->isPurchase();
+        return !$this->isUsed() && $this->isSuccess() && $this->isPurchase();
     }
 
     /**
@@ -198,7 +198,7 @@ trait GetawayActionsTrait
      */
     public function canVoidAuthorization(): bool
     {
-        return $this->isSuccess() && $this->isAuthorization();
+        return !$this->isUsed() && $this->isSuccess() && $this->isAuthorization();
     }
 
     /**
@@ -206,7 +206,7 @@ trait GetawayActionsTrait
      */
     public function canCapture(): bool
     {
-        return $this->isSuccess() && $this->isAuthorization();
+        return !$this->isUsed() && $this->isSuccess() && $this->isAuthorization();
     }
 
     /**
