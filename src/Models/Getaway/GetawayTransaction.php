@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Myth\LaravelTools\Models\BaseModel;
+use Myth\LaravelTools\Traits\PaymentGetaway\GetawayActionsTrait;
 use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayApi;
 use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayInquiryResult;
 use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
@@ -37,6 +38,7 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
 class GetawayTransaction extends BaseModel
 {
     use SoftDeletes;
+    use GetawayActionsTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -202,7 +204,7 @@ class GetawayTransaction extends BaseModel
         if (!$this->action) {
             return '';
         }
-        $value = (array_flip(GetawayOrder::getOrderActions())[$this->action] ?? $this->action) ?: $this->action;
+        $value = (array_flip(static::getOrderActions())[$this->action] ?? $this->action) ?: $this->action;
         return trans_has(($k = "const.getaway_actions.$value"), strtolower($this->order->language), !0) ? __($k) : $value;
     }
 
@@ -261,16 +263,6 @@ class GetawayTransaction extends BaseModel
             'meta_data'      => $transaction->request,
         ]);
         return $transaction;
-    }
-
-    public function isSuccess(): bool
-    {
-        return $this->response_code == '000';
-    }
-
-    public function canVoidRefund(): bool
-    {
-        return $this->action == GetawayOrder::getOrderActions('refund') && $this->isSuccess();
     }
 
     /**

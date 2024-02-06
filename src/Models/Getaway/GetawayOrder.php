@@ -145,16 +145,6 @@ class GetawayOrder extends BaseModel
 
     /**
      * @param string|null $key
-     * @return array|string|null
-     */
-    public static function getOrderActions(?string $key = null): array | string | null
-    {
-        $actions = config('4myth-getaway.actions', []);
-        return !is_null($key) ? ($actions[$key] ?? null) : $actions;
-    }
-
-    /**
-     * @param string|null $key
      * @return array|string
      */
     public static function statuses(?string $key = null): array | string
@@ -343,7 +333,7 @@ class GetawayOrder extends BaseModel
         if (!$this->action) {
             return '';
         }
-        $value = (array_flip(static::getOrderActions())[$this->action] ?? $this->action) ?: $this->action;
+        $value = (array_flip(GetawayTransaction::getOrderActions())[$this->action] ?? $this->action) ?: $this->action;
         return trans_has(($k = "const.getaway_actions.$value"), strtolower($this->language), !0) ? __($k) : $value;
     }
 
