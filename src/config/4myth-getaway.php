@@ -125,21 +125,25 @@ return [
          * | New Model with trackable Model.
          * | without reference_id
          */
-        'initial'      => 'initial',
+        'initial'       => 'initial',
         /**
          * | New Model without trackable Model.
          * | Must have trackable data.
          * | without reference_id
          */
-        'initial_data' => 'initial_data',
+        'initial_data'  => 'initial_data',
         /**
          * | The order is paid.
          */
-        'paid'         => 'paid',
+        'paid'          => 'paid',
         /**
          * | The order is failed process.
          */
-        'failed'       => 'failed',
+        'failed'        => 'failed',
+        /**
+         * | the transaction is unsuccessful.
+         */
+        'un_successful' => 'UnSuccessful',
     ],
     /**
      * | Class of Order.

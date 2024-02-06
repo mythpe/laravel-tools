@@ -338,6 +338,9 @@ class GetawayOrder extends BaseModel
             $this->reference_id = $transaction->payid;
         }
         $this->meta_data = array_merge($this->meta_data, $transaction->request);
+        if (!$transaction->success) {
+            $this->status = static::statuses('un_successful');
+        }
         $this->save();
         return $transaction;
     }
