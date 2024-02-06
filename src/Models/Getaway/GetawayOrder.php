@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Models\Getaway;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -50,6 +51,10 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property ?string $language
  * @property ?string $description
  * @property ?string $description_to_string
+ * @method static Builder initialOnly()
+ * @method static Builder paidOnly()
+ * @method static Builder failedOnly()
+ * @method static Builder unSuccessfulOnly()
  */
 class GetawayOrder extends BaseModel
 {
@@ -185,6 +190,42 @@ class GetawayOrder extends BaseModel
     public static function byTrackId(string $value): ?self
     {
         return self::query()->find(Str::afterLast($value, static::trackPrefix()));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeInitialOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('initial'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopePaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('paid'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeFailedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('failed'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeUnSuccessfulOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('un_successful'));
     }
 
     /**
