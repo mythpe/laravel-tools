@@ -50,6 +50,10 @@ trait GetawayHelpersTrait
      */
     public function toArray(): array
     {
-        return (array) $this;
+        $array = (array) $this;
+        if (array_key_exists('api', $array)) {
+            unset($array['api']);
+        }
+        return $array;
     }
 }

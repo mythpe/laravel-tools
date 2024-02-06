@@ -186,7 +186,7 @@ class GetawayApi
     private function transaction(int | string | Closure $trackId, string $amount, string $email, int $action, ?string $transId = null, ?array $metaData = null, ?array $customer = null): GetawayTransactionResult
     {
         //Generate Track ID
-        $trackId = (string) (is_callable($trackId) ? $trackId($this) : $trackId);
+        $trackId = is_callable($trackId) ? $trackId($this) : $trackId;
         $callbackUrl = route(config('4myth-getaway.callback_route_name'));
         $postResponse = null;
         $result = [
@@ -203,7 +203,7 @@ class GetawayApi
             // $metaData = array_merge($metaData ?: [], ['action' => $action]);
             // $metaData = $metaData ?: [];
             $fields = [
-                'trackid'       => $trackId,
+                'trackid'       => (string) $trackId,
                 'terminalId'    => $this->terminalId,
                 'customerEmail' => $email,
                 'First_name'    => $customer['first_name'] ?? null,
@@ -213,7 +213,7 @@ class GetawayApi
                 'State'         => $customer['state'] ?? null,
                 'Zip'           => $customer['zip'] ?? null,
                 'Phoneno'       => $customer['mobile'] ?? null,
-                'action'        => "$action",
+                'action'        => (string) $action,
                 'merchantIp'    => $this->serverIp(),
                 'password'      => $this->password,
                 'currency'      => $this->currencyCode,
@@ -225,7 +225,6 @@ class GetawayApi
                 'udf3'          => $this->language, //Payment Page Language,
                 'metaData'      => $metaData ? json_encode($metaData, JSON_UNESCAPED_UNICODE) : $metaData,
             ];
-            // dd($fields);
             if ($transId) {
                 $fields['transid'] = $transId;
             }
