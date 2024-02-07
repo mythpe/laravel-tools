@@ -133,6 +133,10 @@ return [
          * | The Transaction is partial refund.
          */
         'partial_refund' => 'partial_refund',
+        /**
+         * | The Transaction/order is void. ( Updated manually )
+         */
+        'void'           => 'void',
     ],
     /**
      * | Class of Order.
