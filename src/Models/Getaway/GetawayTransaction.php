@@ -26,7 +26,8 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property string $track_id
  * @property string $action
  * @property string $action_to_string
- * @property double $amount
+ * @property float $amount
+ * @property float $outstanding_amount
  * @property string $result
  * @property string $result_to_string
  * @property string $response_code
@@ -214,11 +215,16 @@ class GetawayTransaction extends BaseModel
             }
         }
         if (!$isInquiry) {
-            $this->order->transactions()->create([
+            if (!$transaction->amount) {
+                $description = $description ?: '';
+                $description .= 'No Amount.';
+            }
+            /** @var GetawayTransaction $newTraction */
+            $newTraction = $this->order->transactions()->create([
                 'transaction_id' => $transaction->tranid,
                 'track_id'       => $transaction->trackid,
                 'action'         => $action,
-                'amount'         => $transaction->amount,
+                'amount'         => $transaction->amount ?: $amount,
                 'result'         => $transaction->result,
                 'response_code'  => $transaction->responseCode,
                 'auth_code'      => $transaction->authcode,
@@ -236,12 +242,12 @@ class GetawayTransaction extends BaseModel
                     $this->order->status = $outstandingAmount > 0 ? GetawayOrder::statuses('partial_refund') : GetawayOrder::statuses('refunded');
                     $this->order->save();
                     if ($this->order->isRefunded()) {
-                        $this->order->transactions()->update(['used' => !0]);
+                        // $newTraction
+                        // $this->order->transactions()->update(['used' => !0]);
+                        $this->order->firstTransaction()->update(['used' => !1]);
                     }
                 }
-                return $transaction;
             }
-
         }
         return $transaction;
     }
@@ -304,5 +310,26 @@ class GetawayTransaction extends BaseModel
     public function isUsed(): bool
     {
         return $this->used;
+    }
+
+    /**
+     * @return float
+     */
+    public function getOutstandingAmount(): float
+    {
+        if (!$this->exists || (!$this->isAuthorization() && !$this->isPurchase())) {
+            return 0.0;
+        }
+        return $this->order->getOutstandingAmount();
+        // return $this->amount - floatval($this->order->transactions()->refundOnly()->successOnly()->notUsedOnly()->sum('amount') ?: 0);
+    }
+
+    /**
+     * $this->outstanding_amount
+     * @return float
+     */
+    public function getOutstandingAmountAttribute(): float
+    {
+        return $this->getOutstandingAmount();
     }
 }

@@ -37,14 +37,14 @@ return new class extends Migration {
             $table->id();
             $table->string('reference_id')->nullable();
             $table->string('track_id')->nullable();
-            $table->string('action');
+            $table->string('action')->nullable();
             $table->string('status')->nullable();
             $table->double('amount', null, 2)->default(0.00);
-            $table->json('meta_data');
+            $table->json('meta_data')->nullable();
             $table->longText('description')->nullable();
-            $table->string('first_name');
+            $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->string('mobile')->nullable();
             $table->string('address')->nullable();
             $table->string('city')->nullable();
@@ -64,15 +64,15 @@ return new class extends Migration {
         Schema::create($this->transaction, function (Blueprint $table) {
             $table->id();
             $table->foreignId('getaway_order_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('transaction_id');
-            $table->string('track_id');
-            $table->string('action');
+            $table->string('transaction_id')->nullable();
+            $table->string('track_id')->nullable();
+            $table->string('action')->nullable();
             $table->double('amount', null, 2)->default(0.00);
             $table->string('result')->nullable();
             $table->string('response_code')->nullable();
             $table->string('auth_code')->nullable();
             $table->longText('description')->nullable();
-            $table->json('meta_data');
+            $table->json('meta_data')->nullable();
             $table->boolean('used')->default(!1);
             $table->softDeletes();
             $table->timestamps();

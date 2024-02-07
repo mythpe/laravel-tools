@@ -540,7 +540,11 @@ class GetawayOrder extends BaseModel
         if (!$this->exists) {
             return 0.0;
         }
-        return $this->amount - floatval($this->transactions()->refundOnly()->successOnly()->sum('amount') ?: 0);
+        $successRefund = $this->transactions()->refundOnly()->successOnly()->sum('amount') ?: 0;
+        $successVoidRefund = $this->transactions()->voidRefundOnly()->successOnly()->sum('amount') ?: 0;
+        $refunded = $successRefund - $successVoidRefund;
+        return $this->amount - floatval($refunded ?: 0);
+        // return $this->amount - floatval($this->transactions()->refundOnly()->successOnly()->sum('amount') ?: 0);
     }
 
     /**
@@ -549,7 +553,13 @@ class GetawayOrder extends BaseModel
      */
     public function getOutstandingAmountAttribute(): float
     {
-        return $this->getOutstandingAmount();
+        if ($this->exists) {
+            return 0.0;
+        }
+        if ($transaction = $this->firstTransaction) {
+            return 0.0;
+        }
+        return $transaction->getOutstandingAmount();
     }
 
     /**

@@ -14,8 +14,10 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * @method static Builder purchaseOnly()
  * @method static Builder refundOnly()
+ * @method static Builder voidPurchaseOnly()
  * @method static Builder authorizationOnly()
  * @method static Builder captureOnly()
+ * @method static Builder voidRefundOnly()
  * @method static Builder voidAuthorizationOnly()
  * @method static Builder transactionInquiryOnly()
  */
@@ -57,6 +59,15 @@ trait GetawayActionsTrait
      * @param Builder $builder
      * @return Builder
      */
+    public function scopeVoidPurchaseOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.void_purchase', 3));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
     public function scopeAuthorizationOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.authorization', 4));
@@ -69,6 +80,15 @@ trait GetawayActionsTrait
     public function scopeCaptureOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.capture', 5));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeVoidRefundOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.void_refund', 6));
     }
 
     /**
@@ -182,7 +202,18 @@ trait GetawayActionsTrait
      */
     public function canRefund(): bool
     {
-        return !$this->isUsed() && $this->isSuccess() && ($this->isPurchase() || $this->isAuthorization());
+        if ($this->isUsed() || !$this->isSuccess()) {
+            return !1;
+        }
+        if (!$this->isPurchase() && !$this->isAuthorization()) {
+            return !1;
+        }
+        $hasCapture = $this->order->transactions()->successOnly()->captureOnly()->exists();
+        $outstandingAmount = $this->order->getOutstandingAmount();
+        if ($this->isAuthorization()) {
+            return $hasCapture && $outstandingAmount > 0;
+        }
+        return $outstandingAmount > 0;
     }
 
     /**
