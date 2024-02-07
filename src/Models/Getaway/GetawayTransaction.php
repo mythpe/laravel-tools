@@ -217,7 +217,7 @@ class GetawayTransaction extends BaseModel
         if (!$isInquiry) {
             if (!$transaction->amount) {
                 $description = $description ?: '';
-                $description .= 'No Amount.';
+                $description .= '. No Amount.';
             }
             /** @var GetawayTransaction $newTraction */
             $newTraction = $this->order->transactions()->create([
@@ -246,6 +246,13 @@ class GetawayTransaction extends BaseModel
                         // $this->order->transactions()->update(['used' => !0]);
                         $this->order->firstTransaction()->update(['used' => !1]);
                     }
+                }
+                if ($action == static::getVoidRefundAction()) {
+                    $outstandingAmount = $this->order->getOutstandingAmount();
+                    // if ($outstandingAmount == $this->order->amount) {
+                    $this->order->status = $outstandingAmount == $this->order->amount ? GetawayOrder::statuses('paid') : GetawayOrder::statuses('partial_refund');
+                    $this->order->save();
+                    // }
                 }
             }
         }
