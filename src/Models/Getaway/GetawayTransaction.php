@@ -220,7 +220,8 @@ class GetawayTransaction extends BaseModel
             //     $description .= '. No Amount.';
             // }
             if ($action == $this->getRefundAction() && !$transaction->tranid) {
-                $inquiry = GetawayApi::inquiry($this->order->reference_id, $this->order->track_id, $amount);
+                $inquiry = GetawayApi::inquiry($this->order->reference_id, $this->order->track_id, $amount, $this->getRefundAction());
+                $inquiry->tranid = $inquiry->udf2 ?: $inquiry->tranid;
                 $transaction = new class($inquiry->toArray()) extends GetawayTransactionResult {
 
                 };
