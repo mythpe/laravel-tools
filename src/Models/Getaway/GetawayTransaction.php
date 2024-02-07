@@ -212,7 +212,7 @@ class GetawayTransaction extends BaseModel
                 if ($action == static::getRefundAction()) {
                     $outstandingAmount = $this->order->getOutstandingAmount();
                     $this->order->status = $outstandingAmount > 0 ? GetawayOrder::statuses('partial_refund') : GetawayOrder::statuses('refunded');
-                    $this->save();
+                    $this->order->save();
                 }
                 return $transaction;
             }
