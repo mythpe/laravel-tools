@@ -520,10 +520,26 @@ class GetawayOrder extends BaseModel
     }
 
     /**
+     * @param string|null $description
+     * @return GetawayTransactionResult
+     */
+    public function capture(?string $description = null): GetawayTransactionResult
+    {
+        if (!($model = $this->firstTransaction)) {
+            return new class extends GetawayTransactionResult {
+            };
+        }
+        return $model->capture($description);
+    }
+
+    /**
      * @return float
      */
     public function getOutstandingAmount(): float
     {
+        if (!$this->exists) {
+            return 0.0;
+        }
         return $this->amount - floatval($this->transactions()->refundOnly()->successOnly()->sum('amount') ?: 0);
     }
 
@@ -565,5 +581,16 @@ class GetawayOrder extends BaseModel
             return $this->transactions()->successOnly()->captureOnly()->exists();
         }
         return !0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canCapture(): bool
+    {
+        if (!$this->firstTransaction()->exists() || !$this->isProcessed()) {
+            return !1;
+        }
+        return $this->isAuthorization() && !$this->transactions()->successOnly()->captureOnly()->exists();
     }
 }
