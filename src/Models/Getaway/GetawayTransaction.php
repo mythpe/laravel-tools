@@ -215,14 +215,20 @@ class GetawayTransaction extends BaseModel
             }
         }
         if (!$isInquiry) {
-            if (!$transaction->amount) {
-                $description = $description ?: '';
-                $description .= '. No Amount.';
+            // if (!$transaction->amount) {
+            //     $description = $description ?: '';
+            //     $description .= '. No Amount.';
+            // }
+            if ($action == $this->getRefundAction() && !$transaction->tranid) {
+                $inquiry = GetawayApi::inquiry($this->order->reference_id, $this->order->track_id, $amount);
+                $transaction = new class($inquiry->toArray()) extends GetawayTransactionResult {
+
+                };
             }
             /** @var GetawayTransaction $newTraction */
             $newTraction = $this->order->transactions()->create([
                 'transaction_id' => $transaction->tranid,
-                'track_id'       => $transaction->trackid,
+                'track_id'       => $transaction->trackid ?: $this->track_id,
                 'action'         => $action,
                 'amount'         => $transaction->amount ?: $amount,
                 'result'         => $transaction->result,
@@ -267,7 +273,8 @@ class GetawayTransaction extends BaseModel
      * @param string|null $description
      * @return GetawayTransactionResult
      */
-    public function refund(?string $amount = null, ?string $description = null): GetawayTransactionResult
+    public
+    function refund(?string $amount = null, ?string $description = null): GetawayTransactionResult
     {
         return $this->createTransaction(static::getRefundAction(), $amount, $description);
     }
@@ -276,7 +283,8 @@ class GetawayTransaction extends BaseModel
      * @param string|null $description
      * @return GetawayTransactionResult
      */
-    public function voidRefund(?string $description = null): GetawayTransactionResult
+    public
+    function voidRefund(?string $description = null): GetawayTransactionResult
     {
         return $this->createTransaction(static::getVoidRefundAction(), $this->amount, $description);
     }
@@ -285,7 +293,8 @@ class GetawayTransaction extends BaseModel
      * @param string|null $description
      * @return GetawayTransactionResult
      */
-    public function capture(?string $description = null): GetawayTransactionResult
+    public
+    function capture(?string $description = null): GetawayTransactionResult
     {
         return $this->createTransaction(static::getCaptureAction(), $this->amount, $description);
     }
@@ -294,7 +303,8 @@ class GetawayTransaction extends BaseModel
      * @param ?string $description
      * @return GetawayTransactionResult
      */
-    public function voidAuthorization(?string $description = null): GetawayTransactionResult
+    public
+    function voidAuthorization(?string $description = null): GetawayTransactionResult
     {
         return $this->createTransaction(config('4myth-getaway.actions.void_authorization'), description : $description);
     }
@@ -303,8 +313,12 @@ class GetawayTransaction extends BaseModel
      * $this->result_to_string
      * @return string
      */
-    public function getResultToStringAttribute(): string
+    public
+    function getResultToStringAttribute(): string
     {
+        if (!$this->result) {
+            return '';
+        }
         return trans_has($k = 'const.statuses.'.Str::snake($this->result)) ? __($k) : $this->result;
     }
 
@@ -312,12 +326,14 @@ class GetawayTransaction extends BaseModel
      * $this->response_code_message
      * @return string
      */
-    public function getResponseCodeMessageAttribute(): string
+    public
+    function getResponseCodeMessageAttribute(): string
     {
-        return config('4myth-getaway.codes.'.$this->response_code, $this->result) ?: '';
+        return config('4myth-getaway.codes.'.$this->response_code, $this->result ?: '') ?: '';
     }
 
-    public function isUsed(): bool
+    public
+    function isUsed(): bool
     {
         return $this->used;
     }
@@ -325,7 +341,8 @@ class GetawayTransaction extends BaseModel
     /**
      * @return float
      */
-    public function getOutstandingAmount(): float
+    public
+    function getOutstandingAmount(): float
     {
         if (!$this->exists || (!$this->isAuthorization() && !$this->isPurchase())) {
             return 0.0;
@@ -338,7 +355,8 @@ class GetawayTransaction extends BaseModel
      * $this->outstanding_amount
      * @return float
      */
-    public function getOutstandingAmountAttribute(): float
+    public
+    function getOutstandingAmountAttribute(): float
     {
         return $this->getOutstandingAmount();
     }

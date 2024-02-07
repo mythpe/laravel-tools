@@ -414,7 +414,7 @@ class GetawayOrder extends BaseModel
      */
     public function trackId(): string
     {
-        return static::trackPrefix().$this->id;
+        return static::trackPrefix().$this->id ?: '';
     }
 
     /**
@@ -543,7 +543,7 @@ class GetawayOrder extends BaseModel
         $successRefund = $this->transactions()->refundOnly()->successOnly()->sum('amount') ?: 0;
         $successVoidRefund = $this->transactions()->voidRefundOnly()->successOnly()->sum('amount') ?: 0;
         $refunded = $successRefund - $successVoidRefund;
-        return $this->amount - floatval($refunded ?: 0);
+        return $this->amount - round($refunded ?: 0, 2);
         // return $this->amount - floatval($this->transactions()->refundOnly()->successOnly()->sum('amount') ?: 0);
     }
 
