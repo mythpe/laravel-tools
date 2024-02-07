@@ -11,6 +11,7 @@ namespace Myth\LaravelTools\Models\Getaway;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -221,6 +222,22 @@ class GetawayOrder extends BaseModel
     public function isPartialRefund(): bool
     {
         return $this->status == static::statuses('partial_refund');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPurchase(): bool
+    {
+        return $this->action == GetawayTransaction::getTransactionActions('purchase');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAuthorization(): bool
+    {
+        return $this->action == GetawayTransaction::getTransactionActions('authorization');
     }
 
     /**
@@ -520,21 +537,11 @@ class GetawayOrder extends BaseModel
     }
 
     /**
-     * @return HasMany
+     * @return HasOne
      */
-    public function firstTransactionQuery(): HasMany
+    public function firstTransaction(): HasOne
     {
-        return $this->transactions()->successOnly()->where('transaction_id', $this->reference_id);
-    }
-
-    /**
-     * @return ?GetawayTransaction
-     */
-    public function firstTransaction(): ?GetawayTransaction
-    {
-        /** @var GetawayTransaction $transaction */
-        $transaction = $this->firstTransactionQuery()->first();
-        return $transaction;
+        return $this->hasOne(GetawayTransaction::class)->successOnly()->where('transaction_id', $this->reference_id);
     }
 
     /**
@@ -542,7 +549,7 @@ class GetawayOrder extends BaseModel
      */
     public function canInquiry(): bool
     {
-        return $this->firstTransactionQuery()->exists() && $this->isProcessed();
+        return $this->firstTransaction()->exists() && $this->isProcessed();
     }
 
     /**
@@ -550,6 +557,13 @@ class GetawayOrder extends BaseModel
      */
     public function canRefund(): bool
     {
-        return $this->firstTransaction()->exists() && $this->isProcessed();
+        if (!$this->firstTransaction()->exists() || !$this->isProcessed()) {
+            return !1;
+        }
+
+        if ($this->isAuthorization()) {
+            return $this->transactions()->successOnly()->captureOnly()->exists();
+        }
+        return !0;
     }
 }

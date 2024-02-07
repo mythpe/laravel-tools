@@ -38,6 +38,10 @@ use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
  * @property bool $used
  * @property string $used_to_string
  * @property GetawayOrder $order
+ * @method static Builder byTransactionId(string|array $id)
+ * @method static Builder successOnly()
+ * @method static Builder usedOnly()
+ * @method static Builder notUsedOnly()
  */
 class GetawayTransaction extends BaseModel
 {
@@ -127,6 +131,24 @@ class GetawayTransaction extends BaseModel
     public function scopeSuccessOnly(Builder $builder): Builder
     {
         return $builder->where('response_code', '=', '000');
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeUsedOnly(Builder $builder): Builder
+    {
+        return $builder->where('used', '=', !0);
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeNotUsedOnly(Builder $builder): Builder
+    {
+        return $builder->where('used', '=', !1);
     }
 
     /**
