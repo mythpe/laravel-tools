@@ -187,7 +187,7 @@ class GetawayTransaction extends BaseModel
         $newUsed = !$transaction->success;
         $isInquiry = $action == static::getTransactionInquiryAction();
         if ($transaction->success) {
-            if (in_array($action, $this->actionsCantDoTransaction())) {
+            if (in_array($action, [$this->actionsCantDoTransaction(), $this->getCaptureAction()])) {
                 $newUsed = !0;
             }
         }
@@ -209,6 +209,7 @@ class GetawayTransaction extends BaseModel
                 $this->save();
                 return $transaction;
             }
+
         }
         return $transaction;
     }
@@ -230,6 +231,15 @@ class GetawayTransaction extends BaseModel
     public function voidRefund(?string $description = null): GetawayTransactionResult
     {
         return $this->createTransaction(static::getVoidRefundAction(), $this->amount, $description);
+    }
+
+    /**
+     * @param string|null $description
+     * @return GetawayTransactionResult
+     */
+    public function capture(?string $description = null): GetawayTransactionResult
+    {
+        return $this->createTransaction(static::getCaptureAction(), $this->amount, $description);
     }
 
     /**

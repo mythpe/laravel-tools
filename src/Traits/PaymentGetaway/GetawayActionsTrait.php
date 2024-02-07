@@ -182,7 +182,7 @@ trait GetawayActionsTrait
      */
     public function canRefund(): bool
     {
-        return !$this->isUsed() && $this->isSuccess() && ($this->isPurchase() || $this->isCapture());
+        return !$this->isUsed() && $this->isSuccess() && ($this->isPurchase() || $this->isAuthorization());
     }
 
     /**
@@ -206,7 +206,10 @@ trait GetawayActionsTrait
      */
     public function canCapture(): bool
     {
-        return !$this->isUsed() && $this->isSuccess() && $this->isAuthorization();
+        if (!$this->isAuthorization() || !$this->isSuccess()) {
+            return !1;
+        }
+        return !$this->isUsed() && $this->isAuthorization() && !$this->order->transactions()->successOnly()->captureOnly()->exists();
     }
 
     /**

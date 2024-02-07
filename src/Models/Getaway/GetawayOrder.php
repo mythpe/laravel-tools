@@ -151,7 +151,7 @@ class GetawayOrder extends BaseModel
     {
         $statuses = config('4myth-getaway.statuses', []);
         if ($key && !array_key_exists($key, $statuses)) {
-            throw new InvalidArgumentException("Invalid key passed $key. Must One Of ".implode(',', array_keys($statuses)));
+            throw new InvalidArgumentException("Invalid key passed [$key]. Must One Of ".implode(',', array_keys($statuses)));
         }
         return !is_null($key) ? $statuses[$key] : $statuses;
     }
@@ -518,5 +518,29 @@ class GetawayOrder extends BaseModel
     public function getOutstandingAmount(): float
     {
         return $this->amount - floatval($this->transactions()->refundOnly()->successOnly()->sum('amount') ?: 0);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function firstTransaction(): HasMany
+    {
+        return $this->transactions()->where('transaction_id', $this->reference_id);
+    }
+
+    /**
+     * @return bool
+     */
+    public function canInquiry(): bool
+    {
+        return $this->firstTransaction()->successOnly()->exists() && $this->isProcessed();
+    }
+
+    /**
+     * @return bool
+     */
+    public function canRefund(): bool
+    {
+        return $this->firstTransaction()->successOnly()->exists() && $this->isProcessed();
     }
 }

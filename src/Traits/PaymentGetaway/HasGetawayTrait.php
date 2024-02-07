@@ -53,17 +53,17 @@ trait HasGetawayTrait
      */
     public function createGetawayOrder(array $attributes, array $metaData = []): GetawayOrder
     {
-        if ($order = $this->getawayOrder) {
-            return $order;
-        }
+        // if ($order = $this->getawayOrder) {
+        //     return $order;
+        // }
         $action = $attributes['action'] ?? static::getDefaultOrderAction();
         $amount = $attributes['amount'] ?? '0.00';
         $actions = config('4myth-getaway.transaction_class', GetawayTransaction::class)::getTransactionActions();
         if (!in_array($action, $actions)) {
-            throw new InvalidArgumentException("Invalid action passed $action. Must One Of ".implode(',', $actions));
+            throw new InvalidArgumentException("Invalid action passed [$action]. Must One Of ".implode(',', $actions));
         }
         /** @var GetawayOrder $order */
-        $order = $this->getawayOrder()->create([
+        $order = $this->getawayOrders()->create([
             'reference_id'   => null,
             'action'         => (string) $action,
             'status'         => GetawayOrder::statuses('initial'),
