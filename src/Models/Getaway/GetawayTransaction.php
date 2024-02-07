@@ -204,9 +204,16 @@ class GetawayTransaction extends BaseModel
                 'meta_data'      => $transaction->request,
                 'used'           => $newUsed,
             ]);
-            if ($transaction->success && in_array($action, $this->actionsCantDoTransaction())) {
-                $this->used = !0;
-                $this->save();
+            if ($transaction->success) {
+                if (in_array($action, $this->actionsCantDoTransaction())) {
+                    $this->used = !0;
+                    $this->save();
+                }
+                if ($action == static::getRefundAction()) {
+                    $outstandingAmount = $this->order->getOutstandingAmount();
+                    $this->order->status = $outstandingAmount > 0 ? GetawayOrder::statuses('partial_refund') : GetawayOrder::statuses('refunded');
+                    $this->save();
+                }
                 return $transaction;
             }
 

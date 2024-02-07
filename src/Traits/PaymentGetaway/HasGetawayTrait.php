@@ -106,13 +106,4 @@ trait HasGetawayTrait
     {
         return $this->getawayOrders()->where('status', GetawayOrder::statuses('initial'))->whereNotNull(['reference_id'])->exists();
     }
-
-    /**
-     * @param GetawayTransaction $item
-     * @param GetawayTransactionResult $transaction
-     * @return void
-     */
-    public function onRefund(GetawayTransaction $item, GetawayTransactionResult $transaction): void
-    {
-    }
 }
