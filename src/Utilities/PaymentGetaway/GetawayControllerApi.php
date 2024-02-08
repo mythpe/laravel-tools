@@ -38,6 +38,9 @@ abstract class GetawayControllerApi
      */
     public function validateHash(): bool
     {
+        if (!$this->data->responseHash || !$this->data->TranId || !$this->data->amount || !$this->data->ResponseCode) {
+            return false;
+        }
         return GetawayApi::validateResponseHash($this->data->TranId, $this->data->ResponseCode, $this->data->amount, $this->data->responseHash);
     }
 
@@ -46,6 +49,9 @@ abstract class GetawayControllerApi
      */
     public function getTrackable(): ?Model
     {
+        if (!$this->data->TrackId) {
+            return null;
+        }
         return config('4myth-getaway.order_class', GetawayOrder::class)::byTrackId($this->data->TrackId);
     }
 }
