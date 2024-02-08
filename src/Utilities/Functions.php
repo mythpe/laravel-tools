@@ -36,16 +36,16 @@ if (!function_exists('mythAllowHeaders')) {
 
 if (!function_exists('to_number_format')) {
     /**
-     * @param float|null $number
+     * @param float|string|null $number
      * @param int $decimals
      * @param string|null $currency
      * @param string $thousands_sep
      * @param string $dec_point
      * @return string
      */
-    function to_number_format(?float $number, int $decimals = 2, ?string $currency = null, string $thousands_sep = ',', string $dec_point = '.'): string
+    function to_number_format(float | string | null $number, int $decimals = 2, ?string $currency = null, string $thousands_sep = ',', string $dec_point = '.'): string
     {
-        $number = $number ?: 0.0;
+        $number = !is_numeric($number) ? 0 : floatval($number ?: 0);
         $v = number_format((float) $number, $decimals, $dec_point, $thousands_sep);
         $currency = $currency ?: '';
         return trim("$v $currency");
