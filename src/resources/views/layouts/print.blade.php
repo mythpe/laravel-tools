@@ -6,17 +6,17 @@
 <head>
     @include('4myth-tools::partials.head')
     <link
-        href="{{ asset("storage/vendor/4myth/pdf-style/app.css") }}"
+        href="{{ public_path("storage/vendor/4myth/pdf-style/app.css") }}"
         rel="stylesheet"
         type="text/css"
     >
     <link
-        href="{{ asset("storage/vendor/4myth/pdf-style/app-{$DIRECTION}.css") }}"
+        href="{{ public_path("storage/vendor/4myth/pdf-style/app-{$DIRECTION}.css") }}"
         rel="stylesheet"
         type="text/css"
     >
     <link
-        href="{{ asset("storage/vendor/4myth/fonts/fontawesome-free/css/all.css") }}"
+        href="{{ public_path("storage/vendor/4myth/fonts/fontawesome-free/css/all.css") }}"
         rel="stylesheet"
         type="text/css"
     >
@@ -63,7 +63,7 @@
     </div>
 </div>
 @yield('print_content')
-<script src="{{asset('storage/vendor/4myth/js/jquery/jquery.min.js')}}"></script>
+<script src="{{public_path('storage/vendor/4myth/js/jquery/jquery.min.js')}}"></script>
 
 <script>
 

@@ -6,12 +6,12 @@
 <head>
     @include('4myth-tools::partials.head')
     <link
-        href="{{ asset("storage/vendor/4myth/pdf-style/app.css") }}"
+        href="{{ public_path("storage/vendor/4myth/pdf-style/app.css") }}"
         rel="stylesheet"
         type="text/css"
     >
     <link
-        href="{{ asset("storage/vendor/4myth/pdf-style/app-{$DIRECTION}.css") }}"
+        href="{{ public_path("storage/vendor/4myth/pdf-style/app-{$DIRECTION}.css") }}"
         rel="stylesheet"
         type="text/css"
     >
