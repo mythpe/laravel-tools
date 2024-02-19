@@ -9,10 +9,10 @@
 
 namespace Myth\LaravelTools\Http\Resources;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
+use Myth\LaravelTools\Models\BaseModel;
 
 class ApiResource extends JsonResource
 {
@@ -89,15 +89,22 @@ class ApiResource extends JsonResource
      */
     protected function transformModel(array $merge = []): array
     {
-        /** @var Model $model */
+        /** @var BaseModel $model */
         $model = $this->resource;
         $id = $model->id;
         $label = $model->name;
         if (request()->input(static::STATIC_REQUEST_KEY)) {
-            $result = [
-                'name_ar' => $model->name_ar,
-                'name_en' => $model->name_en,
-            ];
+            $locales = config('4myth-tools.locales');
+            $result = [];
+            foreach ($locales as $locale) {
+                $attr = locale_attribute('name', $locale);
+                if ($model->isFillable($attr)) {
+                    $result[$attr] = $model->{$attr};
+                }
+            }
+            if ($model->isFillable('name') && !($result[$k = 'name_'.app()->getLocale()] ?? null)) {
+                $result[$k] = $model->name;
+            }
             if (method_exists($model, static::STATIC_REQUEST_KEY)) {
                 $result = array_merge($result, $model->{static::STATIC_REQUEST_KEY}());
             }
