@@ -1,5 +1,5 @@
 @php
-    $funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset'
+    $funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
 @endphp
 <!doctype html>
 <html

@@ -1,5 +1,5 @@
 @php
-$funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset'
+$funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
 @endphp
 <!doctype html>
 <html lang="{{$LOCALE}}" dir="{{$DIRECTION}}">
@@ -13,7 +13,7 @@ $funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset'
 
 <body>
 @yield('content')
-<script src="{{asset('storage/vendor/4myth/js/jquery/jquery.min.js')}}"></script>
+<script src="{{$funcType('storage/vendor/4myth/js/jquery/jquery.min.js')}}"></script>
 
 @stack('scripts')
 </body>
