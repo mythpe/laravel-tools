@@ -1,5 +1,5 @@
 @php
-$funcType = ($assetAsPath ?? null) ? 'asset' : 'public_path'
+$funcType = ($usePublickPath ?? null) ? 'public_path' : 'asset'
 @endphp
 <!doctype html>
 <html lang="{{$LOCALE}}" dir="{{$DIRECTION}}">
