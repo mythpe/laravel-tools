@@ -1,10 +1,13 @@
+@php
+$funcType = ($assetAsPath ?? null) ? 'asset' : 'public_path'
+@endphp
 <!doctype html>
 <html lang="{{$LOCALE}}" dir="{{$DIRECTION}}">
 <head>
     @include('4myth-tools::partials.head')
-    <link href="{{ asset("storage/vendor/4myth/pdf-style/app.css") }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset("storage/vendor/4myth/pdf-style/app-{$DIRECTION}.css") }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset("storage/vendor/4myth/fonts/fontawesome-free/css/all.css") }}" rel="stylesheet" type="text/css">
+    <link href="{{ $funcType("storage/vendor/4myth/pdf-style/app.css") }}" rel="stylesheet" type="text/css">
+    <link href="{{ $funcType("storage/vendor/4myth/pdf-style/app-{$DIRECTION}.css") }}" rel="stylesheet" type="text/css">
+    <link href="{{ $funcType("storage/vendor/4myth/fonts/fontawesome-free/css/all.css") }}" rel="stylesheet" type="text/css">
     @stack('styles')
 </head>
 
