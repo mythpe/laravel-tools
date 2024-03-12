@@ -31,7 +31,8 @@ return new class extends Migration {
         Schema::disableForeignKeyConstraints();
         Schema::create($this->table, function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();{migration}
+            $table->string('name_ar')->nullable();{migration}
+            $table->string('name_en')->nullable();{migration}
             $table->timestamps();
         });
     }

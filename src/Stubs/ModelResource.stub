@@ -27,7 +27,6 @@ class {modelName}Resource extends ApiResource
      */
     public function transformer(Request $request): array
     {
-        // return [];
         $model = $this->resource;
         return $this->transformModel([{resource}
         ]);

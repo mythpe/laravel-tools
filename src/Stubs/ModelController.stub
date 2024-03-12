@@ -40,8 +40,8 @@ class {modelName}Controller extends Controller
     public function getRules(): array
     {
         return [
-            'name_ar'  => [$this->requiredByLocale()],
-            'name_en'  => [$this->requiredByLocale('en')],{rules}
+            'name_ar'  => ['required'],
+            'name_en'  => ['required'],{rules}
         ];
     }
 }

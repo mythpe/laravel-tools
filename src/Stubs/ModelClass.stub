@@ -20,7 +20,8 @@ class {modelName} extends BaseModel
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',{fillable}
+        'name_ar',
+        'name_en',{fillable}
     ];
 
     /**
@@ -29,7 +30,8 @@ class {modelName} extends BaseModel
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'name' => null,{attributes}
+        'name_ar' => null,
+        'name_en' => null,{attributes}
     ];
 
     /**
