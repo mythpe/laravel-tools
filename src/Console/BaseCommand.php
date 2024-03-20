@@ -285,7 +285,7 @@ class BaseCommand extends Command
                 if ($r instanceof BelongsToMany) {
                     $model->{$relation}()->sync($row, !1);
                     $this->echo("Sync [$classLabel]: ".json_encode($row));
-                    break;
+                    continue;
                 }
                 foreach ($row as $child) {
                     $this->insert($child, $relation, $model);
