@@ -480,4 +480,9 @@ class BaseModel extends Authenticate implements HasMedia
         }
         return null;
     }
+
+    public function getAuthPasswordName(): string
+    {
+        return 'password';
+    }
 }
