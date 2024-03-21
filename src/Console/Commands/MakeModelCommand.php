@@ -73,10 +73,9 @@ to insert code automatically add this comment "use myth crud model command" to y
     public function handle(): int
     {
         $this->prepare();
-        $time = now()->format('Y_m_d');
         $snake = Str::snake(Str::pluralStudly($this->modelName));
         $stubs = [
-            'ModelMigration.stub'     => "database/migrations/{$time}_000000_{$snake}_table.php",
+            'ModelMigration.stub'     => "database/migrations/1111_11_11_000001_{$snake}_table.php",
             'ModelClass.stub'         => "app/Models/$this->model.php",
             'ModelController.stub'    => "app/Http/Controllers/{$this->model}Controller.php",
             'ModelResource.stub'      => "app/Http/Resources/{$this->model}Resource.php",
