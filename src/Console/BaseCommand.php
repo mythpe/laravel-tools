@@ -130,7 +130,7 @@ class BaseCommand extends Command
                     continue;
                 }
                 $data = json_decode($this->disk()->get($file), true);
-                $name = Str::afterLast('-', $file);
+                $name = Str::afterLast($file, '-');
                 $table = strtolower(Str::snake(Str::plural(pathinfo($name, PATHINFO_FILENAME))));
                 $this->truncate($table);
                 foreach ($data as $v) {
