@@ -130,7 +130,8 @@ class BaseCommand extends Command
                     continue;
                 }
                 $data = json_decode($this->disk()->get($file), true);
-                $table = strtolower(Str::snake(Str::plural(pathinfo($file, PATHINFO_FILENAME))));
+                $name = Str::afterLast('-', $file);
+                $table = strtolower(Str::snake(Str::plural(pathinfo($name, PATHINFO_FILENAME))));
                 $this->truncate($table);
                 foreach ($data as $v) {
                     $this->insert($v, $table);
