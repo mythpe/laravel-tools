@@ -25,10 +25,10 @@ class MakeModelCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'myth:model {model}
+    protected $signature = 'myth:model {model*}
 {--s|scoped : Create model with scopes}
 {--t|translator : Create model with translator scope}
-{--d|delete : Delete model}';
+{--d|delete : Delete model} {--F|force-delete : Force delete model}';
 
     //use myth crud model command
 
@@ -51,92 +51,95 @@ to insert code automatically add this comment "use myth crud model command" to y
     /**
      * User input
      *
-     * @var string
+     * @var array<int, array<int, string>>
      */
-    protected string $model;
-
-    /**
-     * @var string
-     */
-    protected string $modelName;
-
-    /**
-     * @var string|null
-     */
-    protected ?string $namespace = null;
+    protected array $models = [];
 
     /**
      * Execute the console command.
      *
      * @return int
      */
-    public function handle(): int
+    public function handle(): void
     {
         $this->prepare();
-        $snake = Str::snake(Str::pluralStudly($this->modelName));
-        $stubs = [
-            'ModelMigration.stub'     => "database/migrations/1111_11_11_000001_{$snake}_table.php",
-            'ModelClass.stub'         => "app/Models/$this->model.php",
-            'ModelController.stub'    => "app/Http/Controllers/{$this->model}Controller.php",
-            'ModelResource.stub'      => "app/Http/Resources/{$this->model}Resource.php",
-            'BelongsToModel.stub'     => "app/Traits/BelongsTo/BelongsTo{$this->modelName}.php",
-            'BelongsToManyModel.stub' => "app/Traits/BelongsToMany/BelongsToMany{$this->modelName}.php",
-            'HasManyModel.stub'       => "app/Traits/HasMany/HasMany{$this->modelName}.php",
-        ];
+        $force = (bool) $this->option('force-delete');
+        $deleteModel = $force ? !0 : ((bool) $this->option('delete'));
+        foreach ($this->models as $value) {
+            $model = $value['model'];
+            $modelName = $value['modelName'];
+            $namespace = $value['namespace'] ?? null;
 
-        $deleteModel = (bool) $this->option('delete');
-        if ($deleteModel && !$this->confirm("Delete <fg=red>$this->model</> ?")) {
-            return 0;
-        }
+            $snake = Str::snake(Str::pluralStudly($model));
+            $stubs = [
+                'ModelMigration.stub'     => "database/migrations/1111_00_00_000000_{$snake}_table.php",
+                'ModelClass.stub'         => "app/Models/$model.php",
+                'ModelController.stub'    => "app/Http/Controllers/{$model}Controller.php",
+                'ModelResource.stub'      => "app/Http/Resources/{$model}Resource.php",
+                'BelongsToModel.stub'     => "app/Traits/BelongsTo/BelongsTo{$modelName}.php",
+                'BelongsToManyModel.stub' => "app/Traits/BelongsToMany/BelongsToMany{$modelName}.php",
+                'HasManyModel.stub'       => "app/Traits/HasMany/HasMany{$modelName}.php",
+            ];
 
-        $stubsPath = __DIR__.'/../../Stubs';
-        foreach ($stubs as $stub => $path) {
             if ($deleteModel) {
-                $this->components->task("Deleting <fg=red>$path</>", fn() => $this->disk()->delete($path));
-                continue;
+                if (!$force && !$this->confirm("Delete <fg=red>$model</> ?"))
+                    continue;
             }
-            $content = $this->fillStub(file_get_contents("$stubsPath/$stub"));
-            if ($this->disk()->exists($path)) {
-                $this->components->warn("File exists: <fg=red>$path</> <fg=yellow;bg=black>Skipped</>");
-                continue;
+            $stubsPath = __DIR__.'/../../Stubs';
+            foreach ($stubs as $stub => $path) {
+                if ($deleteModel) {
+                    $this->components->task("Deleting <fg=red>$path</>", fn() => $this->disk()->delete($path));
+                    continue;
+                }
+                $content = $this->fillStub($value, file_get_contents("$stubsPath/$stub"));
+                if ($this->disk()->exists($path)) {
+                    $this->components->warn("File exists: <fg=red>$path</> <fg=yellow;bg=black>Skipped</>");
+                    continue;
+                }
+                $this->components->task("Creating $path", fn() => $this->disk()->put($path, $content));
             }
-            $this->components->task("Creating $path", fn() => $this->disk()->put($path, $content));
-        }
-        if ($deleteModel) {
-            return 0;
-        }
 
-        $path = 'app\Providers\RouteServiceProvider.php';
-        $existsNeedles = "$this->modelName::";
-        $replaceContent = '        $this->binder(\''.$this->modelName.'\', \\App\\Models\\'.$this->model.'::class);';
-        $this->modifyFile($path, $existsNeedles, $replaceContent);
+            $path = 'app\Providers\RouteServiceProvider.php';
+            $existsNeedles = "$modelName::";
+            $replaceContent = '        $this->binder(\''.$modelName.'\', \\App\\Models\\'.$model.'::class);';
+            $this->modifyFile($modelName, $path, $existsNeedles, $replaceContent);
 
-        $path = 'app\Http\Controllers\SideMenuController.php';
-        $existsNeedles = "// # $this->modelName.";
-        $routeName = $this->modelPluralKebabName();
-        $permissions = "$this->modelName.index";
-        if ($this->namespace) {
-            $routeName = strtolower(str_ireplace('\\', '.', $this->namespace)).".$routeName";
-            $permissions = str_ireplace('\\', '.', $this->namespace).".$permissions";
-        }
-        $permissions = "'$permissions'";
+            $path = 'app\Http\Controllers\SideMenuController.php';
+            $existsNeedles = "// # $modelName.";
+            $routeName = $this->modelPluralKebabName($modelName);
+            $permissions = "$modelName.index";
+            if ($namespace) {
+                $routeName = strtolower(str_ireplace('\\', '.', $namespace)).".$routeName";
+                $permissions = str_ireplace('\\', '.', $namespace).".$permissions";
+            }
+            $permissions = "'$permissions'";
 
-        $replaceContent = <<<html
+            $replaceContent = <<<html
             $existsNeedles
             [
-                'title'       => trans_choice("choice.{$this->modelPluralName()}", 2),
+                'title'       => trans_choice("choice.{$this->modelPluralName($modelName)}", 2),
                 'name'        => 'panel.$routeName',
                 'icon'        => '',
                 'permissions' => [$permissions],
             ],
 html;
-        $this->modifyFile($path, $existsNeedles, $replaceContent);
-        $this->insertModelLanguage();
-        $this->newLine();
-        $modelNamespace = "\\App\\Http\\Controllers\\{$this->model}Controller";
-        $this->components->info("Please insert model routes <fg=yellow;bg=black>apiResource('$this->modelName', $modelNamespace::class);</>");
-        $this->components->info("Please run <fg=yellow;bg=black>php artisan setup:permissions</> to make permissions or add them manually.");
-        return 1;
+            $this->modifyFile($modelName, $path, $existsNeedles, $replaceContent);
+            $this->insertModelLanguage($modelName);
+            $this->newLine();
+            $modelNamespace = "\\App\\Http\\Controllers\\{$model}Controller";
+        }
+
+        if (!$force && !$deleteModel && count($this->models) > 0) {
+            $this->components->info("Please insert model routes: [<fg=yellow;bg=black>routes.php</>]");
+            foreach ($this->models as $value) {
+                $model = $value['model'];
+                $modelName = $value['modelName'];
+                $modelNamespace = "App\\Http\\Controllers\\{$model}Controller";
+                $v = "apiResource('$modelName', $modelNamespace::class);";
+                $this->line("<fg=yellow;bg=black>$v</>");
+            }
+            $this->components->info("Please run <fg=yellow;bg=black>php artisan setup:permissions</> to make permissions or add them manually.");
+        }
     }
 
     /**
@@ -146,28 +149,47 @@ html;
      */
     protected function prepare(): void
     {
-        $this->model = preg_replace(['/\/+/', '/\\\+/'], '\\', $this->argument('model'));
-        $options = explode('\\', $this->model);
-        $this->modelName = array_pop($options);
-        if (count($options) > 0) {
-            $this->namespace = implode('\\', $options);
+        $arg = $this->argument('model');
+        foreach ($arg as $value) {
+            $model = preg_replace(['/\/+/', '/\\\+/'], '\\', $value);
+            $options = explode('\\', $model);
+            $data = [
+                'model'     => $model,
+                'modelName' => array_pop($options),
+                'namespace' => null,
+            ];
+            if (count($options) > 0) {
+                $data['namespace'] = implode('\\', $options);
+            }
+            $this->models[] = $data;
         }
+        // d($this->models);
+        // $this->model = preg_replace(['/\/+/', '/\\\+/'], '\\', $this->argument('model'));
+        // $options = explode('\\', $this->model);
+        // $modelName = array_pop($options);
+        // if (count($options) > 0) {
+        //     $namespace = implode('\\', $options);
+        // }
     }
 
     /**
      * Fill stub content
      *
+     * @param array<string,mixed> $Model
      * @param string $stub
      *
      * @return string
      */
-    protected function fillStub(string $stub): string
+    protected function fillStub(array $Model, string $stub): string
     {
         $scoped = $this->option('scoped');
         $class_methods = $class_use = $fillable = $attributes = $casts = $rules = $migration = $resource = $oldest = '';
+        $model = $Model['model'];
+        $modelName = $Model['modelName'];
+        $namespace = $Model['namespace'];
 
         if ($scoped) {
-            $class_use .= 'use \Myth\LaravelTools\Traits\Utilities\OrderByScopeTrait, \Myth\LaravelTools\Traits\Utilities\ActiveScopeTrait;
+            $class_use .= 'use Myth\LaravelTools\Traits\Utilities\OrderByScopeTrait, Myth\LaravelTools\Traits\Utilities\ActiveScopeTrait;
 ';
             $fillable .= <<<html
 
@@ -200,7 +222,7 @@ html;
         }
 
         if ($this->option('translator')) {
-            $class_use .= 'use \Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
+            $class_use .= 'use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
 ';
             $class_methods .= "
     public static function translatorAttributes(): array
@@ -228,9 +250,9 @@ html;
             '{modelPluralName}',
             '{class_methods}',
         ], [
-            $this->namespace ? '\\'.$this->namespace : null,
-            $this->model,
-            $this->modelName,
+            $namespace ? '\\'.$namespace : null,
+            $model,
+            $modelName,
             Carbon::now()->format('Y'),
             $class_use,
             $fillable,
@@ -240,49 +262,53 @@ html;
             $migration,
             $resource,
             $oldest,
-            $this->modelForeignKey(),
-            $this->modelCamelName(),
-            Str::camel($this->modelPluralName()),
+            $this->modelForeignKey($modelName),
+            $this->modelCamelName($modelName),
+            Str::camel($this->modelPluralName($modelName)),
             $class_methods,
         ], $stub);
     }
 
     /**
+     * @param string $modelName
      * @return string
      */
-    protected function modelForeignKey(): string
+    protected function modelForeignKey(string $modelName): string
     {
-        return Str::snake($this->modelName).'_id';
+        return Str::snake($modelName).'_id';
     }
 
     /**
+     * @param string $modelName
      * @return string
      */
-    protected function modelCamelName(): string
+    protected function modelCamelName(string $modelName): string
     {
-        return Str::camel($this->modelName);
+        return Str::camel($modelName);
     }
 
     /**
+     * @param string $modelName
      * @return string
      */
-    protected function modelPluralName(): string
+    protected function modelPluralName(string $modelName): string
     {
-        return Str::plural($this->modelName);
+        return Str::plural($modelName);
     }
 
     /**
-     * @param $path
+     * @param string $modelName
+     * @param string $path
      * @param $existsNeedles
      * @param $replaceContent
-     *
      * @return void
      */
-    protected function modifyFile($path, $existsNeedles = null, $replaceContent = null): void
+    protected function modifyFile(string $modelName, string $path, $existsNeedles = null, $replaceContent = null): void
     {
-        $this->components->task("Try to modify <fg=green>$path</>", function () use ($path, $existsNeedles, $replaceContent) {
+        $this->components->task("Updateing <fg=green>$path</>", function () use ($modelName, $path, $existsNeedles, $replaceContent) {
             $comment = static::LINE_COMMENT_UPDATE;
             $this->newLine();
+            $deleteMode = $this->isDeleteMode();
 
             // Get Source
             $source = file(str_replace('\\', '/', $this->disk()->path($path)));
@@ -294,20 +320,33 @@ html;
             }
 
             if (!is_null($existsLine)) {
-                ++$existsLine;
-                $this->components->warn("<fg=red>$this->modelName</> found in line: {$existsLine}");
+                if ($deleteMode) {
+                    $f = str_ireplace($replaceContent, '', implode('', $source));
+                    $this->disk()->put($path, $f);
+                }
+                else {
+                    ++$existsLine;
+                    $this->components->warn("<fg=red>$modelName</> found in line: {$existsLine}");
+                }
             }
             elseif (is_null($commentIndex)) {
                 $this->components->info("Add this comment [$comment] to automatically modify the file or add this line: [$replaceContent]");
             }
             else {
+                if ($this->isDeleteMode() && is_null($existsLine)) {
+                    return;
+                }
                 $before = array_slice($source, 0, $commentIndex + 1);
                 $after = array_slice($source, $commentIndex + 1);
                 $file = array_merge($before, [
                     $replaceContent,
                     PHP_EOL,
                 ], $after);
-                $this->disk()->put($path, implode('', $file));
+                $lastContent = $file;
+                if ($deleteMode) {
+                    $lastContent = str_ireplace(trim($replaceContent), '', $lastContent);
+                }
+                $this->disk()->put($path, implode('', $lastContent));
                 $this->components->twoColumnDetail("<fg=green>$path</>", '<fg=green>Updated</>');
             }
         });
@@ -315,81 +354,135 @@ html;
     }
 
     /**
+     * @param string $modelName
      * @return string
      */
-    protected function modelPluralKebabName(): string
+    protected function modelPluralKebabName(string $modelName): string
     {
-        return Str::kebab($this->modelPluralName());
+        return Str::kebab($this->modelPluralName($modelName));
     }
 
     /**
+     * @param string $modelName
      * @return void
      */
-    protected function insertModelLanguage(): void
+    protected function insertModelLanguage(string $modelName): void
     {
-        $this->components->task("Add model language", function () {
-            $pluralChoice = $this->modelPluralName();
+        $this->components->task("Model language", function () use ($modelName) {
+            $pluralChoice = $this->modelPluralName($modelName);
             $this->newLine();
-            $studlyWords = ucwords(str_ireplace('-', ' ', Str::kebab(Str::studly($this->modelName))));
-            $pluralWords = ucwords(str_ireplace('-', ' ', $this->modelPluralKebabName()));
+            $studlyWords = ucwords(str_ireplace('-', ' ', Str::kebab(Str::studly($modelName))));
+            $pluralWords = ucwords(str_ireplace('-', ' ', $this->modelPluralKebabName($modelName)));
             foreach (config('4myth-tools.locales') as $locale) {
                 $choice = "lang/$locale/choice.php";
                 if (!$this->disk()->exists($choice)) {
                     $this->components->twoColumnDetail("<fg=red>$choice</> not exists", '<fg=red>Skipped</>');
                 }
-                elseif (trans_has("choice.$pluralChoice")) {
-                    $this->components->twoColumnDetail("<fg=red>$pluralChoice</> Trans choice exists", '<fg=red>Skipped</>');
-                }
                 else {
-                    $file = file($this->disk()->path($choice));
-                    $lastCount = count($file) - 1;
-                    $row = '    \''.$pluralChoice.'\' => \'';
-                    if ($locale == 'ar') {
-                        $row .= 'جمع|مفرد';
+                    $choiceContent = file($this->disk()->path($choice));
+                    $choiceArray = require lang_path("$locale/choice.php");
+                    $choiceFile = '';
+                    foreach ($choiceContent as $content) {
+                        if (Str::contains($content, 'return')) {
+                            break;
+                        }
+                        $choiceFile .= $content;
+                    }
+                    if ($this->isDeleteMode()) {
+                        unset($choiceArray[$pluralChoice]);
                     }
                     else {
-                        $row .= "$studlyWords|$pluralWords";
+                        if (array_key_exists($pluralChoice, $choiceArray)) {
+                            $this->components->twoColumnDetail("<fg=red>$pluralChoice</> Trans choice exists", '<fg=red>Skipped</>');
+                        }
+                        else {
+                            $choiceValue = $locale == 'ar' ? 'جمع|مفرد' : "$studlyWords|$pluralWords";
+                            $choiceArray[$pluralChoice] = $choiceValue;
+                        }
                     }
-                    $row .= '\','.PHP_EOL;
-                    $last = $file[$lastCount];
-                    $file[$lastCount] = $row;
-                    $file[] = $last;
-                    $this->disk()->put($choice, implode('', $file));
+                    $choiceArrayContent = [];
+                    $separator = ','.PHP_EOL;
+                    foreach ($choiceArray as $key => $value) {
+                        $choiceArrayContent[] .= "'$key' => '$value'";
+                    }
+                    $choiceArrayContent = implode($separator, $choiceArrayContent);
+                    if (!Str::endsWith(trim($choiceArrayContent), ',')) {
+                        $choiceArrayContent .= ',';
+                    }
+                    $choiceFile .= <<<html
+return [
+$choiceArrayContent
+];
+html;
+                    $this->disk()->put($choice, $choiceFile);
                     $this->components->twoColumnDetail($choice, '<fg=green>Updated</>');
                 }
+
+
                 $attribute = "lang/$locale/attributes.php";
-                $attr = $this->modelForeignKey();
+                $attr = $this->modelForeignKey($modelName);
                 $attrs = Str::plural(Str::beforeLast($attr, '_id')).'_id';
                 if (!$this->disk()->exists($attribute)) {
                     $this->components->twoColumnDetail("<fg=red>$attribute</> not exists", '<fg=red>Skipped</>');
                     return;
                 }
 
-                $file = file($this->disk()->path($attribute));
-                $last = array_pop($file);
-                $updated = !1;
-                if (!trans_has("attributes.$attr")) {
-                    $updated = !0;
-                    $file[] = "    '$attr' => '$studlyWords',".PHP_EOL;
-                }
-                else {
-                    $this->components->twoColumnDetail("<fg=red>$attr</> attribute exists", '<fg=red>Skipped</>');
+
+                $attributesContent = file($this->disk()->path($attribute));
+                $attributesArray = require lang_path("$locale/attributes.php");
+                $attributesFile = '';
+                foreach ($attributesContent as $content) {
+                    if (Str::contains($content, 'return')) {
+                        break;
+                    }
+                    $attributesFile .= $content;
                 }
 
-                if (!trans_has("attributes.$attrs")) {
-                    $updated = !0;
-                    $file[] = "    '$attrs' => '$pluralWords',".PHP_EOL;
+                if ($this->isDeleteMode()) {
+                    unset($attributesArray[$attr]);
+                    unset($attributesArray[$attrs]);
                 }
                 else {
-                    $this->components->twoColumnDetail("<fg=red>$attrs</> attribute exists", '<fg=red>Skipped</>');
+                    if (array_key_exists($attr, $attributesArray)) {
+                        $this->components->twoColumnDetail("<fg=red>$attr</> attribute exists", '<fg=red>Skipped</>');
+                    }
+                    else {
+                        $attributesArray[$attr] = $studlyWords;
+                    }
+
+                    if (array_key_exists($attrs, $attributesArray)) {
+                        $this->components->twoColumnDetail("<fg=red>$attrs</> attribute exists", '<fg=red>Skipped</>');
+                    }
+                    else {
+                        $attributesArray[$attrs] = $pluralWords;
+                    }
                 }
 
-                if ($updated) {
-                    $file[] = $last;
-                    $this->disk()->put($attribute, implode('', $file));
-                    $this->components->twoColumnDetail($attribute, '<fg=green>Updated</>');
+                $attributesArrayContent = [];
+                $separator = ','.PHP_EOL;
+                foreach ($attributesArray as $key => $value) {
+                    $attributesArrayContent[] .= "'$key' => '$value'";
                 }
+                $attributesArrayContent = implode($separator, $attributesArrayContent);
+                if (!Str::endsWith(trim($attributesArrayContent), ',')) {
+                    $attributesArrayContent .= ',';
+                }
+                $attributesFile .= <<<html
+return [
+$attributesArrayContent
+];
+html;
+                $this->disk()->put($attribute, $attributesFile);
+                $this->components->twoColumnDetail($attribute, '<fg=green>Updated</>');
             }
         });
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isDeleteMode(): bool
+    {
+        return $this->option('force-delete') || $this->option('delete');
     }
 }
