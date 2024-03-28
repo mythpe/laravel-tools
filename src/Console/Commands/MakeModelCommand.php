@@ -396,7 +396,7 @@ html;
                             $this->components->twoColumnDetail("<fg=red>$pluralChoice</> Trans choice exists", '<fg=red>Skipped</>');
                         }
                         else {
-                            $choiceValue = $locale == 'ar' ? 'جمع|مفرد' : "$studlyWords|$pluralWords";
+                            $choiceValue = $locale == 'ar' ? 'مفرد|جمع' : "$studlyWords|$pluralWords";
                             $choiceArray[$pluralChoice] = $choiceValue;
                         }
                     }
