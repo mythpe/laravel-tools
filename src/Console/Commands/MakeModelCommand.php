@@ -215,7 +215,7 @@ html;
             $table->boolean(\'active\');
             $table->integer(\'order_by\');';
             $resource .= '
-            \'status_to_string\' => $model->active_to_string,';
+            \'status\' => $model->active_to_string,';
             $oldest .= '
         //$this->oldest = \'order_by\';';
 
