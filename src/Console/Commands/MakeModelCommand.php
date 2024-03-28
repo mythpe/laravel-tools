@@ -189,7 +189,7 @@ html;
         $namespace = $Model['namespace'];
 
         if ($scoped) {
-            $class_use .= 'use Myth\LaravelTools\Traits\Utilities\OrderByScopeTrait, Myth\LaravelTools\Traits\Utilities\ActiveScopeTrait;
+            $class_use .= 'use \Myth\LaravelTools\Traits\Utilities\OrderByScopeTrait, \Myth\LaravelTools\Traits\Utilities\ActiveScopeTrait;
 ';
             $fillable .= <<<html
 
