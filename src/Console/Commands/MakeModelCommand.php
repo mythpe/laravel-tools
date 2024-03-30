@@ -28,9 +28,9 @@ class MakeModelCommand extends BaseCommand
     protected $signature = 'myth:model {model*}
 {--s|scoped : Create model with scopes}
 {--t|translator : Create model with translator scope}
-{--d|delete : Delete model} {--F|force-delete : Force delete model}';
-
-    //use myth crud model command
+{--g|generic : Create accessories of generic model}
+{--d|delete : Delete model}
+{--F|force : force mode}';
 
     /**
      * The console command description.
@@ -58,75 +58,70 @@ to insert code automatically add this comment "use myth crud model command" to y
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
     public function handle(): void
     {
         $this->prepare();
-        $force = (bool) $this->option('force-delete');
+        $force = (bool) $this->option('force');
         $deleteModel = $force ? !0 : ((bool) $this->option('delete'));
         foreach ($this->models as $value) {
             $model = $value['model'];
             $modelName = $value['modelName'];
-            $namespace = $value['namespace'] ?? null;
-
             $snake = Str::snake(Str::pluralStudly($model));
+            $migrationPrefix = "1111_00_00_000000";
+            $migrations = $this->disk()->files('database/migrations');
+            if (count($migrations) > 0) {
+                asort($migrations);
+                $last = pathinfo($migrations[count($migrations) - 1], PATHINFO_FILENAME);
+                $name = explode('_', preg_replace(['/[^\d_]+/', '/__/'], '', $last));
+                if (count($name) == 4) {
+                    $name[3] = str_pad($name[3] + 1, strlen($name[3]), '0', STR_PAD_LEFT);
+                    $migrationPrefix = implode('_', $name);
+                }
+            }
             $stubs = [
-                'ModelMigration.stub'     => "database/migrations/1111_00_00_000000_{$snake}_table.php",
                 'ModelClass.stub'         => "app/Models/$model.php",
                 'ModelController.stub'    => "app/Http/Controllers/{$model}Controller.php",
                 'ModelResource.stub'      => "app/Http/Resources/{$model}Resource.php",
                 'BelongsToModel.stub'     => "app/Traits/BelongsTo/BelongsTo{$modelName}.php",
                 'BelongsToManyModel.stub' => "app/Traits/BelongsToMany/BelongsToMany{$modelName}.php",
                 'HasManyModel.stub'       => "app/Traits/HasMany/HasMany{$modelName}.php",
+                'ModelMigration.stub'     => "database/migrations/{$migrationPrefix}_create_{$snake}_table.php",
             ];
-
             if ($deleteModel) {
                 if (!$force && !$this->confirm("Delete <fg=red>$model</> ?"))
                     continue;
             }
             $stubsPath = __DIR__.'/../../Stubs';
             foreach ($stubs as $stub => $path) {
+                $isMigration = $stub === 'ModelMigration.stub';
+                if ($isMigration) {
+                    $migrations = $this->disk()->files('database/migrations');
+                    foreach ($migrations as $migration) {
+                        $name = preg_replace('(\d+\_)', '', pathinfo($migration, PATHINFO_FILENAME));
+                        if (Str::endsWith($name, "{$snake}_table")) {
+                            $path = $migration;
+                            break;
+                        }
+                    }
+                }
+
                 if ($deleteModel) {
-                    $this->components->task("Deleting <fg=red>$path</>", fn() => $this->disk()->delete($path));
+                    $this->components->task("<fg=red>Deleting</> $path", fn() => $this->disk()->exists($path) ? $this->disk()->delete($path) : !1);
                     continue;
                 }
                 $content = $this->fillStub($value, file_get_contents("$stubsPath/$stub"));
-                if ($this->disk()->exists($path)) {
-                    $this->components->warn("File exists: <fg=red>$path</> <fg=yellow;bg=black>Skipped</>");
-                    continue;
-                }
-                $this->components->task("Creating $path", fn() => $this->disk()->put($path, $content));
+                $exists = $this->disk()->exists($path);
+                $taskTitle = $exists ? "<fg=yellow>File exists:</> $path" : "<fg=green>Creating</> $path";
+                $this->components->task($taskTitle, fn() => !$exists && $this->disk()->put($path, $content));
             }
+            // $this->line('');
 
-            $path = 'app\Providers\RouteServiceProvider.php';
-            $existsNeedles = "$modelName::";
-            $replaceContent = '        $this->binder(\''.$modelName.'\', \\App\\Models\\'.$model.'::class);';
-            $this->modifyFile($modelName, $path, $existsNeedles, $replaceContent);
-
-            $path = 'app\Http\Controllers\SideMenuController.php';
-            $existsNeedles = "// # $modelName.";
-            $routeName = $this->modelPluralKebabName($modelName);
-            $permissions = "$modelName.index";
-            if ($namespace) {
-                $routeName = strtolower(str_ireplace('\\', '.', $namespace)).".$routeName";
-                $permissions = str_ireplace('\\', '.', $namespace).".$permissions";
-            }
-            $permissions = "'$permissions'";
-
-            $replaceContent = <<<html
-            $existsNeedles
-            [
-                'title'       => trans_choice("choice.{$this->modelPluralName($modelName)}", 2),
-                'name'        => 'panel.$routeName',
-                'icon'        => '',
-                'permissions' => [$permissions],
-            ],
-html;
-            $this->modifyFile($modelName, $path, $existsNeedles, $replaceContent);
+            $this->updateRouteServiceProvider($value);
+            $this->updateSideMenuController($value);
             $this->insertModelLanguage($modelName);
             $this->newLine();
-            $modelNamespace = "\\App\\Http\\Controllers\\{$model}Controller";
         }
 
         if (!$force && !$deleteModel && count($this->models) > 0) {
@@ -140,6 +135,41 @@ html;
             }
             $this->components->info("Please run <fg=yellow;bg=black>php artisan setup:permissions</> to make permissions or add them manually.");
         }
+    }
+
+    public function updateSideMenuController(array $Model): void
+    {
+        $path = 'app\Http\Controllers\SideMenuController.php';
+        $modelName = $Model['modelName'];
+        $namespace = $Model['namespace'] ?? null;
+        $existsNeedles = "// # $modelName.";
+        $routeName = $this->modelPluralKebabName($modelName);
+        $permissions = "$modelName.index";
+        if ($namespace) {
+            $routeName = strtolower(str_ireplace('\\', '.', $namespace)).".$routeName";
+            $permissions = str_ireplace('\\', '.', $namespace).".$permissions";
+        }
+        $permissions = "'$permissions'";
+        $replaceContent = <<<html
+            $existsNeedles
+            [
+                'title'       => trans_choice("choice.{$this->modelPluralName($modelName)}", 2),
+                'name'        => 'panel.$routeName',
+                'icon'        => '',
+                'permissions' => [$permissions],
+            ],
+html;
+        $this->modifyFile($modelName, $path, $existsNeedles, $replaceContent);
+    }
+
+    protected function updateRouteServiceProvider(array $Model): void
+    {
+        $path = 'app\Providers\RouteServiceProvider.php';
+        $model = $Model['model'];
+        $modelName = $Model['modelName'];
+        $existsNeedles = "$modelName::";
+        $replaceContent = '        $this->binder(\''.$modelName.'\', \\App\\Models\\'.$model.'::class);';
+        $this->modifyFile($modelName, $path, $existsNeedles, $replaceContent);
     }
 
     /**
@@ -163,13 +193,6 @@ html;
             }
             $this->models[] = $data;
         }
-        // d($this->models);
-        // $this->model = preg_replace(['/\/+/', '/\\\+/'], '\\', $this->argument('model'));
-        // $options = explode('\\', $this->model);
-        // $modelName = array_pop($options);
-        // if (count($options) > 0) {
-        //     $namespace = implode('\\', $options);
-        // }
     }
 
     /**
@@ -305,52 +328,55 @@ html;
      */
     protected function modifyFile(string $modelName, string $path, $existsNeedles = null, $replaceContent = null): void
     {
-        $this->components->task("Updateing <fg=green>$path</>", function () use ($modelName, $path, $existsNeedles, $replaceContent) {
+        $this->components->task("<fg=yellow>Updateing</> $path", function () use ($modelName, $path, $existsNeedles, $replaceContent) {
             $comment = static::LINE_COMMENT_UPDATE;
-            $this->newLine();
             $deleteMode = $this->isDeleteMode();
-
             // Get Source
             $source = file(str_replace('\\', '/', $this->disk()->path($path)));
             $commentIndex = null;
             $existsLine = null;
             foreach ($source as $k => $line) {
-                is_null($existsLine) && ($existsLine = Str::contains($line, $existsNeedles) ? $k : null);
+                is_null($existsLine) && ($existsLine = Str::contains($line, trim($existsNeedles)) ? $k : null);
                 is_null($commentIndex) && ($commentIndex = Str::contains($line, $comment) ? $k : null);
             }
-
             if (!is_null($existsLine)) {
                 if ($deleteMode) {
-                    $f = str_ireplace($replaceContent, '', implode('', $source));
-                    $this->disk()->put($path, $f);
+                    $content = trim($source[$existsLine]) == trim($replaceContent);
+                    if (!$content) {
+                        for ($i = 0; $i < 7; $i++) {
+                            unset($source[$existsLine + $i]);
+                        }
+                        return $this->disk()->put($path, implode('', $source));
+                    }
+                    else {
+                        unset($source[$existsLine]);
+                    }
+                    return $this->disk()->put($path, implode('', $source));
                 }
                 else {
                     ++$existsLine;
-                    $this->components->warn("<fg=red>$modelName</> found in line: {$existsLine}");
+                    // $this->components->warn("<fg=red>$modelName</> found in line: {$existsLine}");
+                    return !1;
                 }
             }
             elseif (is_null($commentIndex)) {
-                $this->components->info("Add this comment [$comment] to automatically modify the file or add this line: [$replaceContent]");
+                // $this->components->info("Add this comment [$comment] to automatically modify the file or add this line: [$replaceContent]");
+                return !1;
             }
             else {
                 if ($this->isDeleteMode() && is_null($existsLine)) {
-                    return;
+                    return !1;
                 }
-                $before = array_slice($source, 0, $commentIndex + 1);
-                $after = array_slice($source, $commentIndex + 1);
-                $file = array_merge($before, [
-                    $replaceContent,
-                    PHP_EOL,
-                ], $after);
-                $lastContent = $file;
+                $afterComment = $commentIndex + 1;
+                $before = array_slice($source, 0, $afterComment);
+                $after = array_slice($source, $afterComment);
                 if ($deleteMode) {
-                    $lastContent = str_ireplace(trim($replaceContent), '', $lastContent);
+                    return $this->disk()->put($path, implode('', $lastContent));
+                    // $lastContent = str_ireplace(trim($replaceContent), '', $lastContent);
                 }
-                $this->disk()->put($path, implode('', $lastContent));
-                $this->components->twoColumnDetail("<fg=green>$path</>", '<fg=green>Updated</>');
+                return $this->disk()->put($path, implode('', array_merge($before, [$replaceContent, PHP_EOL], $after)));
             }
         });
-        $this->newLine();
     }
 
     /**
@@ -370,55 +396,10 @@ html;
     {
         $this->components->task("Model language", function () use ($modelName) {
             $pluralChoice = $this->modelPluralName($modelName);
-            $this->newLine();
             $studlyWords = ucwords(str_ireplace('-', ' ', Str::kebab(Str::studly($modelName))));
             $pluralWords = ucwords(str_ireplace('-', ' ', $this->modelPluralKebabName($modelName)));
             foreach (config('4myth-tools.locales') as $locale) {
-                $choice = "lang/$locale/choice.php";
-                if (!$this->disk()->exists($choice)) {
-                    $this->components->twoColumnDetail("<fg=red>$choice</> not exists", '<fg=red>Skipped</>');
-                }
-                else {
-                    $choiceContent = file($this->disk()->path($choice));
-                    $choiceArray = require lang_path("$locale/choice.php");
-                    $choiceFile = '';
-                    foreach ($choiceContent as $content) {
-                        if (Str::contains($content, 'return')) {
-                            break;
-                        }
-                        $choiceFile .= $content;
-                    }
-                    if ($this->isDeleteMode()) {
-                        unset($choiceArray[$pluralChoice]);
-                    }
-                    else {
-                        if (array_key_exists($pluralChoice, $choiceArray)) {
-                            $this->components->twoColumnDetail("<fg=red>$pluralChoice</> Trans choice exists", '<fg=red>Skipped</>');
-                        }
-                        else {
-                            $choiceValue = $locale == 'ar' ? 'مفرد|جمع' : "$studlyWords|$pluralWords";
-                            $choiceArray[$pluralChoice] = $choiceValue;
-                        }
-                    }
-                    $choiceArrayContent = [];
-                    $separator = ','.PHP_EOL;
-                    foreach ($choiceArray as $key => $value) {
-                        $choiceArrayContent[] .= "'$key' => '$value'";
-                    }
-                    $choiceArrayContent = implode($separator, $choiceArrayContent);
-                    if (!Str::endsWith(trim($choiceArrayContent), ',')) {
-                        $choiceArrayContent .= ',';
-                    }
-                    $choiceFile .= <<<html
-return [
-$choiceArrayContent
-];
-html;
-                    $this->disk()->put($choice, $choiceFile);
-                    $this->components->twoColumnDetail($choice, '<fg=green>Updated</>');
-                }
-
-
+                $this->updateLanguageFile('choice', $locale, $modelName);
                 $attribute = "lang/$locale/attributes.php";
                 $attr = $this->modelForeignKey($modelName);
                 $attrs = Str::plural(Str::beforeLast($attr, '_id')).'_id';
@@ -478,11 +459,71 @@ html;
         });
     }
 
+    protected function updateLanguageFile(string $fileName, string $locale, string $modelName): void
+    {
+        $path = "lang/$locale/$fileName.php";
+        $langPath = lang_path("$locale/$fileName.php");
+        $pluralChoice = $this->modelPluralName($modelName);
+        $studlyWords = ucwords(str_ireplace('-', ' ', Str::kebab(Str::studly($modelName))));
+        $pluralWords = ucwords(str_ireplace('-', ' ', $this->modelPluralKebabName($modelName)));
+
+        if (!$this->disk()->exists($path)) {
+            $this->components->twoColumnDetail("<fg=red>$path</> not exists", '<fg=red>Skipped</>');
+        }
+        else {
+            $choiceContent = file($this->disk()->path($path));
+            $choiceArray = require lang_path("$locale/choice.php");
+            $choiceFile = '';
+            foreach ($choiceContent as $content) {
+                if (Str::contains($content, 'return')) {
+                    break;
+                }
+                $choiceFile .= $content;
+            }
+            if ($this->isDeleteMode()) {
+                unset($choiceArray[$pluralChoice]);
+            }
+            else {
+                if (array_key_exists($pluralChoice, $choiceArray)) {
+                    $this->components->twoColumnDetail("<fg=red>$pluralChoice</> Trans choice exists", '<fg=red>Skipped</>');
+                }
+                else {
+                    $choiceValue = $locale == 'ar' ? 'مفرد|جمع' : "$studlyWords|$pluralWords";
+                    $choiceArray[$pluralChoice] = $choiceValue;
+                }
+            }
+            $choiceArrayContent = [];
+            $separator = ','.PHP_EOL;
+            foreach ($choiceArray as $key => $value) {
+                $choiceArrayContent[] .= "'$key' => '$value'";
+            }
+            $choiceArrayContent = implode($separator, $choiceArrayContent);
+            if (!Str::endsWith(trim($choiceArrayContent), ',')) {
+                $choiceArrayContent .= ',';
+            }
+            $choiceFile .= <<<html
+return [
+$choiceArrayContent
+];
+html;
+            $this->disk()->put($path, $choiceFile);
+            $this->components->twoColumnDetail($path, '<fg=green>Updated</>');
+        }
+    }
+
     /**
      * @return bool
      */
     protected function isDeleteMode(): bool
     {
-        return $this->option('force-delete') || $this->option('delete');
+        return $this->option('delete');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isGeneric(): bool
+    {
+        return $this->option('generic');
     }
 }
