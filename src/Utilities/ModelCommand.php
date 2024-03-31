@@ -19,22 +19,18 @@ class ModelCommand
      * @var Stringable
      */
     public Stringable $string;
-
     public Stringable $name;
-
     public ?Stringable $namespace = null;
-
     public Stringable $singular;
     public Stringable $plural;
-
     public Stringable $studlySingular;
     public Stringable $studlyPlural;
-
     public Stringable $snakeSingular;
     public Stringable $snakePlural;
-
     public Stringable $camelSingular;
     public Stringable $camelPlural;
+    public Stringable $titleSingular;
+    public Stringable $titlePlural;
 
     /**
      * @param string $string
@@ -57,5 +53,8 @@ class ModelCommand
 
         $this->camelSingular = $this->singular->camel();
         $this->camelPlural = $this->plural->camel();
+
+        $this->titleSingular = $this->string->snake(' ')->singular()->title();
+        $this->titlePlural = $this->string->snake(' ')->plural()->title();
     }
 }

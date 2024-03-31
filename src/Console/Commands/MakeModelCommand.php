@@ -127,11 +127,9 @@ to insert code automatically add this comment "use myth crud model command" to y
                 $taskTitle = $exists ? "<fg=yellow>File exists:</> $path" : "<fg=green>Creating</> $path";
                 $this->components->task($taskTitle, fn() => !$exists && $this->disk()->put($path, $content));
             }
-            // $this->line('');
-
-            // $this->updateRouteServiceProvider($value);
-            // $this->updateSideMenuController($value);
-            // $this->insertModelLanguage($modelName);
+            $this->updateRouteServiceProvider();
+            $this->updateSideMenuController();
+            // $this->insertModelLanguage();
             $this->newLine();
         }
 
@@ -146,13 +144,13 @@ to insert code automatically add this comment "use myth crud model command" to y
         }
     }
 
-    public function updateSideMenuController(array $Model): void
+    public function updateSideMenuController(): void
     {
         $path = 'app\Http\Controllers\SideMenuController.php';
-        $modelName = $Model['modelName'];
-        $namespace = $Model['namespace'] ?? null;
+        $modelName = $this->model->studlySingular;
+        $namespace = $this->model->namespace;
         $existsNeedles = "// # $modelName.";
-        $routeName = $this->modelPluralKebabName($modelName);
+        $routeName = $this->model->snakePlural;
         $permissions = "$modelName.index";
         if ($namespace) {
             $routeName = strtolower(str_ireplace('\\', '.', $namespace)).".$routeName";
@@ -162,23 +160,23 @@ to insert code automatically add this comment "use myth crud model command" to y
         $replaceContent = <<<html
             $existsNeedles
             [
-                'title'       => trans_choice("choice.{$this->modelPluralName($modelName)}", 2),
+                'title'       => trans_choice("choice.{$this->model->studlyPlural}", 2),
                 'name'        => 'panel.$routeName',
                 'icon'        => '',
                 'permissions' => [$permissions],
             ],
 html;
-        $this->modifyFile($modelName, $path, $existsNeedles, $replaceContent);
+        $this->modifyFile($path, $existsNeedles, $replaceContent);
     }
 
-    protected function updateRouteServiceProvider(array $Model): void
+    protected function updateRouteServiceProvider(): void
     {
         $path = 'app\Providers\RouteServiceProvider.php';
-        $model = $Model['model'];
-        $modelName = $Model['modelName'];
+        $model = $this->model->string;
+        $modelName = $this->model->studlySingular;
         $existsNeedles = "$modelName::";
         $replaceContent = '        $this->binder(\''.$modelName.'\', \\App\\Models\\'.$model.'::class);';
-        $this->modifyFile($modelName, $path, $existsNeedles, $replaceContent);
+        $this->modifyFile($path, $existsNeedles, $replaceContent);
     }
 
     /**
@@ -191,17 +189,6 @@ html;
         $arg = $this->argument('model');
         foreach ($arg as $value) {
             $this->models[] = new ModelCommand($value);
-            // $model = preg_replace(['/\/+/', '/\\\+/'], '\\', $value);
-            // $options = explode('\\', $model);
-            // $data = [
-            //     'model'     => $model,
-            //     'modelName' => array_pop($options),
-            //     'namespace' => null,
-            // ];
-            // if (count($options) > 0) {
-            //     $data['namespace'] = implode('\\', $options);
-            // }
-            // $this->models[] = $data;
         }
     }
 
@@ -298,53 +285,18 @@ html;
     }
 
     /**
-     * @param string $modelName
-     * @return string
-     */
-    protected function modelForeignKey(string $modelName): string
-    {
-        return Str::snake($modelName).'_id';
-    }
-
-    /**
-     * @param string $modelName
-     * @return string
-     */
-    protected function modelCamelName(string $modelName): string
-    {
-        return Str::camel($modelName);
-    }
-
-    /**
-     * @param string $modelName
-     * @return string
-     */
-    protected function modelPluralName(string $modelName): string
-    {
-        return Str::plural($modelName);
-    }
-
-    protected function modelSingularName(string $modelName): string
-    {
-        return Str::singular($modelName);
-    }
-
-    /**
-     * @param string $modelName
      * @param string $path
      * @param $existsNeedles
      * @param $replaceContent
      * @return void
      */
-    protected function modifyFile(string $modelName, string $path, $existsNeedles = null, $replaceContent = null): void
+    protected function modifyFile(string $path, $existsNeedles = null, $replaceContent = null): void
     {
-        $this->components->task("<fg=yellow>Updateing</> $path", function () use ($modelName, $path, $existsNeedles, $replaceContent) {
+        $this->components->task("<fg=yellow>Updating</> $path", function () use ($path, $existsNeedles, $replaceContent) {
             $comment = static::LINE_COMMENT_UPDATE;
-            $deleteMode = $this->isDeleteMode();
             // Get Source
-            $source = file(str_replace('\\', '/', $this->disk()->path($path)));
-            if (!is_array($source)) {
-                $source = [];
+            if (!($source = file(str_replace('\\', '/', $this->disk()->path($path))))) {
+                return !1;
             }
             $commentIndex = null;
             $existsLine = null;
@@ -379,25 +331,14 @@ html;
     }
 
     /**
-     * @param string $modelName
-     * @return string
-     */
-    protected function modelPluralKebabName(string $modelName): string
-    {
-        return Str::kebab($this->modelPluralName($modelName));
-    }
-
-    /**
-     * @param string $modelName
      * @return void
      */
-    protected function insertModelLanguage(string $modelName): void
+    protected function insertModelLanguage(): void
     {
-        $this->components->task("Model language", function () use ($modelName) {
-            $pluralChoice = $this->modelPluralName($modelName);
-            $studlyWords = ucwords(str_ireplace('-', ' ', Str::kebab(Str::studly($modelName))));
-            $pluralWords = ucwords(str_ireplace('-', ' ', $this->modelPluralKebabName($modelName)));
+        $this->components->task("Model language", function () {
             foreach (config('4myth-tools.locales') as $locale) {
+                $choice = 'choice';
+                $choiceArray = require lang_path("$locale/choice.php");
                 // $this->updateLanguageFile('choice', $locale, $modelName);
                 $this->updateLanguageFile($modelName);
                 $attribute = "lang/$locale/attributes.php";
