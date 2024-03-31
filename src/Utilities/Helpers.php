@@ -85,7 +85,7 @@ class Helpers
  */
 
 return [
-{$values->implode(','."\n")}
+{$values->implode(','."\n")},
 ];
 ";
             }
