@@ -44,7 +44,7 @@ class ModelCommand
         $this->string = Str::of($string);
         $this->name = $this->string->classBasename();
 
-        $this->namespace = $this->string->whenContains('\\', fn() => $this->string->beforeLast('\\'));
+        $this->namespace = $this->string->contains('\\') ? '\\'.$this->string->beforeLast('\\') : null;
 
         $this->singular = $this->name->singular();
         $this->plural = $this->name->plural();
