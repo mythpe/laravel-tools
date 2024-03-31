@@ -25,7 +25,7 @@ class ExportAttributesCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'myth:export-attributes
+    protected $signature = 'myth:attrs
 {--o|output= : Output path inside resource path}
 {--t|to : Do not Insert to_ keys to exported data}
 {--f|from : Do not  Insert from_ keys to exported data}
@@ -350,7 +350,7 @@ class ExportAttributesCommand extends BaseCommand
         ]);
 
         if ($jsonOption) {
-            $this->call('myth:export-lang');
+            $this->call('myth:lang');
         }
     }
 }

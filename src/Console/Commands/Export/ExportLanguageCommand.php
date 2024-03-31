@@ -19,7 +19,7 @@ class ExportLanguageCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'myth:export-lang
+    protected $signature = 'myth:lang
 {--f|flip : File choice files}
 {--o|output=deploy : Output path}
 {--d|disk=setup : Output Disk}

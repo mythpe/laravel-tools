@@ -64,7 +64,6 @@ Public Assets
 
 ---
 
-
 ##### Convert Arabic numbers to English:
 
 Edit file `app/Http/Kernel.php`.
@@ -99,7 +98,6 @@ Edit `app/Http/Kernel.php` to define route middleware in kernel.
 
 ##### Permissions Example:
 
-
 Define your routes. for example in : `routes/api.php`
 
     Route::group(['middleware' => ['auth:sanctum', 'permission']], function(Router $router){
@@ -124,12 +122,14 @@ Edit `app/Http/Kernel.php` to define route middleware in kernel.
 ### Tool commands
 
 - `php artisan myth:postman` Postman API documentation. Only routes has middleware `postman`
-- `php artisan myth:js-lang` Export language files to JS
+- `php artisan myth:lang` Export language files
+- `php artisan myth:attrs` Export language of model
 - `php artisan myth:model` Make crud of model
 
 ---
 
 ### Laravel File system
+
 This tool use the laravel file system `config/filesystems.php`
 
 Types: `root`, `app`, `setup`, `logs`, `media`, `pdf`, `excel` and `qr`
