@@ -216,9 +216,10 @@ html;
     protected function fillStub(string $stub): string
     {
         $class_methods = $class_use = $fillable = $attributes = $casts = $rules = $migration = $resource = $oldest = '';
+        $year = now()->format('Y');
         $copyright = <<<Copyright
 /*
- * MyTh Ahmed Faiz Copyright © 2016-2023 All rights reserved.
+ * MyTh Ahmed Faiz Copyright © 2016-$year All rights reserved.
  * Email: mythpe@gmail.com
  * Mobile: +966590470092
  * Website: https://www.4myth.com
@@ -274,7 +275,6 @@ html;
         $values = Arr::map($vars, fn($k) => $this->model->{$k});
         return str_ireplace(array_merge([
             '{copyright}',
-            '{year}',
             '{class_use}',
             '{fillable}',
             '{attributes}',
@@ -286,7 +286,6 @@ html;
             '{class_methods}',
         ], $keys), array_merge([
             $copyright,
-            now()->format('Y'),
             $class_use,
             $fillable,
             $attributes,
