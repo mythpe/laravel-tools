@@ -85,7 +85,7 @@ class Helpers
  */
 
 return [
-{$values->implode(','.PHP_EOL)}
+{$values->implode(','."\n")}
 ];
 ";
             }
