@@ -82,14 +82,15 @@ to insert code automatically add this comment "use myth crud model command" to y
                     $migrationPrefix = implode('_', $name);
                 }
             }
-            $modelFileName = $value->studlySingular;
+            $modelName = $value->name;
+            $namespacePath = $value->namespace ? str_ireplace('\\', '/', trim($value->namespace, '\\')).'/' : '';
             $stubs = [
-                'ModelClass.stub'         => "app/Models/{$modelFileName}.php",
-                'ModelController.stub'    => "app/Http/Controllers/{$modelFileName}Controller.php",
-                'ModelResource.stub'      => "app/Http/Resources/{$modelFileName}Resource.php",
-                'BelongsToModel.stub'     => "app/Traits/BelongsTo/BelongsTo{$modelFileName}.php",
-                'BelongsToManyModel.stub' => "app/Traits/BelongsToMany/BelongsToMany{$modelFileName}.php",
-                'HasManyModel.stub'       => "app/Traits/HasMany/HasMany{$modelFileName}.php",
+                'ModelClass.stub'         => "app/Models/$namespacePath$modelName.php",
+                'ModelController.stub'    => "app/Http/Controllers/$namespacePath{$modelName}Controller.php",
+                'ModelResource.stub'      => "app/Http/Resources/$namespacePath{$modelName}Resource.php",
+                'BelongsToModel.stub'     => "app/Traits/BelongsTo/{$namespacePath}BelongsTo{$modelName}.php",
+                'BelongsToManyModel.stub' => "app/Traits/BelongsToMany/{$namespacePath}BelongsToMany{$modelName}.php",
+                'HasManyModel.stub'       => "app/Traits/HasMany/{$namespacePath}HasMany{$modelName}.php",
                 'ModelMigration.stub'     => "database/migrations/{$migrationPrefix}_create_{$value->snakePlural}_table.php",
             ];
             if ($this->isDeleteMode()) {
@@ -137,10 +138,8 @@ to insert code automatically add this comment "use myth crud model command" to y
         if (count($this->models) > 0 && !$this->isDeleteMode()) {
             $this->components->info("Please insert model routes: [<fg=yellow;bg=black>routes.php</>]");
             foreach ($this->models as $value) {
-                $model = $value['model'];
-                $modelName = $value['modelName'];
-                $modelNamespace = "App\\Http\\Controllers\\{$model}Controller";
-                $v = "apiResource('$modelName', $modelNamespace::class);";
+                $modelNamespace = "App\\Http\\Controllers\\{$value->string}Controller";
+                $v = "apiResource('$value->studlySingular', $modelNamespace::class);";
                 $this->line("<fg=yellow;bg=black>$v</>");
             }
             $this->components->info("Please run <fg=yellow;bg=black>php artisan setup:permissions</> to make permissions or add them manually.");
