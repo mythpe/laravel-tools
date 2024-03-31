@@ -216,6 +216,15 @@ html;
     protected function fillStub(string $stub): string
     {
         $class_methods = $class_use = $fillable = $attributes = $casts = $rules = $migration = $resource = $oldest = '';
+        $copyright = <<<Copyright
+/*
+ * MyTh Ahmed Faiz Copyright © 2016-2023 All rights reserved.
+ * Email: mythpe@gmail.com
+ * Mobile: +966590470092
+ * Website: https://www.4myth.com
+ * Github: https://github.com/mythpe
+ */
+Copyright;
 
         if ($this->isScoped()) {
             $class_use .= 'use \Myth\LaravelTools\Traits\Utilities\OrderByScopeTrait, \Myth\LaravelTools\Traits\Utilities\ActiveScopeTrait;
@@ -264,6 +273,7 @@ html;
         $keys = Arr::map($vars, fn($k) => "{".$k."}");
         $values = Arr::map($vars, fn($k) => $this->model->{$k});
         return str_ireplace(array_merge([
+            '{copyright}',
             '{year}',
             '{class_use}',
             '{fillable}',
@@ -275,6 +285,7 @@ html;
             '{oldest}',
             '{class_methods}',
         ], $keys), array_merge([
+            $copyright,
             now()->format('Y'),
             $class_use,
             $fillable,
