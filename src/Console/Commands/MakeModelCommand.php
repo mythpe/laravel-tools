@@ -104,9 +104,9 @@ to insert code automatically add this comment "use myth crud model command" to y
                         $name = preg_replace('(\d+_)', '', pathinfo($migration, PATHINFO_FILENAME));
                         if (
                             Str::contains($name, [
-                                "{$value->snake}_table",
+                                "{$value->snakeSingular}_table",
                                 "{$value->snakePlural}_table",
-                                $value->snake,
+                                $value->snakeSingular,
                                 $value->snakePlural,
                             ])
                         ) {

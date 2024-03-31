@@ -10,26 +10,52 @@
 namespace Myth\LaravelTools\Utilities;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 
 class ModelCommand
 {
-    public string $string;
+    /**
+     * Original string
+     * @var Stringable
+     */
+    public Stringable $string;
 
-    public string $name;
+    public Stringable $name;
 
-    public ?string $namespace = null;
+    public ?Stringable $namespace = null;
 
-    public string $studly;
+    public Stringable $singular;
+    public Stringable $plural;
 
-    public string $snake;
-    public string $snakePlural;
+    public Stringable $studlySingular;
+    public Stringable $studlyPlural;
 
-    public function __construct(string $str)
+    public Stringable $snakeSingular;
+    public Stringable $snakePlural;
+
+    public Stringable $camelSingular;
+    public Stringable $camelPlural;
+
+    /**
+     * @param string $string
+     */
+    public function __construct(string $string)
     {
-        $this->string = Str::of($str);
-        $this->name = $this->string->afterLast('\\')->studly();
-        $this->studly = $this->name->studly();
-        $this->snake = $this->name->snake();
-        $this->snakePlural = $this->snake->plural();
+        $this->string = Str::of($string);
+        $this->name = $this->string->classBasename();
+
+        $this->namespace = $this->string->beforeLast('\\') ?: null;
+
+        $this->singular = $this->name->singular();
+        $this->plural = $this->name->plural();
+
+        $this->studlySingular = $this->singular->studly();
+        $this->studlyPlural = $this->plural->pluralStudly();
+
+        $this->snakeSingular = $this->singular->snake();
+        $this->snakePlural = $this->plural->snake();
+
+        $this->camelSingular = $this->singular->camel();
+        $this->camelPlural = $this->plural->camel();
     }
 }

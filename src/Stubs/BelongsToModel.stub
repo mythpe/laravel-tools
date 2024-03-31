@@ -9,21 +9,21 @@
 
 namespace App\Traits\BelongsTo;
 
-use App\Models\{model} as Model;
+use App\Models\{studlySingular} as Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property Model ${modelCamelName}
+ * @property Model ${camelSingular}
  */
-trait BelongsTo{modelName}
+trait BelongsTo{studlySingular}
 {
 
     /**
      * @return BelongsTo
      */
-    public function {modelCamelName}(): BelongsTo
+    public function {camelSingular}(): BelongsTo
     {
         return $this->belongsTo(Model::class)->withDefault();
     }
@@ -34,10 +34,10 @@ trait BelongsTo{modelName}
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeBy{modelName}(Builder $builder, $value): Builder
+    public function scopeBy{studlySingular}(Builder $builder, $value): Builder
     {
         $value instanceof Eloquent && ($value = [$value->id]);
         !is_array($value) && ($value = explode(',', $value));
-        return $builder->whereIn('{modelForeignKey}', $value);
+        return $builder->whereIn('{snakeSingular}_id', $value);
     }
 }

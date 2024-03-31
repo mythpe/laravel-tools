@@ -9,16 +9,16 @@
 
 namespace App\Traits\BelongsToMany;
 
-use App\Models\{model} as Model;
+use App\Models\{studlySingular} as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-trait BelongsToMany{modelName}
+trait BelongsToMany{studlySingular}
 {
 
     /**
      * @return BelongsToMany
      */
-    public function {modelPluralName}(): BelongsToMany
+    public function {camelPlural}(): BelongsToMany
     {
         return $this->belongsToMany(Model::class)->withTimestamps();
     }

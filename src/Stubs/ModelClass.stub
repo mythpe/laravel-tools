@@ -11,7 +11,7 @@ namespace App\Models{namespace};
 
 use App\Models\BaseModel;
 
-class {modelName} extends BaseModel
+class {studlySingular} extends BaseModel
 {
     {class_use}
     /**

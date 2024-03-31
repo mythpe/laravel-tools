@@ -12,7 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\{model}Resource as Transformer;
 use App\Models\{model} as Model;
 
-class {modelName}Controller extends Controller
+class {studlySingular}Controller extends Controller
 {
     public function __construct()
     {
