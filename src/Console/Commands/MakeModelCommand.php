@@ -16,6 +16,7 @@ use Myth\LaravelTools\Utilities\ModelCommand;
 
 class MakeModelCommand extends BaseCommand
 {
+    const PHP_EOL = "\n";
     /**
      *
      */
@@ -129,7 +130,7 @@ to insert code automatically add this comment "use myth crud model command" to y
             }
             $this->updateRouteServiceProvider();
             $this->updateSideMenuController();
-            // $this->insertModelLanguage();
+            $this->insertModelLanguage();
             $this->newLine();
         }
 
@@ -319,13 +320,13 @@ html;
                 return $this->disk()->put($path, implode('', $source));
             }
             else {
-                if ($this->isDeleteMode() || is_null($commentIndex)) {
+                if ($this->isDeleteMode() || is_null($commentIndex) || !is_null($existsLine)) {
                     return !1;
                 }
                 $afterComment = $commentIndex + 1;
                 $before = array_slice($source, 0, $afterComment);
                 $after = array_slice($source, $afterComment);
-                return $this->disk()->put($path, implode('', array_merge($before, [$replaceContent, PHP_EOL], $after)));
+                return $this->disk()->put($path, implode('', array_merge($before, [$replaceContent, self::PHP_EOL], $after)));
             }
         });
     }
@@ -335,68 +336,92 @@ html;
      */
     protected function insertModelLanguage(): void
     {
-        $this->components->task("Model language", function () {
+        $this->components->info("Model language");
+
+        $this->components->task("Attributes File: ", function () {
+            $success = !1;
             foreach (config('4myth-tools.locales') as $locale) {
-                $choice = 'choice';
-                $choiceArray = require lang_path("$locale/choice.php");
-                // $this->updateLanguageFile('choice', $locale, $modelName);
-                $this->updateLanguageFile($modelName);
-                $attribute = "lang/$locale/attributes.php";
-                $attr = $this->modelForeignKey($modelName);
-                $attrs = Str::plural(Str::beforeLast($attr, '_id')).'_id';
-                if (!$this->disk()->exists($attribute)) {
-                    $this->components->twoColumnDetail("<fg=red>$attribute</> not exists", '<fg=red>Skipped</>');
-                    return;
+                $path = lang_path("$locale/attributes.php");
+                $array = require $path;;
+                if (!is_array($file = file($path))) {
+                    continue;
                 }
-
-
-                $attributesContent = file($this->disk()->path($attribute));
-                $attributesArray = require lang_path("$locale/attributes.php");
-                $attributesFile = '';
-                foreach ($attributesContent as $content) {
-                    if (Str::contains($content, 'return')) {
-                        break;
-                    }
-                    $attributesFile .= $content;
-                }
-
-                if ($this->isDeleteMode()) {
-                    unset($attributesArray[$attr]);
-                    unset($attributesArray[$attrs]);
-                }
-                else {
-                    if (array_key_exists($attr, $attributesArray)) {
-                        $this->components->twoColumnDetail("<fg=red>$attr</> attribute exists", '<fg=red>Skipped</>');
-                    }
-                    else {
-                        $attributesArray[$attr] = $studlyWords;
-                    }
-
-                    if (array_key_exists($attrs, $attributesArray)) {
-                        $this->components->twoColumnDetail("<fg=red>$attrs</> attribute exists", '<fg=red>Skipped</>');
-                    }
-                    else {
-                        $attributesArray[$attrs] = $pluralWords;
+                $id = "{$this->model->snakeSingular}_id";
+                $ids = "{$this->model->snakePlural}_id";
+                $modify = !array_key_exists($id, $array) || !array_key_exists($ids, $array);
+                $delete = array_key_exists($id, $array) || array_key_exists($ids, $array);
+                if ($this->isDeleteMode() && $delete) {
+                    foreach ($file as $fileKey => $line) {
+                        if (Str::contains($line, $id)) {
+                            unset($file[$fileKey]);
+                        }
+                        elseif (Str::contains($line, $ids)) {
+                            unset($file[$fileKey]);
+                        }
+                        $success = file_put_contents($path, implode('', $file)) !== !1;
                     }
                 }
-
-                $attributesArrayContent = [];
-                $separator = ','.PHP_EOL;
-                foreach ($attributesArray as $key => $value) {
-                    $attributesArrayContent[] .= "'$key' => '$value'";
+                elseif (!$this->isDeleteMode() && $modify) {
+                    $src = require __DIR__."/../../lang/$locale/attributes.php";
+                    $original = $file;
+                    $last = array_pop($file);
+                    if (!Str::endsWith(trim($file[count($file) - 1]), ',')) {
+                        $file[count($file) - 1] = trim($file[count($file) - 1]).',';
+                    }
+                    if (!Str::endsWith(trim($file[count($file) - 1]), self::PHP_EOL)) {
+                        $file[count($file) - 1] = trim($file[count($file) - 1]).self::PHP_EOL;
+                    }
+                    if (!array_key_exists($id, $array)) {
+                        $val = array_key_exists($id, $src) ? $src[$id] : $this->model->titleSingular;
+                        $file[] = "'$id' => '$val',".self::PHP_EOL;
+                    }
+                    if (!array_key_exists($ids, $array)) {
+                        $val = array_key_exists($ids, $src) ? $src[$ids] : $this->model->titlePlural;
+                        $file[] = "'$ids' => '$val',".self::PHP_EOL;
+                    }
+                    if ($modify) {
+                        $file[] = $last;
+                        $success = file_put_contents($path, implode('', $file)) !== !1;
+                    }
                 }
-                $attributesArrayContent = implode($separator, $attributesArrayContent);
-                if (!Str::endsWith(trim($attributesArrayContent), ',')) {
-                    $attributesArrayContent .= ',';
-                }
-                $attributesFile .= <<<html
-return [
-$attributesArrayContent
-];
-html;
-                $this->disk()->put($attribute, $attributesFile);
-                $this->components->twoColumnDetail($attribute, '<fg=green>Updated</>');
             }
+            return $success;
+        });
+
+        $this->components->task("Choice File: ", function () {
+            $error = !0;
+            foreach (config('4myth-tools.locales') as $locale) {
+                $path = lang_path("$locale/choice.php");
+                $array = require $path;
+                $file = file($path);
+                if (is_array($file)) {
+                    $k = (string) $this->model->studlyPlural;
+                    if ($this->isDeleteMode() && array_key_exists($k, $array)) {
+                        foreach ($file as $lineKey => $line) {
+                            if (Str::contains($line, $k)) {
+                                unset($file[$lineKey]);
+                            }
+                        }
+                        $error = (bool) file_put_contents($path, implode('', $file));
+                    }
+                    else if (!$this->isDeleteMode() && !array_key_exists($k, $array)) {
+                        $src = require __DIR__."/../../lang/$locale/choice.php";
+                        $value = array_key_exists($k, $src) ? $src[$k] : ($locale == 'ar' ? "{$this->model->titlePlural}|{$this->model->titleSingular}" : "{$this->model->titleSingular}|{$this->model->titlePlural}");
+                        $last = array_pop($file);
+                        if (!Str::endsWith(trim($file[count($file) - 1]), ',')) {
+                            $file[count($file) - 1] = trim($file[count($file) - 1]).',';
+                        }
+                        if (!Str::endsWith(trim($file[count($file) - 1]), self::PHP_EOL)) {
+                            $file[count($file) - 1] = trim($file[count($file) - 1]).self::PHP_EOL;
+                        }
+                        $error = (bool) file_put_contents($path, implode('', array_merge($file, [
+                            "'$k' => '$value',".self::PHP_EOL,
+                            $last,
+                        ])));
+                    }
+                }
+            }
+            return !$error;
         });
     }
 
@@ -462,7 +487,7 @@ html;
                 }
             }
             $choiceArrayContent = [];
-            $separator = ','.PHP_EOL;
+            $separator = ','.self::PHP_EOL;
             foreach ($choiceArray as $key => $value) {
                 $choiceArrayContent[] .= "'$key' => '$value'";
             }
