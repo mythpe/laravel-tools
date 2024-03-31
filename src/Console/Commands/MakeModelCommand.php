@@ -31,6 +31,8 @@ class MakeModelCommand extends BaseCommand
 {--s|scoped : Create model with scopes}
 {--t|translator : Create model with translator scope}
 {--g|generic : Create accessories of generic model}
+{--l|lang : Just add model language files}
+{--f|files : Just modify model files}
 {--d|delete : Delete model}
 {--F|force : force mode}';
 
@@ -72,6 +74,10 @@ to insert code automatically add this comment "use myth crud model command" to y
         $this->prepare();
         foreach ($this->models as $value) {
             $this->model = $value;
+            if ($this->isLang()) {
+                $this->insertModelLanguage();
+                continue;
+            }
             $migrationPrefix = "1111_00_00_000000";
             $migrations = $this->disk()->files('database/migrations');
             if (count($migrations) > 0) {
@@ -336,8 +342,10 @@ html;
      */
     protected function insertModelLanguage(): void
     {
+        if ($this->isDeleteMode() && $this->isFiles()) {
+            return;
+        }
         $this->components->info("Model language");
-
         $this->components->task("Attributes File: ", function () {
             $success = !1;
             foreach (config('4myth-tools.locales') as $locale) {
@@ -387,7 +395,6 @@ html;
             }
             return $success;
         });
-
         $this->components->task("Choice File: ", function () {
             $error = !0;
             foreach (config('4myth-tools.locales') as $locale) {
@@ -425,92 +432,12 @@ html;
         });
     }
 
-    protected function updateLanguageFile(string $fileName, string $locale, string $modelName): void
-    {
-        $files = ['choice', 'attributes'];
-
-        $modelStr = Str::of($modelName);
-        $pluralModelName = $modelStr->pluralStudly();
-        $singularModelName = $modelStr->singular();
-
-        $singularSnake = $modelStr->singular()->snake();
-        $pluralSnake = $modelStr->plural()->snake();
-
-        $singularWords = $modelStr->singular()->snake(' ')->title();
-        $pluralWords = $modelStr->pluralStudly()->snake(' ')->title();
-        d([
-            (string) $pluralModelName,
-            (string) $singularModelName,
-            (string) $singularSnake,
-            (string) $pluralSnake,
-            (string) $singularWords,
-            (string) $pluralWords,
-        ]);
-
-        foreach (config('4myth-tools.locales') as $locale) {
-
-        }
-
-        $path = "lang/$locale/$fileName.php";
-        $langPath = lang_path("$locale/$fileName.php");
-
-
-        $pluralChoice = $this->modelPluralName($modelName);
-        $studlyWords = ucwords(str_ireplace('-', ' ', Str::kebab(Str::studly($modelName))));
-        $pluralWords = ucwords(str_ireplace('-', ' ', $this->modelPluralKebabName($modelName)));
-        // $pluralModel = $this->modelPluralName($modelName);
-        $pluralModel = $this->modelPluralKebabName($modelName);
-        d($pluralModel);
-        if (!$this->disk()->exists($path)) {
-            $this->components->twoColumnDetail("<fg=red>$path</> not exists", '<fg=red>Skipped</>');
-        }
-        else {
-            $choiceContent = file($this->disk()->path($path));
-            $choiceArray = require lang_path("$locale/choice.php");
-            $choiceFile = '';
-            foreach ($choiceContent as $content) {
-                if (Str::contains($content, 'return')) {
-                    break;
-                }
-                $choiceFile .= $content;
-            }
-            if ($this->isDeleteMode()) {
-                unset($choiceArray[$pluralChoice]);
-            }
-            else {
-                if (array_key_exists($pluralChoice, $choiceArray)) {
-                    $this->components->twoColumnDetail("<fg=red>$pluralChoice</> Trans choice exists", '<fg=red>Skipped</>');
-                }
-                else {
-                    $choiceValue = $locale == 'ar' ? 'مفرد|جمع' : "$studlyWords|$pluralWords";
-                    $choiceArray[$pluralChoice] = $choiceValue;
-                }
-            }
-            $choiceArrayContent = [];
-            $separator = ','.self::PHP_EOL;
-            foreach ($choiceArray as $key => $value) {
-                $choiceArrayContent[] .= "'$key' => '$value'";
-            }
-            $choiceArrayContent = implode($separator, $choiceArrayContent);
-            if (!Str::endsWith(trim($choiceArrayContent), ',')) {
-                $choiceArrayContent .= ',';
-            }
-            $choiceFile .= <<<html
-return [
-$choiceArrayContent
-];
-html;
-            $this->disk()->put($path, $choiceFile);
-            $this->components->twoColumnDetail($path, '<fg=green>Updated</>');
-        }
-    }
-
     /**
      * @return bool
      */
     protected function isForce(): bool
     {
-        return $this->option('force');
+        return (bool) $this->option('force');
     }
 
     /**
@@ -518,7 +445,7 @@ html;
      */
     protected function isDeleteMode(): bool
     {
-        return $this->option('delete');
+        return (bool) $this->option('delete');
     }
 
     /**
@@ -526,7 +453,7 @@ html;
      */
     protected function isGeneric(): bool
     {
-        return $this->option('generic');
+        return (bool) $this->option('generic');
     }
 
     /**
@@ -534,7 +461,7 @@ html;
      */
     protected function isScoped(): bool
     {
-        return $this->option('scoped');
+        return (bool) $this->option('scoped');
     }
 
     /**
@@ -542,6 +469,22 @@ html;
      */
     protected function isTranslator(): bool
     {
-        return $this->option('translator');
+        return (bool) $this->option('translator');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isLang(): bool
+    {
+        return (bool) $this->option('lang');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isFiles(): bool
+    {
+        return (bool) $this->option('files');
     }
 }
