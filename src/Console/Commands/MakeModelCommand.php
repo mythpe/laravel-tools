@@ -9,7 +9,7 @@
 
 namespace Myth\LaravelTools\Console\Commands;
 
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Console\BaseCommand;
 use Myth\LaravelTools\Utilities\ModelCommand;
@@ -209,7 +209,6 @@ html;
     /**
      * Fill stub content
      *
-     * @param ModelCommand $Model
      * @param string $stub
      *
      * @return string
@@ -261,11 +260,10 @@ html;
     }
 ";
         }
-
-        return str_ireplace([
-            '{namespace}',
-            '{model}',
-            '{modelName}',
+        $vars = array_keys(get_class_vars(ModelCommand::class));
+        $keys = Arr::map($vars, fn($k) => "{".$k."}");
+        $values = Arr::map($vars, fn($k) => $this->model->{$k});
+        return str_ireplace(array_merge([
             '{year}',
             '{class_use}',
             '{fillable}',
@@ -275,15 +273,9 @@ html;
             '{migration}',
             '{resource}',
             '{oldest}',
-            '{modelForeignKey}',
-            '{modelCamelName}',
-            '{modelPluralName}',
             '{class_methods}',
-        ], [
-            $this->model->namespace ? '\\'.$this->model->namespace : null,
-            $this->model->name,
-            $this->model->studly,
-            Carbon::now()->format('Y'),
+        ], $keys), array_merge([
+            now()->format('Y'),
             $class_use,
             $fillable,
             $attributes,
@@ -292,11 +284,8 @@ html;
             $migration,
             $resource,
             $oldest,
-            $this->modelForeignKey($this->model->studly),
-            $this->modelCamelName($this->model->studly),
-            Str::camel($this->modelPluralName($this->model->studly)),
             $class_methods,
-        ], $stub);
+        ], $values), $stub);
     }
 
     /**
