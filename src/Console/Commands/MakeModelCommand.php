@@ -82,13 +82,14 @@ to insert code automatically add this comment "use myth crud model command" to y
                     $migrationPrefix = implode('_', $name);
                 }
             }
+            $modelFileName = $value->studlySingular;
             $stubs = [
-                'ModelClass.stub'         => "app/Models/{$value->studly}.php",
-                'ModelController.stub'    => "app/Http/Controllers/{$value->studly}Controller.php",
-                'ModelResource.stub'      => "app/Http/Resources/{$value->studly}Resource.php",
-                'BelongsToModel.stub'     => "app/Traits/BelongsTo/BelongsTo{$value->studly}.php",
-                'BelongsToManyModel.stub' => "app/Traits/BelongsToMany/BelongsToMany{$value->studly}.php",
-                'HasManyModel.stub'       => "app/Traits/HasMany/HasMany{$value->studly}.php",
+                'ModelClass.stub'         => "app/Models/{$modelFileName}.php",
+                'ModelController.stub'    => "app/Http/Controllers/{$modelFileName}Controller.php",
+                'ModelResource.stub'      => "app/Http/Resources/{$modelFileName}Resource.php",
+                'BelongsToModel.stub'     => "app/Traits/BelongsTo/BelongsTo{$modelFileName}.php",
+                'BelongsToManyModel.stub' => "app/Traits/BelongsToMany/BelongsToMany{$modelFileName}.php",
+                'HasManyModel.stub'       => "app/Traits/HasMany/HasMany{$modelFileName}.php",
                 'ModelMigration.stub'     => "database/migrations/{$migrationPrefix}_create_{$value->snakePlural}_table.php",
             ];
             if ($this->isDeleteMode()) {
