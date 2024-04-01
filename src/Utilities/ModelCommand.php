@@ -29,6 +29,8 @@ class ModelCommand
     public Stringable $snakePlural;
     public Stringable $camelSingular;
     public Stringable $camelPlural;
+    public Stringable $kebabSingular;
+    public Stringable $kebabPlural;
     public Stringable $titleSingular;
     public Stringable $titlePlural;
 
@@ -53,6 +55,9 @@ class ModelCommand
 
         $this->camelSingular = $this->singular->camel();
         $this->camelPlural = $this->plural->camel();
+
+        $this->kebabSingular = $this->singular->kebab();
+        $this->kebabPlural = $this->plural->kebab();
 
         $this->titleSingular = $this->string->snake(' ')->singular()->title();
         $this->titlePlural = $this->string->snake(' ')->plural()->title();

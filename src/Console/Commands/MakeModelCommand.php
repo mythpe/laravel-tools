@@ -157,20 +157,19 @@ to insert code automatically add this comment "use myth crud model command" to y
         $modelName = $this->model->studlySingular;
         $namespace = $this->model->namespace;
         $existsNeedles = "// # $modelName.";
-        $routeName = $this->model->snakePlural;
+        $routeName = $this->model->kebabPlural;
         $permissions = "$modelName.index";
         if ($namespace) {
             $routeName = strtolower(str_ireplace('\\', '.', $namespace)).".$routeName";
             $permissions = str_ireplace('\\', '.', $namespace).".$permissions";
         }
-        $permissions = "'$permissions'";
         $replaceContent = <<<html
             $existsNeedles
             [
                 'title'       => trans_choice("choice.{$this->model->studlyPlural}", 2),
                 'name'        => 'panel.$routeName',
                 'icon'        => '',
-                'permissions' => [$permissions],
+                'permissions' => ['$permissions'],
             ],
 html;
         $this->modifyFile($path, $existsNeedles, $replaceContent);
