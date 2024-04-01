@@ -160,8 +160,10 @@ to insert code automatically add this comment "use myth crud model command" to y
         $routeName = $this->model->kebabPlural;
         $permissions = "$modelName.index";
         if ($namespace) {
-            $routeName = strtolower(str_ireplace('\\', '.', $namespace)).".$routeName";
-            $permissions = str_ireplace('\\', '.', $namespace).".$permissions";
+            // $routeName = strtolower(str_ireplace('\\', '.', $namespace)).".$routeName";
+            // $permissions = str_ireplace('\\', '.', $namespace).".$permissions";
+            $routeName = $namespace->replace('\\', '.')->lower()->kebab().".$routeName";
+            $permissions = $namespace->replace('\\', '.').".$permissions";
         }
         $replaceContent = <<<html
             $existsNeedles
