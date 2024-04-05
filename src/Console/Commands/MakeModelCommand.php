@@ -82,8 +82,8 @@ to insert code automatically add this comment "use myth crud model command" to y
             $migrations = $this->disk()->files('database/migrations');
             if (count($migrations) > 0) {
                 asort($migrations);
-                $last = pathinfo($migrations[count($migrations) - 1], PATHINFO_FILENAME);
-                $name = explode('_', preg_replace(['/[^\d_]+/', '/__/'], '', $last));
+                $last = pathinfo(array_pop($migrations), PATHINFO_FILENAME);
+                $name = array_filter(explode('_', preg_replace(['/[^\d_]+/', '/__/'], '', $last)));
                 if (count($name) == 4) {
                     $name[3] = str_pad(intval($name[3]) + 1, strlen($name[3]), '0', STR_PAD_LEFT);
                     $migrationPrefix = implode('_', $name);
