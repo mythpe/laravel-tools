@@ -59,7 +59,7 @@ class ModelCommand
         $this->kebabSingular = $this->singular->kebab();
         $this->kebabPlural = $this->plural->kebab();
 
-        $this->titleSingular = $this->string->snake(' ')->singular()->title();
-        $this->titlePlural = $this->string->snake(' ')->plural()->title();
+        $this->titleSingular = $this->name->snake(' ')->singular()->title();
+        $this->titlePlural = $this->name->snake(' ')->plural()->title();
     }
 }
