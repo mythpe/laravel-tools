@@ -14,8 +14,14 @@ use Illuminate\Support\Str;
 use Myth\LaravelTools\Console\BaseCommand;
 use Myth\LaravelTools\Utilities\ModelCommand;
 
+/**
+ *
+ */
 class MakeModelCommand extends BaseCommand
 {
+    /**
+     *
+     */
     const PHP_EOL = "\n";
     /**
      *
@@ -151,6 +157,9 @@ to insert code automatically add this comment "use myth crud model command" to y
         }
     }
 
+    /**
+     * @return void
+     */
     public function updateSideMenuController(): void
     {
         $path = 'app\Http\Controllers\SideMenuController.php';
@@ -175,6 +184,9 @@ html;
         $this->modifyFile($path, $existsNeedles, $replaceContent);
     }
 
+    /**
+     * @return void
+     */
     protected function updateRouteServiceProvider(): void
     {
         $path = 'app\Providers\RouteServiceProvider.php';
