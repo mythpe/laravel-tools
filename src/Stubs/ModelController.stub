@@ -4,8 +4,8 @@
 namespace App\Http\Controllers{namespace};
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\{studlySingular}Resource as Transformer;
-use App\Models\{studlySingular} as Model;
+use App\Http\Resources{namespace}\{studlySingular}Resource as Transformer;
+use App\Models{namespace}\{studlySingular} as Model;
 
 class {studlySingular}Controller extends Controller
 {

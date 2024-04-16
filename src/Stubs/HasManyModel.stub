@@ -1,9 +1,9 @@
 <?php
 {copyright}
 
-namespace App\Traits\HasMany;
+namespace App\Traits\HasMany{namespace};
 
-use App\Models\{studlySingular} as Model;
+use App\Models{namespace}\{studlySingular} as Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 trait HasMany{studlySingular}

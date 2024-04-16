@@ -1,9 +1,9 @@
 <?php
 {copyright}
 
-namespace App\Traits\BelongsToMany;
+namespace App\Traits\BelongsToMany{namespace};
 
-use App\Models\{studlySingular} as Model;
+use App\Models{namespace}\{studlySingular} as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait BelongsToMany{studlySingular}
