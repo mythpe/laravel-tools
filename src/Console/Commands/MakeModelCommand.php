@@ -181,7 +181,7 @@ to insert code automatically add this comment "use myth crud model command" to y
                 'permissions' => ['$permissions'],
             ],
 html;
-        $this->modifyFile($path, $existsNeedles, $replaceContent);
+        $this->modifyFile($path, $replaceContent);
     }
 
     /**
@@ -192,9 +192,8 @@ html;
         $path = 'app\Providers\RouteServiceProvider.php';
         $model = $this->model->string;
         $modelName = $this->model->studlySingular;
-        $existsNeedles = "$modelName::";
         $replaceContent = '        $this->binder(\''.$modelName.'\', \\App\\Models\\'.$model.'::class);';
-        $this->modifyFile($path, $existsNeedles, $replaceContent);
+        $this->modifyFile($path, $replaceContent);
     }
 
     /**
@@ -304,39 +303,43 @@ html;
 
     /**
      * @param string $path
-     * @param $existsNeedles
      * @param $replaceContent
      * @return void
      */
-    protected function modifyFile(string $path, $existsNeedles = null, $replaceContent = null): void
+    protected function modifyFile(string $path, $replaceContent = null): void
     {
-        $this->components->task("<fg=yellow>Updating</> $path", function () use ($path, $existsNeedles, $replaceContent) {
+        $this->components->task("<fg=yellow>Updating</> $path", function () use ($path, $replaceContent) {
             $comment = static::LINE_COMMENT_UPDATE;
             // Get Source
             if (!($source = file(str_replace('\\', '/', $this->disk()->path($path))))) {
                 return !1;
             }
+
             $commentIndex = null;
             $existsLine = null;
+            $tempPath = storage_path('framework/cache/myth-temp.txt');
+            file_put_contents($tempPath, $replaceContent);
+            $temp = file($tempPath);
+            $firstTemp = $temp[0] ?? '';
+            $lastTemp = $temp[count($temp) - 1] ?? '';
             foreach ($source as $k => $line) {
-                is_null($existsLine) && ($existsLine = Str::contains($line, trim($existsNeedles)) ? $k : null);
                 is_null($commentIndex) && ($commentIndex = Str::contains($line, $comment) ? $k : null);
+                is_null($existsLine) && ($existsLine = trim($line) == trim($firstTemp) ? $k : null);
             }
 
-            if (!is_null($existsLine) && $this->isDeleteMode()) {
-                $content = trim($source[$existsLine]) == trim($replaceContent);
-                if (!$content) {
-                    for ($i = 0; $i < 7; $i++) {
-                        unset($source[$existsLine + $i]);
-                    }
-                    return $this->disk()->put($path, implode('', $source));
+            if ($this->isDeleteMode()) {
+                if (is_null($existsLine)) {
+                    $this->error('nothing to deleted');
+                    return !1;
                 }
-                else {
-                    unset($source[$existsLine]);
+                for ($i = 0; $i < count($temp); $i++) {
+                    unset($source[$existsLine + $i]);
                 }
+                unlink($tempPath);
                 return $this->disk()->put($path, implode('', $source));
             }
             else {
+                unlink($tempPath);
                 if ($this->isDeleteMode() || is_null($commentIndex) || !is_null($existsLine)) {
                     return !1;
                 }
