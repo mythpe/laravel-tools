@@ -317,11 +317,10 @@ html;
 
             $commentIndex = null;
             $existsLine = null;
-            $tempPath = storage_path('framework/cache/myth-temp.txt');
+            $tempPath = storage_path('framework/cache/myth-lang.temp');
             file_put_contents($tempPath, $replaceContent);
             $temp = file($tempPath);
             $firstTemp = $temp[0] ?? '';
-            $lastTemp = $temp[count($temp) - 1] ?? '';
             foreach ($source as $k => $line) {
                 is_null($commentIndex) && ($commentIndex = Str::contains($line, $comment) ? $k : null);
                 is_null($existsLine) && ($existsLine = trim($line) == trim($firstTemp) ? $k : null);
@@ -329,7 +328,6 @@ html;
 
             if ($this->isDeleteMode()) {
                 if (is_null($existsLine)) {
-                    $this->error('nothing to deleted');
                     return !1;
                 }
                 for ($i = 0; $i < count($temp); $i++) {
@@ -374,6 +372,9 @@ html;
                 $delete = array_key_exists($id, $array) || array_key_exists($ids, $array);
                 if ($this->isDeleteMode() && $delete) {
                     foreach ($file as $fileKey => $line) {
+                        if (!is_array($file)) {
+                            continue;
+                        }
                         if (Str::contains($line, $id)) {
                             unset($file[$fileKey]);
                         }
@@ -385,14 +386,18 @@ html;
                 }
                 elseif (!$this->isDeleteMode() && $modify) {
                     $src = require __DIR__."/../../lang/$locale/attributes.php";
-                    $original = $file;
                     $last = array_pop($file);
-                    if (!Str::endsWith(trim($file[count($file) - 1]), ',')) {
-                        $file[count($file) - 1] = trim($file[count($file) - 1]).',';
+                    $lastFileIndex = count($file) - 1;
+                    if (!is_array($file)) {
+                        continue;
                     }
-                    if (!Str::endsWith(trim($file[count($file) - 1]), self::PHP_EOL)) {
-                        $file[count($file) - 1] = trim($file[count($file) - 1]).self::PHP_EOL;
+                    $rtrimList = [','];
+                    foreach ($rtrimList as $rtrim) {
+                        if (!Str::endsWith(rtrim($file[$lastFileIndex]), $rtrim)) {
+                            $file[$lastFileIndex] .= $rtrim;
+                        }
                     }
+
                     if (!array_key_exists($id, $array)) {
                         $val = array_key_exists($id, $src) ? $src[$id] : $this->model->titleSingular;
                         $file[] = "'$id' => '$val',".self::PHP_EOL;
@@ -410,39 +415,47 @@ html;
             return $success;
         });
         $this->components->task("Choice File: ", function () {
-            $error = !0;
+            $success = !1;
             foreach (config('4myth-tools.locales') as $locale) {
                 $path = lang_path("$locale/choice.php");
                 $array = require $path;
                 $file = file($path);
                 if (is_array($file)) {
                     $k = (string) $this->model->studlyPlural;
-                    if ($this->isDeleteMode() && array_key_exists($k, $array)) {
-                        foreach ($file as $lineKey => $line) {
-                            if (Str::contains($line, $k)) {
-                                unset($file[$lineKey]);
+                    if ($this->isDeleteMode()) {
+                        if (array_key_exists($k, $array)) {
+                            foreach ($file as $lineKey => $line) {
+                                if (Str::contains($line, $k)) {
+                                    unset($file[$lineKey]);
+                                }
                             }
+                            $success = file_put_contents($path, implode('', $file)) !== !1;
                         }
-                        $error = (bool) file_put_contents($path, implode('', $file));
                     }
-                    else if (!$this->isDeleteMode() && !array_key_exists($k, $array)) {
-                        $src = require __DIR__."/../../lang/$locale/choice.php";
-                        $value = array_key_exists($k, $src) ? $src[$k] : ($locale == 'ar' ? "{$this->model->titlePlural}|{$this->model->titleSingular}" : "{$this->model->titleSingular}|{$this->model->titlePlural}");
-                        $last = array_pop($file);
-                        if (!Str::endsWith(trim($file[count($file) - 1]), ',')) {
-                            $file[count($file) - 1] = trim($file[count($file) - 1]).',';
+                    else {
+                        if (!array_key_exists($k, $array)) {
+                            $src = require __DIR__."/../../lang/$locale/choice.php";
+                            $value = array_key_exists($k, $src) ? $src[$k] : ($locale == 'ar' ? "{$this->model->titlePlural}|{$this->model->titleSingular}" : "{$this->model->titleSingular}|{$this->model->titlePlural}");
+                            if (!is_array($file)) {
+                                continue;
+                            }
+                            $last = array_pop($file);
+                            $lastIndex = count($file) - 1;
+                            $rtrimList = [','];
+                            foreach ($rtrimList as $rtrim) {
+                                if (!Str::endsWith(rtrim($file[$lastIndex]), $rtrim)) {
+                                    $file[$lastIndex] .= $rtrim;
+                                }
+                            }
+                            $success = file_put_contents($path, implode('', array_merge($file, [
+                                    "'$k' => '$value',".self::PHP_EOL,
+                                    $last,
+                                ]))) !== !1;
                         }
-                        if (!Str::endsWith(trim($file[count($file) - 1]), self::PHP_EOL)) {
-                            $file[count($file) - 1] = trim($file[count($file) - 1]).self::PHP_EOL;
-                        }
-                        $error = (bool) file_put_contents($path, implode('', array_merge($file, [
-                            "'$k' => '$value',".self::PHP_EOL,
-                            $last,
-                        ])));
                     }
                 }
             }
-            return !$error;
+            return $success;
         });
     }
 
