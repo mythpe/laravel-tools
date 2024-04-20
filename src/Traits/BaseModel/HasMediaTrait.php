@@ -49,6 +49,23 @@ trait HasMediaTrait
         return [];
     }
 
+    /**
+     * @return void
+     */
+    protected static function bootHasMediaTrait(): void
+    {
+        static::deleted(function ($model) {
+            if (method_exists($model, 'isForceDeleting')) {
+                if ($model->isForceDeleting()) {
+                    $model->media()->get()->each->delete();
+                }
+            }
+            else {
+                $model->media()->get()->each->delete();
+            }
+        });
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection(static::$mediaSingleCollection)->singleFile();
