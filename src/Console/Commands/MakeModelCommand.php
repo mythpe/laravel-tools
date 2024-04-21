@@ -147,7 +147,11 @@ to insert code automatically add this comment "use myth crud model command" to y
                 $choice = $modelFiles;
             }
             foreach ($choice as $value) {
-                $models[] = Str::singular(class_basename(pathinfo($value, PATHINFO_FILENAME)));
+                $name = Str::singular(class_basename(pathinfo($value, PATHINFO_FILENAME)));
+                if (in_array($name, ['User', 'Role', 'Permission', 'BaseModel'])) {
+                    continue;
+                }
+                $models[] = $name;
             }
             $this->stubsOnly = !0;
             $this->argModels = $models;
