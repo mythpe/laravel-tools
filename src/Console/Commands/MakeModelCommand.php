@@ -34,11 +34,12 @@ class MakeModelCommand extends BaseCommand
      * @var string
      */
     protected $signature = 'myth:model {model*}
+{--B|stubs : Force Create model stubs}
 {--s|scoped : Create model with scopes}
 {--t|translator : Create model with translator scope}
 {--g|generic : Create accessories of generic model}
-{--l|lang : Just add model language files}
-{--f|files : Just modify model files}
+{--l|lang : Modify model language only}
+{--f|files : Modify model files only}
 {--d|delete : Delete model}
 {--F|force : force mode}';
 
@@ -80,7 +81,7 @@ to insert code automatically add this comment "use myth crud model command" to y
         $this->prepare();
         foreach ($this->models as $value) {
             $this->model = $value;
-            if ($this->isLang()) {
+            if ($this->langOnly()) {
                 $this->insertModelLanguage();
                 continue;
             }
@@ -99,12 +100,12 @@ to insert code automatically add this comment "use myth crud model command" to y
             $namespacePath = $value->namespace ? str_ireplace('\\', '/', trim($value->namespace, '\\')).'/' : '';
             $stubs = [
                 'ModelClass.stub'         => "app/Models/$namespacePath$modelName.php",
+                'ModelMigration.stub'     => "database/migrations/{$migrationPrefix}_create_{$value->snakePlural}_table.php",
                 'ModelController.stub'    => "app/Http/Controllers/$namespacePath{$modelName}Controller.php",
                 'ModelResource.stub'      => "app/Http/Resources/$namespacePath{$modelName}Resource.php",
                 'BelongsToModel.stub'     => "app/Traits/BelongsTo/{$namespacePath}BelongsTo{$modelName}.php",
                 'BelongsToManyModel.stub' => "app/Traits/BelongsToMany/{$namespacePath}BelongsToMany{$modelName}.php",
                 'HasManyModel.stub'       => "app/Traits/HasMany/{$namespacePath}HasMany{$modelName}.php",
-                'ModelMigration.stub'     => "database/migrations/{$migrationPrefix}_create_{$value->snakePlural}_table.php",
             ];
             if ($this->isDeleteMode()) {
                 if (!$this->isForce() && !$this->confirm("Delete <fg=red>{$value->string}</> ?"))
@@ -131,14 +132,28 @@ to insert code automatically add this comment "use myth crud model command" to y
                     }
                 }
 
+                if ($this->stubsOnly()) {
+                    $traits = ['BelongsToModel.stub', 'BelongsToManyModel.stub', 'HasManyModel.stub'];
+                    if (!in_array($stub, $traits)) {
+                        continue;
+                    }
+                }
+
                 if ($this->isDeleteMode()) {
                     $this->components->task("<fg=red>Deleting</> $path", fn() => $this->disk()->exists($path) ? $this->disk()->delete($path) : !1);
                     continue;
                 }
                 $content = $this->fillStub(file_get_contents("$stubsPath/$stub"));
+                if ($this->stubsOnly()) {
+                    $this->components->task("<fg=green>Replacing</> $path", fn() => $this->disk()->put($path, $content));
+                    continue;
+                }
                 $exists = $this->disk()->exists($path);
                 $taskTitle = $exists ? "<fg=yellow>File exists:</> $path" : "<fg=green>Creating</> $path";
                 $this->components->task($taskTitle, fn() => !$exists && $this->disk()->put($path, $content));
+            }
+            if ($this->stubsOnly()) {
+                continue;
             }
             $this->updateRouteServiceProvider();
             $this->updateSideMenuController();
@@ -230,7 +245,7 @@ html;
  */
 Copyright;
 
-        if ($this->isScoped()) {
+        if ($this->hasScopes()) {
             $class_use .= 'use \Myth\LaravelTools\Traits\Utilities\OrderByScopeTrait, \Myth\LaravelTools\Traits\Utilities\ActiveScopeTrait;
 ';
             $fillable .= <<<html
@@ -263,7 +278,7 @@ html;
 
         }
 
-        if ($this->isTranslator()) {
+        if ($this->hasTranslator()) {
             $class_use .= 'use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
 ';
             $class_methods .= "
@@ -354,7 +369,7 @@ html;
      */
     protected function insertModelLanguage(): void
     {
-        if ($this->isDeleteMode() && $this->isFiles()) {
+        if ($this->isDeleteMode() && $this->filesOnly()) {
             return;
         }
         $this->components->info("Model language");
@@ -486,7 +501,7 @@ html;
     /**
      * @return bool
      */
-    protected function isScoped(): bool
+    protected function hasScopes(): bool
     {
         return (bool) $this->option('scoped');
     }
@@ -494,7 +509,7 @@ html;
     /**
      * @return bool
      */
-    protected function isTranslator(): bool
+    protected function hasTranslator(): bool
     {
         return (bool) $this->option('translator');
     }
@@ -502,7 +517,7 @@ html;
     /**
      * @return bool
      */
-    protected function isLang(): bool
+    protected function langOnly(): bool
     {
         return (bool) $this->option('lang');
     }
@@ -510,8 +525,16 @@ html;
     /**
      * @return bool
      */
-    protected function isFiles(): bool
+    protected function filesOnly(): bool
     {
         return (bool) $this->option('files');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function stubsOnly(): bool
+    {
+        return (bool) $this->option('stubs');
     }
 }
