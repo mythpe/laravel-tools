@@ -81,14 +81,14 @@ trait CrudTrait
      *
      * @var bool|string|null
      */
-    protected $latest = null;
+    protected bool | string | null $latest = null;
 
     /**
      * Sort query as oldest
      *
      * @var bool|string|null
      */
-    protected $oldest = null;
+    protected bool | string | null $oldest = null;
 
     /**
      * This used to show only active of models
