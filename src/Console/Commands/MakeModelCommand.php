@@ -10,6 +10,7 @@
 namespace Myth\LaravelTools\Console\Commands;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Console\BaseCommand;
 use Myth\LaravelTools\Utilities\ModelCommand;
@@ -33,7 +34,7 @@ class MakeModelCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'myth:model {model*}
+    protected $signature = 'myth:model {model?*}
 {--B|stubs : Force Create model stubs}
 {--s|scoped : Create model with scopes}
 {--t|translator : Create model with translator scope}
@@ -62,6 +63,13 @@ to insert code automatically add this comment "use myth crud model command" to y
     /**
      * User input
      *
+     * @var array<int, string>
+     */
+    protected array $argModels = [];
+
+    /**
+     * User input
+     *
      * @var array<int, ModelCommand>
      */
     protected array $models = [];
@@ -71,6 +79,30 @@ to insert code automatically add this comment "use myth crud model command" to y
      */
     protected ?ModelCommand $model = null;
 
+    /** @var bool */
+    protected bool $stubsOnly = !1;
+
+    /** @var bool */
+    protected bool $filesOnly = !1;
+
+    /** @var bool */
+    protected bool $langOnly = !1;
+
+    /** @var bool */
+    protected bool $hasTranslator = !1;
+
+    /** @var bool */
+    protected bool $hasScopes = !1;
+
+    /** @var bool */
+    protected bool $isGeneric = !1;
+
+    /** @var bool */
+    protected bool $isDelete = !1;
+
+    /** @var bool */
+    protected bool $isForce = !1;
+
     /**
      * Execute the console command.
      *
@@ -78,6 +110,49 @@ to insert code automatically add this comment "use myth crud model command" to y
      */
     public function handle(): void
     {
+        $model = $this->argument('model');
+        if (is_array($model)) {
+            $this->argModels = $model;
+        }
+        $this->stubsOnly = (bool) $this->option('stubs');
+        $this->filesOnly = (bool) $this->option('files');
+        $this->langOnly = (bool) $this->option('lang');
+        $this->hasTranslator = (bool) $this->option('translator');
+        $this->hasScopes = (bool) $this->option('scoped');
+        $this->isGeneric = (bool) $this->option('generic');
+        $this->isDelete = (bool) $this->option('delete');
+        $this->isForce = (bool) $this->option('force');
+
+        if (empty($model)) {
+            $disk = Storage::disk('root');
+            $modelFiles = $disk->files('app/Models');
+            $auto = 'auto';
+            $none = 'none';
+            $choice = $this->components->choice(
+                'Choice Models',
+                array_merge($modelFiles, [
+                    $auto => 'Auto',
+                    $none => 'None',
+                ]),
+                $none,
+                1,
+                !0
+            );
+            if (in_array($none, $choice)) {
+                $this->components->info("Bye");
+                return;
+            }
+            $models = [];
+            if (in_array($auto, $choice)) {
+                $choice = $modelFiles;
+            }
+            foreach ($choice as $value) {
+                $models[] = Str::singular(class_basename(pathinfo($value, PATHINFO_FILENAME)));
+            }
+            $this->stubsOnly = !0;
+            $this->argModels = $models;
+        }
+
         $this->prepare();
         foreach ($this->models as $value) {
             $this->model = $value;
@@ -161,7 +236,7 @@ to insert code automatically add this comment "use myth crud model command" to y
             $this->newLine();
         }
 
-        if (count($this->models) > 0 && !$this->isDeleteMode()) {
+        if (count($this->models) > 0 && !$this->isDeleteMode() && !$this->langOnly() && !$this->stubsOnly()) {
             $this->components->info("Please insert model routes: [<fg=yellow;bg=black>routes.php</>]");
             foreach ($this->models as $value) {
                 $modelNamespace = "App\\Http\\Controllers\\{$value->string}Controller";
@@ -218,8 +293,7 @@ html;
      */
     protected function prepare(): void
     {
-        $arg = $this->argument('model');
-        foreach ($arg as $value) {
+        foreach ($this->argModels as $value) {
             $this->models[] = new ModelCommand($value);
         }
     }
@@ -479,7 +553,7 @@ html;
      */
     protected function isForce(): bool
     {
-        return (bool) $this->option('force');
+        return $this->isForce;
     }
 
     /**
@@ -487,7 +561,7 @@ html;
      */
     protected function isDeleteMode(): bool
     {
-        return (bool) $this->option('delete');
+        return $this->isDelete;
     }
 
     /**
@@ -495,7 +569,7 @@ html;
      */
     protected function isGeneric(): bool
     {
-        return (bool) $this->option('generic');
+        return $this->isGeneric;
     }
 
     /**
@@ -503,7 +577,7 @@ html;
      */
     protected function hasScopes(): bool
     {
-        return (bool) $this->option('scoped');
+        return $this->hasScopes;
     }
 
     /**
@@ -511,7 +585,7 @@ html;
      */
     protected function hasTranslator(): bool
     {
-        return (bool) $this->option('translator');
+        return $this->hasTranslator;
     }
 
     /**
@@ -519,7 +593,7 @@ html;
      */
     protected function langOnly(): bool
     {
-        return (bool) $this->option('lang');
+        return $this->langOnly;
     }
 
     /**
@@ -527,7 +601,7 @@ html;
      */
     protected function filesOnly(): bool
     {
-        return (bool) $this->option('files');
+        return $this->filesOnly;
     }
 
     /**
@@ -535,6 +609,6 @@ html;
      */
     protected function stubsOnly(): bool
     {
-        return (bool) $this->option('stubs');
+        return $this->stubsOnly;
     }
 }
