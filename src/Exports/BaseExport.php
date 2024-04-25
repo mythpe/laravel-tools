@@ -43,7 +43,7 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     /**
      * @return static
      */
-    public static function make()
+    public static function make(): static
     {
         return new static(...func_get_args());
     }
