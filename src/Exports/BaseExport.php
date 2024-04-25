@@ -21,22 +21,22 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     WithEvents
 {
     /**
-     * @var array|Collection
+     * @var array<string|int, mixed>|Collection<string|int, mixed>
      */
-    public $headers = [];
+    public array | Collection $headers = [];
 
     /**
-     * @var array|Collection
+     * @var array<int,mixed>|Collection<int,mixed>
      */
-    public $items = [];
+    public array | Collection $items = [];
 
     /**
      * @param array|Collection $headers
      * @param array|Collection $items
      */
-    public function __construct($headers = [], $items = [])
+    public function __construct(array | Collection $headers = [], array | Collection $items = [])
     {
-        $this->headers = collect($headers);
+        $this->headers = is_array($headers) ? collect($headers) : $headers;
         $this->items = is_array($items) ? collect($items) : $items;
     }
 
@@ -51,10 +51,9 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     /**
      * @return Collection
      */
-    public function collection()
+    public function collection(): Collection
     {
         $data = [];
-        //d($this->headers);
         foreach ($this->headers as $header) {
             if (is_array($header)) {
                 $value = ($header['text'] ?? ($header['label'] ?? ($header['field'] ?? ($header['name'] ?? ''))));
@@ -67,19 +66,17 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
             }
             $data[] = $value;
         }
-        //d($data);
         $data = [$data];
 
         foreach ($this->items as $item) {
             $v = [];
             foreach ($this->headers as $header) {
-                //d($item);
                 $r = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? ($item[($header['field'] ?? '')] ?? ($item[($header['name'] ?? '')] ?? ''))) : ($item[$header] ?? ''));
-                $v[] = $r instanceof MissingValue ? null : $r;
+                $r = $r instanceof MissingValue ? '' : $r;
+                $v[] = $r == 0 ? '0' : $r;
             }
             $data[] = $v;
         }
-        //d($data);
         return collect($data);
     }
 
