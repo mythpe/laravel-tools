@@ -163,7 +163,7 @@ return [
      * Example: ['file1', 'file2']
      * Example: '*' for all
      */
-    'js_lang_command_files'         => ['attributes', 'choice', 'const', 'global', 'hints', 'labels'],
+    'js_lang_command_files'         => ['attributes', 'choice', 'const', 'global', 'labels'],
 
     /**
      * Attributes will be exported
