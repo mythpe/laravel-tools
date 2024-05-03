@@ -240,6 +240,13 @@ class ExportAttributesCommand extends BaseCommand
 
                     $attributes[$locale][$attribute] = $transValue;
                 }
+                if (!$newOption) {
+                    $localeFile = include lang_path("$locale/attributes.php");
+                    $withFillable = array_keys($localeFile);
+                    $attributes[$locale] = array_merge($attributes[$locale], $localeFile);
+                }
+                // Sort Values.
+                ksort($attributes[$locale]);
 
                 if (!empty($sortArray)) {
                     $temp = [];
@@ -254,11 +261,6 @@ class ExportAttributesCommand extends BaseCommand
                     $attributes[$locale] = $temp;
                 }
 
-                if (!$newOption) {
-                    $localeFile = include lang_path("$locale/attributes.php");
-                    $withFillable = array_keys($localeFile);
-                    $attributes[$locale] = array_merge($attributes[$locale], $localeFile);
-                }
             }
             $key = Str::plural($classPascal);
             $k = "choice.$key";
