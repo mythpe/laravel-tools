@@ -42,6 +42,22 @@ class Controller extends BaseController
      */
     const RELATIONS = [];
 
+    /**
+     * Model Permissions
+     * Use create permission as show
+     * Example: [ 'create' => 'show' ]
+     * @var array<string,string>
+     */
+    const MAP_PERMISSIONS = [];
+
+    /**
+     * Model Permissions
+     * Define No Permissions of functions
+     * Example: [ 'create', 'show' ]
+     * @var array<int,string>
+     */
+    const NO_PERMISSIONS = [];
+
     /** @var Model|null|User */
     public $user;
 

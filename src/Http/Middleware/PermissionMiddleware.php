@@ -40,11 +40,34 @@ class PermissionMiddleware
         }
         /** @var Route $route */
         $route = $request->route();
-        $routeName = $route->getName();
-        if (!Str::endsWith($routeName, config('4myth-tools.skip_permission_ends_with', []))) {
+        $permissionName = $route->getName();
+        $controller = $route->getController();
+        $className = get_class($controller);
+        if (defined("$className::MAP_PERMISSIONS")) {
+            $maps = $className::MAP_PERMISSIONS;
+            foreach ($maps as $key => $value) {
+                if (Str::endsWith($permissionName, ".$key")) {
+                    $permissionName = str_replace(".$key", ".$value", $permissionName);
+                    break;
+                }
+            }
+        }
+
+        $skip = config('4myth-tools.skip_permission_ends_with', []);
+        if (defined("$className::NO_PERMISSIONS")) {
+            $maps = $className::NO_PERMISSIONS;
+            foreach ($maps as $value) {
+                if (in_array(".$value", $skip)) {
+                    continue;
+                }
+                $skip[] = Str::start($value, '.');
+            }
+            $skip = array_unique($skip);
+        }
+        if (!Str::endsWith($permissionName, $skip)) {
             $routes = getRouterPermissions(!0);
-            if (in_array($routeName, $routes)) {
-                throw_if(!$user->checkPermission($routeName), new NoPermissionException());
+            if (in_array($permissionName, $routes)) {
+                throw_if(!$user->checkPermission($permissionName), new NoPermissionException());
             }
         }
         return $next($request);
