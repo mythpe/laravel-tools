@@ -311,7 +311,7 @@ html;
      */
     protected function fillStub(string $stub): string
     {
-        $class_methods = $class_use = $fillable = $attributes = $casts = $rules = $migration = $resource = $oldest = '';
+        $class_methods = $class_use = $fillable = $attributes = $casts = $rules = $migration = $resource = '';
         $year = now()->format('Y');
         $copyright = <<<Copyright
 /*
@@ -350,10 +350,7 @@ html;
             $table->boolean(\'active\');
             $table->integer(\'order_by\');';
             $resource .= '
-            \'status\' => $model->active_to_string,';
-            $oldest .= '
-        //$this->oldest = \'order_by\';';
-
+            \'status_to_string\' => $model->active_to_string,';
         }
 
         if ($this->hasTranslator()) {
@@ -378,7 +375,6 @@ html;
             '{rules}',
             '{migration}',
             '{resource}',
-            '{oldest}',
             '{class_methods}',
         ], $keys), array_merge([
             $copyright,
@@ -389,7 +385,6 @@ html;
             $rules,
             $migration,
             $resource,
-            $oldest,
             $class_methods,
         ], $values), $stub);
     }

@@ -9,17 +9,14 @@ use App\Models{namespace}\{studlySingular} as Model;
 
 class {studlySingular}Controller extends Controller
 {
-
+    // public const RELATIONS = [];
     public static string $indexTransformer = Transformer::class;
     public static string $controllerTransformer = Transformer::class;
     public static string $controllerModel = Model::class;
-
-    public function __construct()
-    {
-        parent::__construct();
-        //$this->autoSavingImage = !0;
-        {oldest}
-    }
+    // public array $with = self::RELATIONS;
+    // protected bool $autoSavingImage = !0;
+    // protected string | bool | null $oldest = !1;
+    // protected string | bool | null $latest = !1;
 
     /**
      * @param  array  $rules
