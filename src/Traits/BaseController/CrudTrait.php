@@ -12,14 +12,11 @@ namespace Myth\LaravelTools\Traits\BaseController;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
-use Myth\LaravelTools\Http\Resources\ApiCollectionResponse;
 use Myth\LaravelTools\Http\Resources\ApiResource;
 use Myth\LaravelTools\Models\BaseModel as Model;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 trait CrudTrait
 {
@@ -129,20 +126,16 @@ trait CrudTrait
     }
 
     /**
-     * @return Response|mixed|BinaryFileResponse|void|null
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @return JsonResponse|mixed
      */
     public function indexActiveOnly()
     {
-        $this->isIndexActiveOnly = !0;
+        $this->isIndexActiveOnly = !$this->request->input('qid', !1);
         return $this->allIndex(...func_get_args());
     }
 
     /**
-     * @return JsonResponse|Response|mixed|ApiCollectionResponse|BinaryFileResponse|void|null
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @return JsonResponse|mixed
      */
     public function allIndex()
     {
@@ -152,7 +145,7 @@ trait CrudTrait
     }
 
     /**
-     * @return JsonResponse|Response|mixed|ApiCollectionResponse|BinaryFileResponse
+     * @return JsonResponse|mixed
      */
     public function index()
     {
