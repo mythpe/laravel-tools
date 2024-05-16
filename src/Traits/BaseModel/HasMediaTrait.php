@@ -110,15 +110,15 @@ trait HasMediaTrait
     }
 
     /**
-     * @param array|string[]|string|UploadedFile $files
-     * @param null $collection
-     * @return Media[]
+     * @param string|array|UploadedFile $files
+     * @param string|null $collection
+     * @return array
      * @throws FileCannotBeAdded
      * @throws FileDoesNotExist
      * @throws FileIsTooBig
      * @throws InvalidBase64Data
      */
-    public function addModelMedia($files, $collection = null): array
+    public function addModelMedia(string | array | UploadedFile $files, ?string $collection = null): array
     {
         if (!is_array($files)) {
             $files = [$files];
