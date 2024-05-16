@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Traits\BaseModel;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Spatie\Image\Exceptions\InvalidManipulation;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -265,5 +266,14 @@ trait HasMediaTrait
         $fill = array_merge($fill, request()->only($media->getFillable()));
         !empty($fill) && $media->fill($fill)->save();
         return $media;
+    }
+
+    /**
+     * @param string|null $collection
+     * @return Collection
+     */
+    public function getMediaAttachments(?string $collection = null): Collection
+    {
+        return $this->getMedia($collection ?: static::$mediaAttachmentsCollection)->sortByDesc('order_column')->values();
     }
 }
