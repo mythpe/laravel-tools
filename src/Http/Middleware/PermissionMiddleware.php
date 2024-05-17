@@ -52,7 +52,6 @@ class PermissionMiddleware
                 }
             }
         }
-
         $skip = config('4myth-tools.skip_permission_ends_with', []);
         if (defined("$className::NO_PERMISSIONS")) {
             $maps = $className::NO_PERMISSIONS;
@@ -66,7 +65,7 @@ class PermissionMiddleware
         }
         if (!Str::endsWith($permissionName, $skip)) {
             $routes = getRouterPermissions(!0);
-            if (in_array($permissionName, $routes)) {
+            if (!in_array($permissionName, $routes)) {
                 throw_if(!$user->checkPermission($permissionName), new NoPermissionException());
             }
         }
