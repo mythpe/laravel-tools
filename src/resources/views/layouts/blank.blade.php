@@ -1,14 +1,15 @@
 @php
-    $funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
+$funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
 @endphp
-    <!doctype html>
+
+<!doctype html>
 <html lang="{{$LOCALE}}" dir="{{$DIRECTION}}">
 <head>
-    @include('4myth-tools::partials.head')
-    <link href="{{ $funcType("storage/vendor/4myth/style/app.css") }}" rel="stylesheet" type="text/css">
-    <link href="{{ $funcType("storage/vendor/4myth/style/app-{$DIRECTION}.css") }}" rel="stylesheet" type="text/css">
-    <link href="{{ $funcType("storage/vendor/4myth/fonts/fontawesome-free-6.5.2/css/all.css") }}" rel="stylesheet" type="text/css">
-    @stack('styles')
+@include('4myth-tools::partials.head')
+<link href="{{ $funcType("storage/vendor/4myth/style/app.css") }}" rel="stylesheet" type="text/css">
+<link href="{{ $funcType("storage/vendor/4myth/style/app-{$DIRECTION}.css") }}" rel="stylesheet" type="text/css">
+<link href="{{ $funcType("storage/vendor/4myth/fonts/fontawesome-free-6.5.2/css/all.css") }}" rel="stylesheet" type="text/css">
+@stack('styles')
 </head>
 
 <body class="{{ config('4myth-tools.font_family_class') }}">
