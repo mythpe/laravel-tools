@@ -11,7 +11,7 @@
 
 @section('title',$pageTitle)
 
-<body>
+<body class="{{ config('4myth-tools.font_family_class') }}">
 <table class="table table-bordered table-condensed table-striped">
     <tr class="text-center">
         <th colspan="{{count($headerItems)}}">{{$pageTitle}}</th>

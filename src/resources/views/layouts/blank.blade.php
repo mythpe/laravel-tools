@@ -1,7 +1,7 @@
 @php
-$funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
+    $funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
 @endphp
-<!doctype html>
+    <!doctype html>
 <html lang="{{$LOCALE}}" dir="{{$DIRECTION}}">
 <head>
     @include('4myth-tools::partials.head')
@@ -11,7 +11,7 @@ $funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
     @stack('styles')
 </head>
 
-<body>
+<body class="{{ config('4myth-tools.font_family_class') }}">
 @yield('content')
 <script src="{{$funcType('storage/vendor/4myth/js/jquery/jquery.min.js')}}"></script>
 

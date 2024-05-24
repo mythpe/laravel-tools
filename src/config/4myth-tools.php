@@ -98,7 +98,6 @@ return [
      */
     'front_end_url'                 => (string) env('FRONT_END_URL', ''),
 
-
     /*
     |--------------------------------------------------------------------------
     | Contact Us Website url
@@ -229,7 +228,13 @@ return [
 
     'translator_morph' => 'translatable',
 
-    'transformer' => [
+    'transformer'       => [
         'append_text' => !1,
     ],
+
+    /**
+     * Default font family of views
+     * Available: 'font-kufi', 'font-sstarabic', 'font-changa'
+     */
+    'font_family_class' => 'font-kufi',
 ];

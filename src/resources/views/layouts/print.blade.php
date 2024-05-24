@@ -31,7 +31,7 @@
     </script>
 </head>
 
-<body>
+<body class="{{ config('4myth-tools.font_family_class') }}">
 <div class="d-print-none main-print-buttons {{ $ALIGN }}">
     <div class="">
         <a
