@@ -1,0 +1,15 @@
+/*
+ * MyTh Ahmed Faiz Copyright © 2016-2024 All rights reserved.
+ * Email: mythpe@gmail.com
+ * Mobile: +966590470092
+ * Website: https://www.4myth.com
+ * Github: https://github.com/mythpe
+ */
+@import "./bootstrap-5.2.3-dist/css/bootstrap.rtl.css";
+
+body {
+    margin: 0;
+    color: #212529;
+    text-align: right;
+    direction: rtl;
+}

@@ -1,0 +1,27 @@
+/*
+ * MyTh Ahmed Faiz Copyright © 2016-2024 All rights reserved.
+ * Email: mythpe@gmail.com
+ * Mobile: +966590470092
+ * Website: https://www.4myth.com
+ * Github: https://github.com/mythpe
+ */
+
+// sizing icons
+// -------------------------
+
+// literal magnification scale
+.sizes-literal(@factor) when (@factor > 0) {
+  .sizes-literal((@factor - 1));
+
+  .@{fa-css-prefix}-@{factor}x {
+    font-size: (@factor * 1em);
+  }
+}
+.sizes-literal(10);
+
+// step-based scale (with alignment)
+each(.fa-sizes(), {
+  .@{fa-css-prefix}-@{key} {
+    .fa-size(@value);
+  }
+});
