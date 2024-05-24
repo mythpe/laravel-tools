@@ -7,7 +7,7 @@
  */
 
 @font-face {
-    font-family: 'main-font';
+    font-family: 'font-kufi';
     font-weight: normal;
     font-display: swap;
     font-style: normal;
@@ -15,4 +15,8 @@
     url('KufiRegular.woff') format('woff'),
     url('KufiRegular.ttf') format('truetype'),
     url("KufiRegular.svg") format("svg");
+}
+
+.font-kufi {
+    font-family: 'font-kufi', serif;
 }

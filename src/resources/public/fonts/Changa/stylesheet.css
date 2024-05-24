@@ -1,0 +1,22 @@
+/*
+ * MyTh Ahmed Faiz Copyright © 2016-2024 All rights reserved.
+ * Email: mythpe@gmail.com
+ * Mobile: +966590470092
+ * Website: https://www.4myth.com
+ * Github: https://github.com/mythpe
+ */
+
+@font-face {
+    font-family: 'font-changa';
+    font-weight: normal;
+    font-display: swap;
+    font-style: normal;
+    src: url('./subset-Changa-Regular.woff') format('woff'),
+    url('./subset-Changa-Regular.ttf') format('truetype'),
+    url('./subset-Changa-Regular.eot') format("eot"),
+    url('./subset-Changa-Regular.svg') format("svg");
+}
+
+.font-changa {
+    font-family: 'font-changa', serif;
+}
