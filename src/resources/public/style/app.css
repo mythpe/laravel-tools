@@ -99,10 +99,6 @@ body {
     vertical-align: middle !important;
 }
 
-.main-print-buttons {
-    z-index: 99999;
-}
-
 .page-break-inside-avoid {
     page-break-inside: avoid !important;
 }

@@ -10,6 +10,7 @@
     <link href="{{ $funcType("storage/vendor/4myth/fonts/fontawesome-free/css/all.css") }}" rel="stylesheet" type="text/css">
     <style>
         .main-print-buttons {
+            z-index: 99999;
             position: fixed;
             width: auto;
         }

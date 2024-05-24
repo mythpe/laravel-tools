@@ -7,11 +7,6 @@
     @include('4myth-tools::partials.head')
     <link href="{{ $funcType("storage/vendor/4myth/style/app.css") }}" rel="stylesheet" type="text/css">
     <link href="{{ $funcType("storage/vendor/4myth/style/app-{$DIRECTION}.css") }}" rel="stylesheet" type="text/css">
-    <style>
-        body {
-            font-family: 'main-font', 'Sans', monospace !important;
-        }
-    </style>
 </head>
 
 @section('title',$pageTitle)
