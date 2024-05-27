@@ -1,7 +1,3 @@
 # Auto detect text files and perform LF normalization
-!*.zip text eol=lf
-!*.svg text eol=lf
-!*.ttf text eol=lf
-!*.woff text eol=lf
-!*.woff2 text eol=lf
+* eol=lf
 
