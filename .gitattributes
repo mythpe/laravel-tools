@@ -1,8 +1,7 @@
 # Auto detect text files and perform LF normalization
-*.txt text eol=lf
-*.php text eol=lf
-*.js text eol=lf
-*.css text eol=lf
-*.scss text eol=lf
-*.sass text eol=lf
-*.stub text eol=lf
+!*.zip text eol=lf
+!*.svg text eol=lf
+!*.ttf text eol=lf
+!*.woff text eol=lf
+!*.woff2 text eol=lf
+
