@@ -71,12 +71,18 @@ class BaseCommand extends Command
     public function insertImageFromUrl(BaseModel $model, array $data): void
     {
         $keys = array_keys($data);
+        $files = [];
         foreach ($keys as $key) {
-            if (!Str::startsWith($key, '_file')) {
-                continue;
+            if ($key == '_files') {
+                $files = array_merge($files, $data[$key]);
             }
+            elseif ($key == '_file') {
+                $files[] = $data[$key];
+            }
+        }
+        foreach ($files as $file) {
             try {
-                $src = $data[$key];
+                $src = $file;
                 $collection = null;
                 if (is_array($src)) {
                     $collection = $src['collection'] ?? null;
@@ -87,7 +93,6 @@ class BaseCommand extends Command
                     continue;
                 }
                 $random = rand(1, 50);
-                // $src = $data['_avatar'];
                 if ($src === 1 || $src === !0) {
                     $r = 2 / 3;
                     $w = 400;
@@ -115,37 +120,6 @@ class BaseCommand extends Command
                 $this->components->error($exception);
             }
         }
-        // if (array_key_exists('_avatar', $data)) {
-        //     try {
-        //         $random = rand(1, 50);
-        //         $src = $data['_avatar'];
-        //         if ($src === 1 || $src === !0) {
-        //             $r = 2 / 3;
-        //             $w = 400;
-        //             $h = (int) floor($w * $r);
-        //             $src = "https://picsum.photos/id/$random/$w/$h";
-        //         }
-        //         elseif (Str::startsWith($src, ($r = 'r:'))) {
-        //             $array = explode(',', Str::after($src, $r));
-        //             $r = explode('/', $array[0]);
-        //             $r = $r[0] / $r[1];
-        //             $w = $array[1];
-        //             $h = (int) floor($w * $r);
-        //             $src = "https://picsum.photos/id/$random/$w/$h";
-        //         }
-        //         elseif (is_array($src)) {
-        //             $src = "https://picsum.photos/id/$random/$src[0]/".($src[1] ?? $src[0]);
-        //         }
-        //         elseif (is_string($src) && Str::startsWith($src, '/')) {
-        //             $src = base_path($src);
-        //         }
-        //         $model->addModelMedia($src);
-        //     }
-        //     catch (Exception $exception) {
-        //         $this->echo("Insert Image: [".get_class($model)."] ID => $model->id");
-        //         $this->components->error($exception);
-        //     }
-        // }
     }
 
     /**
