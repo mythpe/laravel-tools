@@ -114,7 +114,7 @@ class BaseCommand extends Command
                 elseif (is_string($src) && Str::startsWith($src, '/')) {
                     $src = base_path($src);
                 }
-                if ($single) {
+                if ($single && $collection) {
                     $model->clearMediaCollection($collection);
                 }
                 $model->addModelMedia($src, $collection);
