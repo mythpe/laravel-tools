@@ -76,7 +76,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishes([
             __DIR__.'/../resources/public' => storage_path('app/public/vendor/4myth'),
             __DIR__.'/../resources/vendor' => resource_path('vendor'),
-        ], '4myth-tools-assets');
+        ], 'laravel-assets');
 
         if ($this->app->runningInConsole()) {
             $this->commands([

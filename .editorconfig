@@ -3,9 +3,10 @@ charset = utf-8
 end_of_line = lf
 indent_size = 4
 indent_style = space
-insert_final_newline = false
-max_line_length = 200
+insert_final_newline = true
+max_line_length = 150
 tab_width = 4
+trim_trailing_whitespace = true
 ij_continuation_indent_size = 8
 ij_formatter_off_tag = @formatter:off
 ij_formatter_on_tag = @formatter:on
@@ -320,6 +321,7 @@ ij_typescript_union_types_wrap = on_every_item
 ij_typescript_use_chained_calls_group_indents = false
 ij_typescript_use_double_quotes = false
 ij_typescript_use_explicit_js_extension = auto
+ij_typescript_use_import_type = auto
 ij_typescript_use_path_mapping = always
 ij_typescript_use_public_modifier = false
 ij_typescript_use_semicolon_after_statement = false
@@ -401,7 +403,7 @@ ij_javascript_imports_wrap = on_every_item
 ij_javascript_indent_case_from_switch = true
 ij_javascript_indent_chained_calls = true
 ij_javascript_indent_package_children = 0
-ij_javascript_jsx_attribute_value = braces
+ij_javascript_jsx_attribute_value = quotes
 ij_javascript_keep_blank_lines_in_code = 2
 ij_javascript_keep_first_column_comment = true
 ij_javascript_keep_indents_on_empty_lines = false
@@ -501,6 +503,7 @@ ij_javascript_union_types_wrap = on_every_item
 ij_javascript_use_chained_calls_group_indents = false
 ij_javascript_use_double_quotes = false
 ij_javascript_use_explicit_js_extension = auto
+ij_javascript_use_import_type = auto
 ij_javascript_use_path_mapping = always
 ij_javascript_use_public_modifier = false
 ij_javascript_use_semicolon_after_statement = false
@@ -736,7 +739,7 @@ ij_php_version_weight = 28
 ij_php_while_brace_force = never
 ij_php_while_on_new_line = false
 
-[{*.har,*.jsb2,*.jsb3,*.json,.babelrc,.eslintrc,.prettierrc,.stylelintrc,bowerrc,composer.lock,jest.config}]
+[{*.har,*.jsb2,*.jsb3,*.json,*.jsonc,*.postman_collection,*.postman_collection.json,*.postman_environment,*.postman_environment.json,.babelrc,.eslintrc,.prettierrc,.stylelintrc,.ws-context,bowerrc,composer.lock,jest.config}]
 indent_size = 2
 ij_json_array_wrapping = split_into_lines
 ij_json_keep_blank_lines_in_code = 0
@@ -753,7 +756,7 @@ ij_json_spaces_within_braces = false
 ij_json_spaces_within_brackets = false
 ij_json_wrap_long_lines = false
 
-[{*.htm,*.html,*.ng,*.sht,*.shtm,*.shtml}]
+[{*.htm,*.html,*.sht,*.shtm,*.shtml}]
 indent_size = 1
 tab_width = 2
 ij_continuation_indent_size = 1
