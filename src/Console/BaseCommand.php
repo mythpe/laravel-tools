@@ -84,6 +84,7 @@ class BaseCommand extends Command
             try {
                 $src = $file;
                 $collection = null;
+                $single = is_array($src) ? ($src['single'] ?? !1) : !0;
                 if (is_array($src)) {
                     $collection = $src['collection'] ?? null;
                     $src = $src['src'] ?? null;
@@ -112,6 +113,9 @@ class BaseCommand extends Command
                 }
                 elseif (is_string($src) && Str::startsWith($src, '/')) {
                     $src = base_path($src);
+                }
+                if ($single) {
+                    $model->clearMediaCollection($collection);
                 }
                 $model->addModelMedia($src, $collection);
             }
