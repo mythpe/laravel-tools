@@ -46,9 +46,9 @@ body {
     /*font-weight: 400;*/
     /*line-height: 1.6;*/
     /*color: #212529;*/
-    text-align: left;
+    text-align: right;
     /*background-color: #f8fafc;*/
-    direction: ltr;
+    direction: rtl;
 }
 
 [tabindex="-1"]:focus {
