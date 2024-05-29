@@ -14,7 +14,8 @@
 }
 
 html {
-    line-height: 1.15;
+    /*font-family: sans-serif;*/
+    /*line-height: 1.15;*/
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     -ms-overflow-style: scrollbar;
@@ -39,15 +40,15 @@ section {
 }
 
 body {
-    margin: 0;
-    /*font-family: 'main-font', sans-serif;*/
+    /*margin: 0;*/
+    /*font-family: 'main-font', serif;*/
     /*font-size: .9rem;*/
     /*font-weight: 400;*/
     /*line-height: 1.6;*/
-    color: #212529;
-    text-align: right;
+    /*color: #212529;*/
+    text-align: left;
     /*background-color: #f8fafc;*/
-    direction: rtl;
+    direction: ltr;
 }
 
 [tabindex="-1"]:focus {
