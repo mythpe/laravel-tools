@@ -64,10 +64,11 @@ class PermissionMiddleware
             $skip = array_unique($skip);
         }
         if (!Str::endsWith($permissionName, $skip)) {
-            $routes = getRouterPermissions(!0);
-            if (!in_array($permissionName, $routes)) {
-                throw_if(!$user->checkPermission($permissionName), new NoPermissionException());
-            }
+            throw_if(!$user->checkPermission($permissionName), new NoPermissionException());
+            // $routes = getRouterPermissions(!0);
+            // if (!in_array($permissionName, $routes)) {
+            //     throw_if(!$user->checkPermission($permissionName), new NoPermissionException());
+            // }
         }
         return $next($request);
     }
