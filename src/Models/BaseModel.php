@@ -11,6 +11,7 @@ namespace Myth\LaravelTools\Models;
 
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -25,13 +26,14 @@ use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
 use Myth\LaravelTools\Utilities\Helpers;
 use Spatie\MediaLibrary\HasMedia;
 
+
 /**
  *
  * @property array|mixed|string|void|null $id
  * @property array|mixed|string|void|null $created_at
  * @property array|mixed|string|void|null $updated_at
  */
-class BaseModel extends Authenticate implements HasMedia
+class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
 {
     use HasFactory;
     use Notifiable;
@@ -484,5 +486,13 @@ class BaseModel extends Authenticate implements HasMedia
     public function getAuthPasswordName(): string
     {
         return 'password';
+    }
+
+    /**
+     * Get the model's preferred locale.
+     */
+    public function preferredLocale(): string
+    {
+        return $this->locale;
     }
 }
