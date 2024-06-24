@@ -274,6 +274,6 @@ trait HasMediaTrait
      */
     public function getMediaAttachments(?string $collection = null): Collection
     {
-        return $this->getMedia($collection ?: static::$mediaAttachmentsCollection)->sortByDesc('order_column')->values();
+        return $this->getMedia($collection ?? static::$mediaAttachmentsCollection)->sortByDesc('order_column')->values();
     }
 }

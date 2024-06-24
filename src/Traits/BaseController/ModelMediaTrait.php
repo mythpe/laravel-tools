@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Myth\LaravelTools\Models\BaseModel;
 
-trait AttachmentsTrait
+trait ModelMediaTrait
 {
     static string $returnTypeKey = 'return';
 
@@ -79,18 +79,23 @@ trait AttachmentsTrait
     }
 
     /**
+     * Example: Collection
+     *  [ 'collection' => 'files' ]
+     * Example: Return all attachments
+     * [ static::$returnType => 'all' ]
      * @param BaseModel $model
      * @return mixed
+     * @uses static::$returnTypeKey
      */
     public function getModelAttachmentsMedia(&$model)
     {
         $model->refresh();
         $request = $this->request;
-        $collection = $request->input('collection', $model::$mediaAttachmentsCollection);
         $resource = config('4myth-tools.media_resource_class');
-        $all = $request->input(static::$returnTypeKey) == 'all';
-        $media = $model->media()->when(!$all, fn(Builder $b) => $b->where(['collection_name' => $collection]))->latest('order_column');
-        return $resource::collection($media->get());
+        if ($request->input(static::$returnTypeKey) == 'all') {
+            return $resource::collection($model->media()->latest('order_column')->get());
+        }
+        return $resource::collection($model->getMediaAttachments($request->input('collection')));
     }
 
     /**

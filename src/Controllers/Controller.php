@@ -10,7 +10,6 @@
 namespace Myth\LaravelTools\Controllers;
 
 use App\Models\User;
-use Closure;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -20,7 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Myth\LaravelTools\Traits\BaseController\ApplyQueryTrait;
-use Myth\LaravelTools\Traits\BaseController\AttachmentsTrait;
+use Myth\LaravelTools\Traits\BaseController\ModelMediaTrait;
 use Myth\LaravelTools\Traits\BaseController\CrudTrait;
 use Myth\LaravelTools\Traits\BaseController\EventsTrait;
 use Myth\LaravelTools\Traits\BaseController\FilterTrait;
@@ -35,7 +34,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    use CrudTrait, EventsTrait, SearchTrait, RulesTrait, SortTrait, PaginateTrait, FilterTrait, AttachmentsTrait, ApplyQueryTrait;
+    use CrudTrait, EventsTrait, SearchTrait, RulesTrait, SortTrait, PaginateTrait, FilterTrait, ModelMediaTrait, ApplyQueryTrait;
 
     /**
      * Model Relations
@@ -58,11 +57,11 @@ class Controller extends BaseController
      */
     const NO_PERMISSIONS = [];
 
-    /** @var Model|null|User */
-    public $user;
+    /** @var Model|User|null */
+    public ?Model $user = null;
 
-    /** @var mixed|Request|string|array|null */
-    protected $request;
+    /** @var Request */
+    protected Request $request;
 
     /**
      * Controller constructor.
@@ -70,30 +69,26 @@ class Controller extends BaseController
     public function __construct()
     {
         $this->request = request();
+        $this->user = auth()->user();
         method_exists($this, 'iniPaginateRequest') && $this->iniPaginateRequest($this->request);
-        $this->middleware(function ($request, Closure $next) {
-            $this->user = $request->user();
-            return $next($request);
-        });
     }
 
     /**
      * Send API unique response for model
      * Helper
      *
-     * @param string|array||\App\Models\BaseModel $model
+     * @param $model
      * @param string|null $message
-     *
      * @return JsonResponse
      */
-    protected function resource($model, ?string $message = ''): JsonResponse
+    protected function resource($model, ?string $message = null): JsonResponse
     {
         if (is_string($model)) {
             $message = $model;
-            $model = null;
+            $model = [];
         }
         return $this->json([
-            "message" => $message,
+            "message" => $message ?? '',
             "success" => !0,
             "data"    => $model,
         ]);
@@ -126,11 +121,11 @@ class Controller extends BaseController
     /**
      * Send API Unique success Message Response
      *
-     * @param null|array|string $data
+     * @param array|string|null $data
      *
      * @return JsonResponse
      */
-    protected function successResponse($data = null): JsonResponse
+    protected function successResponse(array | string | null $data = null): JsonResponse
     {
         $res = [
             "message" => '',
@@ -140,7 +135,7 @@ class Controller extends BaseController
 
         if (is_string($data)) {
             $res['message'] = $data;
-            $res['data'] = null;
+            $res['data'] = [];
         }
         if (is_array($data)) {
             $res = array_merge($res, $data);
