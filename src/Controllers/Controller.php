@@ -19,10 +19,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Myth\LaravelTools\Traits\BaseController\ApplyQueryTrait;
-use Myth\LaravelTools\Traits\BaseController\ModelMediaTrait;
 use Myth\LaravelTools\Traits\BaseController\CrudTrait;
 use Myth\LaravelTools\Traits\BaseController\EventsTrait;
 use Myth\LaravelTools\Traits\BaseController\FilterTrait;
+use Myth\LaravelTools\Traits\BaseController\ModelMediaTrait;
 use Myth\LaravelTools\Traits\BaseController\PaginateTrait;
 use Myth\LaravelTools\Traits\BaseController\RulesTrait;
 use Myth\LaravelTools\Traits\BaseController\SearchTrait;
@@ -69,8 +69,11 @@ class Controller extends BaseController
     public function __construct()
     {
         $this->request = request();
-        $this->user = auth()->user();
         method_exists($this, 'iniPaginateRequest') && $this->iniPaginateRequest($this->request);
+        $this->middleware(function ($request, \Closure $next) {
+            $this->user = $request->user();
+            return $next($request);
+        });
     }
 
     /**
