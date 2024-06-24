@@ -11,7 +11,9 @@ namespace Myth\LaravelTools\Traits\BaseController;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Myth\LaravelTools\Models\BaseModel;
 
 trait ModelMediaTrait
@@ -83,28 +85,27 @@ trait ModelMediaTrait
      *  [ 'collection' => 'files' ]
      * Example: Return all attachments
      * [ static::$returnType => 'all' ]
-     * @param BaseModel $model
-     * @return mixed
-     * @uses static::$returnTypeKey
+     * @param BaseModel|Model $model
+     * @return AnonymousResourceCollection
+     * @uses self::$returnTypeKey
      */
-    public function getModelAttachmentsMedia(&$model)
+    public function getModelAttachmentsMedia(&$model): AnonymousResourceCollection
     {
         $model->refresh();
         $request = $this->request;
         $resource = config('4myth-tools.media_resource_class');
-        if ($request->input(static::$returnTypeKey) == 'all') {
+        if ($request->input(self::$returnTypeKey) == 'all') {
             return $resource::collection($model->media()->latest('order_column')->get());
         }
         return $resource::collection($model->getMediaAttachments($request->input('collection')));
     }
 
     /**
-     * @param BaseModel|Builder $model
-     * @param BaseModel $media
-     *
+     * @param Model $model
+     * @param Model $media
      * @return JsonResponse
      */
-    public function deleteAttachment($model, $media): JsonResponse
+    public function deleteAttachment(Model $model, Model $media): JsonResponse
     {
         if ($media->model->is($model)) {
             $media->delete();
