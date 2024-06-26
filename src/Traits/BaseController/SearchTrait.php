@@ -241,7 +241,7 @@ trait SearchTrait
                         else {
                             $builder->orWhere($column, 'LIKE', "%{$words}%");
                             if (Helpers::hasTrait($model, HasTranslatorTrait::class)) {
-                                $availableAttributes = $model->translatorAttributes();
+                                $availableAttributes = $model?->translatorAttributes();
                                 if (in_array($column, $availableAttributes)) {
                                     $builder->orWhere(fn(Builder $t) => $t->whereHas('translator', fn($m) => $m->where('attribute', $column)->where('value', 'LIKE', "%$words%")));
                                 }
