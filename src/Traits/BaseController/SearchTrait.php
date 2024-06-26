@@ -22,14 +22,12 @@ trait SearchTrait
      * @var bool
      */
     public bool $customSearchColumns = false;
-
     /**
      * Fields to be searched
      *
      * @var array
      */
     public array $searchColumns = [];
-
     /**
      * user_id => ['user']
      * user_id => ['relation' => 'user', 'method' => 'whereHas', 'column' => 'name', 'operator' => 'LIKE', 'value' => '%{v}%']
@@ -37,17 +35,20 @@ trait SearchTrait
      * @var array<string,array>
      */
     public array $mapSearchQueryColumns = [];
-
     /**
      * @var string
      */
     public string $searchRequestKey = 'search';
-
     /**
      * @var string
      */
     public string $searchColumnsRequestKey = 'searchColumns';
-
+    /**
+     * Make this columns force like operator
+     * Example: [ 'name', 'email' ]
+     * @var array<int,string>
+     */
+    public array $forceLikeColumns = [];
     /**
      * @var string
      */
@@ -233,7 +234,8 @@ trait SearchTrait
 
                     }
                     elseif (Schema::hasColumn($this->searchTable, $column)) {
-                        if (($column == 'id' && is_numeric($words)) || (ends_with($column, '_id') && is_numeric($words))) {
+                        $hasForce = in_array($column, $this->forceLikeColumns, !0);
+                        if (!$hasForce && (($column == 'id' && is_numeric($words)) || (ends_with($column, '_id') && is_numeric($words)))) {
                             $builder->orWhere($column, '=', (int) $words);
                         }
                         else {
