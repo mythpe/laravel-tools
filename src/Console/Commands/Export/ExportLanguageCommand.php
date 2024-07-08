@@ -73,7 +73,7 @@ class ExportLanguageCommand extends BaseCommand
                     });
                 }
                 $path = "$dir/$locale/$fileName.json";
-                $outputDisk->put($path, $data->toJson(JSON_UNESCAPED_UNICODE));
+                $outputDisk->put($path, $data->undot()->toJson(JSON_UNESCAPED_UNICODE));
                 $o = str_ireplace(base_path(), '', $outputDisk->path($path));
                 $o = str_ireplace('/', '\\', $o);
                 $o = trim($o, '/\\');
