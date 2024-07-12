@@ -11,11 +11,11 @@ namespace Myth\LaravelTools\Notifications;
 
 class SmsNotification
 {
-    /** @var string */
-    protected string $content = '';
+    /** @var ?string */
+    protected ?string $content = null;
 
-    /** @var null|string|string[] */
-    protected $mobile = null;
+    /** @var string|string[] */
+    protected string | array | null $mobile = null;
 
     /**
      * Set the content of the message.
@@ -37,9 +37,9 @@ class SmsNotification
      *
      * @return $this
      */
-    public function to($mobile): self
+    public function to(array | string $mobile): self
     {
-        $this->mobile = $mobile;
+        $this->mobile = $mobile ?: null;
         return $this;
     }
 
@@ -48,13 +48,13 @@ class SmsNotification
      */
     public function getContent(): string
     {
-        return $this->content;
+        return $this->content ?: '';
     }
 
     /**
-     * @return string|string[]
+     * @return array|string|null
      */
-    public function getMobile()
+    public function getMobile(): array | string | null
     {
         return $this->mobile;
     }
