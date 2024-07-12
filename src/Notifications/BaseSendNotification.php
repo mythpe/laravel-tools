@@ -266,8 +266,8 @@ class BaseSendNotification extends Notification implements ShouldQueue
             return $notifiable->routeNotificationFor('sms');
         }
         if ($notifiable instanceof Model) {
-            if (method_exists($notifiable, 'routeNotificationFor')) {
-                return $notifiable->routeNotificationFor($this);
+            if (method_exists($notifiable, 'routeNotificationForSms')) {
+                return $notifiable->routeNotificationForSms($this);
             }
             return $notifiable->mobile;
         }
