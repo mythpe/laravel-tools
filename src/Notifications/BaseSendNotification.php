@@ -348,9 +348,11 @@ class BaseSendNotification extends Notification implements ShouldQueue
     public function viaQueues(): array
     {
         return [
-            'mail'  => 'default',
-            'slack' => 'default',
-            'sms'   => 'default',
+            'database'   => 'default',
+            'mail'       => 'default',
+            'slack'      => 'default',
+            'sms'        => 'default',
+            'push_token' => 'default',
         ];
     }
 }

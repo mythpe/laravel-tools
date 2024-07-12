@@ -24,7 +24,7 @@ class ExpoPushNotification
     /**
      * @var string|string[]
      */
-    protected $pushToken = '';
+    protected array | string $pushToken = '';
 
     /**
      * Push notification channel
@@ -71,7 +71,7 @@ class ExpoPushNotification
      *
      * @return $this
      */
-    public function to($pushToken): self
+    public function to(array | string $pushToken): self
     {
         $this->pushToken = $pushToken;
         return $this;
@@ -88,7 +88,7 @@ class ExpoPushNotification
     /**
      * @return string|string[]
      */
-    public function getPushToken()
+    public function getPushToken(): array | string
     {
         return $this->pushToken;
     }
