@@ -187,13 +187,13 @@ class SmsMessage
             $arg = [
                 $this->segments['send_sms'],
                 [
-                    ...$this->data,
                     $this->usernameKey   => $this->username,
                     $this->passwordKey   => $this->password,
                     $this->senderKey     => $this->sender,
                     $this->numbersKey    => is_array($numbers) ? implode(',', $numbers) : $numbers,
                     $this->messageKey    => trim($message),
                     $this->returnTypeKey => $this->returnType,
+                    ...$this->data,
                 ],
             ];
             if ($this->debug) {
@@ -237,9 +237,9 @@ class SmsMessage
     {
         try {
             $request = $this->http->get($this->segments['balance'], [
-                ...$this->data,
                 $this->usernameKey => $this->username,
                 $this->passwordKey => $this->password,
+                ...$this->data,
             ]);
             $res = $request->json();
             $this->log($res);
@@ -268,9 +268,9 @@ class SmsMessage
     {
         try {
             $request = $this->http->get($this->segments['sender_names'], [
-                ...$this->data,
                 $this->usernameKey => $this->username,
                 $this->passwordKey => $this->password,
+                ...$this->data,
             ]);
             $res = $request->json();
             $this->log($res);
