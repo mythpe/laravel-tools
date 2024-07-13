@@ -63,6 +63,32 @@ class SmsMessage
         'sender_names' => 'sender_names',
     ];
     /**
+     * @var string
+     */
+    public string $usernameKey = 'username';
+    /**
+     * @var string
+     */
+    public string $messageKey = 'message';
+    /**
+     * @var string
+     */
+    public string $senderKey = 'sender';
+    /**
+     * @var string
+     */
+    public string $passwordKey = 'api_key';
+    /** @var string */
+    public string $returnTypeKey = 'return';
+    /**
+     * @var string
+     */
+    public string $numbersKey = 'numbers';
+    /** @var string Log Folder Name */
+    public string $logName = 'sms';
+    /** @var PendingRequest $http */
+    public PendingRequest $http;
+    /**
      * API domain url
      *
      * @var string|null
@@ -70,32 +96,6 @@ class SmsMessage
     protected string | null $baseUrl = null;
     /** @var string */
     protected string $method = 'POST';
-    /**
-     * @var string
-     */
-    protected string $usernameKey = 'username';
-    /**
-     * @var string
-     */
-    protected string $messageKey = 'message';
-    /**
-     * @var string
-     */
-    protected string $senderKey = 'sender';
-    /**
-     * @var string
-     */
-    protected string $passwordKey = 'api_key';
-    /** @var string */
-    protected string $returnTypeKey = 'return';
-    /**
-     * @var string
-     */
-    protected string $numbersKey = 'numbers';
-    /** @var string Log Folder Name */
-    protected string $logName = 'sms';
-    /** @var PendingRequest $http */
-    protected PendingRequest $http;
 
     /**
      * @param string|null $url
