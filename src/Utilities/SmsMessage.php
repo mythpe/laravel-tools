@@ -105,10 +105,10 @@ class SmsMessage
      */
     public function __construct()
     {
-        $this->baseUrl = rtrim((string) env('SMS_URL'), '/');
-        $this->username = (string) env('SMS_USERNAME');
-        $this->password = (string) env('SMS_PASSWORD');
-        $this->sender = (string) env('SMS_SENDER_NAME');
+        $this->baseUrl = rtrim((string) env('SMS_URL', ''), '/');
+        $this->username = (string) env('SMS_USERNAME', '');
+        $this->password = (string) env('SMS_PASSWORD', '');
+        $this->sender = (string) env('SMS_SENDER_NAME', '');
         $this->http = Http::baseUrl($this->getBaseUrl())->withHeader('X-REQUEST-WITH', "MyTh SMS API 2.0");
     }
 
