@@ -76,16 +76,16 @@ trait CrudTrait
     /**
      * Sort query as latest
      *
-     * @var bool|string|null
+     * @var array|bool|string|null
      */
-    protected bool | string | null $latest = null;
+    protected string | array | bool | null $latest = null;
 
     /**
      * Sort query as oldest
      *
-     * @var bool|string|null
+     * @var array|bool|string|null
      */
-    protected bool | string | null $oldest = null;
+    protected string | array | bool | null $oldest = null;
 
     /**
      * This used to show only active of models
@@ -162,7 +162,24 @@ trait CrudTrait
             return $r;
         }
 
-        if ($this->latest) {
+        if (!!$this->oldest) {
+            $column = $this->oldest;
+            if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
+                $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) asc");
+            }
+            else {
+                if (is_array($this->oldest)) {
+                    foreach ($this->oldest as $item) {
+                        $query->oldest($item);
+                    }
+                }
+                else {
+                    $query->oldest($this->oldest === !0 ? null : $this->oldest);
+                }
+            }
+        }
+
+        if (!!$this->latest) {
             $column = $this->latest;
             if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
                 $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) desc");
@@ -179,22 +196,6 @@ trait CrudTrait
             }
         }
 
-        if ($this->oldest) {
-            $column = $this->oldest;
-            if (is_string($column) && array_key_exists($column, $this->orderByRawColumns)) {
-                $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) asc");
-            }
-            else {
-                if (is_array($this->oldest)) {
-                    foreach ($this->oldest as $item) {
-                        $query->oldest($item);
-                    }
-                }
-                else {
-                    $query->oldest($this->oldest === !0 ? null : $this->oldest);
-                }
-            }
-        }
         $with = $this->with;
         /** @var Model $model */
         $model = $query->getModel();
