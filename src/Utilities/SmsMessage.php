@@ -45,13 +45,14 @@ class SmsMessage
      */
     public string $returnType = 'json';
     /**
+     * unicode type of content.
+     * @var string
+     */
+    public string $unicode = 'u';
+    /**
      * @var array Http query params
      */
     public array $data = [];
-    /**
-     * @var array Client Options
-     */
-    public array $options = [];
     /** @var bool Debug request */
     public bool $debug = !1;
     /** @var bool Log send */
@@ -80,6 +81,8 @@ class SmsMessage
     public string $passwordKey = 'api_key';
     /** @var string */
     public string $returnTypeKey = 'return';
+    /** @var string */
+    public string $unicodeKey = 'return';
     /**
      * @var string
      */
@@ -193,6 +196,7 @@ class SmsMessage
                     $this->numbersKey    => is_array($numbers) ? implode(',', $numbers) : $numbers,
                     $this->messageKey    => trim($message),
                     $this->returnTypeKey => $this->returnType,
+                    $this->unicodeKey    => $this->unicode,
                     ...$this->data,
                 ],
             ];
