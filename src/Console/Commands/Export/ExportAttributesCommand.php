@@ -95,25 +95,24 @@ class ExportAttributesCommand extends BaseCommand
             /** @var BaseModel $model */
             $model = app($namespace);
             /** @var Collection $fillable */
-            $fillable = collect();
+            $fillable = collect([]);
 
             if (method_exists($model, 'getFillable')) {
-                $fillable->merge($model->getFillable());
+                $fillable = $fillable->merge($model->getFillable());
             }
 
             if (method_exists($model, 'getAppends')) {
-                $fillable->merge($model->getAppends());
+                $fillable = $fillable->merge($model->getAppends());
             }
 
             if (method_exists($model, 'getHidden')) {
-                $fillable->merge($model->getHidden());
+                $fillable = $fillable->merge($model->getHidden());
             }
 
             if (method_exists($model, 'getTable')) {
-                $fillable->merge(Schema::getColumnListing($model->getTable()));
+                $fillable = $fillable->merge(Schema::getColumnListing($model->getTable()));
             }
-
-            $fillable->merge(config('4myth-tools.export_attributes', []));
+            $fillable = $fillable->merge(config('4myth-tools.export_attributes', []));
             $parents = explode('\\', $model::class);
             if (count($parents) > 3) {
                 unset($parents[count($parents) - 1]);
@@ -123,9 +122,6 @@ class ExportAttributesCommand extends BaseCommand
                     $additionalChoice[] = $v;
                 }
             }
-
-            // d($controllersFiles);
-
             foreach ($controllersFiles as $controller) {
                 $fileName = 'App\\'.Str::before(str_replace('/', '\\', $controller), '.php');
                 if (!class_exists($fileName)) {
@@ -148,7 +144,7 @@ class ExportAttributesCommand extends BaseCommand
             $classSnake = Str::snake($class_basename);
             $classCamel = Str::camel($class_basename);
             $classPascal = ucfirst($classCamel);
-            $fillable->merge(["{$classSnake}_id", Str::plural($classSnake)."_id"]);
+            $fillable = $fillable->merge(["{$classSnake}_id", Str::plural($classSnake)."_id"]);
 
             // Customizing
             if ($class_basename == 'Setting' && method_exists($model, 'setting')) {
@@ -191,7 +187,6 @@ class ExportAttributesCommand extends BaseCommand
                     '_pivot_',
                 ]) && !Str::endsWith($v, '_to_string'))->values()->toArray();
             sort($fillable);
-            // dd($fillable);
             $temp = [];
             foreach ($fillable as $k => $value) {
                 $hasFrom = starts_with($value, 'from_');
