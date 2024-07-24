@@ -158,8 +158,11 @@ class ExportAttributesCommand extends BaseCommand
             $class_reflex = new ReflectionClass($model);
             $class_constants = $class_reflex->getConstants();
             foreach ($class_constants as $constant) {
-                if (is_string($constant)) {
+                if (is_string($constant) && preg_match_all("/[\w\d]+/", $constant)) {
                     $fillable[] = $constant;
+                }
+                elseif (is_array($constant)) {
+                    $fillable = array_unique([...$fillable, ...array_values($constant)]);
                 }
             }
 
