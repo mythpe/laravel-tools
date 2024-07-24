@@ -70,7 +70,7 @@ class BaseCommand extends Command
      * @param array $data
      * @return void
      */
-    public function insertImageFromUrl(BaseModel $model, array $data): void
+    public function insertImage(BaseModel $model, array $data): void
     {
         $keys = array_keys($data);
         $files = [];
@@ -165,12 +165,15 @@ class BaseCommand extends Command
             $this->iniCollection();
             Schema::disableForeignKeyConstraints();
             $files = $file ? [$directory] : $this->disk()->files($directory);
-            $files = collect($files)->filter(fn(string $file) => Str::endsWith($file, ['.php', '.json']) && !Str::startsWith($file, [
+            $files = collect($files)->filter(fn(string $file) => Str::endsWith($file, [
+                    '.php',
+                    '.json',
+                ]) && !Str::startsWith(pathinfo($file, PATHINFO_FILENAME), [
                     '_',
                     '.',
                     '.ignored',
                 ]))->sort()->values();
-
+            // dd($files);
             foreach ($files as $file) {
                 $data = $this->getRowData($file);
                 $name = Str::afterLast($file, '-');
@@ -271,7 +274,7 @@ class BaseCommand extends Command
      * @param $model - Model instance.
      * @return void
      */
-    protected function insert(array | string $data, $table, $model = null): void
+    protected function insert(array | string $data, string $table, BaseModel $model = null): void
     {
         $this->iniCollection();
         $data = $this->getRowData($data);
@@ -299,12 +302,20 @@ class BaseCommand extends Command
             $fill = Arr::only($insert, $model->getFillable());
             $model->fill($fill);
             $model->save();
-            $this->insertImageFromUrl($model, $insert);
-            $this->pushData($model);
         }
         else {
-            /** @var BaseModel $model */
-            $model = $model->{$table}();
+            $cases = [$table, Str::snake($table), Str::camel($table), Str::studly($table)];
+            $found = !1;
+            foreach ($cases as $case) {
+                if (method_exists($model, $case)) {
+                    $model = $model->{$case}();
+                    $found = !0;
+                    break;
+                }
+            }
+            if (!$found) {
+                $model = $model->{$table}();
+            }
             if ($model instanceof Relation) {
                 $fill = Arr::only($insert, $model->getModel()->getFillable());
             }
@@ -312,9 +323,9 @@ class BaseCommand extends Command
                 $fill = Arr::only($insert, $model->getFillable());
             }
             $model = $model->create($fill);
-            $this->insertImageFromUrl($model, $insert);
-            $this->pushData($model);
         }
+        $this->insertImage($model, $insert);
+        $this->pushData($model);
         $classLabel = Str::singular(class_basename($model));
         $this->echo("[".($parentName ? "$parentName => " : '')."$classLabel] => {$model->id}");
         if ($hasRelations && count($data) > 0) {
@@ -340,7 +351,8 @@ class BaseCommand extends Command
 
     /**
      * @param string $text
-     * @param string $method
+     * @param string|null $method
+     * @return void
      */
     protected function echo(string $text, ?string $method = null): void
     {
