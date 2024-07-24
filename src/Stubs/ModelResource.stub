@@ -1,28 +1,1 @@
-<?php
-{copyright}
-
-namespace App\Http\Resources{namespace};
-
-use Illuminate\Http\Request;
-use App\Models{namespace}\{studlySingular} as Model;
-use Myth\LaravelTools\Http\Resources\ApiResource;
-
-class {studlySingular}Resource extends ApiResource
-{
-
-    /** @var Model */
-    public $resource;
-
-    /**
-     * Transform the resource into an array.
-     *
-     * @param Request $request
-     * @return array
-     */
-    public function transformer(Request $request): array
-    {
-        $model = $this->resource;
-        return $this->transformModel([{resource}
-        ]);
-    }
-}
+<?php{copyright}namespace App\Http\Resources{namespace};use Illuminate\Http\Request;use App\Models{namespace}\{studlySingular} as Model;use Myth\LaravelTools\Http\Resources\ApiResource;class {studlySingular}Resource extends ApiResource{    /** @var Model */    public $resource;    /**     * Transform the resource into an array.     *     * @param Request $request     * @return array     */    public function transformer(Request $request): array    {        $model = $this->resource;        return $this->transformModel([{resource}        ]);    }}

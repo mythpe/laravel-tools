@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Console\Commands\Export;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -93,27 +94,27 @@ class ExportAttributesCommand extends BaseCommand
             }
             /** @var BaseModel $model */
             $model = app($namespace);
-            $fillable = [];
+            /** @var Collection $fillable */
+            $fillable = collect();
 
             if (method_exists($model, 'getFillable')) {
-                $fillable = array_unique(array_merge($fillable, $model->getFillable()));
+                $fillable->merge($model->getFillable());
             }
 
             if (method_exists($model, 'getAppends')) {
-                $fillable = array_unique(array_merge($fillable, $model->getAppends()));
+                $fillable->merge($model->getAppends());
             }
 
             if (method_exists($model, 'getHidden')) {
-                $fillable = array_unique(array_merge($fillable, $model->getHidden()));
+                $fillable->merge($model->getHidden());
             }
 
             if (method_exists($model, 'getTable')) {
-                $fillable = array_unique(array_merge($fillable, Schema::getColumnListing($model->getTable())));
+                $fillable->merge(Schema::getColumnListing($model->getTable()));
             }
 
-            $fillable = array_unique(array_merge($fillable, config('4myth-tools.export_attributes')));
+            $fillable->merge(config('4myth-tools.export_attributes', []));
             $parents = explode('\\', $model::class);
-
             if (count($parents) > 3) {
                 unset($parents[count($parents) - 1]);
                 unset($parents[0]);
@@ -138,35 +139,35 @@ class ExportAttributesCommand extends BaseCommand
                 foreach ($r->getMethods() as $method) {
                     $methodName = $method->getName();
                     if (starts_with($methodName, '_') && $method->getReturnType() == 'array') {
-                        $fillable = array_unique(array_merge($fillable, array_keys($c->{$methodName}())));
+                        $fillable->merge(array_keys($c->{$methodName}()));
                     }
                 }
             }
-            $fillable = array_filter($fillable, fn($value) => !is_numeric($value));
+            $fillable = $fillable->filter(fn($value) => !is_numeric($value));
             $class_basename = class_basename($model);
             $classSnake = Str::snake($class_basename);
             $classCamel = Str::camel($class_basename);
             $classPascal = ucfirst($classCamel);
-            $fillable[] = "{$classSnake}_id";
-            $fillable[] = Str::plural($classSnake)."_id";
+            $fillable->merge(["{$classSnake}_id", Str::plural($classSnake)."_id"]);
 
             // Customizing
-            if ($class_basename == 'Setting' && method_exists($model, 'getAll')) {
-                $fillable = array_merge($fillable, array_keys($model::getAll()));
+            if ($class_basename == 'Setting' && method_exists($model, 'setting')) {
+                $fillable->merge(array_keys($model::setting()));
             }
 
             $class_reflex = new ReflectionClass($model);
             $class_constants = $class_reflex->getConstants();
             foreach ($class_constants as $constant) {
                 if (is_string($constant) && preg_match_all("/[\w\d]+/", $constant)) {
-                    $fillable[] = $constant;
+                    $fillable->push($constant);
                 }
                 elseif (is_array($constant)) {
-                    $fillable = array_unique([...$fillable, ...array_values($constant)]);
+                    $fillable->merge(array_values($constant));
                 }
             }
 
             $sortArray = [];
+            $fillable = $fillable->filter()->unique()->values();
             foreach ($fillable as $value) {
                 if ($value != 'id' && !ends_with($value, '_id')) {
                     if ($fromOption && (Helpers::hasDateCast($model, $value) || Helpers::hasNumericCast($model, $value))) {
@@ -184,8 +185,13 @@ class ExportAttributesCommand extends BaseCommand
                     }
                 }
             }
-            $fillable = collect($fillable)->unique()->filter(fn($v) => !Str::contains($v, ['pivot_', '_pivot', '_pivot_']) && !Str::endsWith($v, '_to_string'))->values()->toArray();
+            $fillable = $fillable->filter(fn($v) => !Str::contains($v, [
+                    'pivot_',
+                    '_pivot',
+                    '_pivot_',
+                ]) && !Str::endsWith($v, '_to_string'))->values()->toArray();
             sort($fillable);
+            // dd($fillable);
             $temp = [];
             foreach ($fillable as $k => $value) {
                 $hasFrom = starts_with($value, 'from_');
@@ -201,9 +207,8 @@ class ExportAttributesCommand extends BaseCommand
                     $temp[$k] = $value;
                 }
             }
-            $fillable = $temp;
+            $fillable = collect($temp)->filter((fn($v) => !Str::endsWith('.*', $v)))->values()->toArray();
             sort($fillable);
-            // dd($fillable);
 
             foreach ($locales as $locale) {
                 foreach ($fillable as $attribute) {
@@ -212,8 +217,8 @@ class ExportAttributesCommand extends BaseCommand
                     }
                     $transKey = "attributes.$attribute";
                     $transHas = trans_has($transKey, $locale);
-                    $defualtTrans = strlen($attribute) > 2 ? ucfirst(str_replace('_', ' ', ucwords(Str::snake(ends_with($attribute, '_id') ? Str::beforeLast($attribute, '_id') : $attribute), '_'))) : strtoupper($attribute);
-                    $transValue = $defualtTrans;
+                    $defaultTrans = strlen($attribute) > 2 ? ucfirst(str_replace('_', ' ', ucwords(Str::snake(ends_with($attribute, '_id') ? Str::beforeLast($attribute, '_id') : $attribute), '_'))) : strtoupper($attribute);
+                    $transValue = $defaultTrans;
                     if ($transHas) {
                         $transValue = __($transKey, [], $locale);
                     }
@@ -237,7 +242,7 @@ class ExportAttributesCommand extends BaseCommand
                         }
                     }
                     // No value set from cache
-                    if ($transValue == $defualtTrans && isset($cacheAttrs[$locale][$attribute])) {
+                    if ($transValue == $defaultTrans && isset($cacheAttrs[$locale][$attribute])) {
                         $transValue = $cacheAttrs[$locale][$attribute];
                     }
 

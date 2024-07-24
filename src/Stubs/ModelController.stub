@@ -1,38 +1,1 @@
-<?php
-{copyright}
-
-namespace App\Http\Controllers{namespace};
-
-use App\Http\Controllers\Controller;
-use App\Http\Resources{namespace}\{studlySingular}Resource as Transformer;
-use App\Models{namespace}\{studlySingular} as Model;
-
-class {studlySingular}Controller extends Controller
-{
-    public static string $indexTransformer = Transformer::class;
-    public static string $controllerTransformer = Transformer::class;
-    public static string $controllerModel = Model::class;
-
-    /**
-     * @param  array  $rules
-     * @param  Model|null  $model
-     *
-     * @return array
-     */
-    protected function requestRules(array &$rules = [], &$model = null): array
-    {
-        $rules = array_merge($rules, $this->getRules());
-        return parent::requestRules($rules, $model);
-    }
-
-    /**
-     * @return \string[][]
-     */
-    public function getRules(): array
-    {
-        return [
-            'name_ar'  => ['required'],
-            'name_en'  => ['required'],{rules}
-        ];
-    }
-}
+<?php{copyright}namespace App\Http\Controllers{namespace};use App\Http\Controllers\Controller;use App\Http\Resources{namespace}\{studlySingular}Resource as Transformer;use App\Models{namespace}\{studlySingular} as Model;class {studlySingular}Controller extends Controller{    public static string $indexTransformer = Transformer::class;    public static string $controllerTransformer = Transformer::class;    public static string $controllerModel = Model::class;    /**     * @param  array  $rules     * @param  Model|null  $model     *     * @return array     */    protected function requestRules(array &$rules = [], &$model = null): array    {        $rules = array_merge($rules, $this->getRules());        return parent::requestRules($rules, $model);    }    /**     * @return \string[][]     */    public function getRules(): array    {        return [            'name_ar'  => ['required'],            'name_en'  => ['required'],{rules}        ];    }}
