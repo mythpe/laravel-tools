@@ -184,7 +184,7 @@ class ExportAttributesCommand extends BaseCommand
                     }
                 }
             }
-            $fillable = collect($fillable)->unique()->filter(fn($v) => !Str::contains($v, ['pivot_', '_pivot', '_pivot_']))->values()->toArray();
+            $fillable = collect($fillable)->unique()->filter(fn($v) => !Str::contains($v, ['pivot_', '_pivot', '_pivot_']) && !Str::endsWith($v, '_to_string'))->values()->toArray();
             sort($fillable);
             $temp = [];
             foreach ($fillable as $k => $value) {
