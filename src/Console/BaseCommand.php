@@ -31,6 +31,8 @@ class BaseCommand extends Command
     use ProgressBarTrait, CommandColors;
 
     static bool $debug = !1;
+    /** @var int - sleep seconds if error. */
+    static int $ERROR_SLEEP_TIMEOUT = 1;
 
     /**
      * @var bool
@@ -91,6 +93,7 @@ class BaseCommand extends Command
                 }
                 if (empty($src)) {
                     $this->components->error("Insert Image: [".get_class($model)."] ID => $model->id");
+                    sleep(static::$ERROR_SLEEP_TIMEOUT);
                     continue;
                 }
                 $random = rand(1, 50);
@@ -122,6 +125,7 @@ class BaseCommand extends Command
             catch (Exception $exception) {
                 $this->components->error("Insert Image: [".get_class($model)."] ID => $model->id");
                 $this->components->error($exception);
+                sleep(static::$ERROR_SLEEP_TIMEOUT);
             }
         }
     }
@@ -135,26 +139,42 @@ class BaseCommand extends Command
     }
 
     /**
-     * @param $directory
-     * @param bool $file
+     * @param array|string $data - Get data if it is a file or array.
+     * @return array
+     */
+    public function getRowData(array | string $data): array
+    {
+        if (!is_array($data)) {
+            $data = Str::endsWith($data, '.json') ? json_decode($this->disk()->get($data), !0) : require($this->disk()->path($data));
+        }
+        return $data;
+    }
+
+    /**
+     * @param $directory - All files in this directory.
+     * File name must end with .php or .json.
+     * To ignore files start with '_' or '.' or '.ignored'
+     * @param bool $file - Do insert from file.
      *
      * @throws FileNotFoundException
      */
     protected function fetchFiles($directory, bool $file = !1): void
     {
         $this->components->task('Fetch Files:', function () use (&$directory, &$file) {
-            $this->line('');
+            $this->newLine();
             $this->iniCollection();
             Schema::disableForeignKeyConstraints();
             $files = $file ? [$directory] : $this->disk()->files($directory);
-            asort($files);
+            $files = collect($files)->filter(fn(string $file) => Str::endsWith($file, ['.php', '.json']) && !Str::startsWith($file, [
+                    '_',
+                    '.',
+                    '.ignored',
+                ]))->sort()->values();
+
             foreach ($files as $file) {
-                if (!Str::endsWith($file, '.json')) {
-                    continue;
-                }
-                $data = json_decode($this->disk()->get($file), true);
+                $data = $this->getRowData($file);
                 $name = Str::afterLast($file, '-');
-                $table = strtolower(Str::snake(Str::plural(pathinfo($name, PATHINFO_FILENAME))));
+                $table = Str::of(pathinfo($name, PATHINFO_FILENAME))->snake()->plural()->lower();
                 $this->truncate($table);
                 foreach ($data as $v) {
                     $this->insert($v, $table);
@@ -213,6 +233,7 @@ class BaseCommand extends Command
                 }
                 else {
                     $this->components->error("Table: {$originalTable}. not found");
+                    sleep(static::$ERROR_SLEEP_TIMEOUT);
                 }
             }
         }
@@ -245,17 +266,18 @@ class BaseCommand extends Command
     }
 
     /**
-     * @param $data
-     * @param $table
-     * @param null $model
+     * @param array|string $data - The data will insert. Array or string file path.
+     * @param $table - The table name.
+     * @param $model - Model instance.
+     * @return void
      */
-    protected function insert($data, $table, $model = null): void
+    protected function insert(array | string $data, $table, $model = null): void
     {
         $this->iniCollection();
+        $data = $this->getRowData($data);
         $hasRelations = array_key_exists('data', $data);
         $insert = $hasRelations ? $data['data'] : $data;
         request()->merge($insert);
-        // d($insert);
         unset($data['data']);
         $parentName = $model ? class_basename($model) : null;
         if (is_null($model)) {
@@ -278,7 +300,6 @@ class BaseCommand extends Command
             $model->fill($fill);
             $model->save();
             $this->insertImageFromUrl($model, $insert);
-            //$this->echo("Push Data: $table");
             $this->pushData($model);
         }
         else {
@@ -292,17 +313,16 @@ class BaseCommand extends Command
             }
             $model = $model->create($fill);
             $this->insertImageFromUrl($model, $insert);
-            //$this->echo("Inserted: $table");
             $this->pushData($model);
         }
         $classLabel = Str::singular(class_basename($model));
         $this->echo("[".($parentName ? "$parentName => " : '')."$classLabel] => {$model->id}");
-
         if ($hasRelations && count($data) > 0) {
             foreach ($data as $relation => $row) {
                 if (Str::startsWith($relation, '_')) {
                     continue;
                 }
+                $row = $this->getRowData($row);
                 $r = $model->{$relation}();
                 $_table = method_exists($r, 'getTable') ? $r->getTable() : $relation;
                 $this->truncate($_table);
