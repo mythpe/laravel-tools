@@ -244,7 +244,10 @@ to insert code automatically add this comment "use myth crud model command" to y
             $this->components->info("Please insert model routes: [<fg=yellow;bg=black>routes.php</>]");
             foreach ($this->models as $value) {
                 $modelNamespace = "App\\Http\\Controllers\\{$value->string}Controller";
-                $v = "apiResource('$value->studlySingular', \\$modelNamespace::class);";
+                $v = "apiResource('$value->studlySingular', \\$modelNamespace::class, function () {
+        Route::post('DestroyAll', [\\$modelNamespace::class, 'destroyAll'])->name('destroyAll');
+        Route::post('Export', [\\$modelNamespace::class, 'index'])->name('export');
+    });";
                 $this->line("<fg=yellow;bg=black>$v</>");
             }
             $this->components->info("Please run <fg=yellow;bg=black>php artisan setup:permissions</> to make permissions or add them manually.");
