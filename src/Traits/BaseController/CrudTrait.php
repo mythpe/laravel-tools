@@ -156,7 +156,7 @@ trait CrudTrait
         $transformer = ($args[1] ?? $this->getIndexTransformer());
         $excelClass = ($args[2] ?? null);
 
-        $this->isIndexActiveOnly && $query->activeOnly();
+        ($this->isIndexActiveOnly && method_exists($query, 'scopeActiveOnly')) && $query->activeOnly();
 
         if (($r = $this->indexing($query))) {
             return $r;
