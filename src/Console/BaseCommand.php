@@ -329,21 +329,27 @@ class BaseCommand extends Command
         $classLabel = Str::singular(class_basename($model));
         $this->echo("[".($parentName ? "$parentName => " : '')."$classLabel] => {$model->id}");
         if ($hasRelations && count($data) > 0) {
-            foreach ($data as $relation => $row) {
-                if (Str::startsWith($relation, '_')) {
+            foreach ($data as $_relation => $row) {
+                if (Str::startsWith($_relation, '_')) {
                     continue;
                 }
                 $row = $this->getRowData($row);
-                $r = $model->{$relation}();
-                $_table = method_exists($r, 'getTable') ? $r->getTable() : $relation;
+                $relation = $model->{$_relation}();
+                $_table = method_exists($relation, 'getTable') ? $relation->getTable() : $_relation;
                 $this->truncate($_table);
-                if ($r instanceof BelongsToMany) {
-                    $model->{$relation}()->sync($row, !1);
-                    $this->echo("Sync [$classLabel]: ".json_encode($row));
-                    continue;
+                if ($relation instanceof BelongsToMany) {
+                    if (!is_array($row[0] ?? null)) {
+                        $relation->sync($row, !1);
+                        $this->echo("Sync [$classLabel]: ".json_encode($row));
+                        continue;
+                    }
+                    else {
+                        $this->truncate($relation->getModel()->getTable());
+                    }
+
                 }
                 foreach ($row as $child) {
-                    $this->insert($child, $relation, $model);
+                    $this->insert($child, $_relation, $model);
                 }
             }
         }
