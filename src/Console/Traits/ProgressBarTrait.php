@@ -36,10 +36,13 @@ trait ProgressBarTrait
     }
 
     /**
-     * @return ProgressBar
+     * @return ProgressBar|null
      */
     protected function getBar(): ?ProgressBar
     {
+        if (!$this->bar) {
+            $this->setBar();
+        }
         return $this->bar;
     }
 
@@ -60,8 +63,8 @@ trait ProgressBarTrait
     protected function finishBar(): self
     {
         $this->getBar()->finish();
-        $this->line(' ');
-        $this->alert('Finish');
+        $this->newLine();
+        $this->components->info('Finish');
         return $this;
     }
 

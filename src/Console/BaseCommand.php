@@ -33,7 +33,6 @@ class BaseCommand extends Command
     static bool $debug = !1;
     /** @var int - sleep seconds if error. */
     static int $ERROR_SLEEP_TIMEOUT = 1;
-
     /**
      * @var bool
      */
@@ -173,7 +172,7 @@ class BaseCommand extends Command
                     '.',
                     '.ignored',
                 ]))->sort()->values();
-            // dd($files);
+            $this->startBar(count($files));
             foreach ($files as $file) {
                 $data = $this->getRowData($file);
                 $name = Str::afterLast($file, '-');
@@ -183,6 +182,7 @@ class BaseCommand extends Command
                     $this->insert($v, $table);
                 }
             }
+            $this->finishBar();
         });
     }
 
@@ -263,9 +263,9 @@ class BaseCommand extends Command
         if ($this->isTruncated($table)) {
             return;
         }
-        static::$debug && $this->components->info("truncated : {$table}");
         $this->tables[] = $table;
         DB::table($table)->truncate();
+        $this->table(['name'], collect($this->tables)->map(fn($t) => ['name' => $t]));
     }
 
     /**
@@ -348,6 +348,7 @@ class BaseCommand extends Command
                     }
 
                 }
+                $this->advanceBar(count($row));
                 foreach ($row as $child) {
                     $this->insert($child, $_relation, $model);
                 }
