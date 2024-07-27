@@ -1,17 +1,10 @@
-@php
-$funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
-@endphp
 <!doctype html>
 <html lang="{{$LOCALE}}" dir="{{$DIRECTION}}">
 <head>
 @include('4myth-tools::partials.head')
-<link href="{{ $funcType("storage/vendor/4myth/style/app.css") }}" rel="stylesheet" type="text/css">
-<link href="{{ $funcType("storage/vendor/4myth/style/app-{$DIRECTION}.css") }}" rel="stylesheet" type="text/css">
-<link href="{{ $funcType("storage/vendor/4myth/fonts/fontawesome/css/all.css") }}" rel="stylesheet" type="text/css">
+@include('4myth-tools::partials.scripts')
 </head>
-
 @section('title',$pageTitle)
-
 <body class="{{ config('4myth-tools.font_family_class') }}">
 <table class="table table-bordered table-condensed table-striped">
 <tr class="text-center">
@@ -22,7 +15,6 @@ $funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
 <th>{!! ($headerItem['text'] ?? ($headerItem['label'] ?? ($headerItem['field'] ?? ($headerItem['name'] ?? (is_array($headerItem) ? $k : $headerItem))))) !!}</th>
 @endforeach
 </tr>
-
 @foreach($items as $itemKey => $item)
 <tr>
 @foreach($headerItems as $k => $headerItem)

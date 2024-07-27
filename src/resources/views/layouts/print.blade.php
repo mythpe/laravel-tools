@@ -1,21 +1,15 @@
-@php
-$funcType = ($usePublicPath ?? !1) ? 'public_path' : 'asset';
-@endphp
 <!doctype html>
-
 <html lang="{{$LOCALE}}" dir="{{$DIRECTION}}">
 <head>
 @include('4myth-tools::partials.head')
-<link href="{{ $funcType("storage/vendor/4myth/style/app.css") }}" rel="stylesheet" type="text/css">
-<link href="{{ $funcType("storage/vendor/4myth/style/app-{$DIRECTION}.css") }}" rel="stylesheet" type="text/css">
-<link href="{{ $funcType("storage/vendor/4myth/fonts/fontawesome/css/all.css") }}" rel="stylesheet" type="text/css">
+@include('4myth-tools::partials.scripts')
 <style>
 .main-print-buttons {
 z-index: 99999;
 position: fixed;
 width: auto;
 }
-
++
 .main-print-buttons.left {
 left: 0;
 right: auto;
@@ -27,48 +21,13 @@ left: auto;
 }
 </style>
 @stack('styles')
-<script>
-
-</script>
 </head>
-
 <body class="{{ config('4myth-tools.font_family_class') }}">
 <div class="d-print-none main-print-buttons {{ $ALIGN }}">
-<div class="">
-<a
-href="javascript:void(0);"
-class="btn btn-dark"
-onclick="printWindow()"
->
-{!! __( 'global.print' ) !!}
-</a>
-
-{{--<a--}}
-{{--    href="javascript:void(0)"--}}
-{{--    onclick="window.goBack()"--}}
-{{--    class='btn btn-danger'--}}
-{{-->--}}
-{{--    {!! __( 'global.back' ) !!}--}}
-{{--</a>--}}
-</div>
+<div class=""><a href="javascript:void(0);" class="btn btn-dark" onclick="printWindow()">{!! __( 'global.print' ) !!}</a></div>
 </div>
 @yield('print_content')
-<script src="{{$funcType('storage/vendor/4myth/js/jquery/jquery.min.js')}}"></script>
-
 <script>
-
-// window.addEventListener("message", (event) => {
-//   // alert(event.data)
-//   // Do we trust the sender of this message?
-//   // if (event.origin !== "http://example.com:8080") {
-//   //   return
-//   // }
-//
-//   // event.source is window.opener
-//   // event.data is "hello there!"
-//
-// }, false);
-
 window.arabicString = str => {
 try {
 if (!str.toString().trim()) {
