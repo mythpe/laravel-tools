@@ -706,3 +706,17 @@ if (!function_exists('fixString')) {
         return trim($string) ?? '';
     }
 }
+
+if (!function_exists('assetUrl')) {
+    /**
+     * @param string $path
+     * @param bool $url
+     * @return string
+     */
+    function assetUrl(string $path, bool $url = !1): string
+    {
+        $windows = strtolower(PHP_OS_FAMILY) == 'windows';
+        return ($windows && !$url ? 'file://' : '').($url ? asset($path, !0) : public_path($path));
+    }
+
+}
