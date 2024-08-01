@@ -298,9 +298,13 @@ class BaseCommand extends Command
                     break;
                 }
             }
+            /** @var BaseModel $model */
             $model = new $model();
             $fill = Arr::only($insert, $model->getFillable());
             $model->fill($fill);
+            if ($model->isFillable('order_by') && !$model->order_by) {
+                $model->order_by = $model::query()->count() + 1;
+            }
             $model->save();
         }
         else {
@@ -322,7 +326,11 @@ class BaseCommand extends Command
             else {
                 $fill = Arr::only($insert, $model->getFillable());
             }
-            $model = $model->create($fill);
+            $model = $model->make($fill);
+            if ($model->isFillable('order_by') && !$model->order_by) {
+                $model->order_by = $model::query()->count() + 1;
+            }
+            $model->save();
         }
         $this->insertImage($model, $insert);
         $this->pushData($model);
@@ -349,7 +357,7 @@ class BaseCommand extends Command
 
                 }
                 $this->advanceBar(count($row));
-                foreach ($row as $child) {
+                foreach ($row as $k => $child) {
                     $this->insert($child, $_relation, $model);
                 }
             }
