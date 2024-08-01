@@ -17,7 +17,6 @@ use Myth\LaravelTools\Http\Resources\ApiResource;
 use Myth\LaravelTools\Models\BaseModel as Model;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 trait CrudTrait
 {
@@ -468,36 +467,12 @@ trait CrudTrait
     }
 
     /**
-     * @param Model|Builder $model
+     * @param object|Model $model
      * @return JsonResponse
      */
-    public function clone($model): JsonResponse
+    public function clone(object $model): JsonResponse
     {
-        $clone = $model->replicate();
-        if ($clone->isFillable('name')) {
-            $clone->name = __('replace.copy_of', ['name' => $model->name]);
-        }
-        if ($clone->isFillable('name_ar')) {
-            $clone->name_ar = __('replace.copy_of', ['name' => $model->name_ar], 'ar');
-        }
-        if ($clone->isFillable('name_en')) {
-            $clone->name_en = __('replace.copy_of', ['name' => $model->name_en], 'en');
-        }
-        $clone->created_at = now();
-        $clone->updated_at = now();
-        $clone->push();
-        try {
-            if (method_exists($model, 'media')) {
-                $media = $model->media()->get();
-                /** @var Media $file */
-                foreach ($media as $file) {
-                    $file->copy($clone, $file->collection_name);
-                }
-            }
-        }
-        catch (Exception $e) {
-            return $this->errorResponse($e->getMessage());
-        }
+        $clone = $model->cloneModel();
         return $this->resource(__('messages.clone_success'));
     }
 

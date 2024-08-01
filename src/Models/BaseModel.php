@@ -25,6 +25,7 @@ use Myth\LaravelTools\Traits\BaseModel\SlugModelTrait;
 use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
 use Myth\LaravelTools\Utilities\Helpers;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 
 /**
@@ -39,6 +40,9 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     use Notifiable;
     use HasMediaTrait;
     use SlugModelTrait;
+
+    /** @var array<int,string> - e.g: ['customers','users'] */
+    protected array $cloneRelations = [];
 
     /**
      * @param array $attributes
@@ -97,6 +101,9 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
         return collect($values);
     }
 
+    /**
+     * @return array
+     */
     public static function getDaysOptions(): array
     {
         return collect(__('const.days'))->mapWithKeys(fn($v, $k) => [
@@ -104,6 +111,9 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
         ])->values()->toArray();
     }
 
+    /**
+     * @return array
+     */
     public static function getDaysArray(): array
     {
         return array_keys(__('const.days'));
@@ -483,6 +493,9 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
         return null;
     }
 
+    /**
+     * @return string
+     */
     public function getAuthPasswordName(): string
     {
         return 'password';
@@ -494,5 +507,61 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     public function preferredLocale(): string
     {
         return $this->locale;
+    }
+
+    /**
+     * @param array<string,int> $except - e.g. [ 'user_id' => 1 ]
+     * @return self
+     */
+    public function cloneModel(array $except = []): self
+    {
+        $clone = $this->replicate(array_keys($except));
+        if ($clone->isFillable('name')) {
+            $clone->name = __('replace.copy_of', ['name' => $this->name]);
+        }
+        if ($clone->isFillable('name_ar')) {
+            $clone->name_ar = __('replace.copy_of', ['name' => $this->name_ar], 'ar');
+        }
+        if ($clone->isFillable('name_en')) {
+            $clone->name_en = __('replace.copy_of', ['name' => $this->name_en], 'en');
+        }
+        if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name')) {
+            $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
+        }
+        if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name_ar')) {
+            $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
+        }
+        if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name_en')) {
+            $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
+        }
+        if ($clone->isFillable('order_by')) {
+            $clone->order_by = $this->order_by + 1;
+        }
+        foreach ($except as $k => $v) {
+            if ($clone->isFillable($k)) {
+                $clone->{$k} = $v;
+            }
+        }
+        $clone->created_at = now();
+        $clone->updated_at = now();
+        $clone->push();
+        try {
+            if (method_exists($this, 'media')) {
+                $media = $this->media()->get();
+                /** @var Media $file */
+                foreach ($media as $file) {
+                    $file->copy($clone, $file->collection_name);
+                }
+            }
+        }
+        catch (Exception $e) {
+
+        }
+
+        /** @var self $relation */
+        foreach ($this->cloneRelations as $relation) {
+            $relation->cloneModel([$this->getForeignKey() => $this->getKey()]);
+        }
+        return $clone;
     }
 }
