@@ -542,8 +542,15 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
                 $clone->{$k} = $v;
             }
         }
-        $clone->created_at = now();
-        $clone->updated_at = now();
+        if ($this->created_at) {
+            $clone->created_at = now();
+        }
+        if ($this->updated_at) {
+            $clone->updated_at = now();
+        }
+        if ($this->deleted_at) {
+            $clone->deleted_at = null;
+        }
         $clone->push();
         try {
             if (method_exists($this, 'media')) {
