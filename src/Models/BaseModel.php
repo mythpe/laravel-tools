@@ -405,6 +405,14 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     }
 
     /**
+     * @return string
+     */
+    public function getAuthPasswordName(): string
+    {
+        return 'password';
+    }
+
+    /**
      * @param Builder $builder
      * @param $value
      *
@@ -494,14 +502,6 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     }
 
     /**
-     * @return string
-     */
-    public function getAuthPasswordName(): string
-    {
-        return 'password';
-    }
-
-    /**
      * Get the model's preferred locale.
      */
     public function preferredLocale(): string
@@ -516,26 +516,28 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     public function cloneModel(array $except = []): self
     {
         $clone = $this->replicate(array_keys($except));
-        if ($clone->isFillable('name')) {
-            $clone->name = __('replace.copy_of', ['name' => $this->name]);
-        }
-        if ($clone->isFillable('name_ar')) {
-            $clone->name_ar = __('replace.copy_of', ['name' => $this->name_ar], 'ar');
-        }
-        if ($clone->isFillable('name_en')) {
-            $clone->name_en = __('replace.copy_of', ['name' => $this->name_en], 'en');
-        }
-        if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name')) {
-            $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
-        }
-        if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name_ar')) {
-            $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
-        }
-        if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name_en')) {
-            $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
-        }
-        if ($clone->isFillable('order_by')) {
-            $clone->order_by = $this->order_by + 1;
+        if (empty($except)) {
+            if ($clone->isFillable('name')) {
+                $clone->name = __('replace.copy_of', ['name' => $this->name]);
+            }
+            if ($clone->isFillable('name_ar')) {
+                $clone->name_ar = __('replace.copy_of', ['name' => $this->name_ar], 'ar');
+            }
+            if ($clone->isFillable('name_en')) {
+                $clone->name_en = __('replace.copy_of', ['name' => $this->name_en], 'en');
+            }
+            if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name')) {
+                $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
+            }
+            if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name_ar')) {
+                $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
+            }
+            if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name_en')) {
+                $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
+            }
+            if ($clone->isFillable('order_by')) {
+                $clone->order_by = $this->order_by + 1;
+            }
         }
         foreach ($except as $k => $v) {
             if ($clone->isFillable($k)) {
@@ -565,9 +567,11 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
 
         }
 
-        /** @var self $relation */
-        foreach ($this->cloneRelations as $relation) {
-            $relation->cloneModel([$this->getForeignKey() => $this->getKey()]);
+        foreach ($this->cloneRelations as $relationName) {
+            /** @var self $relation */
+            foreach ($this->{$relationName} as $relation) {
+                $relation->cloneModel([$clone->getForeignKey() => $clone->getKey()]);
+            }
         }
         return $clone;
     }
