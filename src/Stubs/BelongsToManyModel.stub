@@ -1,1 +1,22 @@
-<?php{copyright}namespace App\Traits\BelongsToMany{namespace};use App\Models{namespace}\{studlySingular} as Model;use Illuminate\Database\Eloquent\Relations\BelongsToMany;/** * @property-read \Illuminate\Database\Eloquent\Collection<int, Model> ${camelPlural} */trait BelongsToMany{studlySingular}{    /**     * @return BelongsToMany     */    public function {camelPlural}(): BelongsToMany    {        return $this->belongsToMany(Model::class)->withTimestamps();    }}
+<?php
+{copyright}
+
+namespace App\Traits\BelongsToMany{namespace};
+
+use App\Models{namespace}\{studlySingular} as Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Model> ${camelPlural}
+ */
+trait BelongsToMany{studlySingular}
+{
+
+    /**
+     * @return BelongsToMany
+     */
+    public function {camelPlural}(): BelongsToMany
+    {
+        return $this->belongsToMany(Model::class)->withTimestamps();
+    }
+}

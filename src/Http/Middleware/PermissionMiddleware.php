@@ -43,15 +43,17 @@ class PermissionMiddleware
         $permissionName = $route->getName();
         $controller = $route->getController();
         $className = get_class($controller);
+        $maps = ['clone' => 'store'];
         if (defined("$className::MAP_PERMISSIONS")) {
-            $maps = $className::MAP_PERMISSIONS;
-            foreach ($maps as $key => $value) {
-                if (Str::endsWith($permissionName, ".$key")) {
-                    $permissionName = str_replace(".$key", ".$value", $permissionName);
-                    break;
-                }
+            $maps = [...$maps, ...$className::MAP_PERMISSIONS];
+        }
+        foreach ($maps as $key => $value) {
+            if (Str::endsWith($permissionName, ".$key")) {
+                $permissionName = str_replace(".$key", ".$value", $permissionName);
+                break;
             }
         }
+
         $skip = config('4myth-tools.skip_permission_ends_with', []);
         if (defined("$className::NO_PERMISSIONS")) {
             $maps = $className::NO_PERMISSIONS;

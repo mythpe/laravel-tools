@@ -1,1 +1,52 @@
-<?php{copyright}namespace App\Traits\HasMany{namespace};use App\Models{namespace}\{studlySingular} as Model;use Illuminate\Database\Eloquent\Relations\HasMany;/** * @property-read \Illuminate\Database\Eloquent\Collection<int, Model> ${camelPlural} */trait HasMany{studlySingular}{    /**     * @return void     */    protected static function bootHasMany{studlySingular}(): void    {        static::deleting(function (self $model) {            $items = $model->{camelPlural}()->get();            if (method_exists($model, 'isForceDeleting')) {                if ($model->isForceDeleting()) {                    foreach ($items as $item) {                        try {                            $item->delete();                        }                        catch (\Exception $e) {                        }                    }                }            }            else {                foreach ($items as $item) {                    try {                        $item->delete();                    }                    catch (\Exception $e) {                    }                }            }        });    }    /**     * @return HasMany     */    public function {camelPlural}(): HasMany    {        return $this->hasMany(Model::class);    }}
+<?php
+{copyright}
+
+namespace App\Traits\HasMany{namespace};
+
+use App\Models{namespace}\{studlySingular} as Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Model> ${camelPlural}
+ */
+trait HasMany{studlySingular}
+{
+
+    /**
+     * @return void
+     */
+    protected static function bootHasMany{studlySingular}(): void
+    {
+        static::deleting(function (self $model) {
+            $items = $model->{camelPlural}()->get();
+            if (method_exists($model, 'isForceDeleting')) {
+                if ($model->isForceDeleting()) {
+                    foreach ($items as $item) {
+                        try {
+                            $item->delete();
+                        }
+                        catch (\Exception $e) {
+                        }
+                    }
+                }
+            }
+            else {
+                foreach ($items as $item) {
+                    try {
+                        $item->delete();
+                    }
+                    catch (\Exception $e) {
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function {camelPlural}(): HasMany
+    {
+        return $this->hasMany(Model::class);
+    }
+}
