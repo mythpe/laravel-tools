@@ -278,10 +278,12 @@ class BaseCommand extends Command
     {
         $this->iniCollection();
         $data = $this->getRowData($data);
-        $hasRelations = array_key_exists('data', $data);
-        $insert = $hasRelations ? $data['data'] : $data;
+        $hasRelations = array_key_exists('_data', $data);
+        $insert = $hasRelations ? $data['_data'] : $data;
         request()->merge($insert);
-        unset($data['data']);
+        if ($hasRelations) {
+            unset($data['_data']);
+        };
         $parentName = $model ? class_basename($model) : null;
         if (is_null($model)) {
             $namespaces = ['\\App\\Models', '\\App\\Models\\Utilities'];
