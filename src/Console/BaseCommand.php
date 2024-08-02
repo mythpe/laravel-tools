@@ -159,31 +159,29 @@ class BaseCommand extends Command
      */
     protected function fetchFiles($directory, bool $file = !1): void
     {
-        $this->components->task('Fetch Files:', function () use (&$directory, &$file) {
-            $this->newLine();
-            $this->iniCollection();
-            Schema::disableForeignKeyConstraints();
-            $files = $file ? [$directory] : $this->disk()->files($directory);
-            $files = collect($files)->filter(fn(string $file) => Str::endsWith($file, [
-                    '.php',
-                    '.json',
-                ]) && !Str::startsWith(pathinfo($file, PATHINFO_FILENAME), [
-                    '_',
-                    '.',
-                    '.ignored',
-                ]))->sort()->values();
-            $this->startBar(count($files));
-            foreach ($files as $file) {
-                $row = $this->getRowData($file);
-                $name = Str::afterLast($file, '-');
-                $table = Str::of(pathinfo($name, PATHINFO_FILENAME))->snake()->plural()->lower();
-                $this->truncate($table);
-                foreach ($row as $data) {
-                    $this->insert($data, $table);
-                }
+        // $this->newLine();
+        $this->iniCollection();
+        Schema::disableForeignKeyConstraints();
+        $files = $file ? [$directory] : $this->disk()->files($directory);
+        $files = collect($files)->filter(fn(string $file) => Str::endsWith($file, [
+                '.php',
+                '.json',
+            ]) && !Str::startsWith(pathinfo($file, PATHINFO_FILENAME), [
+                '_',
+                '.',
+                '.ignored',
+            ]))->sort()->values();
+        $this->startBar($files);
+        foreach ($files as $file) {
+            $row = $this->getRowData($file);
+            $name = Str::afterLast($file, '-');
+            $table = Str::of(pathinfo($name, PATHINFO_FILENAME))->snake()->plural()->lower();
+            $this->truncate($table);
+            foreach ($row as $data) {
+                $this->insert($data, $table);
             }
-            $this->finishBar();
-        });
+        }
+        $this->finishBar();
     }
 
     /**
@@ -265,16 +263,16 @@ class BaseCommand extends Command
         }
         $this->tables[] = $table;
         DB::table($table)->truncate();
-        $this->table(['name'], collect($this->tables)->map(fn($t) => ['name' => $t]));
+        // $this->table(['name'], collect($this->tables)->map(fn($t) => ['name' => $t]));
     }
 
     /**
      * @param array|string $data - The data will insert. Array or string file path.
-     * @param $table - The table name.
-     * @param $model - Model instance.
+     * @param $tableOrRelation - The table name.
+     * @param $RelationModel - Model instance.
      * @return void
      */
-    protected function insert(array | string $data, string $table, BaseModel $model = null): void
+    protected function insert(array | string $data, string $tableOrRelation, ?Relation $RelationModel = null): void
     {
         $this->iniCollection();
         $data = $this->getRowData($data);
@@ -284,14 +282,14 @@ class BaseCommand extends Command
         if ($hasRelations) {
             unset($data['_data']);
         };
-        $parentName = $model ? class_basename($model) : null;
-        if (is_null($model)) {
+        $parentName = $RelationModel ? class_basename($RelationModel) : null;
+        if (is_null($RelationModel)) {
             $namespaces = ['\\App\\Models', '\\App\\Models\\Utilities'];
             $directories = Storage::disk('app')->directories('Models');
             foreach ($directories as $directory) {
                 $namespaces[] = '\\App\\'.str_ireplace('/', '\\', $directory);
             }
-            $class = ucfirst(Str::camel(Str::singular($table)));
+            $class = ucfirst(Str::camel(Str::singular($tableOrRelation)));
             $model = null;
             foreach ($namespaces as $namespace) {
                 $c = "{$namespace}\\{$class}";
@@ -301,62 +299,61 @@ class BaseCommand extends Command
                 }
             }
             /** @var BaseModel $model */
-            $model = new $model();
-            $fill = Arr::only($insert, $model->getFillable());
-            $model->fill($fill);
+            $model = $model::create(Arr::only($insert, (new $model())->getFillable()));
         }
         else {
-            $cases = [$table, Str::snake($table), Str::camel($table), Str::studly($table)];
-            $found = !1;
-            foreach ($cases as $case) {
-                if (method_exists($model, $case)) {
-                    $model = $model->{$case}();
-                    $found = !0;
-                    break;
-                }
-            }
-            if (!$found) {
-                $model = $model->{$table}();
-            }
-            if ($model instanceof Relation) {
-                $fill = Arr::only($insert, $model->getModel()->getFillable());
-            }
-            else {
-                $fill = Arr::only($insert, $model->getFillable());
-            }
-            $model = $model->make($fill);
+            // $cases = [$tableOrRelation, Str::snake($tableOrRelation), Str::camel($tableOrRelation), Str::studly($tableOrRelation)];
+            // $model = null;
+            // $found = !1;
+            // foreach ($cases as $case) {
+            //     if (method_exists($RelationModel, $case)) {
+            //         $model = $RelationModel->{$case}();
+            //         // $found = !0;
+            //         break;
+            //     }
+            // }
+            // if (!$model) {
+            //     $this->components->error("Model: {$tableOrRelation} not found.");
+            //     return;
+            // }
+            // if ($parent instanceof Relation) {
+            //     $fill = Arr::only($insert, $parent->getModel()->getFillable());
+            // }
+            // else {
+            //     $fill = Arr::only($insert, $parent->getFillable());
+            // }
+            $fill = Arr::only($insert, $RelationModel->getModel()->getFillable());
+            $model = $RelationModel->create($fill);
         }
         if ($model->isFillable('order_by') && !$model->order_by) {
-            $model->order_by = $model::query()->count() + 1;
+            $model->update(['order_by' => $model::query()->count() + 1]);
         }
-        $model->save();
         $this->insertImage($model, $insert);
         $this->pushData($model);
-        $classLabel = Str::singular(class_basename($model));
-        $this->echo("[".($parentName ? "$parentName => " : '')."$classLabel] => {$model->id}");
+        // $classLabel = Str::singular(class_basename($model));
+        // $this->echo("[".($parentName ? "$parentName => " : '')."$classLabel] => {$model->id}");
         if ($hasRelations && count($data) > 0) {
+            $this->startBar($data);
             foreach ($data as $relationName => $row) {
                 if (Str::startsWith($relationName, '_')) {
                     continue;
                 }
                 $row = $this->getRowData($row);
                 $relation = $model->{$relationName}();
-                $_table = method_exists($relation, 'getTable') ? $relation->getTable() : $relationName;
-                $this->truncate($_table);
+                $table = method_exists($relation, 'getTable') ? $relation->getTable() : $relationName;
+                $this->truncate($table);
                 if ($relation instanceof BelongsToMany) {
                     if (!is_array($row[0] ?? null)) {
                         $relation->sync($row, !1);
-                        $this->echo("Sync [$classLabel]: ".json_encode($row));
+                        // $this->echo("Sync [$classLabel]: ".json_encode($row));
                         continue;
                     }
                     else {
                         $this->truncate($relation->getModel()->getTable());
                     }
-
                 }
-                $this->advanceBar(count($row));
                 foreach ($row as $rowData) {
-                    $this->insert($rowData, $relationName, $model);
+                    $this->insert($rowData, $relationName, $relation);
                 }
             }
         }
@@ -402,6 +399,7 @@ class BaseCommand extends Command
         $data = $this->collection->get($key);
         $data->push($model);
         $this->collection->put($key, $data);
+        $this->advanceBar();
         return $this->collection;
     }
 

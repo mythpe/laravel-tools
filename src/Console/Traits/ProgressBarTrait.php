@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Console\Traits;
 
+use Illuminate\Support\Collection;
 use Symfony\Component\Console\Helper\ProgressBar;
 
 /**
@@ -18,27 +19,24 @@ use Symfony\Component\Console\Helper\ProgressBar;
  */
 trait ProgressBarTrait
 {
-    /**
-     * @var
-     */
-    protected $bar;
+    /** @var ProgressBar|null */
+    protected ?ProgressBar $bar = null;
 
     /**
-     * @param int|null $max
-     *
-     * @return $this
+     * @param int|array|Collection|null $max
+     * @return ProgressBar
      */
-    protected function startBar(int $max = null): self
+    protected function startBar(int | array | Collection $max = null): ProgressBar
     {
-        $this->getBar()->start($max);
-        $this->line('');
-        return $this;
+        $max = is_countable($max) ? count($max) : $max;
+        $this->setMaxSteps($max);
+        return $this->getBar();
     }
 
     /**
-     * @return ProgressBar|null
+     * @return ProgressBar
      */
-    protected function getBar(): ?ProgressBar
+    protected function getBar(): ProgressBar
     {
         if (!$this->bar) {
             $this->setBar();
@@ -48,24 +46,26 @@ trait ProgressBarTrait
 
     /**
      * @param int $max
-     *
-     * @return $this
+     * @return ProgressBar
      */
-    protected function setBar(int $max = 0): self
+    protected function setBar(int $max = 0): ProgressBar
     {
         $this->bar = $this->output->createProgressBar($max);
-        return $this;
+        $this->bar->setOverwrite(!0);
+        $this->bar->setProgressCharacter('');
+        $this->bar->setBarCharacter('▓');
+        $this->bar->setEmptyBarCharacter('░');
+        return $this->bar;
     }
 
     /**
-     * @return $this
+     * @return ProgressBar
      */
-    protected function finishBar(): self
+    protected function finishBar(): ProgressBar
     {
         $this->getBar()->finish();
-        $this->newLine();
         $this->components->info('Finish');
-        return $this;
+        return $this->getBar();
     }
 
     /**
@@ -76,7 +76,17 @@ trait ProgressBarTrait
     protected function advanceBar(int $step = 1): ProgressBar
     {
         $this->getBar()->advance($step);
-        $this->line('');
+        // sleep(1);
+        return $this->getBar();
+    }
+
+    /**
+     * @param int $max
+     * @return ProgressBar
+     */
+    protected function setMaxSteps(int $max): ProgressBar
+    {
+        $this->getBar()->setMaxSteps($max + $this->getBar()->getProgress());
         return $this->getBar();
     }
 }
