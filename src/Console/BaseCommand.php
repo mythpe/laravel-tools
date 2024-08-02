@@ -304,10 +304,6 @@ class BaseCommand extends Command
             $model = new $model();
             $fill = Arr::only($insert, $model->getFillable());
             $model->fill($fill);
-            if ($model->isFillable('order_by') && !$model->order_by) {
-                $model->order_by = $model::query()->count() + 1;
-            }
-            $model->save();
         }
         else {
             $cases = [$table, Str::snake($table), Str::camel($table), Str::studly($table)];
@@ -329,11 +325,11 @@ class BaseCommand extends Command
                 $fill = Arr::only($insert, $model->getFillable());
             }
             $model = $model->make($fill);
-            if ($model->isFillable('order_by') && !$model->order_by) {
-                $model->order_by = $model::query()->count() + 1;
-            }
-            $model->save();
         }
+        if ($model->isFillable('order_by') && !$model->order_by) {
+            $model->order_by = $model::query()->count() + 1;
+        }
+        $model->save();
         $this->insertImage($model, $insert);
         $this->pushData($model);
         $classLabel = Str::singular(class_basename($model));
