@@ -174,12 +174,12 @@ class BaseCommand extends Command
                 ]))->sort()->values();
             $this->startBar(count($files));
             foreach ($files as $file) {
-                $data = $this->getRowData($file);
+                $row = $this->getRowData($file);
                 $name = Str::afterLast($file, '-');
                 $table = Str::of(pathinfo($name, PATHINFO_FILENAME))->snake()->plural()->lower();
                 $this->truncate($table);
-                foreach ($data as $v) {
-                    $this->insert($v, $table);
+                foreach ($row as $data) {
+                    $this->insert($data, $table);
                 }
             }
             $this->finishBar();
@@ -357,8 +357,8 @@ class BaseCommand extends Command
 
                 }
                 $this->advanceBar(count($row));
-                foreach ($row as $k => $child) {
-                    $this->insert($child, $relationName, $model);
+                foreach ($row as $rowData) {
+                    $this->insert($rowData, $relationName, $model);
                 }
             }
         }
