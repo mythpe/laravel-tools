@@ -1,5 +1,5 @@
-<!doctype html>
-<html lang="{{$LOCALE}}" dir="{{$DIRECTION}}">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{$LOCALE}}" dir="{{$DIRECTION}}">
 <head>
 @include('4myth-tools::partials.head')
 @include('4myth-tools::partials.scripts')
@@ -22,7 +22,7 @@ left: auto;
 </style>
 @stack('styles')
 </head>
-<body class="{{ config('4myth-tools.font_family_class') }}">
+<body class="{{ config('4myth-tools.font_family_class') }}" style="direction: {!! $DIRECTION !!}">
 <div class="d-print-none main-print-buttons {{ $ALIGN }}">
 <div class=""><a href="javascript:void(0);" class="btn btn-dark" onclick="printWindow()">{!! __( 'global.print' ) !!}</a></div>
 </div>

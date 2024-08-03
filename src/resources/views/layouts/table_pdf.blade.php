@@ -5,7 +5,7 @@
 @include('4myth-tools::partials.scripts')
 </head>
 @section('title',$pageTitle)
-<body class="{{ config('4myth-tools.font_family_class') }}">
+<body class="{{ config('4myth-tools.font_family_class') }}" style="direction: {!! $DIRECTION !!}">
 <table class="table table-bordered table-condensed table-striped">
 <tr class="text-center">
 <th colspan="{{count($headerItems)}}">{{$pageTitle}}</th>
