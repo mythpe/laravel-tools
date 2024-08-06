@@ -133,23 +133,12 @@ trait PaginateTrait
                         'data' => ['url' => $disk->url($fileName),],
                     ]);
                 }
-                //d($fileName);
                 /** @var BinaryFileResponse $e */
-                return Excel::download($excelClass::make($headers, $items), "{$fileName}")->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $fileName);
-                // response()->headers->set('content-disposition',"filename={$fileName}");
-                // $r->headers->set('content-disposition', "filename={$fileName}");
-                // d(2);
-                //return $r;
-                // dd($r);
-                //return Excel::download($excelClass::make($headers, $items), "{$fileName}");
-                // $disk = Storage::disk('excel');
-                // Excel::store($excelClass::make($headers, $items), $fileName, 'excel');
-                // return response()->redirectTo($disk->url($fileName));
-
-                // response()->headers->set('content-disposition',"filename={$fileName}");
-                // return  $disk->get($fileName);
+                return Excel::download($excelClass::make($headers, $items), $fileName, null, [
+                    'File-Name'                     => $fileName,
+                    'Access-Control-Expose-Headers' => ['Content-Disposition','File-Name'],
+                ])->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $fileName, $fileName);
             }
-            //d($headers, $items);
             $headers = collect($headers)->filter(fn($v) => is_array($v) ? (($v['value'] ?? null) != $this->controlHeaderKey && ($v['field'] ?? null) != $this->controlHeaderKey) : $v != $this->controlHeaderKey)->values()->toArray();
             $compact = [
                 'headerItems' => $headers,
