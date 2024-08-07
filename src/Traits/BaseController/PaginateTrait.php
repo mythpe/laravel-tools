@@ -79,7 +79,7 @@ trait PaginateTrait
      */
     public static function getControllerPdfView(): string
     {
-        return config('4myth-tools.snappy_pdf_view', '4myth-tools::layouts.pdf_table');
+        return config('4myth-tools.snappy_pdf_view', '4myth-tools::layouts.table_pdf');
     }
 
     /**
@@ -160,23 +160,11 @@ trait PaginateTrait
                 ]);
             }
 
-            // return $pdf->output();
             /** Inline */
-            return $pdf->inline($fileName);
+            // return $pdf->inline($fileName);
 
-            /** Download */ //$pdf->save($path, !0);
-            //
-            //$size = $disk->getSize($fileName);
-            //$disk->delete($fileName);
-            //return $pdf->download($fileName)->header('Content-Length', $size);
-
-            // response()->headers->set('content-disposition',"filename={$fileName}");
-            // return response()->redirectTo($disk->url($fileName));
-            // return $disk->download($fileName, $fileName, [
-            //     'Location'                    => config('app.url'),
-            //     'Access-Control-Allow-Origin' => '*',
-            // ]);
-            // return $disk->url($fileName);
+            /** Download */
+            return $pdf->download($fileName);
         }
         $responseClass = config('4myth-tools.api_collection_response_class', ApiCollectionResponse::class);
         return new $responseClass($this->paginate($query), $transformer);
