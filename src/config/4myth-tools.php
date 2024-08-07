@@ -155,7 +155,7 @@ return [
     /**
      * Layout of export view using snappy pdf
      */
-    'snappy_pdf_view'               => '4myth-tools::layouts.pdf_table',
+    'snappy_pdf_view'               => '4myth-tools::layouts.table_pdf',
 
     /**
      * Name of lang files
