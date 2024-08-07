@@ -69,7 +69,7 @@ trait ApplyQueryTrait
      *
      * @return Builder|mixed
      */
-    protected function apply($builder = null)
+    public function apply($builder = null)
     {
         if ($builder) {
             $this->trimKeysFromRequest();
@@ -86,7 +86,7 @@ trait ApplyQueryTrait
      *
      * @return mixed
      */
-    protected function applyExcludeQuery($query)
+    public function applyExcludeQuery($query)
     {
         if (($ids = $this->request->input($this->autoExcludeKey))) {
             if (!is_array($ids)) {
