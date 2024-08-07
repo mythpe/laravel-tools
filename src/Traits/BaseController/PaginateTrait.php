@@ -141,9 +141,10 @@ trait PaginateTrait
             }
             $headers = collect($headers)->filter(fn($v) => is_array($v) ? (($v['value'] ?? null) != $this->controlHeaderKey && ($v['field'] ?? null) != $this->controlHeaderKey) : $v != $this->controlHeaderKey)->values()->toArray();
             $compact = [
-                'headerItems' => $headers,
-                'items'       => $items,
-                'pageTitle'   => $pageTitle,
+                'headerItems'   => $headers,
+                'items'         => $items,
+                'pageTitle'     => $pageTitle,
+                'usePublicPath' => !0,
             ];
 
             $disk = Storage::disk('pdf');
