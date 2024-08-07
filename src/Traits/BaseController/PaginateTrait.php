@@ -136,7 +136,7 @@ trait PaginateTrait
                 /** @var BinaryFileResponse $e */
                 return Excel::download($excelClass::make($headers, $items), $fileName, null, [
                     'File-Name'                     => $fileName,
-                    'Access-Control-Expose-Headers' => ['Content-Disposition','File-Name'],
+                    'Access-Control-Expose-Headers' => ['Content-Disposition', 'File-Name'],
                 ])->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $fileName, $fileName);
             }
             $headers = collect($headers)->filter(fn($v) => is_array($v) ? (($v['value'] ?? null) != $this->controlHeaderKey && ($v['field'] ?? null) != $this->controlHeaderKey) : $v != $this->controlHeaderKey)->values()->toArray();
@@ -164,7 +164,13 @@ trait PaginateTrait
             // return $pdf->inline($fileName);
 
             /** Download */
-            return $pdf->download($fileName);
+            // return $pdf->download($fileName);
+            return response($pdf->output(), 200, [
+                'Content-Type'                  => 'application/pdf',
+                'Content-Disposition'           => 'attachment; filename="'.$fileName.'"',
+                'File-Name'                     => $fileName,
+                'Access-Control-Expose-Headers' => ['Content-Disposition', 'File-Name'],
+            ]);
         }
         $responseClass = config('4myth-tools.api_collection_response_class', ApiCollectionResponse::class);
         return new $responseClass($this->paginate($query), $transformer);
