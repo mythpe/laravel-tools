@@ -66,33 +66,33 @@ trait CrudTrait
     /**
      * @var Model
      */
-    protected $updatedModel;
+    public $updatedModel;
 
     /**
      * @var Model
      */
-    protected $storedModel;
+    public $storedModel;
 
     /**
      * Sort query as latest
      *
      * @var array|bool|string|null
      */
-    protected string | array | bool | null $latest = null;
+    public string | array | bool | null $latest = null;
 
     /**
      * Sort query as oldest
      *
      * @var array|bool|string|null
      */
-    protected string | array | bool | null $oldest = null;
+    public string | array | bool | null $oldest = null;
 
     /**
      * This used to show only active of models
      *
      * @var bool
      */
-    protected bool $isIndexActiveOnly = !1;
+    public bool $isIndexActiveOnly = !1;
 
     /**
      * Map keys from request to fill model
@@ -101,20 +101,20 @@ trait CrudTrait
      *
      * @var array
      */
-    protected array $mapFromRequest = [];
+    public array $mapFromRequest = [];
 
     /**
      * Check from model relations before destroying
      *
      * @var array
      */
-    protected array $checkBeforeDestroy = [];
+    public array $checkBeforeDestroy = [];
 
     /**
      * Auto save model image after saved event
      * @var bool
      */
-    protected bool $autoSavingImage = !1;
+    public bool $autoSavingImage = !1;
 
     /**
      * @return array
@@ -481,7 +481,7 @@ trait CrudTrait
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    protected function getMapFromRequest(): array
+    public function getMapFromRequest(): array
     {
         $array = [];
         foreach ($this->mapFromRequest as $rule => $request) {
@@ -493,7 +493,7 @@ trait CrudTrait
     /**
      * @return Model|mixed
      */
-    protected function getBindModel()
+    public function getBindModel()
     {
         if (app()->runningInConsole()) {
             return new static::$controllerModel;
