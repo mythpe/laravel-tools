@@ -10,6 +10,7 @@
 namespace Myth\LaravelTools\Traits\BaseController;
 
 use Exception;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -111,5 +112,44 @@ trait ModelMediaTrait
             $media->delete();
         }
         return $this->resource($this->getModelAttachmentsMedia($model), __("messages.deleted_success"));
+    }
+
+    /**
+     * @param Model $model
+     * @param Model $media
+     * @return JsonResponse
+     * @throws BindingResolutionException
+     */
+    public function updateAttachment($model, $media): JsonResponse
+    {
+        if ($media->model->is($model)) {
+            $request = $this->request;
+            $rules = $this->_updateAttachmentRules();
+            $request->validate($rules);
+            $data = $request->only(array_keys($rules));
+            foreach ($data as $key => &$value) {
+                if (is_null($value)) {
+                    $value = $media->{$key};
+                }
+            }
+            $media->update($data);
+            if ($request->input(static::$returnTypeKey) == 'current') {
+                $resource = config('4myth-tools.media_resource_class');
+                return $this->resource($resource::make($media->refresh()));
+            }
+        }
+        return $this->resource($this->getModelAttachmentsMedia($model), __('messages.updated_success'));
+    }
+
+    /**
+     * @param $media
+     * @return array[]
+     */
+    public function _updateAttachmentRules(): array
+    {
+        return [
+            'name'         => ['string'],
+            'order_column' => ['int'],
+        ];
     }
 }
