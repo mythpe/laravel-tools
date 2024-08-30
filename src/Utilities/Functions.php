@@ -131,7 +131,7 @@ if (!function_exists('str_replace_en_ar')) {
      *
      * @return string
      */
-    function str_replace_en_ar(?string $string = ''): string
+    function str_replace_en_ar(?string $string = null): string
     {
         return str_replace_name_ar(str_replace_name_en($string ?: ''));
     }
@@ -145,12 +145,9 @@ if (!function_exists('str_replace_name_ar')) {
      *
      * @return string
      */
-    function str_replace_name_ar(?string $string = ''): string
+    function str_replace_name_ar(?string $string = null): string
     {
-        $string ??= '';
-        $string = str_ireplace(['إ', 'أ'], 'ا', $string);
-        $string = str_ireplace("عبدال", 'عبد ال', $string);
-        return trim($string);
+        return Str::of($string ?? '')->trim()->replace(['إ', 'أ'], 'ا')->replace("عبدال", 'عبد ال')->trim()->toString();
     }
 }
 
@@ -162,11 +159,29 @@ if (!function_exists('str_replace_name_en')) {
      *
      * @return string
      */
-    function str_replace_name_en(?string $string = ''): string
+    function str_replace_name_en(?string $string = null): string
     {
-        $string ??= '';
-        $string = trim($string);
-        return ucwords($string);
+        return Str::of($string ?? '')->trim()->title()->toString();
+    }
+}
+
+if (!function_exists('str_without_the')) {
+    /**
+     * Remove the first 'the' in arabic form string.
+     *
+     * @param string|null $string $string
+     * @param string|null $locale
+     * @return string
+     */
+    function str_without_the(?string $string = null, ?string $locale = null): string
+    {
+        $locale = $locale ?: app()->getLocale();
+        $string = $string ?: '';
+        if ($locale == 'ar' && str_starts_with($string, 'ال')) {
+            return Str::substr($string, 2);
+        }
+
+        return $string ?? '';
     }
 }
 
