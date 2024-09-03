@@ -137,11 +137,6 @@ table.table-th-headers th {
         page-break-after: avoid
     }
 
-    .container,
-    body {
-        min-width: 992px !important
-    }
-
     .navbar {
         display: none
     }
