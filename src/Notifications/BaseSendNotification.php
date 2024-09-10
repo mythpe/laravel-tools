@@ -263,7 +263,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     public function getMobile($notifiable): mixed
     {
         if ($notifiable instanceof AnonymousNotifiable) {
-            return $notifiable->routeNotificationFor('sms');
+            return $notifiable->routeNotificationFor(config('4myth-tools.sms.disable', 'sms'));
         }
         if ($notifiable instanceof Model) {
             if (method_exists($notifiable, 'routeNotificationForSms')) {

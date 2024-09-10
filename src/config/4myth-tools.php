@@ -84,9 +84,19 @@ return [
     ],
 
     /**
-     * Enable sms messages
+     * SMS Configuration.
      */
-    'send_sms'                      => (bool) env('SEND_SMS', !1),
+    'sms'                           => [
+        /**
+         * Enable sms messages
+         */
+        'disable' => (bool) env('SEND_SMS', !1),
+
+        /**
+         * Class of sms channel.
+         */
+        'driver'  => 'App\Channels\SmsChannel',
+    ],
 
     /**
      * Production url to website_end
