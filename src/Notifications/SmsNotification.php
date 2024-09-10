@@ -14,7 +14,7 @@ class SmsNotification
     /** @var ?string */
     protected ?string $content = null;
 
-    /** @var string|string[] */
+    /** @var string|string[]|null */
     protected string | array | null $mobile = null;
 
     /**
@@ -37,7 +37,7 @@ class SmsNotification
      *
      * @return $this
      */
-    public function to(array | string $mobile): self
+    public function to(array | string | null $mobile): self
     {
         $this->mobile = $mobile ?: null;
         return $this;
