@@ -90,7 +90,7 @@ return [
         /**
          * Enable sms messages
          */
-        'disable' => (bool) env('SEND_SMS', !1),
+        'disable' => !env('SEND_SMS', !1),
 
         /**
          * sms channel.
