@@ -88,7 +88,7 @@ return [
      */
     'sms'                           => [
         /**
-         * Enable sms messages
+         * Disable sms messages
          */
         'disable' => !env('SEND_SMS', !1),
 
