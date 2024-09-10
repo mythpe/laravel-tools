@@ -41,26 +41,26 @@ class ExpoPushNotification
     protected array $data = [];
 
     /**
-     * @param string $title
+     * @param string|null $title
      *
      * @return $this
      */
-    public function title(string $title): self
+    public function title(?string $title): self
     {
-        $this->title = $title;
+        $this->title = $title ?: '';
         return $this;
     }
 
     /**
      * Set the content of the message.
      *
-     * @param string $content
+     * @param string|null $content
      *
      * @return $this
      */
-    public function content(string $content): self
+    public function content(?string $content): self
     {
-        $this->content = $content;
+        $this->content = $content ?: '';
         return $this;
     }
 
@@ -71,9 +71,9 @@ class ExpoPushNotification
      *
      * @return $this
      */
-    public function to(array | string $pushToken): self
+    public function to(array | string | null $pushToken): self
     {
-        $this->pushToken = $pushToken;
+        $this->pushToken = $pushToken ?: '';
         return $this;
     }
 

@@ -20,20 +20,20 @@ class SmsNotification
     /**
      * Set the content of the message.
      *
-     * @param string $content
+     * @param string|null $content
      *
      * @return $this
      */
-    public function content(string $content): self
+    public function content(?string $content): self
     {
-        $this->content = $content;
+        $this->content = $content ?: '';
         return $this;
     }
 
     /**
      * Set the receiver of the message.
      *
-     * @param string|string[] $mobile
+     * @param string|string[]|null $mobile
      *
      * @return $this
      */
