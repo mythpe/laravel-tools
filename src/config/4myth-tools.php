@@ -93,9 +93,29 @@ return [
         'disable' => (bool) env('SEND_SMS', !1),
 
         /**
-         * Class of sms channel.
+         * sms channel.
          */
         'driver'  => 'App\Channels\SmsChannel',
+    ],
+
+    /**
+     * Push Token Configuration.
+     */
+    'push_token'                    => [
+        /**
+         * Push Token channel.
+         */
+        'driver' => 'App\Channels\PushTokenChannel',
+    ],
+
+    /**
+     * Whatsapp Configuration.
+     */
+    'whatsapp'                      => [
+        /**
+         * Whatsapp channel.
+         */
+        'driver' => 'App\Channels\WhatsappChannel',
     ],
 
     /**

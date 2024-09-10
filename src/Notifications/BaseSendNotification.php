@@ -310,7 +310,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     public function getPushToken($notifiable): mixed
     {
         if ($notifiable instanceof AnonymousNotifiable) {
-            return $notifiable->routeNotificationFor('push_token');
+            return $notifiable->routeNotificationFor(config('4myth-tools.push_token.driver', 'push_token'));
         }
         if ($notifiable instanceof Model) {
             if (method_exists($notifiable, 'routeNotificationForPushToken')) {
@@ -348,11 +348,12 @@ class BaseSendNotification extends Notification implements ShouldQueue
     public function viaQueues(): array
     {
         return [
-            'database'   => 'default',
-            'mail'       => 'default',
-            'slack'      => 'default',
-            'sms'        => 'default',
-            'push_token' => 'default',
+            'database'                                            => 'default',
+            'mail'                                                => 'default',
+            'slack'                                               => 'default',
+            config('4myth-tools.sms.driver', 'sms')               => 'default',
+            config('4myth-tools.push_token.driver', 'push_token') => 'default',
+            config('4myth-tools.whatsapp.driver', 'whatsapp')     => 'default',
         ];
     }
 }
