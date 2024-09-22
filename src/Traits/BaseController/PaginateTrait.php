@@ -26,36 +26,34 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 trait PaginateTrait
 {
+    /**
+     * @var string request key of rows will append on export.
+     */
+    const EXPORT_APPEND_KEY = 'myth.append_export_rows';
     /** @var int */
     public int $page = 1;
-
     /**
      * Request page key
      *
      * @var string
      */
     public string $pageKey = 'page';
-
     /** @var int|null */
     public ?int $limit = null;
-
     /**
      * Request limit key
      *
      * @var string
      */
     public string $limitKey = 'limit';
-
     /** @var int */
     public int $itemsPerPage = 15;
-
     /**
      * request key name
      *
      * @var string
      */
     public string $itemsPerPageKey = 'itemsPerPage';
-
     /**
      * request key name
      *
@@ -100,6 +98,7 @@ trait PaginateTrait
         if ($indexType == 'pdf' || $indexType == 'excel') {
             $items = $request->input(ApiResource::$itemsRequestKey, []);
             $headers = $request->input(ApiResource::$headerItemsRequestKey, []);
+            $appendRows = $request->input(static::EXPORT_APPEND_KEY, []) ?: [];
 
             if (!$items) {
                 $ids = $request->input('ids', []);
@@ -121,20 +120,17 @@ trait PaginateTrait
             }
             //d($headers);
             $fileName = "Export-".(auth()->id() ?: 0);
-
             if ($indexType == 'excel') {
                 $fileName = "{$fileName}.xlsx";
                 /** @var BaseExport $excelClass */
                 $excelClass = is_null($excelClass) ? static::getControllerExcelExportClass() : $excelClass;
-                if ($this->request->input('toUrl')) {
+                if ($request->input('toUrl')) {
                     $disk = Storage::disk('excel');
-                    Excel::store($excelClass::make($headers, $items), $fileName, 'excel');
-                    return $this->successResponse([
-                        'data' => ['url' => $disk->url($fileName),],
-                    ]);
+                    Excel::store($excelClass::make($headers, $items, $appendRows ?: []), $fileName, 'excel');
+                    return $this->successResponse(['data' => ['url' => $disk->url($fileName)]]);
                 }
                 /** @var BinaryFileResponse $e */
-                return Excel::download($excelClass::make($headers, $items), $fileName, null, [
+                return Excel::download($excelClass::make($headers, $items, $appendRows ?: []), $fileName, null, [
                     'File-Name'                     => $fileName,
                     'Access-Control-Expose-Headers' => ['Content-Disposition', 'File-Name'],
                 ])->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $fileName, $fileName);
@@ -144,6 +140,7 @@ trait PaginateTrait
                 'headerItems'   => $headers,
                 'items'         => $items,
                 'pageTitle'     => $pageTitle,
+                'appendRows'    => $appendRows,
                 'usePublicPath' => !0,
             ];
 
@@ -154,7 +151,7 @@ trait PaginateTrait
             $pdf = SnappyPdf::loadView(static::getControllerPdfView(), $compact);
             $pdf->setOption('title', $pageTitle);
 
-            if ($this->request->input('toUrl')) {
+            if ($request->input('toUrl')) {
                 $pdf->save($path, !0);
                 return $this->successResponse([
                     'data' => ['url' => $disk->url($fileName),],

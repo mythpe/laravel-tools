@@ -17,8 +17,7 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
 
-class BaseExport extends StringValueBinder implements WithCustomValueBinder, FromCollection,
-    WithEvents
+class BaseExport extends StringValueBinder implements WithCustomValueBinder, FromCollection, WithEvents
 {
     /**
      * @var array<string|int, mixed>|Collection<string|int, mixed>
@@ -31,13 +30,20 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     public array | Collection $items = [];
 
     /**
+     * @var array<int,mixed>|Collection<int,mixed>
+     */
+    public array | Collection $append = [];
+
+    /**
      * @param array|Collection $headers
      * @param array|Collection $items
+     * @param array|Collection $append
      */
-    public function __construct(array | Collection $headers = [], array | Collection $items = [])
+    public function __construct(array | Collection $headers = [], array | Collection $items = [], array | Collection $append = [])
     {
         $this->headers = is_array($headers) ? collect($headers) : $headers;
         $this->items = is_array($items) ? collect($items) : $items;
+        $this->append = is_array($append) ? collect($append) : $append;
     }
 
     /**
@@ -76,6 +82,9 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
                 $v[] = $r == 0 ? '0' : $r;
             }
             $data[] = $v;
+        }
+        if (!empty($this->append)) {
+            $data = [...$data, ...$this->append];
         }
         return collect($data);
     }
