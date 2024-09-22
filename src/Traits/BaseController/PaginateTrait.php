@@ -29,7 +29,7 @@ trait PaginateTrait
     /**
      * @var string request key of rows will append on export.
      */
-    const EXPORT_APPEND_KEY = 'myth.append_export_rows';
+    const EXPORT_APPEND_KEY = 'myth_append_export';
     /** @var int */
     public int $page = 1;
     /**
