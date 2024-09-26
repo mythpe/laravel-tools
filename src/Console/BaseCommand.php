@@ -144,7 +144,8 @@ class BaseCommand extends Command
     public function getRowData(array | string $data): array
     {
         if (!is_array($data)) {
-            $data = Str::endsWith($data, '.json') ? json_decode($this->disk()->get($data), !0) : require($this->disk()->path($data));
+            $path = is_file($data) ? $data : $this->disk()->path($data);
+            $data = Str::endsWith($data, '.json') ? json_decode(file_get_contents($path), !0) : require($path);
         }
         return $data;
     }
