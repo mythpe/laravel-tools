@@ -102,6 +102,9 @@ class BaseCommand extends Command
                     $h = (int) floor($w * $r);
                     $src = "https://picsum.photos/id/$random/$w/$h";
                 }
+                elseif (is_array($src)) {
+                    $src = "https://picsum.photos/id/$random/$src[0]/".($src[1] ?? $src[0]);
+                }
                 elseif (Str::startsWith($src, ($r = 'r:'))) {
                     $array = explode(',', Str::after($src, $r));
                     $r = explode('/', $array[0]);
@@ -110,11 +113,8 @@ class BaseCommand extends Command
                     $h = (int) floor($w * $r);
                     $src = "https://picsum.photos/id/$random/$w/$h";
                 }
-                elseif (is_array($src)) {
-                    $src = "https://picsum.photos/id/$random/$src[0]/".($src[1] ?? $src[0]);
-                }
-                elseif (is_string($src) && Str::startsWith($src, '/')) {
-                    $src = base_path($src);
+                elseif (is_string($src)) {
+                    $src = is_file($src) ? $src : (Str::startsWith($src, '/') ? base_path($src) : $this->disk()->path($src));
                 }
                 if ($single && $collection) {
                     $model->clearMediaCollection($collection);
