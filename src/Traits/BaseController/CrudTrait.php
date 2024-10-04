@@ -157,7 +157,11 @@ trait CrudTrait
         $excelClass = ($args[2] ?? null);
 
         ($this->isIndexActiveOnly && method_exists($query, 'scopeActiveOnly')) && $query->activeOnly();
-
+        if ($this->isIndexActiveOnly) {
+            if (method_exists($query, 'scopeActiveOnly') || method_exists($query->getModel(), 'scopeActiveOnly')) {
+                $query->activeOnly();
+            }
+        }
         if (($r = $this->indexing($query))) {
             return $r;
         }
