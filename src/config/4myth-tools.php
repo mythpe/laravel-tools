@@ -266,5 +266,5 @@ return [
      * Default font family of views
      * Available: 'font-kufi', 'font-sstarabic', 'font-changa', 'font-almarai'
      */
-    'font_family_class' => 'font-almarai',
+    'font_family_class' => 'font-kufi',
 ];
