@@ -135,8 +135,9 @@ trait HasMediaTrait
                 elseif (is_file($file)) {
                     $media = Str::startsWith($file, base_path()) ? $this->copyMedia($file) : $this->addMedia($file);
                 }
-                elseif (request()->hasFile($file)) {
-                    $media = $this->addMediaFromRequest($file);
+                elseif (($f = request()->file($file)) && $f instanceof \Illuminate\Http\UploadedFile) {
+                    // $media = $this->addMediaFromRequest($file);
+                    $media = $this->addMedia($f);
                 }
                 else {
                     // isBase64($file);
