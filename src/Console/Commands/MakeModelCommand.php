@@ -126,14 +126,17 @@ to insert code automatically add this comment "use myth crud model command" to y
         if (empty($model)) {
             $disk = Storage::disk('root');
             $modelFiles = $disk->files('app/Models');
-            $auto = 'auto';
+            $all = 'all';
             $none = 'none';
+            // dd($modelFiles);
+            $options = [
+                ...$modelFiles,
+                $all  => 'All',
+                // $none => 'None',
+            ];
             $choice = $this->components->choice(
                 'Choice Models',
-                array_merge($modelFiles, [
-                    $auto => 'Auto',
-                    $none => 'None',
-                ]),
+                $options,
                 $none,
                 1,
                 !0
@@ -143,17 +146,18 @@ to insert code automatically add this comment "use myth crud model command" to y
                 return;
             }
             $models = [];
-            if (in_array($auto, $choice)) {
-                $choice = $modelFiles;
+            if (in_array($all, $choice)) {
+                $choice = array_keys($modelFiles);
             }
-            foreach ($choice as $value) {
+            foreach ($choice as $index) {
+                $value = $options[$index] ?? $index;
                 $name = Str::singular(class_basename(pathinfo($value, PATHINFO_FILENAME)));
                 if (in_array($name, ['User', 'Role', 'Permission', 'BaseModel'])) {
                     continue;
                 }
                 $models[] = $name;
             }
-            $this->stubsOnly = !0;
+            // $this->stubsOnly = !0;
             $this->argModels = $models;
         }
 
