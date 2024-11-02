@@ -77,6 +77,24 @@ class Controller extends BaseController
     }
 
     /**
+     * Model attribute should not null value
+     * return string if attribute is null.
+     *
+     * @param $attribute
+     * @return string|null
+     */
+    public function attrNotNull($attribute): ?string
+    {
+        if (app()->runningInConsole()) {
+            return 'required';
+        }
+        if (is_null($this->request->input($attribute)) && is_null($this->getBindModel()?->{$attribute})) {
+            return 'required';
+        }
+        return null;
+    }
+
+    /**
      * Send API unique response for model
      * Helper
      *
@@ -219,27 +237,6 @@ class Controller extends BaseController
             $result[$key] = $value;
         }
         return $result;
-    }
-
-    /**
-     * Model attribute should not empty value
-     *
-     * @param $attribute
-     *
-     * @return string|null
-     */
-    protected function attrNotNull($attribute): ?string
-    {
-        $required = 'required';
-        if (app()->runningInConsole()) {
-            return $required;
-        }
-        $model = $this->getBindModel();
-        $value = $this->request->input($attribute, $model?->{$attribute});
-        if (is_null($value)) {
-            return $required;
-        }
-        return null;
     }
 
     /**
