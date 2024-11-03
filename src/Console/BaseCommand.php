@@ -75,7 +75,7 @@ class BaseCommand extends Command
         $files = [];
         foreach ($keys as $key) {
             if ($key == '_files') {
-                $files = array_merge($files, $data[$key]);
+                $files = [...$files, ...$data[$key]];
             }
             elseif ($key == '_file') {
                 $files[] = $data[$key];

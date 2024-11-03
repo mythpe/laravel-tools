@@ -300,7 +300,7 @@ class GetawayOrder extends BaseModel
      */
     public function defaultHiddenAttributes(): array
     {
-        return array_merge(parent::defaultHiddenAttributes(), ['meta_data', 'trackable_data']);
+        return [...parent::defaultHiddenAttributes(), 'meta_data', 'trackable_data'];
     }
 
     /**

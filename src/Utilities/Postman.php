@@ -443,13 +443,13 @@ class Postman
                         }
                         $queryExamples = array_values($queryExamples);
                     }
-                    $query = array_merge($query, $queryExamples);
+                    $query = [...$query, ...$queryExamples];
                     if (in_array($actionName, ['index', 'allIndex']) && $isGet) {
-                        $query = array_merge($query, $this->getControllerParams($controller));
+                        $query = [...$query, ...$this->getControllerParams($controller)];
                     }
 
                     if ($actionName == 'indexActiveOnly' || $isPost) {
-                        $query = array_merge($query, $this->getControllerPaginationParams($controller));
+                        $query = [...$query, ...$this->getControllerPaginationParams($controller)];
                     }
                 }
 
@@ -1035,7 +1035,7 @@ pm.globals.set(\"{$this->getTokenVariableName()}\",response.token);",
             ],
         ];
 
-        return array_merge($pagination, $params);
+        return [...$pagination, ...$params];
     }
 
     /**

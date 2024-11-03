@@ -20,7 +20,7 @@ class {studlySingular}Controller extends \App\Http\Controllers\Controller
      */
     protected function requestRules(array &$rules = [], &$model = null): array
     {
-        $rules = array_merge($rules, $this->getRules());
+        $rules = [...$rules, ...$this->getRules()];
         return parent::requestRules($rules, $model);
     }
 
