@@ -129,9 +129,18 @@ trait PaginateTrait
     /**
      * @return array|callable
      */
-    public function exportAppendRows(): array | callable
+    public function getExportAppendRows(): array | callable
     {
         return $this->request->input(static::EXPORT_APPEND_KEY, $default = []) ?: $default;
+    }
+
+    /**
+     * @param callable $callback
+     * @return void
+     */
+    public function exportAppendRows(callable $callback): void
+    {
+        $this->request->merge([static::EXPORT_APPEND_KEY => $callback]);
     }
 
     /**
@@ -173,7 +182,7 @@ trait PaginateTrait
             }
             //d($headers);
             $fileName = "Export-".(auth()->id() ?: 0);
-            $appendRows = $this->exportAppendRows();
+            $appendRows = $this->getExportAppendRows();
             $appendRows = is_callable($appendRows) ? $appendRows($items, $headers) : $appendRows;
             $headers = collect($headers)->filter(fn($v) => is_array($v) ? !in_array($this->controlHeaderKey, [
                 ($v['field'] ?? null),
