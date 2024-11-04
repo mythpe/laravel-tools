@@ -127,6 +127,14 @@ trait PaginateTrait
     }
 
     /**
+     * @return array|callable
+     */
+    public function exportAppendRows(): array | callable
+    {
+        return $this->request->input(static::EXPORT_APPEND_KEY, $default = []) ?: $default;
+    }
+
+    /**
      * @param mixed|Builder|Model $query
      * @param mixed|string|ApiResource|null $transformer
      * @param mixed|string|null $excelClass
@@ -144,7 +152,6 @@ trait PaginateTrait
         if ($indexType == 'pdf' || $indexType == 'excel') {
             $items = $request->input(ApiResource::$itemsRequestKey, []);
             $headers = $request->input(ApiResource::$headerItemsRequestKey, []);
-            $appendRows = $request->input(static::EXPORT_APPEND_KEY, []) ?: [];
 
             if (!$items) {
                 $ids = $request->input('ids', []);
@@ -166,23 +173,27 @@ trait PaginateTrait
             }
             //d($headers);
             $fileName = "Export-".(auth()->id() ?: 0);
+            $appendRows = $this->exportAppendRows();
+            $appendRows = is_callable($appendRows) ? $appendRows($items, $headers) : $appendRows;
+            $headers = collect($headers)->filter(fn($v) => is_array($v) ? !in_array($this->controlHeaderKey, [
+                ($v['field'] ?? null),
+                ($v['name'] ?? null),
+            ]) : $v != $this->controlHeaderKey)->values()->toArray();
             if ($indexType == 'excel') {
                 $fileName = "{$fileName}.xlsx";
                 /** @var BaseExport $excelClass */
                 $excelClass = is_null($excelClass) ? static::getControllerExcelExportClass() : $excelClass;
                 if ($request->input('toUrl')) {
                     $disk = Storage::disk('excel');
-                    $appendRows = is_callable($appendRows) ? $appendRows($items, $headers) : $appendRows;
-                    Excel::store($excelClass::make($headers, $items, $appendRows ?: []), $fileName, 'excel');
+                    Excel::store($excelClass::make($headers, $items, $appendRows), $fileName, 'excel');
                     return $this->successResponse(['data' => ['url' => $disk->url($fileName)]]);
                 }
                 /** @var BinaryFileResponse $e */
-                return Excel::download($excelClass::make($headers, $items, $appendRows ?: []), $fileName, null, [
+                return Excel::download($excelClass::make($headers, $items, $appendRows), $fileName, null, [
                     'File-Name'                     => $fileName,
                     'Access-Control-Expose-Headers' => ['Content-Disposition', 'File-Name'],
                 ])->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $fileName, $fileName);
             }
-            $headers = collect($headers)->filter(fn($v) => is_array($v) ? (($v['value'] ?? null) != $this->controlHeaderKey && ($v['field'] ?? null) != $this->controlHeaderKey) : $v != $this->controlHeaderKey)->values()->toArray();
             $compact = [
                 'headerItems'   => $headers,
                 'items'         => $items,
