@@ -30,6 +30,12 @@ trait PaginateTrait
      * @var string request key of rows will append on export.
      */
     const EXPORT_APPEND_KEY = 'myth_append_export';
+    /**
+     * Request key of index type.
+     * Values: pdf, excel, index
+     * @var string
+     */
+    const INDEX_TYPE_KEY = 'indexType';
     /** @var int */
     public int $page = 1;
     /**
@@ -81,6 +87,46 @@ trait PaginateTrait
     }
 
     /**
+     * @return string
+     */
+    public function controllerIndexType(): string
+    {
+        return $this->request->input(self::INDEX_TYPE_KEY, $default = 'index') ?: $default;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExcelIndex(): bool
+    {
+        return $this->controllerIndexType() == 'excel';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPdfIndex(): bool
+    {
+        return $this->controllerIndexType() == 'pdf';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIndexType(): bool
+    {
+        return $this->controllerIndexType() === 'index';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExportIndex(): bool
+    {
+        return $this->isPdfIndex() || $this->isExcelIndex();
+    }
+
+    /**
      * @param mixed|Builder|Model $query
      * @param mixed|string|ApiResource|null $transformer
      * @param mixed|string|null $excelClass
@@ -92,7 +138,7 @@ trait PaginateTrait
         $request = $this->request;
         $query = is_null($query) ? static::$controllerModel::whereNull('id') : $query;
         $transformer = is_null($transformer) ? $this->getIndexTransformer() : $transformer;
-        $indexType = $request->input('indexType');
+        $indexType = $this->controllerIndexType();
         $modelName = Str::pluralStudly(class_basename($query->getModel()));
         $pageTitle = $request->input(($a = 'pageTitle')) ? $request->input($a) : (trans_has(($a = "choice.{$modelName}")) ? trans_choice($a, 2) : $modelName);
         if ($indexType == 'pdf' || $indexType == 'excel') {
@@ -126,6 +172,7 @@ trait PaginateTrait
                 $excelClass = is_null($excelClass) ? static::getControllerExcelExportClass() : $excelClass;
                 if ($request->input('toUrl')) {
                     $disk = Storage::disk('excel');
+                    $appendRows = is_callable($appendRows) ? $appendRows($items, $headers) : $appendRows;
                     Excel::store($excelClass::make($headers, $items, $appendRows ?: []), $fileName, 'excel');
                     return $this->successResponse(['data' => ['url' => $disk->url($fileName)]]);
                 }
