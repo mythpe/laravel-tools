@@ -10,6 +10,7 @@
 namespace Myth\LaravelTools\Models;
 
 use Carbon\Carbon;
+use Closure;
 use Exception;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Builder;
@@ -117,6 +118,16 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     public static function getDaysArray(): array
     {
         return array_keys(__('const.days'));
+    }
+
+    public static function cloning($callback): void
+    {
+        static::registerModelEvent('cloning', $callback);
+    }
+
+    public static function cloned($callback): void
+    {
+        static::registerModelEvent('cloned', $callback);
     }
 
     /**
@@ -554,7 +565,9 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
             $clone->deleted_at = null;
         }
         try {
+            $clone->fireModelEvent('cloning', !1);
             $clone->push();
+            $clone->fireModelEvent('cloned', !1);
         }
         catch (\Exception $e) {
         }
