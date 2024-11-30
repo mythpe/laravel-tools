@@ -593,6 +593,25 @@ if (!function_exists('front_end_url')) {
     }
 }
 
+if (!function_exists('frontend_url')) {
+    /**
+     *  Front end url helper
+     *
+     * @param string|null $prefix
+     *
+     * @return string
+     */
+    function frontend_url(?string $prefix = null): string
+    {
+        $url = config('app.frontend_url', '') ?: '';
+        $url = rtrim($url, '/');
+        if ($prefix) {
+            $url .= "/".ltrim($prefix, '/');
+        }
+        return $url;
+    }
+}
+
 if (!function_exists('getRouterPermissions')) {
     /**
      * Get list of auth-routes has permission
