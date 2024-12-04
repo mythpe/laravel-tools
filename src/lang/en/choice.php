@@ -8,12 +8,6 @@
  */
 
 return [
-    'Ages'                 => '{0}-|[1]One Year|[2,*]:age Years',
-    'Days'                 => '{0}-|[1]One Day|[2,*]:days Days',
-    'Minutes'              => '{0}-|[1]One Minute|[2,*]:minutes Minutes',
-    'Hours'                => '{0}-|[1]One Hour|[2,*]:hours Hours',
-    'Months'               => '{0}-|[1]One Month|[2,*] :months Month',
-    'OrderCounts'          => '{0}No Orders|{1} One Order|[2,*] :count Orders',
     'Profiles'             => 'Profile|Profile',
     'Avatars'              => 'Avatar|Avatar',
     'Utilities'            => 'Utility|Utilities',
@@ -52,12 +46,10 @@ return [
     'PaymentMethods'       => 'Payment Method|Payment Methods',
     'Payments'             => 'Payment|Payments',
     'Permissions'          => 'Permission|Permissions',
-    'PluralizedErrors'     => '[0]The given data was invalid|[1](and one more error)|[2](and :e more errors)',
     'Products'             => 'Product|Products',
     'Rates'                => 'Rate|Rates',
     'Regions'              => 'Region|Regions',
     'Reports'              => 'Report|Reports',
-    'ReservationCounts'    => '{0}No Reservations|{1} One Reservation|[2,*] :c Reservations',
     'Reservations'         => 'Reservation|Reservations',
     'Reviews'              => 'Review|Reviews',
     'Roles'                => 'Role|Roles',
@@ -77,7 +69,6 @@ return [
     'Users'                => 'User|Users',
     'WalletTransactions'   => 'Wallet Transaction|Wallet Transactions',
     'Wallets'              => 'Wallet|Wallets',
-    'Years'                => '{0}-|[1]One Year|[2,*]:years Years',
     'Appointments'         => 'Appointment|Appointments',
     'BadgeCategories'      => 'Badge Category|Badge Categories',
     'Badges'               => 'Badge|Badges',

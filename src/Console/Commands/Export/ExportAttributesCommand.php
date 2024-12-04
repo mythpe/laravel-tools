@@ -30,10 +30,12 @@ class ExportAttributesCommand extends BaseCommand
 {--o|output= : Output path inside resource path}
 {--t|to : Do not Insert to_ keys to exported data}
 {--f|from : Do not  Insert from_ keys to exported data}
-{--N|new : Make new export and do not  export attributes with exists files}
+{--N|new : Make new export and do not export attributes with exists files}
 {--D|delete : Delete exported files}
 {--j|json : Use Language Files Command }
 {--s|save : save files to lang directories}
+{--c|choice : with exists choice}
+{--C|countables : with exists countables}
 ';
 
     /**
@@ -61,6 +63,8 @@ class ExportAttributesCommand extends BaseCommand
         $toOption = !$this->option('to');
         $fromOption = !$this->option('from');
         $newOption = $this->option('new');
+        $withChoiceOption = $this->option('choice');
+        $withCountablesOption = $this->option('countables');
         $saveOption = $this->option('save');
         $jsonOption = $this->option('json');
 
@@ -71,6 +75,10 @@ class ExportAttributesCommand extends BaseCommand
         $cacheChoice = [
             'ar' => require __DIR__.'/../../../lang/ar/choice.php',
             'en' => require __DIR__.'/../../../lang/en/choice.php',
+        ];
+        $cacheCountables = [
+            'ar' => require __DIR__.'/../../../lang/ar/countables.php',
+            'en' => require __DIR__.'/../../../lang/en/countables.php',
         ];
 
         foreach ($locales as $locale) {
@@ -205,6 +213,7 @@ class ExportAttributesCommand extends BaseCommand
             $fillable = collect($temp)->filter((fn($v) => !Str::endsWith('.*', $v)))->values()->toArray();
             sort($fillable);
 
+            // # Set Attributes.
             foreach ($locales as $locale) {
                 foreach ($fillable as $attribute) {
                     if (isset($sortArray[$attribute])) {
@@ -236,7 +245,7 @@ class ExportAttributesCommand extends BaseCommand
                             $transValue = $cacheAttrs[$locale][$attribute];
                         }
                     }
-                    // No value set from cache
+                    // # No value set from cache
                     if ($transValue == $defaultTrans && isset($cacheAttrs[$locale][$attribute])) {
                         $transValue = $cacheAttrs[$locale][$attribute];
                     }
@@ -245,8 +254,7 @@ class ExportAttributesCommand extends BaseCommand
                 }
                 if (!$newOption) {
                     $localeFile = include lang_path("$locale/attributes.php");
-                    $withFillable = array_keys($localeFile);
-                    $attributes[$locale] = array_merge($attributes[$locale], $localeFile);
+                    $attributes[$locale] = [...$attributes[$locale], ...$localeFile];
                 }
                 // Sort Values.
                 ksort($attributes[$locale]);
@@ -292,33 +300,39 @@ class ExportAttributesCommand extends BaseCommand
                     }
                 }
 
-                if (isset($cacheChoice[$locale])) {
-                    $choice[$locale] = array_merge($cacheChoice[$locale], $choice[$locale]);
-                }
-
                 if (isset($cacheChoice[$locale][$key])) {
                     $choice[$locale][$key] = $cacheChoice[$locale][$key];
                 }
                 if (!isset($choice[$locale][$key])) {
                     $choice[$locale][$key] = null;
                 }
-                // if (__($k, [], $locale) != $k) {
-                if (!$choice[$locale][$key] && trans_has($k, $locale)) {
-                    $choice[$locale][$key] = __($k, [], $locale);
-                }
-                else {
-                    $plural = str_replace('-', ' ', Str::plural(ucwords(Str::kebab($class_basename), '-')));
-                    $singular = str_replace('-', ' ', Str::singular(ucwords(Str::kebab($class_basename), '-')));
-                    if ($locale == 'ar') {
-                        $choice[$locale][$key] = "$plural|$singular";
+
+                if (!$choice[$locale][$key]) {
+                    if (trans_has($k, $locale)) {
+                        $choice[$locale][$key] = __($k, [], $locale);
                     }
                     else {
-                        $choice[$locale][$key] = "$singular|$plural";
+                        $plural = str_replace('-', ' ', Str::plural(ucwords(Str::kebab($class_basename), '-')));
+                        $singular = str_replace('-', ' ', Str::singular(ucwords(Str::kebab($class_basename), '-')));
+                        if ($locale == 'ar') {
+                            $choice[$locale][$key] = "$plural|$singular";
+                        }
+                        else {
+                            $choice[$locale][$key] = "$singular|$plural";
+                        }
                     }
                 }
-                $choiceLang = is_file($p = lang_path("$locale/choice.php")) ? include $p : [];
-                $choice[$locale] = array_merge($choice[$locale], $choiceLang);
+                $localeChoice = is_file($p = lang_path("$locale/choice.php")) ? include $p : [];
+                $choice[$locale] = [...$choice[$locale], ...$localeChoice];
                 ksort($choice[$locale]);
+
+                if ($withChoiceOption && isset($cacheChoice[$locale])) {
+                    $choice[$locale] = [...$cacheChoice[$locale], ...$choice[$locale]];
+                }
+
+                if ($withCountablesOption && isset($cacheCountables[$locale])) {
+                    $choice[$locale] = [...$cacheCountables[$locale], ...$choice[$locale]];
+                }
             }
         }
         $outputPath = $this->option('output') ?: 'resources/setup/deploy';
