@@ -221,7 +221,7 @@ class ExportAttributesCommand extends BaseCommand
                     }
                     $transKey = "attributes.$attribute";
                     $transHas = trans_has($transKey, $locale);
-                    $defaultTrans = $this->defaultTranslate($attribute);
+                    $defaultTrans = $this->defaultTranslate($attribute, $locale);
                     $transValue = $defaultTrans;
                     if ($transHas) {
                         $transValue = __($transKey, [], $locale);
@@ -243,6 +243,15 @@ class ExportAttributesCommand extends BaseCommand
                         }
                         elseif (isset($cacheAttrs[$locale][$attribute])) {
                             $transValue = $cacheAttrs[$locale][$attribute];
+                        }
+                        elseif (isset($cacheAttrs[$locale][$strBeforeToFrom])) {
+                            $v = $cacheAttrs[$locale][$strBeforeToFrom];
+                            if ($locale == 'ar') {
+                                $transValue = sprintf($v.' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
+                            }
+                            else {
+                                $transValue = sprintf('%s '.$v, $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
+                            }
                         }
                     }
                     // # No value set from cache
@@ -373,16 +382,27 @@ class ExportAttributesCommand extends BaseCommand
         }
     }
 
-    public function defaultTranslate(string $attribute): string
+    public function defaultTranslate(string $attribute, string $locale): string
     {
+        $key = $attribute;
         if (strtolower($attribute) == 'myth') {
             return 'MyTh';
         }
-        if (strlen($attribute) > 2) {
+        if (strlen($attribute) == 3) {
+            $attribute = strtoupper($attribute);
+        }
+        elseif (strlen($attribute) > 3) {
             $attribute = Str::of($attribute)->beforeLast('_id')->snake()->title()->replace('_', ' ')->ucfirst();
         }
-        if (strlen($attribute) == 2) {
-            $attribute = strtoupper($attribute);
+        $last = substr($key, -3);
+        if (in_array($last, ['_ar', '_en'])) {
+
+            if ($locale == 'ar') {
+                $attribute = "$attribute ".($last == '_en' ? "بالإنجليزية" : "بالعربية");
+            }
+            else {
+                $attribute = ($last == '_en' ? "English" : "Arabic")." $attribute";
+            }
         }
         return $attribute;
     }
