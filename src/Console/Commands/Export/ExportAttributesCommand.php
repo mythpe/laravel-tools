@@ -221,7 +221,7 @@ class ExportAttributesCommand extends BaseCommand
                     }
                     $transKey = "attributes.$attribute";
                     $transHas = trans_has($transKey, $locale);
-                    $defaultTrans = strlen($attribute) > 2 ? ucfirst(str_replace('_', ' ', ucwords(Str::snake(ends_with($attribute, '_id') ? Str::beforeLast($attribute, '_id') : $attribute), '_'))) : strtoupper($attribute);
+                    $defaultTrans = $this->defaultTranslate($attribute);
                     $transValue = $defaultTrans;
                     if ($transHas) {
                         $transValue = __($transKey, [], $locale);
@@ -371,5 +371,19 @@ class ExportAttributesCommand extends BaseCommand
         if ($jsonOption) {
             $this->call('myth:lang');
         }
+    }
+
+    public function defaultTranslate(string $attribute): string
+    {
+        if (strtolower($attribute) == 'myth') {
+            return 'MyTh';
+        }
+        if (strlen($attribute) > 2) {
+            $attribute = Str::of($attribute)->beforeLast('_id')->snake()->title()->replace('_', ' ')->ucfirst();
+        }
+        if (strlen($attribute) == 2) {
+            $attribute = strtoupper($attribute);
+        }
+        return $attribute;
     }
 }
