@@ -10,7 +10,6 @@
 namespace Myth\LaravelTools\Models;
 
 use Carbon\Carbon;
-use Closure;
 use Exception;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,6 +41,7 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     use HasMediaTrait;
     use SlugModelTrait;
 
+    const HASH_PREFIX = 'MyTh';
     /** @var array<int,string> - e.g: ['customers','users'] */
     protected array $cloneRelations = [];
 
@@ -128,6 +128,43 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     public static function cloned($callback): void
     {
         static::registerModelEvent('cloned', $callback);
+    }
+
+    /**
+     * @param string|null $string
+     * @param array $variables
+     * @return string|null
+     */
+    public static function replaceVariables(?string $string = null, array $variables = []): ?string
+    {
+        if (!$string) {
+            return null;
+        }
+        [$keys, $values] = $variables;
+        return str_ireplace($keys, $values, $string);
+    }
+
+    /**
+     * @param $hash
+     * @param $id
+     * @return bool
+     */
+    public static function validHash($hash, $id): bool
+    {
+        return $hash == static::getHash($id);
+    }
+
+    /**
+     * @param $id
+     * @return string
+     */
+    public static function getHash($id): string
+    {
+        $sha1 = sha1($id.static::HASH_PREFIX);
+        if (strlen($sha1) > 10) {
+            $sha1 = substr($sha1, 0, 10);
+        }
+        return $sha1;
     }
 
     /**
