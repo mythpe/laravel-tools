@@ -60,8 +60,8 @@ class ExportAttributesCommand extends BaseCommand
         $choice = [];
         $additionalChoice = [];
         $locales = $langDisk->allDirectories();
-        $toOption = !$this->option('to');
-        $fromOption = !$this->option('from');
+        $toOption = $this->option('to');
+        $fromOption = $this->option('from');
         $newOption = $this->option('new');
         $withChoiceOption = $this->option('choice');
         $withCountablesOption = $this->option('countables');
@@ -142,8 +142,8 @@ class ExportAttributesCommand extends BaseCommand
                 $r = new ReflectionClass($c);
                 foreach ($r->getMethods() as $method) {
                     $methodName = $method->getName();
-                    if (starts_with($methodName, '_') && $method->getReturnType() == 'array') {
-                        $fillable->merge(array_keys($c->{$methodName}()));
+                    if (($methodName == 'getRules' || starts_with($methodName, '_')) && $method->getReturnType() == 'array') {
+                        $fillable = $fillable->merge(array_keys($c->{$methodName}()));
                     }
                 }
             }
@@ -156,7 +156,7 @@ class ExportAttributesCommand extends BaseCommand
 
             // Customizing
             if ($class_basename == 'Setting' && method_exists($model, 'setting')) {
-                $fillable->merge(array_keys($model::setting()));
+                $fillable = $fillable->merge(array_keys($model::setting()));
             }
 
             $class_reflex = new ReflectionClass($model);
@@ -166,7 +166,7 @@ class ExportAttributesCommand extends BaseCommand
                     $fillable->push($constant);
                 }
                 elseif (is_array($constant)) {
-                    $fillable->merge(array_values($constant));
+                    $fillable = $fillable->merge(array_values($constant));
                 }
             }
 
