@@ -234,7 +234,7 @@ button {
 }
 
 button:focus {
-    outline: 1px dotted;
+    /*outline: 1px dotted;*/
     outline: 5px auto -webkit-focus-ring-color
 }
 
@@ -3771,8 +3771,8 @@ input[type=submit].btn-block {
 
 .btn-group > .btn-group:not(:first-child) > .btn,
 .btn-group > .btn:not(:first-child) {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0
 }
 
 .dropdown-toggle-split {
@@ -3831,12 +3831,12 @@ input[type=submit].btn-block {
 .btn-group-vertical > .btn-group:not(:last-child) > .btn,
 .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle) {
     border-bottom-left-radius: 0;
-    border-bottom-left-radius: 0
+    border-bottom-right-radius: 0
 }
 
 .btn-group-vertical > .btn-group:not(:first-child) > .btn,
 .btn-group-vertical > .btn:not(:first-child) {
-    border-top-left-radius: 0;
+    border-top-right-radius: 0;
     border-top-left-radius: 0
 }
 
@@ -3908,8 +3908,8 @@ input[type=submit].btn-block {
 
 .input-group > .custom-select:not(:first-child),
 .input-group > .form-control:not(:first-child) {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0
 }
 
 .input-group > .custom-file {
@@ -3928,8 +3928,8 @@ input[type=submit].btn-block {
 }
 
 .input-group > .custom-file:not(:first-child) .custom-file-label {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0
 }
 
 .input-group-append,
@@ -4029,8 +4029,8 @@ input[type=submit].btn-block {
 .input-group > .input-group-prepend:first-child > .input-group-text:not(:first-child),
 .input-group > .input-group-prepend:not(:first-child) > .btn,
 .input-group > .input-group-prepend:not(:first-child) > .input-group-text {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0
 }
 
 .custom-control {
@@ -4159,7 +4159,7 @@ input[type=submit].btn-block {
     line-height: 1.6;
     color: #495057;
     vertical-align: middle;
-    background: #fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right .75rem center;
+    background: #fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat left .75rem center;
     background-size: 8px 10px;
     border: 1px solid #ced4da;
     border-radius: .25rem;
@@ -4479,7 +4479,7 @@ input[type=submit].btn-block {
 
 .nav-tabs .nav-link {
     border: 1px solid transparent;
-    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
     border-top-left-radius: .25rem
 }
 
@@ -4503,7 +4503,7 @@ input[type=submit].btn-block {
 
 .nav-tabs .dropdown-menu {
     margin-top: -1px;
-    border-top-left-radius: 0;
+    border-top-right-radius: 0;
     border-top-left-radius: 0
 }
 
@@ -5032,13 +5032,13 @@ input[type=submit].btn-block {
 }
 
 .card > .list-group:first-child .list-group-item:first-child {
-    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
     border-top-left-radius: .25rem
 }
 
 .card > .list-group:last-child .list-group-item:last-child {
     border-bottom-left-radius: .25rem;
-    border-bottom-left-radius: .25rem
+    border-bottom-right-radius: .25rem
 }
 
 .card-body {
@@ -5121,14 +5121,14 @@ input[type=submit].btn-block {
 
 .card-img-top {
     width: 100%;
-    border-top-left-radius: calc(.25rem - 1px);
+    border-top-right-radius: calc(.25rem - 1px);
     border-top-left-radius: calc(.25rem - 1px)
 }
 
 .card-img-bottom {
     width: 100%;
     border-bottom-left-radius: calc(.25rem - 1px);
-    border-bottom-left-radius: calc(.25rem - 1px)
+    border-bottom-right-radius: calc(.25rem - 1px)
 }
 
 .card-deck {
@@ -5225,18 +5225,18 @@ input[type=submit].btn-block {
     }
 
     .card-group > .card:last-child {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0
     }
 
     .card-group > .card:last-child .card-header,
     .card-group > .card:last-child .card-img-top {
-        border-top-left-radius: 0
+        border-top-right-radius: 0
     }
 
     .card-group > .card:last-child .card-footer,
     .card-group > .card:last-child .card-img-bottom {
-        border-bottom-left-radius: 0
+        border-bottom-right-radius: 0
     }
 
     .card-group > .card:only-child {
@@ -5245,14 +5245,14 @@ input[type=submit].btn-block {
 
     .card-group > .card:only-child .card-header,
     .card-group > .card:only-child .card-img-top {
-        border-top-left-radius: .25rem;
+        border-top-right-radius: .25rem;
         border-top-left-radius: .25rem
     }
 
     .card-group > .card:only-child .card-footer,
     .card-group > .card:only-child .card-img-bottom {
         border-bottom-left-radius: .25rem;
-        border-bottom-left-radius: .25rem
+        border-bottom-right-radius: .25rem
     }
 
     .card-group > .card:not(:first-child):not(:last-child):not(:only-child),
@@ -5296,11 +5296,11 @@ input[type=submit].btn-block {
 .accordion .card:first-of-type {
     border-bottom: 0;
     border-bottom-left-radius: 0;
-    border-bottom-left-radius: 0
+    border-bottom-right-radius: 0
 }
 
 .accordion .card:last-of-type {
-    border-top-left-radius: 0;
+    border-top-right-radius: 0;
     border-top-left-radius: 0
 }
 
@@ -5378,8 +5378,8 @@ input[type=submit].btn-block {
 
 .page-item:first-child .page-link {
     margin-right: 0;
-    border-top-left-radius: .25rem;
-    border-bottom-left-radius: .25rem
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem
 }
 
 .page-item:last-child .page-link {
@@ -5409,8 +5409,8 @@ input[type=submit].btn-block {
 }
 
 .pagination-lg .page-item:first-child .page-link {
-    border-top-left-radius: .3rem;
-    border-bottom-left-radius: .3rem
+    border-top-right-radius: .3rem;
+    border-bottom-right-radius: .3rem
 }
 
 .pagination-lg .page-item:last-child .page-link {
@@ -5425,8 +5425,8 @@ input[type=submit].btn-block {
 }
 
 .pagination-sm .page-item:first-child .page-link {
-    border-top-left-radius: .2rem;
-    border-bottom-left-radius: .2rem
+    border-top-right-radius: .2rem;
+    border-bottom-right-radius: .2rem
 }
 
 .pagination-sm .page-item:last-child .page-link {
@@ -5837,14 +5837,14 @@ input[type=submit].btn-block {
 }
 
 .list-group-item:first-child {
-    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
     border-top-left-radius: .25rem
 }
 
 .list-group-item:last-child {
     margin-bottom: 0;
     border-bottom-left-radius: .25rem;
-    border-bottom-left-radius: .25rem
+    border-bottom-right-radius: .25rem
 }
 
 .list-group-item:focus,
@@ -6157,7 +6157,7 @@ button.close {
     justify-content: space-between;
     padding: 1rem;
     border-bottom: 1px solid #e9ecef;
-    border-top-left-radius: .3rem;
+    border-top-right-radius: .3rem;
     border-top-left-radius: .3rem
 }
 
@@ -6344,7 +6344,7 @@ button.close {
 .bs-tooltip-left .arrow:before {
     right: 0;
     border-width: .4rem 0 .4rem .4rem;
-    border-left-color: #000
+    border-right-color: #000
 }
 
 .tooltip-inner {
@@ -6361,6 +6361,7 @@ button.close {
     right: 0;
     z-index: 1060;
     max-width: 276px;
+    /*font-family: 'main-font', sans-serif;*/
     font-style: normal;
     font-weight: 400;
     line-height: 1.6;
@@ -6528,13 +6529,13 @@ button.close {
 .bs-popover-auto[x-placement^=left] .arrow:before,
 .bs-popover-left .arrow:before {
     left: 0;
-    border-left-color: rgba(0, 0, 0, .25)
+    border-right-color: rgba(0, 0, 0, .25)
 }
 
 .bs-popover-auto[x-placement^=left] .arrow:after,
 .bs-popover-left .arrow:after {
     left: 1px;
-    border-left-color: #fff
+    border-right-color: #fff
 }
 
 .popover-header {
@@ -6544,7 +6545,7 @@ button.close {
     color: inherit;
     background-color: #f7f7f7;
     border-bottom: 1px solid #ebebeb;
-    border-top-left-radius: calc(.3rem - 1px);
+    border-top-right-radius: calc(.3rem - 1px);
     border-top-left-radius: calc(.3rem - 1px)
 }
 
@@ -6963,7 +6964,7 @@ button.bg-dark:hover {
     border-bottom: 0 !important
 }
 
-.border-left-0 {
+.border-right-0 {
     border-right: 0 !important
 }
 
@@ -7008,7 +7009,7 @@ button.bg-dark:hover {
 }
 
 .rounded-top {
-    border-top-left-radius: .25rem !important
+    border-top-right-radius: .25rem !important
 }
 
 .rounded-right,
@@ -7023,11 +7024,11 @@ button.bg-dark:hover {
 
 .rounded-bottom,
 .rounded-left {
-    border-bottom-left-radius: .25rem !important
+    border-bottom-right-radius: .25rem !important
 }
 
 .rounded-left {
-    border-top-left-radius: .25rem !important
+    border-top-right-radius: .25rem !important
 }
 
 .rounded-circle {
@@ -8318,7 +8319,7 @@ button.bg-dark:hover {
 }
 
 .float-right {
-    float: right !important
+    float: left !important
 }
 
 .float-none {
@@ -8331,7 +8332,7 @@ button.bg-dark:hover {
     }
 
     .float-sm-right {
-        float: right !important
+        float: left !important
     }
 
     .float-sm-none {
@@ -8345,7 +8346,7 @@ button.bg-dark:hover {
     }
 
     .float-md-right {
-        float: right !important
+        float: left !important
     }
 
     .float-md-none {
@@ -8359,7 +8360,7 @@ button.bg-dark:hover {
     }
 
     .float-lg-right {
-        float: right !important
+        float: left !important
     }
 
     .float-lg-none {
@@ -8373,7 +8374,7 @@ button.bg-dark:hover {
     }
 
     .float-xl-right {
-        float: right !important
+        float: left !important
     }
 
     .float-xl-none {
@@ -10085,6 +10086,7 @@ button.bg-dark:hover {
 }
 
 .text-monospace {
+    /*font-family: SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace*/
 }
 
 .text-justify {
@@ -10102,11 +10104,11 @@ button.bg-dark:hover {
 }
 
 .text-left {
-    text-align: left !important
+    text-align: right !important
 }
 
 .text-right {
-    text-align: right !important
+    text-align: left !important
 }
 
 .text-center {
@@ -10119,7 +10121,7 @@ button.bg-dark:hover {
     }
 
     .text-sm-right {
-        text-align: right !important
+        text-align: left !important
     }
 
     .text-sm-center {
@@ -10133,7 +10135,7 @@ button.bg-dark:hover {
     }
 
     .text-md-right {
-        text-align: right !important
+        text-align: left !important
     }
 
     .text-md-center {
@@ -10147,7 +10149,7 @@ button.bg-dark:hover {
     }
 
     .text-lg-right {
-        text-align: right !important
+        text-align: left !important
     }
 
     .text-lg-center {
@@ -10161,7 +10163,7 @@ button.bg-dark:hover {
     }
 
     .text-xl-right {
-        text-align: right !important
+        text-align: left !important
     }
 
     .text-xl-center {
@@ -10321,7 +10323,7 @@ a.text-dark:hover {
 }
 
 .float-align {
-    float: right
+    float: right;
 }
 
 .text-align {
@@ -10329,15 +10331,15 @@ a.text-dark:hover {
 }
 
 .direction-ltr {
-    direction: ltr;
+    direction: rtl;
 }
 
 .direction-rtl {
-    direction: rtl;
+    direction: ltr;
 }
 
 input[name*='mobile'],
 input[name*='phone'] {
-    direction: ltr;
+    direction: rtl;
     text-align: right;
 }
