@@ -6,8 +6,7 @@
  * Github: https://github.com/mythpe
  */
 
-@import "Changa/stylesheet.css";
-@import "Kufi/stylesheet.css";
-@import "SSTArabic/stylesheet.css";
-@import "Almarai/stylesheet.css";
-@import "Tajawal/stylesheet.css";
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+
+@import "Tajawal.css";
+@import "Almarai.css";
