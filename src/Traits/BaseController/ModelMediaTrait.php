@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Validation\Rule;
 use Myth\LaravelTools\Models\BaseModel;
 
 trait ModelMediaTrait
@@ -68,8 +69,18 @@ trait ModelMediaTrait
     public function _uploadAttachmentsRules(): array
     {
         return [
-            'attachment_type' => ['nullable'],
-            'attachment'      => ['required', 'file'],
+            'attachment_type' => ['nullable', 'string'],
+            'attachment'      => [
+                'required',
+                Rule::file()->extensions([
+                    'jpg',
+                    'jpeg',
+                    'png',
+                    'gif',
+                    'svg',
+                    'pdf',
+                ])->max(config('media-library.max_file_size', '10MB')),
+            ],
         ];
     }
 
