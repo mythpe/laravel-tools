@@ -79,6 +79,8 @@ trait ModelMediaTrait
                     'gif',
                     'svg',
                     'pdf',
+                    'docx',
+                    'xlsx',
                 ])->max(config('media-library.max_file_size', '10MB')),
             ],
         ];
