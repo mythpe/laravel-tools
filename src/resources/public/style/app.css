@@ -162,3 +162,12 @@ table.table-th-headers th {
 .v-align-bottom {
     vertical-align: bottom;
 }
+
+
+.direction-ltr {
+    direction: ltr;
+}
+
+.direction-rtl {
+    direction: rtl;
+}

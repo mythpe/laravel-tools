@@ -396,7 +396,7 @@ class ExportAttributesCommand extends BaseCommand
         }
         $last = substr($key, -3);
         if (in_array($last, ['_ar', '_en'])) {
-
+            $attribute = substr($attribute, 0, -3);
             if ($locale == 'ar') {
                 $attribute = "$attribute ".($last == '_en' ? "بالإنجليزية" : "بالعربية");
             }

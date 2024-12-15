@@ -10313,7 +10313,6 @@ a.text-dark:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, .04)
 }
 
-
 .dir, .direction {
     direction: ltr;
 }
@@ -10328,14 +10327,6 @@ a.text-dark:hover {
 
 .text-align {
     text-align: left;
-}
-
-.direction-ltr {
-    direction: ltr;
-}
-
-.direction-rtl {
-    direction: rtl;
 }
 
 input[name*='mobile'],
