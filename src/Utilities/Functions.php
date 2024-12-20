@@ -37,15 +37,22 @@ if (!function_exists('mythAllowHeaders')) {
 if (!function_exists('to_number_format')) {
     /**
      * @param float|string|null $number
-     * @param int $decimals
+     * @param int|null $decimals
      * @param string|null $currency
      * @param string $thousands_sep
      * @param string $dec_point
      * @return string
      */
-    function to_number_format(float | string | null $number, int $decimals = 2, ?string $currency = null, string $thousands_sep = ',', string $dec_point = '.'): string
+    function to_number_format(float | string | null $number, ?int $decimals = null, ?string $currency = null, string $thousands_sep = ',', string $dec_point = '.'): string
     {
         $number = !is_numeric($number) ? 0 : floatval($number ?: 0);
+        if (is_null($decimals)) {
+            $has = floor($number) !== ceil($number);
+            $decimals = $has ? 2 : 0;
+        }
+        if (!is_numeric($decimals)) {
+            $decimals = 2;
+        }
         $v = number_format((float) $number, $decimals, $dec_point, $thousands_sep);
         $currency = $currency ?: '';
         return trim("$v $currency");
