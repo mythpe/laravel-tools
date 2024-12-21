@@ -29,11 +29,13 @@ class {studlySingular} extends BaseModel
     ];
 
     /**
-     * The attributes that should be cast.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [{casts}
-    ];
+    protected function casts()
+    {
+        return [{casts}];
+    }
     {class_methods}
 }
