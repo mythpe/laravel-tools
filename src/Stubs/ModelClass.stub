@@ -35,7 +35,8 @@ class {studlySingular} extends BaseModel
      */
     protected function casts(): array
     {
-        return [{casts}];
+        return [{casts}
+        ];
     }
     {class_methods}
 }
