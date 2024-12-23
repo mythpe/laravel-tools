@@ -433,7 +433,7 @@ html;
             }
             else {
                 unlink($tempPath);
-                if ($this->isDeleteMode() || is_null($commentIndex) || !is_null($existsLine)) {
+                if (is_null($commentIndex) || !is_null($existsLine)) {
                     return !1;
                 }
                 $afterComment = $commentIndex + 1;
