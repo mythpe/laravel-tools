@@ -123,7 +123,7 @@ if (!function_exists('locale_attribute')) {
      * @return string
      * @uses app()->getLocale()
      */
-    function locale_attribute(string $attribute = "name", string $locale = null): string
+    function locale_attribute(string $attribute = "name", ?string $locale = null): string
     {
         is_null($locale) && ($locale = app()->getLocale());
         return rtrim($attribute, '_')."_".$locale;
@@ -197,11 +197,11 @@ if (!function_exists('date_by_locale')) {
      * Convert date By locale
      *
      * @param string|null $date
-     * @param null $toLocale
+     * @param string|null $toLocale
      *
      * @return string
      */
-    function date_by_locale(?string $date, $toLocale = null): string
+    function date_by_locale(?string $date, ?string $toLocale = null): string
     {
         if (!$date) {
             return '';
@@ -398,7 +398,7 @@ if (!function_exists('date_by_locale')) {
 }
 
 if (!function_exists('manifest_directory')) {
-    function manifest_directory($path = null): string
+    function manifest_directory(?string $path = null): string
     {
         $directory = rtrim(config('app.manifest_directory'), '/');
         if (!is_null($path)) {
@@ -467,7 +467,7 @@ if (!function_exists('arabic_date')) {
      *
      * @return string
      */
-    function arabic_date($string, bool | string $append = null): string
+    function arabic_date($string, bool | string | null $append = null): string
     {
         $ar = [
             '/',
@@ -680,7 +680,7 @@ if (!function_exists('apiResource')) {
      *
      * @return PendingResourceRegistration
      */
-    function apiResource(string $name, array | string $controller, Closure $group = null, array $routeOptions = []): PendingResourceRegistration
+    function apiResource(string $name, array | string $controller, ?Closure $group = null, array $routeOptions = []): PendingResourceRegistration
     {
         Router::group(['as' => "$name.", 'prefix' => $name], function ($router) use ($name, $controller, $group) {
             if (is_callable($group)) {
@@ -734,7 +734,7 @@ if (!function_exists('fixString')) {
      *
      * @return string $string
      */
-    function fixString($string, string | null $translate = null, $ucwords = !0, array | null $replace = null): string
+    function fixString($string, string | null $translate = null, bool $ucwords = !0, array | null $replace = null): string
     {
         $string = str_replace_en_ar($string);
         is_array($replace) && ($string = trim(str_ireplace($replace[0], $replace[1], $string)));
