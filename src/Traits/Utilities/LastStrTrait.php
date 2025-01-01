@@ -15,29 +15,23 @@ trait LastStrTrait
 {
     /**
      * @param int $length
-     *
+     * @param string $attribute
      * @return string
      */
-    public function mobileLastStr(int $length = 4): string
+    public function getLastStr(int $length = 4, string $attribute = 'mobile'): string
     {
-        if (!$this->mobile) {
+        $value = $this->{$attribute};
+        if (!$value) {
             return '';
         }
-        return 'xxxx'.substr($this->mobile, -$length);
-    }
-
-    /**
-     * @return string
-     */
-    public function emailLastStr(): string
-    {
-        if (!$this->email) {
-            return '';
+        if (filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            $email = explode('@', $value);
+            $first = $email[0] ?? '';
+            $last = Str::beforeLast($email[1] ?? '', '.');
+            // $end = substr(Str::afterLast($value, '.'), 0);
+            return substr($first, 0, 2).'****@'.substr($last, 0, 2).'.***';
+            // return substr($first, 0, 2).'****@'.substr($last, 0, 2).'**.'.$end;
         }
-        $email = explode('@', $this->email);
-        $first = ($email[0] ?? '');
-        $last = Str::beforeLast(($email[1] ?? ''), '.');
-        $end = substr(Str::afterLast($this->email, '.'), 0);
-        return substr($first, 0, 2).'**@'.substr($last, 0, 2).'**.'.$end;
+        return '****'.substr($value, -$length);
     }
 }
