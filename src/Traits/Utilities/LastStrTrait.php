@@ -16,6 +16,7 @@ trait LastStrTrait
     /**
      * @param int $length
      * @param string $attribute
+     * @param string $prefix
      * @return string
      */
     public function getLastStr(int $length = 4, string $attribute = 'mobile', string $prefix = '#'): string
