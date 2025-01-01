@@ -32,7 +32,7 @@ return [
     'age'                            => 'العمر',
     'agreement'                      => 'إتفاقية',
     'align'                          => 'المحاذاة',
-    'allow_category_change'          => '‘مكانية تعديل الفئة',
+    'allow_category_change'          => 'إمكانية تعديل الفئة',
     'amount'                         => 'القيمة',
     'app_fees'                       => 'الرسوم الإدارية',
     'app_name'                       => 'اسم الموقع',
