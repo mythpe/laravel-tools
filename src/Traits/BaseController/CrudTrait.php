@@ -481,14 +481,14 @@ trait CrudTrait
 
     /**
      * @return array
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      */
     public function getMapFromRequest(): array
     {
         $array = [];
         foreach ($this->mapFromRequest as $rule => $request) {
-            $array[$request] = $this->request->input($rule);
+           if($this->request->input($rule)) {
+               $array[$request] = $this->request->input($rule);
+           }
         }
         return $array;
     }
