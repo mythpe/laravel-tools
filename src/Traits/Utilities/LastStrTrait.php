@@ -18,7 +18,7 @@ trait LastStrTrait
      * @param string $attribute
      * @return string
      */
-    public function getLastStr(int $length = 4, string $attribute = 'mobile'): string
+    public function getLastStr(int $length = 4, string $attribute = 'mobile', string $prefix = '#'): string
     {
         $value = $this->{$attribute};
         if (!$value) {
@@ -28,10 +28,10 @@ trait LastStrTrait
             $email = explode('@', $value);
             $first = $email[0] ?? '';
             $last = Str::beforeLast($email[1] ?? '', '.');
-            // $end = substr(Str::afterLast($value, '.'), 0);
-            return substr($first, 0, 2).'****@'.substr($last, 0, 2).'.***';
-            // return substr($first, 0, 2).'****@'.substr($last, 0, 2).'**.'.$end;
+            return substr($first, 0, 2)."**@".substr($last, 0, 2).'****';
         }
-        return '****'.substr($value, -$length);
+        $padLength = strlen($value) <= $length ? 4 : strlen($value) - $length;
+        $pad = str_pad('', $padLength, $prefix);
+        return $pad.substr($value, -$length);
     }
 }
