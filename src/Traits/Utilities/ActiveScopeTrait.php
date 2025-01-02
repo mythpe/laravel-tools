@@ -14,13 +14,15 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * @property bool $active
  * @property-read string $active_to_string
+ * @method static Builder<static>|static activeOnly()
+ * @method static Builder<static>|static inactiveOnly()
  */
 trait ActiveScopeTrait
 {
     /**
-     * @param Builder $builder
+     * @param Builder<static> $builder
      *
-     * @return Builder
+     * @return Builder<static>
      */
     public function scopeActiveOnly(Builder $builder): Builder
     {
@@ -28,13 +30,55 @@ trait ActiveScopeTrait
     }
 
     /**
-     * @param Builder $builder
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $save
+     * @return $this
+     */
+    public function setActive(bool $save = !0): static
+    {
+        if ($this->exists) {
+            $this->active = !0;
+            $save && $this->save();
+        }
+        return $this;
+    }
+
+    /**
+     * @param Builder<static> $builder
      *
-     * @return Builder
+     * @return Builder<static>
      */
     public function scopeInactiveOnly(Builder $builder): Builder
     {
         return $builder->where('active', !1);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInactive(): bool
+    {
+        return !$this->active;
+    }
+
+    /**
+     * @param bool $save
+     * @return $this
+     */
+    public function setInactive(bool $save = !0): static
+    {
+        if ($this->exists) {
+            $this->active = !1;
+            $save && $this->save();
+        }
+        return $this;
     }
 
     /**
