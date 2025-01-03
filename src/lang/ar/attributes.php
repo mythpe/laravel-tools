@@ -173,7 +173,7 @@ return [
     'media_file_id'                    => 'المرفق',
     'media_files_id'                   => 'المرفقات',
     'meta'                             => 'بيانات',
-    'meta_app'                         => 'Meta تطبيق',
+    'meta_app'                         => 'Meta App',
     'mime_type'                        => 'نوع الملف',
     'mobile'                           => 'رقم الجوال',
     'mobile_notifications'             => 'جوال الإشعارات',
