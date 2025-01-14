@@ -181,7 +181,8 @@ trait PaginateTrait
                 $items = [];
             }
             //d($headers);
-            $fileName = "Export-".(auth()->id() ?: 0);
+            // $fileName = "Export-".(auth()->id() ?: round(time()));
+            $fileName = "$modelName-".(auth()->id() ?: round(time()));
             $appendRows = $this->getExportAppendRows();
             $appendRows = is_callable($appendRows) ? $appendRows($items, $headers) : $appendRows;
             $headers = collect($headers)->filter(fn($v) => is_array($v) ? !in_array($this->controlHeaderKey, [
