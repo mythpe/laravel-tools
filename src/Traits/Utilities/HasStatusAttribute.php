@@ -113,7 +113,7 @@ trait HasStatusAttribute
             $result[] = [
                 'id'    => $value,
                 'value' => $value,
-                'label' => trans_has($k = "const.statuses.{$value}") ? __($k) : Str::of($value)->title()->toString(),
+                'label' => trans_has($k = "const.statuses.{$value}") ? __($k) : Str::of($value)->snake()->replace('_', ' ')->title()->toString(),
             ];
         }
         return collect($result)->sortBy('id')->values();
