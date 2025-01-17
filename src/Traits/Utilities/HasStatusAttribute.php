@@ -11,6 +11,7 @@ namespace Myth\LaravelTools\Traits\Utilities;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 /**
  * @property string $status
@@ -64,6 +65,9 @@ trait HasStatusAttribute
     const NEW_STATUS = 'new';
 
     /** @var string */
+    const ON_WAY_STATUS = 'on_way';
+
+    /** @var string */
     const PAID_STATUS = 'paid';
 
     /** @var string */
@@ -104,12 +108,15 @@ trait HasStatusAttribute
      */
     public static function getStatuses(): Collection
     {
-        $lang = collect(__("const.statuses") ?: [])->only(static::getStatusesCodes());
-        return $lang->map(fn($text, $id) => [
-            'id'    => $id,
-            'value' => $id,
-            'label' => $text,
-        ])->values();
+        $result = [];
+        foreach (static::getStatusesCodes() as $value) {
+            $result[] = [
+                'id'    => $value,
+                'value' => $value,
+                'label' => trans_has($k = "const.statuses.{$value}") ? __($k) : Str::of($value)->title()->toString(),
+            ];
+        }
+        return collect($result)->sortBy('id')->values();
     }
 
     /**
@@ -117,33 +124,17 @@ trait HasStatusAttribute
      */
     public static function getStatusesCodes(): array
     {
-        return [
-            'activated',
-            'active',
-            'approved',
-            'archived',
-            'banded',
-            'canceled',
-            'completed',
-            'confirmed',
-            'delivered',
-            'draft',
-            'finished',
-            'inactive',
-            'new',
-            'paid',
-            'partial_paid',
-            'partial_returned',
-            'pending',
-            'pending_payment',
-            'processing',
-            'rejected',
-            'returned',
-            'shipped',
-            'unconfirmed',
-            'unpaid',
-            'used',
-        ];
+        $class_reflex = new \ReflectionClass(static::class);
+        $class_constants = $class_reflex->getConstants();
+        $list = [];
+        foreach ($class_constants as $key => $value) {
+            if (!Str::endsWith($key, '_STATUS')) {
+                continue;
+            }
+            $list[] = $value;
+        }
+        sort($list);
+        return $list;
     }
 
     /**
@@ -740,6 +731,45 @@ trait HasStatusAttribute
     public function isNew(): bool
     {
         return $this->status == static::NEW_STATUS;
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeOnWayOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::ON_WAY_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeNotOnWayOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::ON_WAY_STATUS);
+    }
+
+    /**
+     * @param bool $save
+     *
+     * @return void
+     */
+    public function setOnWay(bool $save = !0): void
+    {
+        $this->status = static::ON_WAY_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOnWay(): bool
+    {
+        return $this->status == static::ON_WAY_STATUS;
     }
 
     /**
