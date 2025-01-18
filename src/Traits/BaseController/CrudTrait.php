@@ -202,7 +202,7 @@ trait CrudTrait
         $with = $this->with;
         /** @var Model $model */
         $model = $query->getModel();
-        if (($uid = $this->request->input('uid')) && $query & in_array('user_id', $model->getFillable())) {
+        if (($uid = $this->request->input('uid')) && in_array('user_id', $model->getFillable())) {
             $query->where('user_id', $uid);
         }
         //d($this->request->all());
@@ -486,9 +486,9 @@ trait CrudTrait
     {
         $array = [];
         foreach ($this->mapFromRequest as $rule => $request) {
-           if($this->request->input($rule)) {
-               $array[$request] = $this->request->input($rule);
-           }
+            if ($this->request->input($rule)) {
+                $array[$request] = $this->request->input($rule);
+            }
         }
         return $array;
     }
