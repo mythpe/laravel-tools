@@ -139,7 +139,7 @@ trait CrudTrait
      */
     public function allIndex()
     {
-        $this->itemsPerPage = $this->request->input($this->itemsPerPageKey, -1);
+        $this->itemsPerPage = $this->request->input($this->itemsPerPageKey, 150);
         $this->page = $this->request->input($this->pageKey, 1);
         return $this->index(...func_get_args());
     }
