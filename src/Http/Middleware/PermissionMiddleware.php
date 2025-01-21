@@ -43,7 +43,7 @@ class PermissionMiddleware
         $permissionName = $route->getName();
         $controller = $route->getController();
         $className = get_class($controller);
-        $maps = ['clone' => 'store'];
+        $maps = ['clone' => 'store', 'destroyAll' => 'destroy'];
         if (defined("$className::MAP_PERMISSIONS")) {
             $maps = [...$maps, ...$className::MAP_PERMISSIONS];
         }
