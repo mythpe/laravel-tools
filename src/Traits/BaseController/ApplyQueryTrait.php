@@ -29,6 +29,12 @@ trait ApplyQueryTrait
     protected string $autoExcludeKey = 'exclude_self';
 
     /**
+     * Auto self id key of model.
+     * @var string
+     */
+    protected string $autoSelfIdKey = 'sid';
+
+    /**
      * Keys that will be removed from the filter if empty
      * Before apply filter
      * Example: ['start_date','end_date']
@@ -77,6 +83,9 @@ trait ApplyQueryTrait
             $builder = $this->sortQuery($builder);
             $builder = $this->searchQuery($builder);
             $builder = $this->filerQuery($builder);
+            if ($this->request->input($this->autoSelfIdKey)) {
+                $builder = $builder->orWhere(fn(Builder $b) => $this->applySelfIdQuery($b));
+            }
         }
         return $builder;
     }
@@ -94,6 +103,24 @@ trait ApplyQueryTrait
             }
             if (is_array($ids) && count($ids) > 0) {
                 $query = $query->whereNotIn('id', $ids);
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * @param Builder|Relation|mixed $query
+     *
+     * @return mixed
+     */
+    public function applySelfIdQuery($query)
+    {
+        if (($ids = $this->request->input($this->autoSelfIdKey))) {
+            if (!is_array($ids)) {
+                $ids = explode(',', $ids);
+            }
+            if (is_array($ids) && count($ids) > 0) {
+                $query = $query->whereIn('id', $ids);
             }
         }
         return $query;
