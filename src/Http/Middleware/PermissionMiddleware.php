@@ -43,34 +43,60 @@ class PermissionMiddleware
         $permissionName = $route->getName();
         $controller = $route->getController();
         $className = get_class($controller);
-        $maps = ['clone' => 'store', 'destroyAll' => 'destroy'];
+        $maps = [
+            'clone'      => 'store',
+            'destroyAll' => 'destroy',
+        ];
         if (defined("$className::MAP_PERMISSIONS")) {
             $maps = [...$maps, ...$className::MAP_PERMISSIONS];
         }
-        foreach ($maps as $key => $value) {
-            if (Str::endsWith($permissionName, ".$key")) {
-                $permissionName = str_replace(".$key", ".$value", $permissionName);
+        if (method_exists($className, 'getMapPermissions')) {
+            $maps = [...$maps, ...$className::getMapPermissions($maps)];
+        }
+        $mainPermission = Str::beforeLast($permissionName, '.');
+        $currentMethod = Str::afterLast($permissionName, '.');
+        if ($methodMap = ($maps[$currentMethod] ?? null)) {
+            $permissionName = [];
+            foreach ((array) $methodMap as $method) {
+                $permissionName[] = $mainPermission.Str::start($method, '.');
+            }
+        }
+        // dd($permissionName, $currentMethod, $methodMap);
+        // foreach ($maps as $key => $values) {
+        //     foreach ((array) $values as $value) {
+        //         dd($key, $value, $permissionName);
+        //         if (Str::endsWith($permissionName, ".$key")) {
+        //             $permissionName = str_replace(".$key", ".$value", $permissionName);
+        //             break;
+        //         }
+        //     }
+        // }
+
+        $skip = config('4myth-tools.skip_permission_ends_with', []);
+        $skipMap = [];
+        $throw = !0;
+        if (defined("$className::NO_PERMISSIONS")) {
+            $skipMap = [...$skipMap, ...$className::NO_PERMISSIONS];
+        }
+        if (method_exists($className, 'noPermissions')) {
+            $skipMap = [...$skipMap, ...$className::noPermissions($skipMap)];
+        }
+        foreach ($skipMap as $value) {
+            if (in_array(Str::start($value, '.'), $skip)) {
+                continue;
+            }
+            $skip[] = Str::start($value, '.');
+        }
+        $skip = array_unique($skip);
+
+        foreach ((array) $permissionName as $value) {
+            if (Str::endsWith($value, $skip)) {
+                $throw = !1;
                 break;
             }
         }
-
-        $skip = config('4myth-tools.skip_permission_ends_with', []);
-        if (defined("$className::NO_PERMISSIONS")) {
-            $maps = $className::NO_PERMISSIONS;
-            foreach ($maps as $value) {
-                if (in_array(".$value", $skip)) {
-                    continue;
-                }
-                $skip[] = Str::start($value, '.');
-            }
-            $skip = array_unique($skip);
-        }
-        if (!Str::endsWith($permissionName, $skip)) {
+        if ($throw) {
             throw_if(!$user->checkPermission($permissionName), new NoPermissionException());
-            // $routes = getRouterPermissions(!0);
-            // if (!in_array($permissionName, $routes)) {
-            //     throw_if(!$user->checkPermission($permissionName), new NoPermissionException());
-            // }
         }
         return $next($request);
     }
