@@ -97,4 +97,10 @@ return [
     'Units'                => 'Unit|Units',
     'UserSubscriptions'    => 'User Subscription|User Subscriptions',
     'Generics'             => 'Generic|Generics',
+    'ExhibitorCategories'  => 'Exhibitor Category|Exhibitor Categories',
+    'ExhibitorCountries'   => 'Exhibitor Country|Exhibitor Countries',
+    'ExhibitorTypes'       => 'Exhibitor Type|Exhibitor Types',
+    'Invoices'             => 'Invoice|Invoices',
+    'SectorCategories'     => 'Sector Category|Sector Categories',
+    'Sectors'              => 'Sector|Sectors',
 ];

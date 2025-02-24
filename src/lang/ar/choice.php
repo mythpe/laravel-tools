@@ -97,4 +97,10 @@ return [
     'Units'                => 'الوحدات|الوحدة',
     'UserSubscriptions'    => 'مشاركات المستخدمين|مشاركة المستخدم',
     'Generics'             => 'الأنواع|النوع',
+    'ExhibitorCategories'  => 'فئات المشاركة|فئة المشاركة',
+    'ExhibitorCountries'   => 'دول المشارك|دولة المشارك',
+    'ExhibitorTypes'       => 'أنواع المشاركة|نوع المشاركة',
+    'Invoices'             => 'الفواتير|الفاتورة',
+    'SectorCategories'     => 'فئات القطاعات|فئة القطاع',
+    'Sectors'              => 'القطاعات|القطاع',
 ];
