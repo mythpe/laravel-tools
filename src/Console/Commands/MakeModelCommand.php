@@ -131,7 +131,7 @@ to insert code automatically add this comment "use myth crud model command" to y
             // dd($modelFiles);
             $options = [
                 ...$modelFiles,
-                $all  => 'All',
+                $all => 'All',
                 // $none => 'None',
             ];
             $choice = $this->components->choice(
@@ -168,21 +168,11 @@ to insert code automatically add this comment "use myth crud model command" to y
                 $this->insertModelLanguage();
                 continue;
             }
-            $migrationPrefix = "1111_00_00_000000";
-            $migrations = $this->disk()->files('database/migrations');
-            if (count($migrations) > 0) {
-                asort($migrations);
-                $last = pathinfo(array_pop($migrations), PATHINFO_FILENAME);
-                $name = array_filter(explode('_', preg_replace(['/[^\d_]+/', '/__/'], '', $last)));
-                if (count($name) == 4) {
-                    $name[3] = str_pad(intval($name[3]) + 1, strlen($name[3]), '0', STR_PAD_LEFT);
-                    $migrationPrefix = implode('_', $name);
-                }
-            }
+            $migrationPrefix = implode('_', [date('Y'), date('m'), date('d'), date('His')]);
             $modelName = $value->name;
             $namespacePath = $value->namespace ? str_ireplace('\\', '/', trim($value->namespace, '\\')).'/' : '';
             $stubs = [
-                'ModelClass.stub'         => "app/Models/$namespacePath$modelName.php",
+                'ModelClass.stub'         => "app/Models/{$namespacePath}{$modelName}.php",
                 'ModelMigration.stub'     => "database/migrations/{$migrationPrefix}_create_{$value->snakePlural}_table.php",
                 'ModelController.stub'    => "app/Http/Controllers/$namespacePath{$modelName}Controller.php",
                 'ModelResource.stub'      => "app/Http/Resources/$namespacePath{$modelName}Resource.php",
@@ -194,28 +184,24 @@ to insert code automatically add this comment "use myth crud model command" to y
                 if (!$this->isForce() && !$this->confirm("Delete <fg=red>{$value->string}</> ?"))
                     continue;
             }
+
+            // $migration = "{$this->model->snakePlural}_table";
+            // $pattern = database_path("/migrations/*_{$migration}.*");
+            // $files = glob($pattern);
+            // dd($pattern, $files);
+
             $stubsPath = __DIR__.'/../../Stubs';
             foreach ($stubs as $stub => $path) {
                 $isMigration = $stub === 'ModelMigration.stub';
+                $skip = !1;
                 if ($isMigration) {
-                    $migrations = $this->disk()->files('database/migrations');
-                    foreach ($migrations as $migration) {
-                        $name = preg_replace('(\d+_)', '', pathinfo($migration, PATHINFO_FILENAME));
-                        if (
-                            Str::contains($name, [
-                                "{$value->snakeSingular}_table",
-                                "{$value->snakePlural}_table",
-                                $value->snakeSingular,
-                                $value->snakePlural,
-                            ])
-                        ) {
-                            $path = $migration;
-                            break;
-                        }
-                    }
+                    $s = "/migrations/*_{$this->model->snakePlural}";
+                    $c1 = glob(database_path("{$s}_table.*"));
+                    $c2 = glob(database_path("{$s}.*"));
+                    $skip = count($c1) > 0 || count($c2) > 0;
                 }
 
-                if ($this->stubsOnly()) {
+                if ($this->stubsOnly() && !$skip) {
                     $traits = ['BelongsToModel.stub', 'BelongsToManyModel.stub', 'HasManyModel.stub'];
                     if (!in_array($stub, $traits)) {
                         continue;
@@ -231,7 +217,7 @@ to insert code automatically add this comment "use myth crud model command" to y
                     $this->components->task("<fg=green>Replacing</> $path", fn() => $this->disk()->put($path, $content));
                     continue;
                 }
-                $exists = $this->disk()->exists($path);
+                $exists = $skip || $this->disk()->exists($path);
                 $taskTitle = $exists ? "<fg=yellow>File exists:</> $path" : "<fg=green>Creating</> $path";
                 $this->components->task($taskTitle, fn() => !$exists && $this->disk()->put($path, $content));
             }
@@ -354,8 +340,8 @@ html;
             'order_by' => ['int'],
 html;
             $migration .= '
-            $table->boolean(\'active\');
-            $table->integer(\'order_by\');';
+            $table->boolean(\'active\')->default(!0);
+            $table->integer(\'order_by\')->default(0);';
             $resource .= '
             \'status_to_string\' => $model->active_to_string,';
         }
