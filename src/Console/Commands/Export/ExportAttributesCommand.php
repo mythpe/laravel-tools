@@ -399,7 +399,19 @@ class ExportAttributesCommand extends BaseCommand
             $attribute = strtoupper($attribute);
         }
         elseif (strlen($attribute) > 3) {
-            $attribute = Str::of($attribute)->beforeLast('_id')->snake()->title()->replace('_', ' ')->ucfirst();
+            $attribute = Str::of($attribute);
+            if (Str::endsWith('_id', $attribute)) {
+                $attribute = $attribute->beforeLast('_id');
+            }
+            $attribute = $attribute->snake()->title()->replace('_', ' ')->ucfirst();
+            if ($attribute->contains('.*.')) {
+                $attribute = Str::of($key);
+                $attribute = $attribute->endsWith('.*.id') ? $attribute->before('.*.') : $attribute->afterLast('.*.');
+                // dd($attribute);
+                if (trans_has($tKey = "attributes.".$attribute->lower()->snake(), $locale, !0)) {
+                    $attribute = __($tKey, [], $locale);
+                }
+            }
         }
         $last = substr($key, -3);
         if (in_array($last, ['_ar', '_en'])) {
