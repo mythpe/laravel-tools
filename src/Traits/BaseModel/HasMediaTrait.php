@@ -110,13 +110,14 @@ trait HasMediaTrait
     /**
      * @param string|array|UploadedFile $files
      * @param string|null $collection
+     * @param array $properties
      * @return array
      * @throws FileCannotBeAdded
      * @throws FileDoesNotExist
      * @throws FileIsTooBig
      * @throws InvalidBase64Data
      */
-    public function addModelMedia(string | array | UploadedFile $files, ?string $collection = null): array
+    public function addModelMedia(string | array | UploadedFile $files, ?string $collection = null, array $properties = []): array
     {
         if (!is_array($files)) {
             $files = [$files];
@@ -145,7 +146,7 @@ trait HasMediaTrait
             else {
                 $media = $this->addMedia($file);
             }
-            $append[] = $media->toMediaCollection($collection ?: static::$mediaSingleCollection);
+            $append[] = $media->withCustomProperties($properties)->toMediaCollection($collection ?: static::$mediaSingleCollection);
         }
         return $append;
     }

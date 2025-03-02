@@ -86,6 +86,7 @@ class BaseCommand extends Command
                 $src = $file;
                 $collection = null;
                 $single = is_array($src) ? ($src['single'] ?? !1) : !0;
+                $props = is_array($src) ? ($src['props'] ?? []) : [];
                 if (is_array($src)) {
                     $collection = $src['collection'] ?? null;
                     $src = $src['src'] ?? null;
@@ -119,7 +120,7 @@ class BaseCommand extends Command
                 if ($single && $collection) {
                     $model->clearMediaCollection($collection);
                 }
-                $model->addModelMedia($src, $collection);
+                $model->addModelMedia($src, $collection, $props);
             }
             catch (Exception $exception) {
                 $this->components->error("Insert Image: [".get_class($model)."] ID => $model->id");
