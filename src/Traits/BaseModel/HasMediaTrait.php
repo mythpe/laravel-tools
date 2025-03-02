@@ -270,10 +270,11 @@ trait HasMediaTrait
 
     /**
      * @param string|null $collection
+     * @param bool $descending
      * @return Collection
      */
-    public function getMediaAttachments(?string $collection = null): Collection
+    public function getMediaAttachments(?string $collection = null, bool $descending = !0): Collection
     {
-        return $this->getMedia($collection ?? static::$mediaAttachmentsCollection)->sortByDesc('order_column')->values();
+        return $this->getMedia($collection ?? static::$mediaAttachmentsCollection)->sortBy(callback : 'order_column', descending : $descending)->values();
     }
 }
