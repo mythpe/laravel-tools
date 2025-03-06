@@ -353,7 +353,7 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
         /** {ATTRIBUTE}_to_yes */
         if (Str::endsWith($key, ($t = "_to_yes")) && !$this->isFillable($key)) {
             $method = Str::before($key, $t);
-            return !is_null(($_name = $this->{$method})) ? __("global.".($_name ? "yes" : "no")) : $_name;
+            return !is_null(($_name = $this->{$method})) ? __("labels.".($_name ? "yes" : "no")) : $_name;
         }
 
         /** {DATE_ATTRIBUTE}_to_date_format */

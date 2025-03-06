@@ -491,7 +491,7 @@ class Postman
                 //     // dd($itemArName);
                 //     $itemName .= ' - '.trim(__($r, $transAttrs));
                 // }
-                // elseif (trans_has($r = "global.$itemArName", 'ar')) {
+                // elseif (trans_has($r = "labels.$itemArName", 'ar')) {
                 //     $itemName .= ' - '.trim(__($r, $transAttrs));
                 // }
                 // d($itemName);

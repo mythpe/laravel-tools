@@ -24,7 +24,7 @@ left: auto;
 </head>
 <body class="{{ config('4myth-tools.font_family_class') }}" style="direction: {!! $DIRECTION !!}">
 <div class="d-print-none main-print-buttons {{ $ALIGN }}">
-<div class=""><a href="javascript:void(0);" class="btn btn-dark" onclick="printWindow()">{!! __( 'global.print' ) !!}</a></div>
+<div class=""><a href="javascript:void(0);" class="btn btn-dark" onclick="printWindow()">{!! __( 'labels.print' ) !!}</a></div>
 </div>
 @yield('print_content')
 <script>
