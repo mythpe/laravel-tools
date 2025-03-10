@@ -75,17 +75,21 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     }
 
     /**
-     * @param string $key
+     * @param string|array $key
      * @param array $options
      * @return Collection
      */
-    public static function langToCollection(string $key, array $options = [])
+    public static function langToCollection(string | array $key, array $options = []): Collection
     {
-        $codes = __($key);
+        $codes = is_array($key) ? $key : __($key);
         $values = [];
         $labels = $options['labels'] ?? [];
         $ids = $options['ids'] ?? [];
         foreach ($codes as $value => $name) {
+            if (is_array($key)) {
+                $value = $name;
+                $name = trans_has($t = "attributes.{$name}") ? __($t) : $name;
+            }
             $code = [
                 'value' => $value,
                 'label' => $name,
