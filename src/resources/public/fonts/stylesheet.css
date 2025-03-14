@@ -6,8 +6,8 @@
  * Github: https://github.com/mythpe
  */
 
-@import "Changa/stylesheet.css";
-@import "Kufi/stylesheet.css";
-@import "SSTArabic/stylesheet.css";
-@import "Almarai/stylesheet.css";
-@import "Tajawal/stylesheet.css";
+@import "./Changa/stylesheet.css";
+@import "./Kufi/stylesheet.css";
+@import "./SSTArabic/stylesheet.css";
+@import "./Almarai/stylesheet.css";
+/* @import "./Tajawal/stylesheet.css"; */
