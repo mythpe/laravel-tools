@@ -11,7 +11,9 @@ namespace Myth\LaravelTools\Exports;
 
 use Illuminate\Http\Resources\MissingValue;
 use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\RegistersEventListeners;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
@@ -19,6 +21,8 @@ use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
 
 class BaseExport extends StringValueBinder implements WithCustomValueBinder, FromCollection, WithEvents
 {
+    use Exportable, RegistersEventListeners;
+
     /**
      * @var array<string|int, mixed>|Collection<string|int, mixed>
      */
@@ -55,6 +59,15 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     }
 
     /**
+     * @param AfterSheet $event
+     * @return void
+     */
+    public static function afterSheet(AfterSheet $event): void
+    {
+        $event->sheet->getDelegate()->setRightToLeft(app()->getLocale() == 'ar');
+    }
+    
+    /**
      * @return Collection
      */
     public function collection(): Collection
@@ -87,18 +100,6 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
             $data = [...$data, ...$this->append];
         }
         return collect($data);
-    }
-
-    /**
-     * @return array
-     */
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->setRightToLeft(app()->getLocale() == 'ar');
-            },
-        ];
     }
 }
 
