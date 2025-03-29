@@ -66,7 +66,7 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
     {
         $event->sheet->getDelegate()->setRightToLeft(app()->getLocale() == 'ar');
     }
-    
+
     /**
      * @return Collection
      */
