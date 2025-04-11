@@ -86,10 +86,12 @@ class BaseCommand extends Command
                 $src = $file;
                 $collection = null;
                 $single = is_array($src) ? ($src['single'] ?? !1) : !0;
-                $props = is_array($src) ? ($src['props'] ?? []) : [];
                 if (is_array($src)) {
                     $collection = $src['collection'] ?? null;
                     $src = $src['src'] ?? null;
+                }
+                if ($single && $collection) {
+                    $model->clearMediaCollection($collection);
                 }
                 if (empty($src)) {
                     $this->components->error("Insert Image: [".get_class($model)."] ID => $model->id");
@@ -117,9 +119,7 @@ class BaseCommand extends Command
                 elseif (is_string($src)) {
                     $src = is_file($src) ? $src : (Str::startsWith($src, '/') ? base_path($src) : $this->disk()->path($src));
                 }
-                if ($single && $collection) {
-                    $model->clearMediaCollection($collection);
-                }
+                $props = is_array($src) ? ($src['props'] ?? []) : [];
                 $model->addModelMedia($src, $collection, $props);
             }
             catch (Exception $exception) {
