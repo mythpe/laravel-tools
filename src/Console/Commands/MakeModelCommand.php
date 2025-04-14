@@ -181,24 +181,26 @@ to insert code automatically add this comment "use myth crud model command" to y
                 'HasManyModel.stub'       => "app/Traits/HasMany/{$namespacePath}HasMany{$modelName}.php",
             ];
             if ($this->isDeleteMode()) {
-                if (!$this->isForce() && !$this->confirm("Delete <fg=red>{$value->string}</> ?"))
-                    continue;
+                if (!$this->isForce()) {
+                    if (!$this->confirm("Delete <fg=red>{$value->string}</> ?")) {
+                        continue;
+                    }
+                }
             }
-
-            // $migration = "{$this->model->snakePlural}_table";
-            // $pattern = database_path("/migrations/*_{$migration}.*");
-            // $files = glob($pattern);
-            // dd($pattern, $files);
-
             $stubsPath = __DIR__.'/../../Stubs';
             foreach ($stubs as $stub => $path) {
                 $isMigration = $stub === 'ModelMigration.stub';
                 $skip = !1;
                 if ($isMigration) {
-                    $s = "/migrations/*_{$this->model->snakePlural}";
-                    $c1 = glob(database_path("{$s}_table.*"));
-                    $c2 = glob(database_path("{$s}.*"));
-                    $skip = count($c1) > 0 || count($c2) > 0;
+                    $s = "/migrations/*_create_{$this->model->snakePlural}";
+                    $glob = glob(database_path("{$s}_table.*"));
+                    $skip = count($glob) > 0;
+                    foreach ($glob as $g) {
+                        if (is_file($g)) {
+                            $path = str_ireplace(base_path(), '', $g);
+                            break;
+                        }
+                    }
                 }
 
                 if ($this->stubsOnly() && !$skip) {
