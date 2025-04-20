@@ -103,4 +103,5 @@ return [
     'Invoices'             => 'Invoice|Invoices',
     'SectorCategories'     => 'Sector Category|Sector Categories',
     'Sectors'              => 'Sector|Sectors',
+    'Experiences'          => 'Experience|Experiences',
 ];
