@@ -82,7 +82,8 @@ class SmsMessage
     /** @var string */
     public string $returnTypeKey = 'return';
     /** @var string */
-    public string $unicodeKey = 'return';
+    // public string $unicodeKey = 'return';
+    public string $unicodeKey = 'unicode';
     /**
      * @var string
      */
@@ -91,6 +92,10 @@ class SmsMessage
     public string $logName = 'sms';
     /** @var PendingRequest $http */
     public PendingRequest $http;
+    /**
+     * @var bool Send as form post.
+     */
+    public bool $asForm = !0;
     /**
      * API domain url
      *
@@ -186,10 +191,18 @@ class SmsMessage
             return null;
         }
         try {
+            $this->usernameKey = config('4myth-tools.sms.keys.username_key', $this->usernameKey);
+            $this->passwordKey = config('4myth-tools.sms.keys.password_key', $this->passwordKey);
+            $this->senderKey = config('4myth-tools.sms.keys.sender_key', $this->senderKey);
+            $this->numbersKey = config('4myth-tools.sms.keys.numbers_key', $this->numbersKey);
+            $this->messageKey = config('4myth-tools.sms.keys.message_key', $this->messageKey);
+            $this->returnTypeKey = config('4myth-tools.sms.keys.return_type_key', $this->returnTypeKey);
+            $this->unicodeKey = config('4myth-tools.sms.keys.unicode_key', $this->unicodeKey);
+
             /** @var Response $request */
             $arg = [
                 $this->segments['send_sms'],
-                [
+                array_values(array_filter([
                     $this->usernameKey   => $this->username,
                     $this->passwordKey   => $this->password,
                     $this->senderKey     => $this->sender,
@@ -198,18 +211,23 @@ class SmsMessage
                     $this->returnTypeKey => $this->returnType,
                     $this->unicodeKey    => $this->unicode,
                     ...$this->data,
-                ],
+                ])),
             ];
             if ($this->debug) {
                 return $this->http->dd()->{$this->method}(...$arg);
             }
-            $request = $this->http->{$this->method}(...$arg);
+            if ($this->asForm) {
+                $request = $this->http->asForm()->{$this->method}(...$arg);
+            }
+            else {
+                $request = $this->http->{$this->method}(...$arg);
+            }
             $res = $request->json();
             $this->log($res);
-            return $res;
+            return $request;
         }
         catch (Exception$e) {
-            Logger::log($e,);
+            Logger::log($e);
             return false;
         }
     }

@@ -96,6 +96,20 @@ return [
          * sms channel.
          */
         'driver'  => 'App\Channels\SmsChannel',
+
+        'url'      => env('SMS_URL', 'https://www.4myth.com'),
+        'username' => env('SMS_USERNAME', ''),
+        'password' => env('SMS_PASSWORD', ''),
+        'sender'   => env('SMS_SENDER_NAME', ''),
+        'keys'     => [
+            'username'    => env('SMS_USERNAME_KEY', 'username'),
+            'password'    => env('SMS_PASSWORD_KEY', 'api_key'),
+            'sender'      => env('SMS_SENDER_NAME_KEY', 'sender'),
+            'numbers'     => env('SMS_NUMBERS_KEY', 'numbers'),
+            'message'     => env('SMS_MESSAGE_KEY', 'message'),
+            'return_type' => env('SMS_RETURN_TYPE_KEY', 'return_type'),
+            'unicode'     => env('SMS_UNICODE_KEY', 'unicode'),
+        ],
     ],
 
     /**
