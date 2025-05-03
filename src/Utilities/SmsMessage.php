@@ -113,10 +113,10 @@ class SmsMessage
      */
     public function __construct()
     {
-        $this->baseUrl = rtrim((string) env('SMS_URL', ''), '/');
-        $this->username = (string) env('SMS_USERNAME', '');
-        $this->password = (string) env('SMS_PASSWORD', '');
-        $this->sender = (string) env('SMS_SENDER_NAME', '');
+        $this->baseUrl = rtrim((string) config('4myth-tools.sms.url', ''), '/');
+        $this->username = (string) config('4myth-tools.sms.username', '');
+        $this->password = (string) config('4myth-tools.sms.password', '');
+        $this->sender = (string) env('4myth-tools.sms.sender', '');
         $this->http = Http::baseUrl($this->getBaseUrl())->withHeader('X-REQUEST-WITH', "MyTh SMS API 2.0");
     }
 
@@ -202,7 +202,7 @@ class SmsMessage
             /** @var Response $request */
             $arg = [
                 $this->segments['send_sms'],
-                array_values(array_filter([
+                array_filter([
                     $this->usernameKey   => $this->username,
                     $this->passwordKey   => $this->password,
                     $this->senderKey     => $this->sender,
@@ -211,7 +211,7 @@ class SmsMessage
                     $this->returnTypeKey => $this->returnType,
                     $this->unicodeKey    => $this->unicode,
                     ...$this->data,
-                ])),
+                ]),
             ];
             if ($this->debug) {
                 return $this->http->dd()->{$this->method}(...$arg);
