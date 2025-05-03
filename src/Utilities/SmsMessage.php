@@ -106,10 +106,7 @@ class SmsMessage
     protected string $method = 'POST';
 
     /**
-     * @param string|null $url
-     * @param string|null $username
-     * @param string|null $password
-     * @param string|null $sender
+     *
      */
     public function __construct()
     {
@@ -191,13 +188,13 @@ class SmsMessage
             return null;
         }
         try {
-            $this->usernameKey = config('4myth-tools.sms.keys.username_key', $this->usernameKey);
-            $this->passwordKey = config('4myth-tools.sms.keys.password_key', $this->passwordKey);
-            $this->senderKey = config('4myth-tools.sms.keys.sender_key', $this->senderKey);
-            $this->numbersKey = config('4myth-tools.sms.keys.numbers_key', $this->numbersKey);
-            $this->messageKey = config('4myth-tools.sms.keys.message_key', $this->messageKey);
-            $this->returnTypeKey = config('4myth-tools.sms.keys.return_type_key', $this->returnTypeKey);
-            $this->unicodeKey = config('4myth-tools.sms.keys.unicode_key', $this->unicodeKey);
+            $this->usernameKey = config('4myth-tools.sms.keys.username', $this->usernameKey);
+            $this->passwordKey = config('4myth-tools.sms.keys.password', $this->passwordKey);
+            $this->senderKey = config('4myth-tools.sms.keys.sender', $this->senderKey);
+            $this->numbersKey = config('4myth-tools.sms.keys.numbers', $this->numbersKey);
+            $this->messageKey = config('4myth-tools.sms.keys.message', $this->messageKey);
+            $this->returnTypeKey = config('4myth-tools.sms.keys.return_type', $this->returnTypeKey);
+            $this->unicodeKey = config('4myth-tools.sms.keys.unicode', $this->unicodeKey);
 
             /** @var Response $request */
             $arg = [
