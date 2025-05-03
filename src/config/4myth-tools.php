@@ -249,7 +249,7 @@ return [
         'domain'                      => env('APP_URL'),
         'file_name'                   => 'postman-collection',
         'middleware_name'             => 'postman',
-        'locale_header_variable_name' => 'App-Locale',
+        'locale_header_variable_name' => 'X-App-Locale',
         'locale_variable_name'        => 'locale',
         'token_variable_name'         => 'token',
         'url_variable_name'           => 'url',

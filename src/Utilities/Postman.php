@@ -143,7 +143,7 @@ class Postman
         $this->collectionName = self::config('collection_name') ?: config('app.name');
         $this->fileName = Str::finish(self::config('file_name', 'postman-collection'), '.json');
         $this->middlewareName = self::config('middleware_name', 'postman');
-        $this->localeHeaderVariableName = self::config('locale_header_variable_name', 'App-Locale');
+        $this->localeHeaderVariableName = self::config('locale_header_variable_name', 'X-App-Locale');
         $this->localeVariableName = self::config('locale_variable_name', 'locale');
         $this->tokenVariableName = self::config('token_variable_name', 'token');
         $this->urlVariableName = self::config('url_variable_name', 'url');
