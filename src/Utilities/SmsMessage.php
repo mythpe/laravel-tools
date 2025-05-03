@@ -113,8 +113,9 @@ class SmsMessage
         $this->baseUrl = rtrim((string) config('4myth-tools.sms.url', ''), '/');
         $this->username = (string) config('4myth-tools.sms.username', '');
         $this->password = (string) config('4myth-tools.sms.password', '');
-        $this->sender = (string) env('4myth-tools.sms.sender', '');
+        $this->sender = (string) config('4myth-tools.sms.sender', '');
         $this->http = Http::baseUrl($this->getBaseUrl())->withHeader('X-REQUEST-WITH', "MyTh SMS API 2.0");
+        $this->setKeys();
     }
 
     /**
@@ -188,14 +189,6 @@ class SmsMessage
             return null;
         }
         try {
-            $this->usernameKey = config('4myth-tools.sms.keys.username', $this->usernameKey);
-            $this->passwordKey = config('4myth-tools.sms.keys.password', $this->passwordKey);
-            $this->senderKey = config('4myth-tools.sms.keys.sender', $this->senderKey);
-            $this->numbersKey = config('4myth-tools.sms.keys.numbers', $this->numbersKey);
-            $this->messageKey = config('4myth-tools.sms.keys.message', $this->messageKey);
-            $this->returnTypeKey = config('4myth-tools.sms.keys.return_type', $this->returnTypeKey);
-            $this->unicodeKey = config('4myth-tools.sms.keys.unicode', $this->unicodeKey);
-
             /** @var Response $request */
             $arg = [
                 $this->segments['send_sms'],
@@ -299,5 +292,20 @@ class SmsMessage
             $this->log($e);
             return false;
         }
+    }
+
+    /**
+     * @return $this
+     */
+    public function setKeys(): self
+    {
+        $this->usernameKey = config('4myth-tools.sms.keys.username', $this->usernameKey);
+        $this->passwordKey = config('4myth-tools.sms.keys.password', $this->passwordKey);
+        $this->senderKey = config('4myth-tools.sms.keys.sender', $this->senderKey);
+        $this->numbersKey = config('4myth-tools.sms.keys.numbers', $this->numbersKey);
+        $this->messageKey = config('4myth-tools.sms.keys.message', $this->messageKey);
+        $this->returnTypeKey = config('4myth-tools.sms.keys.return_type', $this->returnTypeKey);
+        $this->unicodeKey = config('4myth-tools.sms.keys.unicode', $this->unicodeKey);
+        return $this;
     }
 }
