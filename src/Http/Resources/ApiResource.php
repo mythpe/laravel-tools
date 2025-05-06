@@ -106,40 +106,25 @@ class ApiResource extends JsonResource
                 $result[$k] = $model->name;
             }
             if (method_exists($model, static::STATIC_REQUEST_KEY)) {
-                $result = array_merge($result, $model->{static::STATIC_REQUEST_KEY}());
+                $result = [
+                    ...$result,
+                    ... $model->{static::STATIC_REQUEST_KEY}(),
+                ];
             }
             return $this->mainResourceKeys($id, $label, $result);
         }
-        // if ($this->auto) {
-        //     $request = request();
-        //     $fdt = $request->input('fdt');
-        //     if ($fdt == 'i') {
-        //         if (!($columns = $request->input(static::$headerItemsRequestKey))) {
-        //             $columns = '*';
-        //         }
-        //         if (!is_array($columns) && $columns != '*') {
-        //             $columns = explode(',', $columns);
-        //         }
-        //         if ($columns == '*') {
-        //             $columns = $model->getFillable();
-        //         }
-        //         mythAllowHeaders();
-        //         // dd($columns, $request->all());
-        //         dd($merge);
-        //         $merge = array_merge($merge, $model->only($columns));
-        //         d($request->keys());
-        //         $merge = array_merge($merge, []);
-        //     }
-        // }
-        // return $this->mainResourceKeys($id, $label, $merge);
-
         $fillable = $model->only($model->getFillable());
         if (method_exists($model, 'getAppends')) {
             $appends = $model->getAppends();
-            $fillable = array_merge($fillable, $model->only($appends));
+            $fillable = [
+                ...$fillable,
+                ... $model->only($appends),
+            ];
         }
-        $data = array_merge(Arr::except($fillable, $model->getHidden()), $merge);
-        // ksort($data);
+        $data = [
+            ...Arr::except($fillable, $model->getHidden()),
+            ...$merge,
+        ];
         return $this->mainResourceKeys($id, $label, $data);
     }
 }
