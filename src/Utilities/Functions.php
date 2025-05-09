@@ -526,7 +526,10 @@ if (!function_exists('appName')) {
      */
     function appName(?string $locale = null): string
     {
-        return (string) setting(locale_attribute('app_name', $locale));
+        if ($locale) {
+            return config('app.name_'.$locale, config('app.name', ''));
+        }
+        return (string) config('app.name', '');
     }
 }
 
