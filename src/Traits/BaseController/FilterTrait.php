@@ -119,12 +119,12 @@ trait FilterTrait
             if (is_array($value)) {
                 /** @var Model $model */
                 if (Helpers::hasDateCast($model, $column)) {
-                    $from = Carbon::make(($value['form'] ?? ($value[0] ?? null)));
+                    $from = Carbon::make(($value['from'] ?? ($value[0] ?? null)));
                     $to = Carbon::make(($value['to'] ?? ($value[1] ?? null)));
                     $builder->whereDate($column, '>=', $from->min($to))->whereDate($column, '<=', $to->max($from));
                 }
                 elseif (Helpers::hasNumericCast($model, $column) && !Str::endsWith($column, '_id')) {
-                    $from = ($value['form'] ?? ($value[0] ?? null));
+                    $from = ($value['from'] ?? ($value[0] ?? null));
                     $to = ($value['to'] ?? ($value[1] ?? null));
                     $builder->where($column, '>=', min($from, $to))->where($column, '<=', max($to, $from));
                 }
