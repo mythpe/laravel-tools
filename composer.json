@@ -1,6 +1,14 @@
 {
   "name": "4myth/laravel-tools",
   "description": "Tools of laravel framework",
+  "homepage": "https://www.4myth.com",
+  "keywords": [
+    "myth",
+    "tools",
+    "laravel",
+    "generator",
+    "helpers"
+  ],
   "type": "library",
   "require": {
     "php": ">=8.2",
@@ -40,7 +48,7 @@
   },
   "authors": [
     {
-      "name": "MyTh",
+      "name": "MyTh Ahmed Faiz",
       "email": "mythpe@gmail.com"
     }
   ],

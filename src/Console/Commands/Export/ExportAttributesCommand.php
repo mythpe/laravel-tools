@@ -173,7 +173,15 @@ class ExportAttributesCommand extends BaseCommand
                     $fillable->push($constant);
                 }
                 elseif (is_array($constant)) {
-                    $fillable = $fillable->merge(array_values($constant));
+                    $constantValues = array_values($constant);
+                    if (empty($constantValues)) {
+                        continue;
+                    }
+                    $numeric = array_filter($constantValues, fn($v) => !is_numeric($v));
+                    if (empty($numeric)) {
+                        continue;
+                    }
+                    $fillable = $fillable->merge($constantValues);
                 }
             }
 
