@@ -17,6 +17,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller as BaseController;
 use Myth\LaravelTools\Http\Resources\ApiResource;
 use Myth\LaravelTools\Traits\BaseController\ApplyQueryTrait;
@@ -129,7 +130,7 @@ class Controller extends BaseController
         ($json['message'] ?? ($json['message'] = ""));
         ($json['data'] ?? ($json['data'] = null));
         $json['success'] = array_key_exists('success', $json) ? $json['success'] : $status == 200;
-        if ($json['data'] ?? null) {
+        if ($json['data'] ?? null && !$json['data'] instanceof JsonResource) {
             $json['data'] = ApiResource::transformResourceKeys($json['data']);
         }
         $response = response()->json($json, $status);
