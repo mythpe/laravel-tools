@@ -18,6 +18,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Myth\LaravelTools\Http\Resources\ApiResource;
 use Myth\LaravelTools\Traits\BaseController\ApplyQueryTrait;
 use Myth\LaravelTools\Traits\BaseController\CrudTrait;
 use Myth\LaravelTools\Traits\BaseController\EventsTrait;
@@ -128,10 +129,12 @@ class Controller extends BaseController
         ($json['message'] ?? ($json['message'] = ""));
         ($json['data'] ?? ($json['data'] = null));
         $json['success'] = array_key_exists('success', $json) ? $json['success'] : $status == 200;
-
+        if ($json['data'] ?? null) {
+            $json['data'] = ApiResource::transformResourceKeys($json['data']);
+        }
         $response = response()->json($json, $status);
         try {
-            /** For none Json Headers */
+            /** For none JSON Headers */
             return $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         }
         catch (Exception $exception) {

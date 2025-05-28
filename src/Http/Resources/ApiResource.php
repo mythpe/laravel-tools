@@ -32,6 +32,29 @@ class ApiResource extends JsonResource
     public bool $auto = !0;
 
     /**
+     * @param \Countable|Arrayable|array $values
+     * @return array
+     */
+    public static function transformResourceKeys(\Countable | Arrayable | array $values): array
+    {
+        if (request()->header(static::API_RESOURCE_CASE_HEADER_KEY) == 'camel') {
+            return collect($values)->mapWithKeys(fn($value, $key) => [
+                [
+                    Str::camel($key) => $value,
+                ],
+            ])->toArray();
+        }
+        if (request()->header(static::API_RESOURCE_CASE_HEADER_KEY) == 'snake') {
+            return collect($values)->mapWithKeys(fn($value, $key) => [
+                [
+                    Str::snake($key) => $value,
+                ],
+            ])->toArray();
+        }
+        return $values;
+    }
+
+    /**
      * @param Request $request
      *
      * @return array
@@ -42,10 +65,10 @@ class ApiResource extends JsonResource
             return [];
         }
         if (method_exists($this, 'transformer')) {
-            return $this->transformResourceKeys($this->transformer($request));
+            return static::transformResourceKeys($this->transformer($request));
         }
         elseif (is_array($this->resource)) {
-            return $this->transformResourceKeys($this->resource);
+            return static::transformResourceKeys($this->resource);
         }
         $id = $this->resource->id;
         $label = $this->resource->name;
@@ -80,30 +103,7 @@ class ApiResource extends JsonResource
         if (config('4myth-tools.transformer.append_text')) {
             $main['text'] = $label;
         }
-        return $this->transformResourceKeys(array_merge($main, $merge));
-    }
-
-    /**
-     * @param \Countable|Arrayable|array $values
-     * @return array
-     */
-    public function transformResourceKeys(\Countable | Arrayable | array $values): array
-    {
-        if (request()->header(static::API_RESOURCE_CASE_HEADER_KEY) == 'camel') {
-            return collect($values)->mapWithKeys(fn($value, $key) => [
-                [
-                    Str::camel($key) => $value,
-                ],
-            ])->toArray();
-        }
-        if (request()->header(static::API_RESOURCE_CASE_HEADER_KEY) == 'snake') {
-            return collect($values)->mapWithKeys(fn($value, $key) => [
-                [
-                    Str::snake($key) => $value,
-                ],
-            ])->toArray();
-        }
-        return $values;
+        return static::transformResourceKeys(array_merge($main, $merge));
     }
 
     /**
