@@ -23,6 +23,10 @@ class ApiResource extends JsonResource
     const STATIC_REQUEST_KEY = 'staticRequest';
     /** @var string Type of transform the api resource */
     const API_RESOURCE_CASE_HEADER_KEY = 'X-Api-Trans';
+    const API_RESOURCE_CASES_KEY = [
+        'camel',
+        'snake',
+    ];
 
     /** @var string Request key of items */
     public static string $itemsRequestKey = 'items';
@@ -38,13 +42,21 @@ class ApiResource extends JsonResource
      */
     public static function transformResourceKeys(Countable | Arrayable | array $values): array
     {
-        $header = request()->header(static::API_RESOURCE_CASE_HEADER_KEY);
-        if (!in_array($header, ['camel', 'snake'])) {
+        if (!($case = static::apiResourceCase())) {
             return $values;
         }
         return collect($values)->mapWithKeys(fn($value, $key) => [
-            Str::{$header}($key) => $value,
+            Str::{$case}($key) => $value,
         ])->toArray();
+    }
+
+    public static function apiResourceCase(): ?string
+    {
+        $cast = request()->header(static::API_RESOURCE_CASE_HEADER_KEY) ?: null;
+        if (in_array($cast, static::API_RESOURCE_CASES_KEY)) {
+            return $cast;
+        }
+        return null;
     }
 
     /**
