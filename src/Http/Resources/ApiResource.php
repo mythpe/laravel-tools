@@ -37,21 +37,13 @@ class ApiResource extends JsonResource
      */
     public static function transformResourceKeys(\Countable | Arrayable | array $values): array
     {
-        if (request()->header(static::API_RESOURCE_CASE_HEADER_KEY) == 'camel') {
-            return collect($values)->mapWithKeys(fn($value, $key) => [
-                [
-                    Str::camel($key) => $value,
-                ],
-            ])->toArray();
+        $key = request()->header(static::API_RESOURCE_CASE_HEADER_KEY);
+        if (!in_array($key, ['camel', 'snake'])) {
+            return $values;
         }
-        if (request()->header(static::API_RESOURCE_CASE_HEADER_KEY) == 'snake') {
-            return collect($values)->mapWithKeys(fn($value, $key) => [
-                [
-                    Str::snake($key) => $value,
-                ],
-            ])->toArray();
-        }
-        return $values;
+        return collect($values)->mapWithKeys(fn($value, $key) => [
+            Str::{$key}($key) => $value,
+        ])->toArray();
     }
 
     /**
