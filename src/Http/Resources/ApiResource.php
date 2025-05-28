@@ -9,15 +9,19 @@
 
 namespace Myth\LaravelTools\Http\Resources;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Myth\LaravelTools\Models\BaseModel;
 
 class ApiResource extends JsonResource
 {
     /** @var string Request key of static axios request */
     const STATIC_REQUEST_KEY = 'staticRequest';
+    /** @var string Type of transform the api resource */
+    const API_RESOURCE_CASE_HEADER_KEY = 'X-Api-Trans';
 
     /** @var string Request key of items */
     public static string $itemsRequestKey = 'items';
@@ -32,20 +36,17 @@ class ApiResource extends JsonResource
      *
      * @return array
      */
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         if (is_null($this->resource)) {
             return [];
         }
-
         if (method_exists($this, 'transformer')) {
-            return $this->transformer($request);
+            return $this->transformResourceKeys($this->transformer($request));
         }
-
-        if (is_array($this->resource)) {
-            return $this->resource;
+        elseif (is_array($this->resource)) {
+            return $this->transformResourceKeys($this->resource);
         }
-
         $id = $this->resource->id;
         $label = $this->resource->name;
         return $this->mainResourceKeys($id, $label, $this->resource->toArray());
@@ -79,7 +80,30 @@ class ApiResource extends JsonResource
         if (config('4myth-tools.transformer.append_text')) {
             $main['text'] = $label;
         }
-        return array_merge($main, $merge);
+        return $this->transformResourceKeys(array_merge($main, $merge));
+    }
+
+    /**
+     * @param \Countable|Arrayable|array $values
+     * @return array
+     */
+    public function transformResourceKeys(\Countable | Arrayable | array $values): array
+    {
+        if (request()->header(static::API_RESOURCE_CASE_HEADER_KEY) == 'camel') {
+            return collect($values)->mapWithKeys(fn($value, $key) => [
+                [
+                    Str::camel($key) => $value,
+                ],
+            ])->toArray();
+        }
+        if (request()->header(static::API_RESOURCE_CASE_HEADER_KEY) == 'snake') {
+            return collect($values)->mapWithKeys(fn($value, $key) => [
+                [
+                    Str::snake($key) => $value,
+                ],
+            ])->toArray();
+        }
+        return $values;
     }
 
     /**
