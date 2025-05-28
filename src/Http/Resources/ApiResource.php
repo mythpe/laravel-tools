@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Http\Resources;
 
+use Countable;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -32,10 +33,10 @@ class ApiResource extends JsonResource
     public bool $auto = !0;
 
     /**
-     * @param \Countable|Arrayable|array $values
+     * @param Countable|Arrayable|array $values
      * @return array
      */
-    public static function transformResourceKeys(\Countable | Arrayable | array $values): array
+    public static function transformResourceKeys(Countable | Arrayable | array $values): array
     {
         $header = request()->header(static::API_RESOURCE_CASE_HEADER_KEY);
         if (!in_array($header, ['camel', 'snake'])) {
