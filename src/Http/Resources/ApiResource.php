@@ -14,6 +14,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Models\BaseModel;
 
@@ -37,10 +38,10 @@ class ApiResource extends JsonResource
     public bool $auto = !0;
 
     /**
-     * @param Countable|Arrayable|array $values
-     * @return array
+     * @param Countable|Arrayable|array|Collection $values
+     * @return Countable|array|Collection|Arrayable
      */
-    public static function transformResourceKeys(Countable | Arrayable | array $values): array
+    public static function transformResourceKeys(Countable | Arrayable | array | Collection $values): Countable | array | Collection | Arrayable
     {
         if (!($case = static::apiResourceCase())) {
             return $values;
