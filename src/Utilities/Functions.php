@@ -210,7 +210,9 @@ if (!function_exists('date_by_locale')) {
         if (is_null($toLocale)) {
             $toLocale = app()->getLocale();
         }
-
+        if (app()->getLocale() != 'ar') {
+            return $date;
+        }
         $ar = [
             "/",
             "٠",
