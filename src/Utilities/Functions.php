@@ -211,6 +211,17 @@ if (!function_exists('date_by_locale')) {
         }
 
         $ar = [
+            "/",
+            "٠",
+            "١",
+            "٢",
+            "٣",
+            "٤",
+            "٥",
+            "٦",
+            "٧",
+            "٨",
+            "٩",
             "الأحد",
             "أح",
             "الإثنين",
@@ -283,6 +294,17 @@ if (!function_exists('date_by_locale')) {
             "سنة",
         ];
         $notAr = [
+            "-",
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
             "Sunday",
             "Sun",
             "Monday",
@@ -354,7 +376,6 @@ if (!function_exists('date_by_locale')) {
             "year",
             "Year",
         ];
-
         try {
             $str = $date;
             $str = str_ireplace([
@@ -381,11 +402,11 @@ if (!function_exists('date_by_locale')) {
                 '1 س',
                 'س',
             ], $str);
-            //$str = str_ireplace([
-            //    "ثانية",
-            //    //"ثواني",
-            //    //"ثوان",
-            //], 'ث', $str);
+            $str = str_ireplace([
+               "ثانية",
+               "ثواني",
+               "ثوان",
+            ], 'ث', $str);
             return str_ireplace([
                 "دقيقة",
                 "دقائق",
@@ -482,7 +503,6 @@ if (!function_exists('arabic_date')) {
             '٨',
             '٩',
         ];
-
         $notAr = [
             '-',
             '0',
@@ -496,7 +516,6 @@ if (!function_exists('arabic_date')) {
             '8',
             '9',
         ];
-
         $val = str_ireplace($notAr, $ar, $string);
         return $val.($append ? ($append == !0 ? " هـ" : $append) : '');
     }
@@ -504,7 +523,7 @@ if (!function_exists('arabic_date')) {
 
 if (!function_exists('isBase64')) {
     /**
-     * Check if string is image base64
+     * Check if the string is image base64
      *
      * @param $str
      *
