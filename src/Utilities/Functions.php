@@ -54,6 +54,7 @@ if (!function_exists('to_number_format')) {
             $decimals = 2;
         }
         $v = number_format((float) $number, $decimals, $dec_point, $thousands_sep);
+        $v = $v ?: '0.00';
         $currency = $currency ?: '';
         return trim("$v $currency");
     }
@@ -403,9 +404,9 @@ if (!function_exists('date_by_locale')) {
                 'س',
             ], $str);
             $str = str_ireplace([
-               "ثانية",
-               "ثواني",
-               "ثوان",
+                "ثانية",
+                "ثواني",
+                "ثوان",
             ], 'ث', $str);
             return str_ireplace([
                 "دقيقة",
