@@ -378,7 +378,7 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
         if (Str::endsWith($key, ($t = "_to_date_string_format")) && ($attribute = Str::before($key, $t))) {
             if ($this->isDateCastable($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return $date->format(config('4myth-tools.date_format.date_string'));
+                return date_by_locale($date->format(config('4myth-tools.date_format.date_string')));
             }
         }
 
