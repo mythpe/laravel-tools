@@ -77,7 +77,7 @@ return [
         'full'             => "Y/m/d H:i:s",
         'full_12'          => "Y/m/d g:i a",
         'human'            => "Y/m/d g:i a",
-        'human_full'       => "l Y/m/d g:i a",
+        'human_full'       => "l Y/m/d • g:i a",
         'hijri_human'      => "Y/m/d g:i a",
         'hijri_human_full' => "l Y/m/d g:i a",
         'log'              => 'Y-m-d',
