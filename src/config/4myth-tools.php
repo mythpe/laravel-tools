@@ -75,7 +75,6 @@ return [
         'time_string'  => "g:i a",
         'time_12'      => "g:i",
         'full'         => "Y/m/d • H:i:s",
-        'human'        => "Y/m/d • g:i a",
         'readable'     => "l Y/m/d • g:i a",
         'hijri_human'  => "Y/m/d g:i a",
         'log'          => 'Y-m-d',
