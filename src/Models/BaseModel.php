@@ -437,6 +437,14 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
             }
         }
 
+        /** {DATE_ATTRIBUTE}_to_human_format */
+        if (Str::endsWith($key, ($t = "_to_human_format")) && ($attribute = Str::before($key, $t))) {
+            if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
+                !$date instanceof Carbon && ($date = Carbon::parse($date));
+                return date_by_locale($date->format(config('4myth-tools.date_format.human_full')));
+            }
+        }
+
         /** {RELATION}_to_ids */
         if (Str::endsWith($key, ($t = "_to_ids"))) {
             $relation = Str::beforeLast($key, $t);
