@@ -33,6 +33,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property array|mixed|string|void|null $id
  * @property array|mixed|string|void|null $created_at
  * @property array|mixed|string|void|null $updated_at
+ * @property-read string $_{DATE_ATTRIBUTE}_to_readable_format
+ * @example
+ * $this->date_to_readable_format
  */
 class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
 {
@@ -437,11 +440,11 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
             }
         }
 
-        /** {DATE_ATTRIBUTE}_to_human_format */
-        if (Str::endsWith($key, ($t = "_to_human_format")) && ($attribute = Str::before($key, $t))) {
+        /** {DATE_ATTRIBUTE}_to_readable_format */
+        if (Str::endsWith($key, ($t = "_to_readable_format")) && ($attribute = Str::before($key, $t))) {
             if ($this->isDateAttribute($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('4myth-tools.date_format.human_full')));
+                return date_by_locale($date->format(config('4myth-tools.date_format.readable')));
             }
         }
 
