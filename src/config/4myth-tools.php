@@ -65,19 +65,20 @@ return [
 
     /** App date formats */
     "date_format"                   => [
-        'long_date'    => "d M, Y",
-        'date'         => "Y/m/d",
-        'date-reverse' => "d/m/Y",
-        'datetime'     => "Y/m/d • g:i a",
-        'day'          => "l",
-        'hijri_date'   => "Y/m/d",
-        'time'         => "H:i",
-        'time_string'  => "g:i a",
-        'time_12'      => "g:i",
-        'full'         => "Y/m/d • H:i:s",
-        'readable'     => "l Y/m/d • g:i a",
-        'hijri_human'  => "Y/m/d g:i a",
-        'log'          => 'Y-m-d',
+        'date'          => "Y/m/d",
+        'date_string'   => "d M, Y",
+        'date-reverse'  => "d/m/Y",
+        'datetime'      => "Y/m/d • g:i a",
+        'day'           => "l",
+        'hijri_date'    => "Y/m/d",
+        'time'          => "H:i",
+        'time_string'   => "g:i a",
+        'time_12'       => "g:i",
+        'full'          => "Y/m/d • H:i:s",
+        'long_readable' => "l Y/m/d • g:i a",
+        'readable'      => "l d M, Y • g:i a",
+        'hijri_human'   => "Y/m/d g:i a",
+        'log'           => 'Y-m-d',
     ],
 
     /**

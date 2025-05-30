@@ -374,6 +374,14 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
             }
         }
 
+        /** {DATE_ATTRIBUTE}_to_date_string_format */
+        if (Str::endsWith($key, ($t = "_to_date_string_format")) && ($attribute = Str::before($key, $t))) {
+            if ($this->isDateCastable($attribute) && ($date = $this->{$attribute})) {
+                !$date instanceof Carbon && ($date = Carbon::parse($date));
+                return $date->format(config('4myth-tools.date_format.date_string'));
+            }
+        }
+
         /** {DATE_ATTRIBUTE}_to_time_format */
         if (Str::endsWith($key, ($t = "_to_time_format")) && ($attribute = Str::before($key, $t))) {
             if ($this->isDateCastable($attribute) && ($date = $this->{$attribute})) {
@@ -440,6 +448,14 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
             if ($this->isDateCastable($attribute) && ($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return arabic_date(hijri($date)->format(config('4myth-tools.date_format.date')));
+            }
+        }
+
+        /** {DATE_ATTRIBUTE}_to_long_readable_format */
+        if (Str::endsWith($key, ($t = "_to_long_readable_format")) && ($attribute = Str::before($key, $t))) {
+            if ($this->isDateCastable($attribute) && ($date = $this->{$attribute})) {
+                !$date instanceof Carbon && ($date = Carbon::parse($date));
+                return date_by_locale($date->format(config('4myth-tools.date_format.long_readable')));
             }
         }
 
