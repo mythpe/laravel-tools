@@ -112,6 +112,11 @@ class ApiResource extends JsonResource
         return static::transformResourceKeys(array_merge($main, $merge));
     }
 
+    public function isStaticRequest(): bool
+    {
+        return request()->input(static::STATIC_REQUEST_KEY) ?? false;
+    }
+
     /**
      * @param array $merge
      *
@@ -123,7 +128,12 @@ class ApiResource extends JsonResource
         $model = $this->resource;
         $id = $model->id;
         $label = $model->name;
-        if (request()->input(static::STATIC_REQUEST_KEY)) {
+        $description = locale_attribute('description');
+        if ($model->isFillable($description) && !array_key_exists('description_to_string', $merge)) {
+            $model['description_to_string'] = $model->{$description};
+        }
+
+        if ($this->isStaticRequest()) {
             $locales = config('4myth-tools.locales');
             $result = [];
             foreach ($locales as $locale) {
