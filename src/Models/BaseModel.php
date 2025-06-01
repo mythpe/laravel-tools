@@ -368,9 +368,10 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
 
         /** {$_ATTRIBUTE}_to_{$_format}_format */
         $datesFormats = config('4myth-tools.date_format');
+        $snakeKey = Str::snake($key);
         foreach ($datesFormats as $format => $dateFormat) {
-            if (Str::endsWith($key, ($t = "_to_{$format}_format"))) {
-                $attribute = Str::before($key, $t);
+            if (Str::endsWith($snakeKey, ($t = "_to_{$format}_format"))) {
+                $attribute = Str::before($snakeKey, $t);
                 if (($date = $this->{$attribute})) {
                     !$date instanceof Carbon && ($date = Carbon::parse($date));
                     return date_by_locale($date->format($dateFormat));
@@ -378,65 +379,64 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
             }
         }
         /** {DATE_ATTRIBUTE}_to_date_format */
-        if (Str::endsWith($key, ($t = "_to_date_format")) && ($attribute = Str::before($key, $t))) {
-            if (($date = $this->{$attribute})) {
-                !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return $date->format(config('4myth-tools.date_format.date'));
-            }
-        }
+        // if (Str::endsWith($key, ($t = "_to_date_format")) && ($attribute = Str::before($key, $t))) {
+        //     if (($date = $this->{$attribute})) {
+        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
+        //         return $date->format(config('4myth-tools.date_format.date'));
+        //     }
+        // }
 
         /** {DATE_ATTRIBUTE}_to_date_string_format */
-        if (Str::endsWith($key, ($t = "_to_date_string_format")) && ($attribute = Str::before($key, $t))) {
-            if (($date = $this->{$attribute})) {
-                !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('4myth-tools.date_format.date_string')));
-            }
-        }
+        // if (Str::endsWith($key, ($t = "_to_date_string_format")) && ($attribute = Str::before($key, $t))) {
+        //     if (($date = $this->{$attribute})) {
+        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
+        //         return date_by_locale($date->format(config('4myth-tools.date_format.date_string')));
+        //     }
+        // }
 
         /** {DATE_ATTRIBUTE}_to_time_format */
-        if (Str::endsWith($key, ($t = "_to_time_format")) && ($attribute = Str::before($key, $t))) {
-            if (($date = $this->{$attribute})) {
-                !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return $date->format(config('4myth-tools.date_format.time'));
-            }
-        }
+        // if (Str::endsWith($key, ($t = "_to_time_format")) && ($attribute = Str::before($key, $t))) {
+        //     if (($date = $this->{$attribute})) {
+        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
+        //         return $date->format(config('4myth-tools.date_format.time'));
+        //     }
+        // }
 
         /** {DATE_ATTRIBUTE}_to_time_string_format */
-        if (Str::endsWith($key, ($t = "_to_time_string_format")) && ($attribute = Str::before($key, $t))) {
-            if ($date = $this->{$attribute}) {
-                !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('4myth-tools.date_format.time_string')));
-            }
-        }
+        // if (Str::endsWith($key, ($t = "_to_time_string_format")) && ($attribute = Str::before($key, $t))) {
+        //     if ($date = $this->{$attribute}) {
+        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
+        //         return date_by_locale($date->format(config('4myth-tools.date_format.time_string')));
+        //     }
+        // }
 
         /** {DATE_ATTRIBUTE}_to_datetime_format */
-        if (Str::endsWith($key, ($t = "_to_datetime_format")) && ($attribute = Str::before($key, $t))) {
-            if (($date = $this->{$attribute})) {
-                !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('4myth-tools.date_format.datetime')));
-            }
-        }
+        // if (Str::endsWith($key, ($t = "_to_datetime_format")) && ($attribute = Str::before($key, $t))) {
+        //     if (($date = $this->{$attribute})) {
+        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
+        //         return date_by_locale($date->format(config('4myth-tools.date_format.datetime')));
+        //     }
+        // }
 
         /** {DATE_ATTRIBUTE}_to_full_datetime_format */
-        if (Str::endsWith($key, ($t = "_to_full_datetime_format")) && ($attribute = Str::before($key, $t))) {
-            if (($date = $this->{$attribute})) {
-                !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('4myth-tools.date_format.full')));
-            }
-        }
+        // if (Str::endsWith($key, ($t = "_to_full_datetime_format")) && ($attribute = Str::before($key, $t))) {
+        //     if (($date = $this->{$attribute})) {
+        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
+        //         return date_by_locale($date->format(config('4myth-tools.date_format.full')));
+        //     }
+        // }
 
         /** {DATE_ATTRIBUTE}_to_day_format */
-        if (Str::endsWith($key, ($t = "_to_day_format"))) {
-            $attribute = substr($key, 0, strlen($key) - strlen($t));
-            if (($date = $this->{$attribute})) {
-                !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('4myth-tools.date_format.day')));
-            }
-        }
+        // if (Str::endsWith($key, ($t = "_to_day_format"))) {
+        //     $attribute = substr($key, 0, strlen($key) - strlen($t));
+        //     if (($date = $this->{$attribute})) {
+        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
+        //         return date_by_locale($date->format(config('4myth-tools.date_format.day')));
+        //     }
+        // }
 
         /** {DATE_ATTRIBUTE}_to_hijri */
-        if (Str::endsWith($key, ($t = "_to_hijri"))) {
-            $attribute = substr($key, 0, strlen($key) - strlen($t));
+        if (Str::endsWith($snakeKey, ($t = "_to_hijri")) && ($attribute = Str::before($key, $t))) {
             if (($date = $this->{$attribute})) {
                 !$date instanceof Carbon && ($date = Carbon::parse($date));
                 return hijri($date);
@@ -463,20 +463,20 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
         }
 
         /** {DATE_ATTRIBUTE}_to_long_readable_format */
-        if (Str::endsWith($key, ($t = "_to_long_readable_format")) && ($attribute = Str::before($key, $t))) {
-            if (($date = $this->{$attribute})) {
-                !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('4myth-tools.date_format.long_readable')));
-            }
-        }
+        // if (Str::endsWith($key, ($t = "_to_long_readable_format")) && ($attribute = Str::before($key, $t))) {
+            // if (($date = $this->{$attribute})) {
+            //     !$date instanceof Carbon && ($date = Carbon::parse($date));
+            //     return date_by_locale($date->format(config('4myth-tools.date_format.long_readable')));
+            // }
+        // }
 
         /** {DATE_ATTRIBUTE}_to_readable_format */
-        if (Str::endsWith($key, ($t = "_to_readable_format")) && ($attribute = Str::before($key, $t))) {
-            if (($date = $this->{$attribute})) {
-                !$date instanceof Carbon && ($date = Carbon::parse($date));
-                return date_by_locale($date->format(config('4myth-tools.date_format.readable')));
-            }
-        }
+        // if (Str::endsWith($key, ($t = "_to_readable_format")) && ($attribute = Str::before($key, $t))) {
+        //     if (($date = $this->{$attribute})) {
+        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
+        //         return date_by_locale($date->format(config('4myth-tools.date_format.readable')));
+        //     }
+        // }
 
         /** {RELATION}_to_ids */
         if (Str::endsWith($key, ($t = "_to_ids"))) {
