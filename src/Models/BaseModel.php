@@ -46,8 +46,10 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     use SlugModelTrait;
 
     const HASH_PREFIX = 'MyTh';
-    public ?int $numberFormat = 2;
 
+    const HASH_DEFAULT_ID_LENGTH = 5;
+
+    public ?int $numberFormat = 2;
     /** @var array<int,string> - e.g: ['customers','users'] */
     protected array $cloneRelations = [];
 
@@ -175,6 +177,34 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
             $sha1 = substr($sha1, 0, 10);
         }
         return $sha1;
+    }
+
+    /**
+     * @param $value
+     * @param int|null $length
+     * @param bool $hashTag
+     * @return string
+     */
+    public static function idToString($value, int $length = null, bool $hashTag = !1): string
+    {
+        $value = $value ?: '';
+        $length ??= static::HASH_DEFAULT_ID_LENGTH;
+        $id = str_pad($value, $length, '0', STR_PAD_LEFT);
+        return ($hashTag ? '#' : '').$id;
+    }
+    
+    /**
+     * @param string $str
+     * @param string $attributes
+     * @param bool $prepend
+     * @return string
+     */
+    public function __prepend(string $str = '+966', string $attributes = 'mobile', bool $prepend = !0): string
+    {
+        if (!($value = $this->{$attributes})) {
+            return '';
+        }
+        return $prepend ? "$str$value" : "$value$str";
     }
 
     /**
@@ -464,10 +494,10 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
 
         /** {DATE_ATTRIBUTE}_to_long_readable_format */
         // if (Str::endsWith($key, ($t = "_to_long_readable_format")) && ($attribute = Str::before($key, $t))) {
-            // if (($date = $this->{$attribute})) {
-            //     !$date instanceof Carbon && ($date = Carbon::parse($date));
-            //     return date_by_locale($date->format(config('4myth-tools.date_format.long_readable')));
-            // }
+        // if (($date = $this->{$attribute})) {
+        //     !$date instanceof Carbon && ($date = Carbon::parse($date));
+        //     return date_by_locale($date->format(config('4myth-tools.date_format.long_readable')));
+        // }
         // }
 
         /** {DATE_ATTRIBUTE}_to_readable_format */
@@ -528,31 +558,11 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
     }
 
     /**
-     * @param string $str
-     * @param string $attributes
-     * @param bool $prepend
      * @return string
      */
-    public function __prepend(string $str = '+966', string $attributes = 'mobile', bool $prepend = !0): string
+    public function __idToString(): string
     {
-        if (!($value = $this->{$attributes})) {
-            return '';
-        }
-        return $prepend ? "$str$value" : "$value$str";
-    }
-
-    /**
-     * @param int $length
-     * @param bool $hashTag
-     * @param null $value
-     *
-     * @return string
-     */
-    public function __idToString(int $length = 4, bool $hashTag = !0, $value = null): string
-    {
-        $value = is_null($value) ? $this->getKey() : $value;
-        $id = str_pad($value, $length, '0', STR_PAD_LEFT);
-        return ($hashTag ? '#' : '').$id;
+        return static::idToString(value : $this->id);
     }
 
     /**
