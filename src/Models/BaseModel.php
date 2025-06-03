@@ -47,7 +47,7 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
 
     const HASH_PREFIX = 'MyTh';
 
-    const HASH_DEFAULT_ID_LENGTH = 5;
+    const HASH_DEFAULT_ID_LENGTH = 6;
 
     public ?int $numberFormat = 2;
     /** @var array<int,string> - e.g: ['customers','users'] */
@@ -192,7 +192,7 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
         $id = str_pad($value, $length, '0', STR_PAD_LEFT);
         return ($hashTag ? '#' : '').$id;
     }
-    
+
     /**
      * @param string $str
      * @param string $attributes
