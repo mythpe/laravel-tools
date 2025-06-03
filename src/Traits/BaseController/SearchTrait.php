@@ -44,7 +44,7 @@ trait SearchTrait
      */
     public string $searchColumnsRequestKey = 'searchColumns';
     /**
-     * Make this columns force like operator
+     * Make this column force like operator
      * Example: [ 'name', 'email' ]
      * @var array<int,string>
      */
@@ -289,7 +289,7 @@ trait SearchTrait
      */
     protected function getSearchColumns(): array
     {
-        return $this->searchColumns;
+        return array_values(array_unique([...$this->searchColumns, 'id']));
     }
 
     /**
