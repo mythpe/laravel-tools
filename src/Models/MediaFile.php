@@ -136,9 +136,12 @@ class MediaFile extends Media
      */
     public function getTypeToStringAttribute(): string
     {
-        return trans_has($k = "attributes.$this->type") ? __($k) : ucfirst($this->type);
+        return trans_has($k = "const_media_types.$this->type") ? __($k) : (trans_has($k = "attributes.$this->type") ? __($k) : ucfirst($this->type));
     }
 
+    /**
+     * @return Attribute
+     */
     protected function isPdf(): Attribute
     {
         return Attribute::get(
@@ -149,6 +152,9 @@ class MediaFile extends Media
         );
     }
 
+    /**
+     * @return Attribute
+     */
     protected function isExcel(): Attribute
     {
         return Attribute::get(
@@ -160,6 +166,9 @@ class MediaFile extends Media
         );
     }
 
+    /**
+     * @return Attribute
+     */
     protected function isVideo(): Attribute
     {
         return Attribute::get(
@@ -169,6 +178,9 @@ class MediaFile extends Media
         );
     }
 
+    /**
+     * @return Attribute
+     */
     protected function isAudio(): Attribute
     {
         return Attribute::get(
