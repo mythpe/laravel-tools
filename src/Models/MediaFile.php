@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -17,6 +18,10 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $model_type_to_string
  * @property-read string $type_to_string
  * @property-read string $size_to_string
+ * @property-read bool $is_pdf
+ * @property-read bool $is_excel
+ * @property-read bool $is_video
+ * @property-read bool $is_audio
  */
 class MediaFile extends Media
 {
@@ -26,8 +31,23 @@ class MediaFile extends Media
     public const TYPE_IMAGE = 'image';
     public const TYPE_AUDIO = 'audio';
     public const TYPE_VIDEO = 'video';
-
-    protected $appends = ['original_url', 'preview_url', 'model_type_to_string', 'type_to_string', 'size_to_string'];
+    public const PDF_MIMES = [
+        'application/pdf',
+        'application/x-pdf',
+        'application/acrobat',
+        'applications/vnd.pdf',
+    ];
+    protected $appends = [
+        'original_url',
+        'preview_url',
+        'model_type_to_string',
+        'type_to_string',
+        'size_to_string',
+        'is_pdf',
+        'is_excel',
+        'is_video',
+        'is_audio',
+    ];
 
     /**
      * @return string
@@ -63,21 +83,22 @@ class MediaFile extends Media
     public function getTypeAttribute(): string
     {
         $type = $this->getTypeFromExtension();
-        if (in_array(strtolower($this->extension ?: ''), static::EXCEL_EXT) && strtolower($type) === static::TYPE_OTHER) {
+        if ($this->is_excel) {
             return static::TYPE_EXCEL;
         }
 
-        if (strtolower($this->extension ?: '') == static::TYPE_PDF) {
+        if ($this->is_pdf) {
             return static::TYPE_PDF;
         }
 
-        if (Str::contains($this->mime_type, static::TYPE_VIDEO)) {
+        if ($this->is_video) {
             return static::TYPE_VIDEO;
         }
 
-        if (Str::contains($this->mime_type, static::TYPE_AUDIO)) {
+        if ($this->is_audio) {
             return static::TYPE_AUDIO;
         }
+
         if ($type !== static::TYPE_OTHER) {
             return $type;
         }
@@ -118,4 +139,42 @@ class MediaFile extends Media
         return trans_has($k = "attributes.$this->type") ? __($k) : ucfirst($this->type);
     }
 
+    protected function isPdf(): Attribute
+    {
+        return Attribute::get(
+            function () {
+                $ext = strtolower($this->extension ?: '');
+                return $ext == static::TYPE_PDF && in_array($this->mime_type, static::PDF_MIMES);
+            }
+        );
+    }
+
+    protected function isExcel(): Attribute
+    {
+        return Attribute::get(
+            function () {
+                $ext = strtolower($this->extension ?: '');
+                $type = $this->getTypeFromExtension();
+                return in_array($ext, static::EXCEL_EXT) && strtolower($type) === static::TYPE_OTHER;
+            }
+        );
+    }
+
+    protected function isVideo(): Attribute
+    {
+        return Attribute::get(
+            function () {
+                return Str::contains($this->mime_type, static::TYPE_VIDEO);
+            }
+        );
+    }
+
+    protected function isAudio(): Attribute
+    {
+        return Attribute::get(
+            function () {
+                return Str::contains($this->mime_type, static::TYPE_AUDIO);
+            }
+        );
+    }
 }
