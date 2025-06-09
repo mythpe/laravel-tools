@@ -49,6 +49,12 @@ class MediaFile extends Media
     protected $appends = [
         'original_url',
         'preview_url',
+        'file_name',
+        'type',
+        'mime_type',
+        'size',
+        'collection_name',
+        'order_column',
         'model_type_to_string',
         'type_to_string',
         'size_to_string',
