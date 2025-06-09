@@ -13,9 +13,9 @@ use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
+ * @property string $type
  * @property-read string $model_type_to_string
  * @property-read string $type_to_string
- * @property string $type
  * @property-read string $size_to_string
  */
 class MediaFile extends Media
@@ -26,6 +26,8 @@ class MediaFile extends Media
     public const TYPE_IMAGE = 'image';
     public const TYPE_AUDIO = 'audio';
     public const TYPE_VIDEO = 'video';
+
+    protected $appends = ['original_url', 'preview_url', 'model_type_to_string', 'type_to_string', 'size_to_string'];
 
     /**
      * @return string
@@ -76,13 +78,12 @@ class MediaFile extends Media
         if (Str::contains($this->mime_type, static::TYPE_AUDIO)) {
             return static::TYPE_AUDIO;
         }
-
-
-        if ($type !== static::TYPE_OTHER) {
-            return $type;
-        }
-
-        return $this->getTypeFromMime();
+        return $this->type()->get;
+        // if ($type !== static::TYPE_OTHER) {
+        //     return $type;
+        // }
+        //
+        // return $this->getTypeFromMime();
     }
 
     /**
