@@ -136,7 +136,7 @@ class MediaFile extends Media
      */
     public function getTypeToStringAttribute(): string
     {
-        return trans_has($k = "const_media_types.$this->type") ? __($k) : (trans_has($k = "attributes.$this->type") ? __($k) : ucfirst($this->type));
+        return trans_has($k = "const.media_types.$this->type") ? __($k) : (trans_has($k = "attributes.$this->type") ? __($k) : ucfirst($this->type));
     }
 
     /**
