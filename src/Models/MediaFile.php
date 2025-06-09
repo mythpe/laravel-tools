@@ -18,6 +18,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $model_type_to_string
  * @property-read string $type_to_string
  * @property-read string $size_to_string
+ * @property-read bool $is_image
  * @property-read bool $is_pdf
  * @property-read bool $is_excel
  * @property-read bool $is_video
@@ -43,6 +44,7 @@ class MediaFile extends Media
         'model_type_to_string',
         'type_to_string',
         'size_to_string',
+        'is_image',
         'is_pdf',
         'is_excel',
         'is_video',
@@ -142,6 +144,18 @@ class MediaFile extends Media
     /**
      * @return Attribute
      */
+    protected function isImage(): Attribute
+    {
+        return Attribute::get(
+            function () {
+                return Str::startsWith($this->mime_type, static::TYPE_IMAGE);
+            }
+        );
+    }
+
+    /**
+     * @return Attribute
+     */
     protected function isPdf(): Attribute
     {
         return Attribute::get(
@@ -173,7 +187,7 @@ class MediaFile extends Media
     {
         return Attribute::get(
             function () {
-                return Str::contains($this->mime_type, static::TYPE_VIDEO);
+                return Str::startsWith($this->mime_type, static::TYPE_VIDEO);
             }
         );
     }
@@ -185,7 +199,7 @@ class MediaFile extends Media
     {
         return Attribute::get(
             function () {
-                return Str::contains($this->mime_type, static::TYPE_AUDIO);
+                return Str::startsWith($this->mime_type, static::TYPE_AUDIO);
             }
         );
     }
