@@ -78,12 +78,11 @@ class MediaFile extends Media
         if (Str::contains($this->mime_type, static::TYPE_AUDIO)) {
             return static::TYPE_AUDIO;
         }
-        return $this->type()->get ?: '';
-        // if ($type !== static::TYPE_OTHER) {
-        //     return $type;
-        // }
-        //
-        // return $this->getTypeFromMime();
+        if ($type !== static::TYPE_OTHER) {
+            return $type;
+        }
+
+        return $this->getTypeFromMime();
     }
 
     /**
