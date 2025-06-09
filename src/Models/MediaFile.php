@@ -86,65 +86,81 @@ class MediaFile extends Media
     /**
      * $this->type
      *
-     * @return string
+     * @return Attribute
      */
-    public function getTypeAttribute(): string
+    protected function type(): Attribute
     {
-        $type = $this->getTypeFromExtension();
-        if ($this->is_excel) {
-            return static::TYPE_EXCEL;
-        }
+        return Attribute::get(
+            function () {
+                $type = $this->getTypeFromExtension();
+                if ($this->is_excel) {
+                    return static::TYPE_EXCEL;
+                }
 
-        if ($this->is_pdf) {
-            return static::TYPE_PDF;
-        }
+                if ($this->is_pdf) {
+                    return static::TYPE_PDF;
+                }
 
-        if ($this->is_video) {
-            return static::TYPE_VIDEO;
-        }
+                if ($this->is_video) {
+                    return static::TYPE_VIDEO;
+                }
 
-        if ($this->is_audio) {
-            return static::TYPE_AUDIO;
-        }
+                if ($this->is_audio) {
+                    return static::TYPE_AUDIO;
+                }
 
-        if ($type !== static::TYPE_OTHER) {
-            return $type;
-        }
+                if ($type !== static::TYPE_OTHER) {
+                    return $type;
+                }
 
-        return $this->getTypeFromMime();
-    }
-
-    /**
-     * $this->size_to_string
-     *
-     * @return string
-     */
-    public function getSizeToStringAttribute(): string
-    {
-        return static::getSizeToString($this->size ?: 0);
+                return $this->getTypeFromMime();
+            }
+        );
     }
 
     /**
      * $this->model_type_to_string
      *
-     * @return string
+     * @return Attribute
      */
-    public function getModelTypeToStringAttribute(): string
+    protected function modelTypeToString(): Attribute
     {
-        $name = class_basename($this->model_type);
-        $type = Str::of($name)->pluralStudly()->studly();
-        $trans = trans_has($k = "choice.$type") ? trans_choice($k, 1) : $this->model_type;
-        return str_without_the($trans);
+        return Attribute::get(
+            function () {
+                $name = class_basename($this->model_type);
+                $type = Str::of($name)->pluralStudly()->studly();
+                $trans = trans_has($k = "choice.$type") ? trans_choice($k, 1) : $this->model_type;
+                return str_without_the($trans);
+            }
+        );
     }
 
     /**
      * $this->type_to_string
      *
-     * @return string
+     * @return Attribute
      */
-    public function getTypeToStringAttribute(): string
+    protected function typeToString(): Attribute
     {
-        return trans_has($k = "const.media_types.$this->type") ? __($k) : (trans_has($k = "attributes.$this->type") ? __($k) : ucfirst($this->type));
+        return Attribute::get(
+            function () {
+                return trans_has($k = "const.media_types.$this->type") ? __($k) : (trans_has($k = "attributes.$this->type") ? __($k) : ucfirst($this->type));
+            }
+        );
+    }
+
+    /**
+     * $this->size_to_string
+     *
+     * @return Attribute
+     */
+    protected function sizeToString(): Attribute
+    {
+        return Attribute::get(
+            function () {
+                return static::getSizeToString($this->size ?: 0);
+            }
+        );
     }
 
     /**
