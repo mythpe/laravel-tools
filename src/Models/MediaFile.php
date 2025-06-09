@@ -23,6 +23,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read bool $is_excel
  * @property-read bool $is_video
  * @property-read bool $is_audio
+ * @property-read string $description
+ * @property-read string $attachment_type
+ * @property-read string $collection_to_string
  */
 class MediaFile extends Media
 {
@@ -49,6 +52,9 @@ class MediaFile extends Media
         'is_excel',
         'is_video',
         'is_audio',
+        'description',
+        'attachment_type',
+        'collection_to_string',
     ];
 
     /**
@@ -200,6 +206,76 @@ class MediaFile extends Media
         return Attribute::get(
             function () {
                 return Str::startsWith($this->mime_type, static::TYPE_AUDIO);
+            }
+        );
+    }
+
+    protected function description(): Attribute
+    {
+        return Attribute::get(
+            function () {
+                $attachmentType = $this->attachment_type;
+                if (!empty($attachmentType)) {
+                    return $attachmentType;
+                }
+
+                $collectionToString = $this->collection_to_string;
+                if (!empty($collectionToString)) {
+                    return $collectionToString;
+                }
+
+                $customProperties = $this->custom_properties ?: [];
+                $string = $customProperties['description'] ?? null;
+                if ($string) {
+                    if (trans_has(($k = "attributes.$string"))) {
+                        $string = __($k);
+                    }
+                    elseif (trans_has(($k = "media.$string"))) {
+                        $string = __($k);
+                    }
+                    return $string;
+                }
+
+                return '';
+            }
+        );
+    }
+
+    protected function attachmentType(): Attribute
+    {
+        return Attribute::get(
+            function () {
+                $customProperties = $this->custom_properties ?: [];
+                $string = $customProperties['attachment_type'] ?? null;
+                if ($string) {
+                    if (trans_has(($k = "attributes.$string"))) {
+                        $string = __($k);
+                    }
+                    elseif (trans_has(($k = "media.$string"))) {
+                        $string = __($k);
+                    }
+                    return $string;
+                }
+                return '';
+            }
+        );
+    }
+
+    protected function collectionToString(): Attribute
+    {
+        return Attribute::get(
+            function () {
+                $string = $this->collection_name;
+                if ($string) {
+                    if (trans_has(($k = "attributes.$string"))) {
+                        $string = __($k);
+                    }
+                    elseif (trans_has(($k = "media.$string"))) {
+                        $string = __($k);
+                    }
+                    return $string;
+                }
+                return '';
             }
         );
     }
