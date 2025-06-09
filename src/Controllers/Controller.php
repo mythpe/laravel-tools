@@ -24,7 +24,7 @@ use Myth\LaravelTools\Traits\BaseController\ApplyQueryTrait;
 use Myth\LaravelTools\Traits\BaseController\CrudTrait;
 use Myth\LaravelTools\Traits\BaseController\EventsTrait;
 use Myth\LaravelTools\Traits\BaseController\FilterTrait;
-use Myth\LaravelTools\Traits\BaseController\ModelMediaTrait;
+use Myth\LaravelTools\Traits\BaseController\ModelMediaControllerTrait;
 use Myth\LaravelTools\Traits\BaseController\PaginateTrait;
 use Myth\LaravelTools\Traits\BaseController\RulesTrait;
 use Myth\LaravelTools\Traits\BaseController\SearchTrait;
@@ -36,7 +36,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    use CrudTrait, EventsTrait, SearchTrait, RulesTrait, SortTrait, PaginateTrait, FilterTrait, ModelMediaTrait, ApplyQueryTrait;
+    use CrudTrait, EventsTrait, SearchTrait, RulesTrait, SortTrait, PaginateTrait, FilterTrait, ModelMediaControllerTrait, ApplyQueryTrait;
 
     /**
      * Model Relations

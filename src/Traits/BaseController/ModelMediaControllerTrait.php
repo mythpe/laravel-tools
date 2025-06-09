@@ -15,10 +15,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 use Myth\LaravelTools\Models\BaseModel;
 
-trait ModelMediaTrait
+trait ModelMediaControllerTrait
 {
     static string $returnTypeKey = 'return';
 
@@ -72,15 +72,24 @@ trait ModelMediaTrait
             'attachment_type' => ['nullable', 'string'],
             'attachment'      => [
                 'required',
-                Rule::file()->extensions([
-                    'jpg',
-                    'jpeg',
-                    'png',
-                    'gif',
-                    'svg',
+                File::defaults()->types([
+                    'image/*',
+                    'audio/*',
+                    'video/*',
+                ])->extensions([
                     'pdf',
                     'docx',
+                    'doc',
+                    'dot',
+                    'docm',
+                    'rtf',
                     'xlsx',
+                    'xlsm',
+                    'xltx',
+                    'xltm',
+                    'xls',
+                    'xlt',
+                    'csv',
                 ])->max(config('media-library.max_file_size', '10MB')),
             ],
         ];
