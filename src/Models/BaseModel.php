@@ -185,7 +185,7 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
      * @param bool $hashTag
      * @return string
      */
-    public static function idToString($value, ?int $length = null, bool $hashTag = !1): string
+    public static function getModelIdToString($value, ?int $length = null, bool $hashTag = !1): string
     {
         $value = $value ?: '';
         $length ??= static::HASH_DEFAULT_ID_LENGTH;
@@ -562,7 +562,7 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
      */
     public function __idToString(): string
     {
-        return static::idToString(value : $this->id);
+        return static::getModelIdToString(value : $this->id);
     }
 
     /**
