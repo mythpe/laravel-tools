@@ -10,14 +10,9 @@
 namespace Myth\LaravelTools\Models;
 
 use Illuminate\Contracts\Translation\HasLocalePreference;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticate;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Myth\LaravelTools\Traits\BaseModel\BaseModelTrait;
 use Myth\LaravelTools\Traits\BaseModel\HasMediaTrait;
 use Myth\LaravelTools\Traits\BaseModel\SlugModelTrait;

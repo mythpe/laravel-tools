@@ -3,6 +3,12 @@
 namespace Myth\LaravelTools\Traits\BaseModel;
 
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Myth\LaravelTools\Models\Translator;
 use Myth\LaravelTools\Traits\Utilities\HasTranslatorTrait;
 use Myth\LaravelTools\Utilities\Helpers;
@@ -228,14 +234,18 @@ trait BaseModelTrait
      */
     public function __get($key)
     {
-        if (!$key) {
+        if (! $key) {
             return;
         }
 
         // If the attribute exists in the attribute array or has a "get" mutator we will
         // get the attribute's value. Otherwise, we will proceed as if the developers
         // are asking for a relationship's value. This covers both types of values.
-        if (array_key_exists($key, $this->attributes) || array_key_exists($key, $this->casts) || $this->hasGetMutator($key) || $this->isClassCastable($key)) {
+        if (array_key_exists($key, $this->attributes) ||
+            array_key_exists($key, $this->casts) ||
+            $this->hasGetMutator($key) ||
+            $this->hasAttributeMutator($key) ||
+            $this->isClassCastable($key)) {
             return $this->getAttributeValue($key);
         }
 
@@ -361,62 +371,6 @@ trait BaseModelTrait
                 }
             }
         }
-        /** {DATE_ATTRIBUTE}_to_date_format */
-        // if (Str::endsWith($key, ($t = "_to_date_format")) && ($attribute = Str::before($key, $t))) {
-        //     if (($date = $this->{$attribute})) {
-        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
-        //         return $date->format(config('4myth-tools.date_format.date'));
-        //     }
-        // }
-
-        /** {DATE_ATTRIBUTE}_to_date_string_format */
-        // if (Str::endsWith($key, ($t = "_to_date_string_format")) && ($attribute = Str::before($key, $t))) {
-        //     if (($date = $this->{$attribute})) {
-        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
-        //         return date_by_locale($date->format(config('4myth-tools.date_format.date_string')));
-        //     }
-        // }
-
-        /** {DATE_ATTRIBUTE}_to_time_format */
-        // if (Str::endsWith($key, ($t = "_to_time_format")) && ($attribute = Str::before($key, $t))) {
-        //     if (($date = $this->{$attribute})) {
-        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
-        //         return $date->format(config('4myth-tools.date_format.time'));
-        //     }
-        // }
-
-        /** {DATE_ATTRIBUTE}_to_time_string_format */
-        // if (Str::endsWith($key, ($t = "_to_time_string_format")) && ($attribute = Str::before($key, $t))) {
-        //     if ($date = $this->{$attribute}) {
-        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
-        //         return date_by_locale($date->format(config('4myth-tools.date_format.time_string')));
-        //     }
-        // }
-
-        /** {DATE_ATTRIBUTE}_to_datetime_format */
-        // if (Str::endsWith($key, ($t = "_to_datetime_format")) && ($attribute = Str::before($key, $t))) {
-        //     if (($date = $this->{$attribute})) {
-        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
-        //         return date_by_locale($date->format(config('4myth-tools.date_format.datetime')));
-        //     }
-        // }
-
-        /** {DATE_ATTRIBUTE}_to_full_datetime_format */
-        // if (Str::endsWith($key, ($t = "_to_full_datetime_format")) && ($attribute = Str::before($key, $t))) {
-        //     if (($date = $this->{$attribute})) {
-        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
-        //         return date_by_locale($date->format(config('4myth-tools.date_format.full')));
-        //     }
-        // }
-
-        /** {DATE_ATTRIBUTE}_to_day_format */
-        // if (Str::endsWith($key, ($t = "_to_day_format"))) {
-        //     $attribute = substr($key, 0, strlen($key) - strlen($t));
-        //     if (($date = $this->{$attribute})) {
-        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
-        //         return date_by_locale($date->format(config('4myth-tools.date_format.day')));
-        //     }
-        // }
 
         /** {DATE_ATTRIBUTE}_to_hijri */
         if (Str::endsWith($snakeKey, ($t = "_to_hijri")) && ($attribute = Str::before($key, $t))) {
@@ -444,22 +398,6 @@ trait BaseModelTrait
                 return arabic_date(hijri($date)->format(config('4myth-tools.date_format.date')));
             }
         }
-
-        /** {DATE_ATTRIBUTE}_to_long_readable_format */
-        // if (Str::endsWith($key, ($t = "_to_long_readable_format")) && ($attribute = Str::before($key, $t))) {
-        // if (($date = $this->{$attribute})) {
-        //     !$date instanceof Carbon && ($date = Carbon::parse($date));
-        //     return date_by_locale($date->format(config('4myth-tools.date_format.long_readable')));
-        // }
-        // }
-
-        /** {DATE_ATTRIBUTE}_to_readable_format */
-        // if (Str::endsWith($key, ($t = "_to_readable_format")) && ($attribute = Str::before($key, $t))) {
-        //     if (($date = $this->{$attribute})) {
-        //         !$date instanceof Carbon && ($date = Carbon::parse($date));
-        //         return date_by_locale($date->format(config('4myth-tools.date_format.readable')));
-        //     }
-        // }
 
         /** {RELATION}_to_ids */
         if (Str::endsWith($key, ($t = "_to_ids"))) {
@@ -545,9 +483,9 @@ trait BaseModelTrait
 
     /**
      * @param array<string,int> $except - e.g. [ 'user_id' => 1 ]
-     * @return self
+     * @return static
      */
-    public function cloneModel(array $except = []): self
+    public function cloneModel(array $except = []): static
     {
         $clone = $this->replicate(array_keys($except));
         if (empty($except)) {
@@ -604,7 +542,7 @@ trait BaseModelTrait
             }
         }
         catch (Exception $e) {
-
+            //
         }
 
         foreach ($this->cloneRelations as $relationName) {
