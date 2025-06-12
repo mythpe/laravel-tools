@@ -24,7 +24,7 @@ trait ActiveScopeTrait
      *
      * @return Builder<static>
      */
-    public function scopeActiveOnly(Builder $builder): Builder
+    protected function scopeActiveOnly(Builder $builder): Builder
     {
         return $builder->where('active', !0);
     }
@@ -55,7 +55,7 @@ trait ActiveScopeTrait
      *
      * @return Builder<static>
      */
-    public function scopeInactiveOnly(Builder $builder): Builder
+    protected function scopeInactiveOnly(Builder $builder): Builder
     {
         return $builder->where('active', !1);
     }

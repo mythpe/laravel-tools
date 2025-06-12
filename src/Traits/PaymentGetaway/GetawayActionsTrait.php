@@ -41,7 +41,7 @@ trait GetawayActionsTrait
      * @param Builder $builder
      * @return Builder
      */
-    public function scopePurchaseOnly(Builder $builder): Builder
+    protected function scopePurchaseOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.purchase', 1));
     }
@@ -50,7 +50,7 @@ trait GetawayActionsTrait
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeRefundOnly(Builder $builder): Builder
+    protected function scopeRefundOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.refund', 2));
     }
@@ -59,7 +59,7 @@ trait GetawayActionsTrait
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeVoidPurchaseOnly(Builder $builder): Builder
+    protected function scopeVoidPurchaseOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.void_purchase', 3));
     }
@@ -68,7 +68,7 @@ trait GetawayActionsTrait
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeAuthorizationOnly(Builder $builder): Builder
+    protected function scopeAuthorizationOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.authorization', 4));
     }
@@ -77,7 +77,7 @@ trait GetawayActionsTrait
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeCaptureOnly(Builder $builder): Builder
+    protected function scopeCaptureOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.capture', 5));
     }
@@ -86,7 +86,7 @@ trait GetawayActionsTrait
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeVoidRefundOnly(Builder $builder): Builder
+    protected function scopeVoidRefundOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.void_refund', 6));
     }
@@ -95,7 +95,7 @@ trait GetawayActionsTrait
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeVoidAuthorizationOnly(Builder $builder): Builder
+    protected function scopeVoidAuthorizationOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.void_authorization', 9));
     }
@@ -104,7 +104,7 @@ trait GetawayActionsTrait
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeTransactionInquiryOnly(Builder $builder): Builder
+    protected function scopeTransactionInquiryOnly(Builder $builder): Builder
     {
         return $builder->where('action', '=', config('4myth-getaway.actions.transaction_inquiry', 10));
     }

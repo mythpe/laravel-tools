@@ -541,7 +541,7 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
      *
      * @return Builder
      */
-    public function scopeFromCreatedAt(Builder $builder, $value): Builder
+    protected function scopeFromCreatedAt(Builder $builder, $value): Builder
     {
         return $builder->whereDate('created_at', '>=', $value);
     }
@@ -552,7 +552,7 @@ class BaseModel extends Authenticate implements HasMedia, HasLocalePreference
      *
      * @return Builder
      */
-    public function scopeToCreatedAt(Builder $builder, $value): Builder
+    protected function scopeToCreatedAt(Builder $builder, $value): Builder
     {
         return $builder->whereDate('created_at', '<=', $value);
     }

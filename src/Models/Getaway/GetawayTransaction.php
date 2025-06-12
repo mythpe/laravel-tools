@@ -117,7 +117,7 @@ class GetawayTransaction extends BaseModel
      * @param $value
      * @return Builder
      */
-    public function scopeByTransactionId(Builder $builder, $value): Builder
+    protected function scopeByTransactionId(Builder $builder, $value): Builder
     {
         if (!is_array($value)) {
             $value = explode(',', $value);
@@ -129,7 +129,7 @@ class GetawayTransaction extends BaseModel
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeSuccessOnly(Builder $builder): Builder
+    protected function scopeSuccessOnly(Builder $builder): Builder
     {
         return $builder->where('response_code', '=', '000');
     }
@@ -138,7 +138,7 @@ class GetawayTransaction extends BaseModel
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeUsedOnly(Builder $builder): Builder
+    protected function scopeUsedOnly(Builder $builder): Builder
     {
         return $builder->where('used', '=', !0);
     }
@@ -147,7 +147,7 @@ class GetawayTransaction extends BaseModel
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeNotUsedOnly(Builder $builder): Builder
+    protected function scopeNotUsedOnly(Builder $builder): Builder
     {
         return $builder->where('used', '=', !1);
     }

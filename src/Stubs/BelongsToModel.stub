@@ -28,7 +28,7 @@ trait BelongsTo{studlySingular}
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeBy{studlySingular}(Builder $builder, $value): Builder
+    protected function scopeBy{studlySingular}(Builder $builder, $value): Builder
     {
         $value instanceof Eloquent && ($value = [$value->id]);
         !is_array($value) && ($value = explode(',', $value));

@@ -244,7 +244,7 @@ class GetawayOrder extends BaseModel
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeInitialOnly(Builder $builder): Builder
+    protected function scopeInitialOnly(Builder $builder): Builder
     {
         return $builder->where('status', '=', static::statuses('initial'));
     }
@@ -253,7 +253,7 @@ class GetawayOrder extends BaseModel
      * @param Builder $builder
      * @return Builder
      */
-    public function scopePaidOnly(Builder $builder): Builder
+    protected function scopePaidOnly(Builder $builder): Builder
     {
         return $builder->where('status', '=', static::statuses('paid'));
     }
@@ -262,7 +262,7 @@ class GetawayOrder extends BaseModel
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeFailedOnly(Builder $builder): Builder
+    protected function scopeFailedOnly(Builder $builder): Builder
     {
         return $builder->where('status', '=', static::statuses('failed'));
     }
@@ -271,7 +271,7 @@ class GetawayOrder extends BaseModel
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeUnSuccessfulOnly(Builder $builder): Builder
+    protected function scopeUnSuccessfulOnly(Builder $builder): Builder
     {
         return $builder->where('status', '=', static::statuses('un_successful'));
     }
@@ -280,7 +280,7 @@ class GetawayOrder extends BaseModel
      * @param Builder $builder
      * @return Builder
      */
-    public function scopeRefundedOnly(Builder $builder): Builder
+    protected function scopeRefundedOnly(Builder $builder): Builder
     {
         return $builder->where('status', '=', static::statuses('refunded'));
     }
@@ -289,7 +289,7 @@ class GetawayOrder extends BaseModel
      * @param Builder $builder
      * @return Builder
      */
-    public function scopePartialRefundOnly(Builder $builder): Builder
+    protected function scopePartialRefundOnly(Builder $builder): Builder
     {
         return $builder->where('status', '=', static::statuses('partial_refund'));
     }
