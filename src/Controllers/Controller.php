@@ -59,8 +59,8 @@ class Controller extends BaseController
      */
     const NO_PERMISSIONS = [];
 
-    /** @var Model|User|null */
-    public ?Model $user = null;
+    /** @var User|null */
+    public ?User $user = null;
 
     /** @var Request */
     protected Request $request;
@@ -90,7 +90,7 @@ class Controller extends BaseController
         if (app()->runningInConsole()) {
             return 'required';
         }
-        if (is_null($this->request->input($attribute)) && is_null($this->getBindModel()?->{$attribute})) {
+        if (is_null($this->request->input($attribute)) && is_null($this->getBindModel()->{$attribute})) {
             return 'required';
         }
         return null;

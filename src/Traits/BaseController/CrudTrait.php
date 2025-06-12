@@ -494,9 +494,9 @@ trait CrudTrait
     }
 
     /**
-     * @return Model|mixed
+     * @return Model
      */
-    public function getBindModel()
+    public function getBindModel(): Model
     {
         if (app()->runningInConsole()) {
             return new static::$controllerModel;
