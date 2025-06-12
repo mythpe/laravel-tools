@@ -18,7 +18,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 trait BaseModelTrait
 {
     const HASH_PREFIX = 'MyTh';
-    
+
     const HASH_DEFAULT_ID_LENGTH = 6;
     /**
      * @var int|null
