@@ -5,6 +5,7 @@ namespace Myth\LaravelTools\Traits\BaseModel;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
@@ -17,10 +18,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 trait BaseModelTrait
 {
     const HASH_PREFIX = 'MyTh';
-
+    
     const HASH_DEFAULT_ID_LENGTH = 6;
-
-    public ?int $numberFormat = 2;
+    /**
+     * @var int|null
+     * Decimals of numbers format.
+     * Default is non. Will append it.
+     */
+    public ?int $numberFormat = null;
     /** @var array<int,string> - e.g: ['customers','users'] */
     protected array $cloneRelations = [];
 
@@ -78,7 +83,7 @@ trait BaseModelTrait
      */
     public static function getDaysOptions(): array
     {
-        return collect(__('const.days'))->mapWithKeys(fn($v, $k) => [
+        return collect(static::getDaysArray())->mapWithKeys(fn($v, $k) => [
             $k => ['value' => $k, 'label' => $v,],
         ])->values()->toArray();
     }
@@ -176,32 +181,6 @@ trait BaseModelTrait
     }
 
     /**
-     *
-     * $this->name
-     * @param $value
-     *
-     * @return string|null
-     */
-    public function getNameAttribute($value): ?string
-    {
-        $string = "";
-        if ($value) {
-            $string = $value;
-        }
-        else {
-            $attr = locale_attribute();
-            if ($this->isFillable($attr)) {
-                $string = $this->{$attr};
-            }
-            elseif (method_exists($this, 'getNameColumn') && $this->getNameColumn() != 'name') {
-                $string = $this->{$this->getNameColumn()};
-            }
-        }
-
-        return (string) $string;
-    }
-
-    /**
      * Name of attribute will display tne model name Like created_at
      *
      * @return string
@@ -234,7 +213,7 @@ trait BaseModelTrait
      */
     public function __get($key)
     {
-        if (! $key) {
+        if (!$key) {
             return;
         }
 
@@ -435,26 +414,6 @@ trait BaseModelTrait
     }
 
     /**
-     * $this->created_at_to_string
-     *
-     * @return string|null
-     */
-    public function getCreatedAtToStringAttribute(): ?string
-    {
-        return $this->created_at ? $this->created_at->format(config('4myth-tools.date_format.date')) : null;
-    }
-
-    /**
-     * $this->updated_at_to_string
-     *
-     * @return string|null
-     */
-    public function getUpdatedAtToStringAttribute(): ?string
-    {
-        return $this->updated_at ? $this->updated_at->format(config('4myth-tools.date_format.date')) : null;
-    }
-
-    /**
      * Check if model has method
      *
      * @param $method
@@ -552,6 +511,44 @@ trait BaseModelTrait
             }
         }
         return $clone;
+    }
+
+    /**
+     *
+     * $this->name
+     * @param $value
+     *
+     * @return string|null
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::get(function ($value = null) {
+            if ($value) {
+                return $value;
+            }
+            $key = method_exists($this, 'getNameColumn') && $this->getNameColumn() != 'name' ? $this->getNameColumn() : locale_attribute();
+            return $this->{$key};
+        });
+    }
+
+    /**
+     * $this->created_at_to_string
+     *
+     * @return Attribute
+     */
+    protected function createdAtToString(): Attribute
+    {
+        return Attribute::get(fn() => $this->created_at_to_readable_format);
+    }
+
+    /**
+     * $this->updated_at_to_string
+     *
+     * @return string|null
+     */
+    protected function updatedAtToString(): Attribute
+    {
+        return Attribute::get(fn() => $this->updated_at_to_readable_format);
     }
 
     /**
