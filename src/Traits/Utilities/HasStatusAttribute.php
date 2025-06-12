@@ -103,6 +103,9 @@ trait HasStatusAttribute
     /** @var string */
     const USED_STATUS = 'used';
 
+    /** @var string */
+    const TRANSFERRED_STATUS = 'transferred';
+
     /**
      * @return Collection
      */
@@ -149,62 +152,11 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeActivatedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::ACTIVATED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotActivatedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::ACTIVATED_STATUS);
-    }
-
-    /**
-     * @param bool $save
-     *
-     * @return void
-     */
-    public function setActivated(bool $save = !0): void
-    {
-        $this->status = static::ACTIVATED_STATUS;
-        $save && $this->save();
-    }
-
-    /**
      * @return bool
      */
     public function isActivated(): bool
     {
         return $this->status == static::ACTIVATED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeActiveOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::ACTIVE_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotActiveOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::ACTIVE_STATUS);
     }
 
     /**
@@ -227,26 +179,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeApprovedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::APPROVED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotApprovedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::APPROVED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -263,26 +195,6 @@ trait HasStatusAttribute
     public function isApproved(): bool
     {
         return $this->status == static::APPROVED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeArchivedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::ARCHIVED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotArchivedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::ARCHIVED_STATUS);
     }
 
     /**
@@ -305,26 +217,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeBandedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::BANDED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotBandedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::BANDED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -341,26 +233,6 @@ trait HasStatusAttribute
     public function isBanded(): bool
     {
         return $this->status == static::BANDED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeCanceledOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::CANCELED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotCanceledOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::CANCELED_STATUS);
     }
 
     /**
@@ -383,26 +255,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeCompletedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::COMPLETED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotCompletedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::COMPLETED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -419,26 +271,6 @@ trait HasStatusAttribute
     public function isCompleted(): bool
     {
         return $this->status == static::COMPLETED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeConfirmedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::CONFIRMED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotConfirmedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::CONFIRMED_STATUS);
     }
 
     /**
@@ -461,26 +293,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeDeletedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::DELETED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotDeletedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::DELETED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -497,26 +309,6 @@ trait HasStatusAttribute
     public function isDeleted(): bool
     {
         return $this->status == static::DELETED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeDeliveredOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::DELIVERED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotDeliveredOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::DELIVERED_STATUS);
     }
 
     /**
@@ -539,26 +331,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeDisabledOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::DISABLED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotDisabledOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::DISABLED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -575,26 +347,6 @@ trait HasStatusAttribute
     public function isDisabled(): bool
     {
         return $this->status == static::DISABLED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeDraftOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::DRAFT_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotDraftOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::DRAFT_STATUS);
     }
 
     /**
@@ -617,26 +369,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeFinishedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::FINISHED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotFinishedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::FINISHED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -653,26 +385,6 @@ trait HasStatusAttribute
     public function isFinished(): bool
     {
         return $this->status == static::FINISHED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeInactiveOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::INACTIVE_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotInactiveOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::INACTIVE_STATUS);
     }
 
     /**
@@ -695,26 +407,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNewOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::NEW_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotNewOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::NEW_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -731,26 +423,6 @@ trait HasStatusAttribute
     public function isNew(): bool
     {
         return $this->status == static::NEW_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeOnWayOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::ON_WAY_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotOnWayOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::ON_WAY_STATUS);
     }
 
     /**
@@ -773,26 +445,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopePaidOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::PAID_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotPaidOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::PAID_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -809,26 +461,6 @@ trait HasStatusAttribute
     public function isPaid(): bool
     {
         return $this->status == static::PAID_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopePartialPaidOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::PARTIAL_PAID_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotPartialPaidOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::PARTIAL_PAID_STATUS);
     }
 
     /**
@@ -851,26 +483,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopePartialReturnedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::PARTIAL_RETURNED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotPartialReturnedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::PARTIAL_RETURNED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -887,26 +499,6 @@ trait HasStatusAttribute
     public function isPartialReturned(): bool
     {
         return $this->status == static::PARTIAL_RETURNED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopePendingOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::PENDING_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotPendingOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::PENDING_STATUS);
     }
 
     /**
@@ -929,26 +521,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopePendingPaymentOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::PENDING_PAYMENT_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotPendingPaymentOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::PENDING_PAYMENT_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -965,26 +537,6 @@ trait HasStatusAttribute
     public function isPendingPayment(): bool
     {
         return $this->status == static::PENDING_PAYMENT_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeProcessingOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::PROCESSING_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotProcessingOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::PROCESSING_STATUS);
     }
 
     /**
@@ -1007,26 +559,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeRejectedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::REJECTED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotRejectedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::REJECTED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -1043,26 +575,6 @@ trait HasStatusAttribute
     public function isRejected(): bool
     {
         return $this->status == static::REJECTED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeReturnedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::RETURNED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotReturnedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::RETURNED_STATUS);
     }
 
     /**
@@ -1085,26 +597,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeShippedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::SHIPPED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotShippedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::SHIPPED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -1121,26 +613,6 @@ trait HasStatusAttribute
     public function isShipped(): bool
     {
         return $this->status == static::SHIPPED_STATUS;
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeUnconfirmedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::UNCONFIRMED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotUnconfirmedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::UNCONFIRMED_STATUS);
     }
 
     /**
@@ -1163,26 +635,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeUnpaidOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::UNPAID_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotUnpaidOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::UNPAID_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -1202,26 +654,6 @@ trait HasStatusAttribute
     }
 
     /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeUsedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', static::USED_STATUS);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeNotUsedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '!=', static::USED_STATUS);
-    }
-
-    /**
      * @param bool $save
      *
      * @return void
@@ -1238,5 +670,615 @@ trait HasStatusAttribute
     public function isUsed(): bool
     {
         return $this->status == static::USED_STATUS;
+    }
+
+    /**
+     * @param bool $save
+     *
+     * @return void
+     */
+    public function setTransferred(bool $save = !0): void
+    {
+        $this->status = static::TRANSFERRED_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTransferred(): bool
+    {
+        return $this->status == static::TRANSFERRED_STATUS;
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeActivatedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::ACTIVATED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotActivatedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::ACTIVATED_STATUS);
+    }
+
+    /**
+     * @param bool $save
+     *
+     * @return void
+     */
+    protected function setActivated(bool $save = !0): void
+    {
+        $this->status = static::ACTIVATED_STATUS;
+        $save && $this->save();
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeActiveOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::ACTIVE_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotActiveOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::ACTIVE_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeApprovedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::APPROVED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotApprovedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::APPROVED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeArchivedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::ARCHIVED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotArchivedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::ARCHIVED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeBandedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::BANDED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotBandedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::BANDED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeCanceledOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::CANCELED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotCanceledOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::CANCELED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeCompletedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::COMPLETED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotCompletedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::COMPLETED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeConfirmedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::CONFIRMED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotConfirmedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::CONFIRMED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeDeletedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::DELETED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotDeletedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::DELETED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeDeliveredOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::DELIVERED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotDeliveredOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::DELIVERED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeDisabledOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::DISABLED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotDisabledOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::DISABLED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeDraftOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::DRAFT_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotDraftOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::DRAFT_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeFinishedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::FINISHED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotFinishedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::FINISHED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeInactiveOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::INACTIVE_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotInactiveOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::INACTIVE_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNewOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::NEW_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotNewOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::NEW_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeOnWayOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::ON_WAY_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotOnWayOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::ON_WAY_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopePaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PAID_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotPaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PAID_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopePartialPaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PARTIAL_PAID_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotPartialPaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PARTIAL_PAID_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopePartialReturnedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PARTIAL_RETURNED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotPartialReturnedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PARTIAL_RETURNED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopePendingOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PENDING_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotPendingOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PENDING_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopePendingPaymentOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PENDING_PAYMENT_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotPendingPaymentOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PENDING_PAYMENT_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeProcessingOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::PROCESSING_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotProcessingOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::PROCESSING_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeRejectedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::REJECTED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotRejectedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::REJECTED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeReturnedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::RETURNED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotReturnedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::RETURNED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeShippedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::SHIPPED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotShippedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::SHIPPED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeUnconfirmedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::UNCONFIRMED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotUnconfirmedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::UNCONFIRMED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeUnpaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::UNPAID_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotUnpaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::UNPAID_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeUsedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::USED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotUsedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::USED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeTransferredOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', static::TRANSFERRED_STATUS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    protected function scopeNotTransferredOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '!=', static::TRANSFERRED_STATUS);
     }
 }
