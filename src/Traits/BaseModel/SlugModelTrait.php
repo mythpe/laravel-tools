@@ -72,17 +72,22 @@ trait SlugModelTrait
 
     /**
      * @param string $route
-     * @param int $minutes
+     * @param int|null $minutes
      * @param array $params
-     *
      * @return string
      */
-    public function getSignedModelSlugUrl(string $route, int $minutes = 30, array $params = []): string
+    public function getSignedModelSlugUrl(string $route, ?int $minutes = 30, array $params = []): string
     {
-        return URL::temporarySignedRoute($route, now()->addMinutes($minutes), array_merge([
-            $this->getModelSlug(),
-            'locale' => auth()->check() ? (auth()->user()->locale ?: app()->getLocale()) : app()->getLocale(),
-        ], $params));
+        $defLocale = auth()->user()?->locale ?: app()->getLocale();
+        return URL::signedRoute(
+            name : $route,
+            parameters : [
+                $this->getModelSlug(),
+                '_locale' => $defLocale,
+                ...$params,
+            ],
+            expiration : !is_null($minutes) ? now()->addMinutes($minutes) : null
+        );
     }
 
     /**
