@@ -37,7 +37,7 @@ class MediaFile extends Media
     public const TYPE_IMAGE = 'image';
     public const TYPE_AUDIO = 'audio';
     public const TYPE_VIDEO = 'video';
-    public const PDF_MIMES = [
+    public const HASH_PDF_MIMES = [
         'application/pdf',
         'application/x-pdf',
         'application/acrobat',
@@ -185,7 +185,7 @@ class MediaFile extends Media
     {
         return Attribute::get(function () {
             $ext = strtolower($this->extension ?: '');
-            return $ext == static::TYPE_PDF && in_array($this->mime_type, static::PDF_MIMES);
+            return $ext == static::TYPE_PDF && in_array($this->mime_type, static::HASH_PDF_MIMES);
         });
     }
 
