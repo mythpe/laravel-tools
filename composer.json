@@ -17,7 +17,7 @@
     "ext-zip": "*",
     "ext-json": "*",
     "ext-gd": "*",
-    "laravel-notification-channels/fcm": "^4.5"
+    "ext-sodium": "*"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.13",
@@ -36,7 +36,9 @@
     "bavix/laravel-wallet": "^9.6",
     "beyondcode/laravel-websockets": "^1.13",
     "barryvdh/laravel-snappy": "^1.0@dev",
-    "spatie/laravel-medialibrary": "^11.0.0"
+    "spatie/laravel-medialibrary": "^11.0.0",
+    "laravel-notification-channels/fcm": "^4.5",
+    "kreait/laravel-firebase": "^5.10"
   },
   "license": "MIT",
   "autoload": {
