@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\Fcm\FcmMessage;
+use NotificationChannels\Fcm\Resources\Notification as FcmNotification;
 
 class BaseSendNotification extends Notification implements ShouldQueue
 {
@@ -54,7 +56,20 @@ class BaseSendNotification extends Notification implements ShouldQueue
      * @var array
      */
     protected array $data = [];
+    /**
+     * Fcm image notification.
+     * @var string|null
+     */
+    protected ?string $fcmImage = null;
+    /**
+     * Custom function fo FCM notifications.
+     * @var array
+     */
+    protected array $customFcm = [];
 
+    /**
+     * @param array $via
+     */
     public function __construct(array $via = [])
     {
         if (empty($via) && method_exists(config('4myth-tools.setting_class'), 'getNotificationMethods')) {
@@ -66,7 +81,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
     /**
      * @return static
      */
-    public static function make(): self
+    public static function make(): static
     {
         return new self(...func_get_args());
     }
@@ -138,7 +153,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
      * @param string|array|null $value
      * @return $this
      */
-    public function title(string | array | null $value): self
+    public function title(string | array | null $value): static
     {
         $this->title = $value ?: '';
         return $this;
@@ -160,7 +175,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
      * @param string|array|null $value
      * @return $this
      */
-    public function content(string | array | null $value): self
+    public function content(string | array | null $value): static
     {
         $this->content = $value ?: '';
         return $this;
@@ -235,7 +250,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
      *
      * @return $this
      */
-    public function greeting(array | string | null $greeting): self
+    public function greeting(array | string | null $greeting): static
     {
         $this->greeting = $greeting;
         return $this;
@@ -288,11 +303,45 @@ class BaseSendNotification extends Notification implements ShouldQueue
     }
 
     /**
+     * @param $notifiable
+     * @return FcmMessage
+     */
+    public function toFcm($notifiable): FcmMessage
+    {
+        return (new FcmMessage(notification : new FcmNotification(
+            title : $this->getTitle($notifiable),
+            body : $this->getContent($notifiable),
+            image : $this->getFcmImage($notifiable)
+        )))
+            ->data($this->getData($notifiable))
+            ->custom($this->getCustomFcm($notifiable));
+    }
+
+    /**
+     * @param object $notifiable
+     * @return string|null
+     */
+    public function getFcmImage(object $notifiable): ?string
+    {
+        return $this->fcmImage;
+    }
+
+    /**
+     * @param string|null $image
+     * @return $this
+     */
+    public function setFcmImage(?string $image): static
+    {
+        $this->fcmImage = $image;
+        return $this;
+    }
+
+    /**
      * @param array $data
      *
      * @return $this
      */
-    public function data(array $data): self
+    public function data(array $data): static
     {
         $this->data = $data;
         return $this;
@@ -332,7 +381,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
      * @param string $pushTokenChannel
      * @return $this
      */
-    public function pushTokenChannel(string $pushTokenChannel): self
+    public function pushTokenChannel(string $pushTokenChannel): static
     {
         $this->pushTokenChannel = $pushTokenChannel;
         return $this;
@@ -353,5 +402,24 @@ class BaseSendNotification extends Notification implements ShouldQueue
             config('4myth-tools.push_token.driver', 'push_token') => 'default',
             config('4myth-tools.whatsapp.driver', 'whatsapp')     => 'default',
         ];
+    }
+
+    /**
+     * @param object $notifiable
+     * @return array
+     */
+    public function getCustomFcm(object $notifiable): array
+    {
+        return $this->customFcm;
+    }
+
+    /**
+     * @param array $customFcm
+     * @return $this
+     */
+    public function setCustomFcm(array $customFcm): static
+    {
+        $this->customFcm = $customFcm;
+        return $this;
     }
 }
