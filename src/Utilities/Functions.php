@@ -214,7 +214,7 @@ if (!function_exists('date_by_locale')) {
             return $date;
         }
         $ar = [
-            "/",
+            // "/",
             "٠",
             "١",
             "٢",
@@ -297,7 +297,7 @@ if (!function_exists('date_by_locale')) {
             "سنة",
         ];
         $notAr = [
-            "-",
+            // "-",
             "0",
             "1",
             "2",
