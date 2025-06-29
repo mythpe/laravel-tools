@@ -17,8 +17,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 trait BaseModelTrait
 {
+    /**
+     *
+     */
     const HASH_PREFIX = 'MyTh';
 
+    /**
+     *
+     */
     const HASH_DEFAULT_ID_LENGTH = 6;
     /**
      * @var int|null
@@ -28,7 +34,6 @@ trait BaseModelTrait
     public ?int $numberFormat = null;
     /** @var array<int,string> - e.g: ['customers','users'] */
     protected array $cloneRelations = [];
-
 
     /**
      * @return string
@@ -96,11 +101,19 @@ trait BaseModelTrait
         return array_keys(__('const.days'));
     }
 
+    /**
+     * @param $callback
+     * @return void
+     */
     public static function cloning($callback): void
     {
         static::registerModelEvent('cloning', $callback);
     }
 
+    /**
+     * @param $callback
+     * @return void
+     */
     public static function cloned($callback): void
     {
         static::registerModelEvent('cloned', $callback);
@@ -149,11 +162,14 @@ trait BaseModelTrait
      * @param bool $hashTag
      * @return string
      */
-    public static function getModelIdToString($value, ?int $length = null, bool $hashTag = !1): string
+    public static function getModelIdToString($value, ?int $length = null, bool $hashTag = !1, $ltr = false): string
     {
         $value = $value ?: '';
         $length ??= static::HASH_DEFAULT_ID_LENGTH;
         $id = str_pad($value, $length, '0', STR_PAD_LEFT);
+        if (app()->getLocale() == 'ar' || $ltr) {
+            return $id.($hashTag ? '#' : '');
+        }
         return ($hashTag ? '#' : '').$id;
     }
 
@@ -178,32 +194,6 @@ trait BaseModelTrait
     public function defaultHiddenAttributes(): array
     {
         return ['deleted_at', 'updated_at', 'created_at', 'media'];
-    }
-
-    /**
-     * Name of attribute will display tne model name Like created_at
-     *
-     * @return string
-     */
-    public function getNameColumn(): string
-    {
-        $class = class_basename(static::class);
-        $class = Str::snake($class);
-        $class = Str::singular($class);
-        $class = strtolower($class);
-        $array = [
-            'name',
-            locale_attribute(),
-            "{$class}_name",
-        ];
-        $name = 'name';
-        foreach ($array as $item) {
-            if ($this->isFillable($item)) {
-                $name = $item;
-                break;
-            }
-        }
-        return $name;
     }
 
     /**
@@ -398,19 +388,29 @@ trait BaseModelTrait
     }
 
     /**
+     * Name of attribute will display tne model name Like created_at
+     *
      * @return string
      */
-    public function getAuthPasswordName(): string
+    public function getNameColumn(): string
     {
-        return 'password';
-    }
-
-    /**
-     * @return string
-     */
-    public function __idToString(): string
-    {
-        return static::getModelIdToString(value : $this->id);
+        $class = class_basename(static::class);
+        $class = Str::snake($class);
+        $class = Str::singular($class);
+        $class = strtolower($class);
+        $array = [
+            'name',
+            locale_attribute(),
+            "{$class}_name",
+        ];
+        $name = 'name';
+        foreach ($array as $item) {
+            if ($this->isFillable($item)) {
+                $name = $item;
+                break;
+            }
+        }
+        return $name;
     }
 
     /**
@@ -430,6 +430,22 @@ trait BaseModelTrait
             }
         }
         return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthPasswordName(): string
+    {
+        return 'password';
+    }
+
+    /**
+     * @return string
+     */
+    public function __idToString(): string
+    {
+        return static::getModelIdToString(value : $this->id);
     }
 
     /**
