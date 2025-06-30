@@ -23,9 +23,13 @@ trait BaseModelTrait
     const HASH_PREFIX = 'MyTh';
 
     /**
-     *
+     * length of id
      */
     const HASH_DEFAULT_ID_LENGTH = 6;
+    /**
+     * insert hashtag to id string
+     */
+    const HASH_DEFAULT_ID_HASHTAG = false;
     /**
      * @var int|null
      * Decimals of numbers format.
@@ -160,14 +164,19 @@ trait BaseModelTrait
      * @param $value
      * @param int|null $length
      * @param bool $hashTag
+     * @param bool $after
      * @return string
      */
-    public static function getModelIdToString($value, ?int $length = null, bool $hashTag = !1, $ltr = false): string
+    public static function getModelIdToString($value, ?int $length = null, ?bool $hashTag = null, bool $after = false): string
     {
         $value = $value ?: '';
+        if (null === $hashTag) {
+            $hashTag = static::HASH_DEFAULT_ID_HASHTAG;
+        }
         $length ??= static::HASH_DEFAULT_ID_LENGTH;
         $id = str_pad($value, $length, '0', STR_PAD_LEFT);
-        if (app()->getLocale() == 'ar' || $ltr) {
+        // if (app()->getLocale() == 'ar' || $ltr) {
+        if ($after) {
             return $id.($hashTag ? '#' : '');
         }
         return ($hashTag ? '#' : '').$id;
@@ -532,9 +541,7 @@ trait BaseModelTrait
     /**
      *
      * $this->name
-     * @param $value
-     *
-     * @return string|null
+     * @return Attribute
      */
     protected function name(): Attribute
     {
@@ -560,7 +567,7 @@ trait BaseModelTrait
     /**
      * $this->updated_at_to_string
      *
-     * @return string|null
+     * @return Attribute
      */
     protected function updatedAtToString(): Attribute
     {
