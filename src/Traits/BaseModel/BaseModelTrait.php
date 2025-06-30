@@ -175,7 +175,7 @@ trait BaseModelTrait
         }
         $length ??= static::HASH_DEFAULT_ID_LENGTH;
         $id = str_pad($value, $length, '0', STR_PAD_LEFT);
-        // if (app()->getLocale() == 'ar' || $ltr) {
+        // if (app()->getLocale() == 'ar' || $after) {
         if ($after) {
             return $id.($hashTag ? '#' : '');
         }
