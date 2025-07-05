@@ -54,7 +54,6 @@ class QrTag
         $string = base64_encode(implode('', array_map(function ($tag) {
             return (string) $tag;
         }, $array)));
-        //dd($string);
         return $string;
     }
 
@@ -67,14 +66,14 @@ class QrTag
      * @param string|float|null $tax
      * @return string
      */
-    public static function make(?string $name, ?string $number, string | Carbon | null $date, string | float | null $amount, string | float | null $tax)
+    public static function make(?string $name, ?string $number, string | Carbon | null $date, string | float | null $amount, string | float | null $tax): string
     {
         return static::toBase64([
             static::array(1, (string) $name ?: ''),
             static::array(2, (string) $number ?: ''),
             static::array(3, Carbon::make($date ?: '')->format("Y-m-d H:i:s")),
-            static::array(4, (string) $amount ?: ''),
-            static::array(5, (string) $tax ?: ''),
+            static::array(4, (string) $amount ?: '0'),
+            static::array(5, (string) $tax ?: '0'),
         ]);
     }
 
@@ -84,7 +83,6 @@ class QrTag
     public function __toString()
     {
         $value = (string) $this->getValue();
-
         return $this->toHex($this->getTag()).$this->toHex($this->getLength()).($value);
     }
 
