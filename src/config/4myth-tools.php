@@ -65,6 +65,7 @@ return [
 
     /** App date formats */
     "date_format"                   => [
+        'timestamp'         => "Y/m/d H:i:s",
         'day'               => "l",
         'date'              => "Y/m/d",
         'date_string'       => "d M, Y",
