@@ -25,7 +25,7 @@ trait BaseModelTrait
     /**
      * length of id
      */
-    const HASH_DEFAULT_ID_LENGTH = 6;
+    const HASH_DEFAULT_ID_LENGTH = 4;
     /**
      * insert hashtag to id string
      */
