@@ -170,6 +170,9 @@ trait BaseModelTrait
     public static function getModelIdToString($value, ?int $length = null, ?bool $hashTag = null, bool $after = false): string
     {
         $value = $value ?: '';
+        if (!$value) {
+            return '';
+        }
         if (null === $hashTag) {
             $hashTag = static::HASH_DEFAULT_ID_HASHTAG;
         }
