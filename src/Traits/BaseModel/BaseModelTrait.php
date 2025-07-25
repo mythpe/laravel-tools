@@ -348,7 +348,7 @@ trait BaseModelTrait
                 $attribute = Str::before($snakeKey, $t);
                 if (($date = $this->{$attribute})) {
                     !$date instanceof Carbon && ($date = Carbon::parse($date));
-                    if (in_array($format, ['timestamp', 'time', 'date'])) {
+                    if (in_array($format, ['timestamp_res', 'time_res', 'date_res'])) {
                         return $date->format($dateFormat);
                     }
                     return date_by_locale($date->format($dateFormat));

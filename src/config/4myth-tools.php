@@ -66,11 +66,14 @@ return [
     /** App date formats */
     "date_format"                   => [
         'timestamp'         => "Y/m/d H:i:s",
+        'timestamp_res'     => "Y/m/d H:i",
         'day'               => "l",
         'date'              => "Y/m/d",
+        'date_res'          => "Y/m/d",
         'date_string'       => "d M, Y",
         'date_reverse'      => "d/m/Y",
         'time'              => "H:i",
+        'time_res'          => "H:i",
         'time_string'       => "g:i A",
         'time_short'        => "g:i",
         'datetime'          => "Y/m/d • g:i A",
