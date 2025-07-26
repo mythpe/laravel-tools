@@ -58,7 +58,7 @@ class PermissionMiddleware
         if ($methodMap = ($maps[$currentMethod] ?? null)) {
             $permissionName = [];
             foreach ((array) $methodMap as $method) {
-                $permissionName[] = $mainPermission.Str::start($method, '.');
+                $permissionName[] = Str::contains($method, ['.']) ? $method : $mainPermission.Str::start($method, '.');
             }
         }
         // dd($permissionName, $currentMethod, $methodMap);
