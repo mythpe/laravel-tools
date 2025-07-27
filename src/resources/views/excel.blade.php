@@ -10,7 +10,7 @@
         @foreach($rows as $cells)
             <tr>
                 @foreach($cells as $cell)
-                    <td style="border: 1px solid #111111;">{{ $cell }}</td>
+                    <td style="border: 1px solid #111111;">{!! nl2br(e($cell)) !!}</td>
                 @endforeach
             </tr>
         @endforeach
@@ -20,7 +20,7 @@
             @foreach($footer as $cells)
                 <tr>
                     @foreach($cells as $cell)
-                        <td style="border: 1px solid #111111;">{{ $cell }}</td>
+                        <td style="border: 1px solid #111111;">{!! nl2br(e($cell)) !!}</td>
                     @endforeach
                 </tr>
             @endforeach
