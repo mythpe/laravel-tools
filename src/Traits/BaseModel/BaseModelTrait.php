@@ -18,19 +18,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 trait BaseModelTrait
 {
     /**
-     *
-     */
-    const HASH_PREFIX = 'MyTh';
-
-    /**
-     * length of id
-     */
-    const HASH_DEFAULT_ID_LENGTH = 4;
-    /**
-     * insert hashtag to id string
-     */
-    const HASH_DEFAULT_ID_HASHTAG = false;
-    /**
      * @var int|null
      * Decimals of numbers format.
      * Default is non. Will append it.
@@ -148,12 +135,36 @@ trait BaseModelTrait
     }
 
     /**
+     * @return string
+     */
+    public static function getModelHashPrefix(): string
+    {
+        return 'MyTh';
+    }
+
+    /**
+     * @return int
+     */
+    public static function getModelIdToStringLength(): int
+    {
+        return 4;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function getModelIdToStringHasTag(): bool
+    {
+        return !1;
+    }
+
+    /**
      * @param $id
      * @return string
      */
     public static function getHash($id): string
     {
-        $sha1 = sha1($id.static::HASH_PREFIX);
+        $sha1 = sha1($id.static::getModelHashPrefix());
         if (strlen($sha1) > 10) {
             $sha1 = substr($sha1, 0, 10);
         }
@@ -174,9 +185,9 @@ trait BaseModelTrait
             return '';
         }
         if (null === $hashTag) {
-            $hashTag = static::HASH_DEFAULT_ID_HASHTAG;
+            $hashTag = static::getModelIdToStringHasTag();
         }
-        $length ??= static::HASH_DEFAULT_ID_LENGTH;
+        $length ??= static::getModelIdToStringLength();
         $id = str_pad($value, $length, '0', STR_PAD_LEFT);
         // if (app()->getLocale() == 'ar' || $after) {
         if ($after) {
