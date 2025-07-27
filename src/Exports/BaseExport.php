@@ -9,45 +9,36 @@
 
 namespace Myth\LaravelTools\Exports;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Resources\MissingValue;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
 
-class BaseExport extends StringValueBinder implements WithCustomValueBinder, FromCollection, WithEvents
+// class BaseExport extends StringValueBinder implements WithCustomValueBinder, FromCollection, WithEvents
+class BaseExport extends StringValueBinder implements ShouldAutoSize, WithCustomValueBinder, FromView, WithEvents
 {
     use Exportable, RegistersEventListeners;
 
     /**
-     * @var array<string|int, mixed>|Collection<string|int, mixed>
-     */
-    public array | Collection $headers = [];
-
-    /**
-     * @var array<int,mixed>|Collection<int,mixed>
-     */
-    public array | Collection $items = [];
-
-    /**
-     * @var array<int,mixed>|Collection<int,mixed>
-     */
-    public array | Collection $append = [];
-
-    /**
      * @param array|Collection $headers
-     * @param array|Collection $items
-     * @param array|Collection $append
+     * @param array|Collection $rows
+     * @param array|Collection $footer
+     * @param string $view
      */
-    public function __construct(array | Collection $headers = [], array | Collection $items = [], array | Collection $append = [])
+    public function __construct(
+        public array | Collection $headers = [],
+        public array | Collection $rows = [],
+        public array | Collection $footer = [],
+        public string             $view = '4myth-tools::excel',
+    )
     {
-        $this->headers = is_array($headers) ? collect($headers) : $headers;
-        $this->items = is_array($items) ? collect($items) : $items;
-        $this->append = is_array($append) ? collect($append) : $append;
     }
 
     /**
@@ -87,7 +78,7 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
         }
         $data = [$data];
 
-        foreach ($this->items as $item) {
+        foreach ($this->rows as $item) {
             $v = [];
             foreach ($this->headers as $header) {
                 $r = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? ($item[($header['field'] ?? '')] ?? ($item[($header['name'] ?? '')] ?? ''))) : ($item[$header] ?? ''));
@@ -101,5 +92,53 @@ class BaseExport extends StringValueBinder implements WithCustomValueBinder, Fro
         }
         return collect($data);
     }
-}
 
+    /**
+     * Generates a view representation with the provided data.
+     *
+     * @return View The rendered view instance based on the specified template and data.
+     */
+    public function view(): View
+    {
+        $headers = $this->getHeaders();
+        $rows = $this->getRows();
+        return view($this->view, [
+            'headers' => $headers,
+            'rows'    => $rows,
+            'footer'  => $this->footer,
+        ]);
+    }
+
+    protected function getHeaders(): array
+    {
+        $result = [];
+        foreach ($this->headers as $header) {
+            if (is_array($header)) {
+                $value = ($header['text'] ?? ($header['label'] ?? ($header['field'] ?? ($header['name'] ?? ''))));
+            }
+            else {
+                $value = trans_has("attributes.$header") ? __("attributes.$header") : $header;
+            }
+            if ($value == 'control') {
+                continue;
+            }
+            $result[] = $value;
+        }
+        return $result;
+    }
+
+    protected function getRows(): array
+    {
+        $result = [];
+        foreach ($this->rows as $item) {
+            $v = [];
+            foreach ($this->headers as $header) {
+                $r = is_string($item) ? $item : (is_array($header) ? ($item[($header['value'] ?? '')] ?? ($item[($header['field'] ?? '')] ?? ($item[($header['name'] ?? '')] ?? ''))) : ($item[$header] ?? ''));
+                $r = $r instanceof MissingValue ? '' : $r;
+                $v[] = $r == 0 ? '0' : $r;
+            }
+            $result[] = $v;
+        }
+        return $result;
+    }
+}

@@ -27,12 +27,13 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 trait PaginateTrait
 {
     /**
-     * @var string request key of rows will append on export.
+     * The request key of rows that will be appended on export.
+     * @var string
      */
-    const EXPORT_APPEND_KEY = 'myth_append_export';
+    const EXPORT_FOOTER_KEY = 'myth_footer_export';
     /**
-     * Request key of index type.
-     * Values: pdf, excel, index
+     * Request a key of an index type.
+     * Values: PDF, excel, index
      * @var string
      */
     const INDEX_TYPE_KEY = 'indexType';
@@ -129,18 +130,18 @@ trait PaginateTrait
     /**
      * @return array|callable
      */
-    public function getExportAppendRows(): array | callable
+    public function getExportFooter(): array | callable
     {
-        return $this->request->input(static::EXPORT_APPEND_KEY, $default = []) ?: $default;
+        return $this->request->input(static::EXPORT_FOOTER_KEY, $default = []) ?: $default;
     }
 
     /**
-     * @param callable $callback
+     * @param callable $callback Callback function to append rows during export
      * @return void
      */
     public function exportAppendRows(callable $callback): void
     {
-        $this->request->merge([static::EXPORT_APPEND_KEY => $callback]);
+        $this->request->merge([static::EXPORT_FOOTER_KEY => $callback]);
     }
 
     /**
@@ -183,7 +184,7 @@ trait PaginateTrait
             //d($headers);
             // $fileName = "Export-".(auth()->id() ?: round(time()));
             $fileName = "$modelName-".(auth()->id() ?: round(time()));
-            $appendRows = $this->getExportAppendRows();
+            $appendRows = $this->getExportFooter();
             $appendRows = is_callable($appendRows) ? $appendRows($items, $headers) : $appendRows;
             $headers = collect($headers)->filter(fn($v) => is_array($v) ? !in_array($this->controlHeaderKey, [
                 ($v['field'] ?? null),
@@ -195,7 +196,11 @@ trait PaginateTrait
                 $excelClass = is_null($excelClass) ? static::getControllerExcelExportClass() : $excelClass;
                 if ($request->input('toUrl')) {
                     $disk = Storage::disk('excel');
-                    Excel::store($excelClass::make($headers, $items, $appendRows), $fileName, 'excel');
+                    Excel::store($excelClass::make(
+                        $headers,
+                        $items,
+                        $appendRows,
+                    ), $fileName, 'excel');
                     return $this->successResponse(['data' => ['url' => $disk->url($fileName)]]);
                 }
                 /** @var BinaryFileResponse $e */
