@@ -10,6 +10,7 @@
 namespace Myth\LaravelTools\Traits\PaymentGetaway;
 
 use Illuminate\Database\Eloquent\Builder;
+use InvalidArgumentException;
 
 /**
  * @method static Builder purchaseOnly()
@@ -32,81 +33,9 @@ trait GetawayActionsTrait
     {
         $actions = config('4myth-getaway.actions', []);
         if ($key && !array_key_exists($key, $actions)) {
-            throw new \InvalidArgumentException("Invalid key passed $key. Must One Of ".implode(',', array_keys($actions)));
+            throw new InvalidArgumentException("Invalid key passed $key. Must One Of ".implode(',', array_keys($actions)));
         }
         return !is_null($key) ? ($actions[$key] ?? null) : $actions;
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopePurchaseOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.purchase', 1));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeRefundOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.refund', 2));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeVoidPurchaseOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.void_purchase', 3));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeAuthorizationOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.authorization', 4));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeCaptureOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.capture', 5));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeVoidRefundOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.void_refund', 6));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeVoidAuthorizationOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.void_authorization', 9));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeTransactionInquiryOnly(Builder $builder): Builder
-    {
-        return $builder->where('action', '=', config('4myth-getaway.actions.transaction_inquiry', 10));
     }
 
     /**
@@ -313,5 +242,77 @@ trait GetawayActionsTrait
     public function actionsCantDoTransaction(): array
     {
         return [static::getVoidAuthorizationAction(), static::getVoidPurchaseAction(), static::getVoidRefundAction()];
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopePurchaseOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.purchase', 1));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeRefundOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.refund', 2));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeVoidPurchaseOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.void_purchase', 3));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeAuthorizationOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.authorization', 4));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeCaptureOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.capture', 5));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeVoidRefundOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.void_refund', 6));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeVoidAuthorizationOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.void_authorization', 9));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeTransactionInquiryOnly(Builder $builder): Builder
+    {
+        return $builder->where('action', '=', config('4myth-getaway.actions.transaction_inquiry', 10));
     }
 }

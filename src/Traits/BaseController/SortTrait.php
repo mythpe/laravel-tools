@@ -154,7 +154,7 @@ trait SortTrait
                     if ($query->getQuery() instanceof \Illuminate\Database\Query\Builder) {
                         $query->getQuery()->orders = [];
                     }
-                    if ($query->getQuery() instanceof \Illuminate\Database\Eloquent\Builder) {
+                    if ($query->getQuery() instanceof Builder) {
                         $query->getQuery()->getQuery()->orders = [];
                     }
                 }

@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use InvalidArgumentException;
 use Myth\LaravelTools\Models\Getaway\GetawayOrder;
 use Myth\LaravelTools\Models\Getaway\GetawayTransaction;
-use Myth\LaravelTools\Utilities\PaymentGetaway\GetawayTransactionResult;
 
 /**
  * @property GetawayOrder $getawayOrder

@@ -520,7 +520,7 @@ trait BaseModelTrait
             $clone->push();
             $clone->fireModelEvent('cloned', !1);
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
         }
         try {
             if (method_exists($this, 'media')) {

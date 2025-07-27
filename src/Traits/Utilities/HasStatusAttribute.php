@@ -12,6 +12,7 @@ namespace Myth\LaravelTools\Traits\Utilities;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use ReflectionClass;
 
 /**
  * @property string $status
@@ -127,7 +128,7 @@ trait HasStatusAttribute
      */
     public static function getStatusesCodes(): array
     {
-        $class_reflex = new \ReflectionClass(static::class);
+        $class_reflex = new ReflectionClass(static::class);
         $class_constants = $class_reflex->getConstants();
         $list = [];
         foreach ($class_constants as $key => $value) {

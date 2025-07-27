@@ -20,16 +20,6 @@ use Illuminate\Database\Eloquent\Builder;
 trait ActiveScopeTrait
 {
     /**
-     * @param Builder<static> $builder
-     *
-     * @return Builder<static>
-     */
-    protected function scopeActiveOnly(Builder $builder): Builder
-    {
-        return $builder->where('active', !0);
-    }
-
-    /**
      * @return bool
      */
     public function isActive(): bool
@@ -48,16 +38,6 @@ trait ActiveScopeTrait
             $save && $this->save();
         }
         return $this;
-    }
-
-    /**
-     * @param Builder<static> $builder
-     *
-     * @return Builder<static>
-     */
-    protected function scopeInactiveOnly(Builder $builder): Builder
-    {
-        return $builder->where('active', !1);
     }
 
     /**
@@ -92,5 +72,25 @@ trait ActiveScopeTrait
             return __("const.statuses.active");
         }
         return __("const.statuses.inactive");
+    }
+
+    /**
+     * @param Builder<static> $builder
+     *
+     * @return Builder<static>
+     */
+    protected function scopeActiveOnly(Builder $builder): Builder
+    {
+        return $builder->where('active', !0);
+    }
+
+    /**
+     * @param Builder<static> $builder
+     *
+     * @return Builder<static>
+     */
+    protected function scopeInactiveOnly(Builder $builder): Builder
+    {
+        return $builder->where('active', !1);
     }
 }
