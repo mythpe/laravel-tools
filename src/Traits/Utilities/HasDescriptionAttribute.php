@@ -23,9 +23,9 @@ trait HasDescriptionAttribute
      *
      * @return Attribute
      */
-    protected function description($value): Attribute
+    protected function description(): Attribute
     {
-        return Attribute::get(function () use ($value) {
+        return Attribute::get(function ($value) {
             if ($value) {
                 return $value;
             }
