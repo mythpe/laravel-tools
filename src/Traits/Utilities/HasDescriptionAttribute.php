@@ -19,17 +19,9 @@ trait HasDescriptionAttribute
     /**
      * $this->description
      *
-     * @param $value
-     *
      * @return Attribute
      */
     protected function description(): Attribute
     {
-        return Attribute::get(function ($value) {
-            if ($value) {
-                return $value;
-            }
-            return (string) $this->{locale_attribute('description')};
-        });
+        return Attribute::get(fn() => $this->{locale_attribute('description')});
     }
-}
