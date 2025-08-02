@@ -9,6 +9,8 @@
 
 namespace Myth\LaravelTools\Traits\Utilities;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 /**
  * @property-read string|mixed $description
  */
@@ -19,13 +21,15 @@ trait HasDescriptionAttribute
      *
      * @param $value
      *
-     * @return string|mixed
+     * @return Attribute
      */
-    public function getDescriptionAttribute($value): mixed
+    protected function description($value): Attribute
     {
-        if ($value) {
-            return $value;
-        }
-        return (string) $this->{locale_attribute('description')};
+        return Attribute::get(function () use ($value) {
+            if ($value) {
+                return $value;
+            }
+            return (string) $this->{locale_attribute('description')};
+        });
     }
 }
