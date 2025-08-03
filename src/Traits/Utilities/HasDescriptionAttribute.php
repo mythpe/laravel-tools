@@ -25,3 +25,4 @@ trait HasDescriptionAttribute
     {
         return Attribute::get(fn() => $this->{locale_attribute('description')});
     }
+}
