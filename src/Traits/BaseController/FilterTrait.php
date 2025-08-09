@@ -116,6 +116,7 @@ trait FilterTrait
     {
         if (Schema::hasColumn($this->filterTable, $column)) {
             $model = $builder->getModel();
+            $idsColumns = ['id', 'value', 'key'];
             if (is_array($value)) {
                 /** @var Model $model */
                 if (Helpers::hasDateCast($model, $column)) {
@@ -123,7 +124,7 @@ trait FilterTrait
                     $to = Carbon::make(($value['to'] ?? ($value[1] ?? null)));
                     $builder->whereDate($column, '>=', $from->min($to))->whereDate($column, '<=', $to->max($from));
                 }
-                elseif (Helpers::hasNumericCast($model, $column) && !Str::endsWith($column, '_id')) {
+                elseif (!in_array($column, $idsColumns) && Helpers::hasNumericCast($model, $column) && !Str::endsWith($column, '_id')) {
                     $from = ($value['from'] ?? ($value[0] ?? null));
                     $to = ($value['to'] ?? ($value[1] ?? null));
                     $builder->where($column, '>=', min($from, $to))->where($column, '<=', max($to, $from));
@@ -131,7 +132,7 @@ trait FilterTrait
                 else {
                     if (is_array($value[0] ?? null)) {
                         $found = null;
-                        foreach (['id', 'value', 'key'] as $key) {
+                        foreach ($idsColumns as $key) {
                             if (array_key_exists($key, $value[0])) {
                                 $found = $key;
                                 break;
