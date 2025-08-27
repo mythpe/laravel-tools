@@ -744,7 +744,7 @@ if (!function_exists('developmentMode')) {
      */
     function developmentMode(): bool
     {
-        return app()->environment(config('4myth-tools.development_modes', [])) || env('IS_MYTH');
+        return app()->environment(config('4myth-tools.development_modes', []));
     }
 }
 
