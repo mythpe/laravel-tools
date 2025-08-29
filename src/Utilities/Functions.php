@@ -436,14 +436,17 @@ if (!function_exists('trans_has')) {
     /**
      * Determine if a translation exists.
      *
-     * @param string $key
+     * @param string|null $key
      * @param string|null $locale
      * @param bool $fallback
      *
      * @return bool
      */
-    function trans_has(string $key, ?string $locale = null, bool $fallback = !1): bool
+    function trans_has(?string $key, ?string $locale = null, bool $fallback = !1): bool
     {
+        if (!$key) {
+            return false;
+        }
         return app('translator')->has($key, $locale, $fallback);
     }
 }
