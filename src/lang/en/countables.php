@@ -15,6 +15,6 @@ return [
     'Months'            => '{0}-|[1]One Month|[2,*] :months Month',
     'OrderCounts'       => '{0}No Orders|{1} One Order|[2,*] :count Orders',
     'PluralizedErrors'  => '[0]The given data was invalid|[1](and one more error)|[2](and :e more errors)',
-    'ReservationCounts' => '{0}No Reservations|{1} One Reservation|[2,*] :c Reservations',
+    'ReservationCounts' => '{0}No Reservations|{1} One Reservation|[2,*] :count Reservations',
     'Years'             => '{0}-|[1]One Year|[2,*]:years Years',
 ];
