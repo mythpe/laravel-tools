@@ -104,4 +104,5 @@ return [
     'SectorCategories'     => 'Sector Category|Sector Categories',
     'Sectors'              => 'Sector|Sectors',
     'Experiences'          => 'Experience|Experiences',
+    'VerificationCodes'    => 'Verification Code|Verification Codes',
 ];

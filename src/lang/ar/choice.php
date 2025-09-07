@@ -104,4 +104,5 @@ return [
     'SectorCategories'     => 'فئات القطاعات|فئة القطاع',
     'Sectors'              => 'القطاعات|القطاع',
     'Experiences'          => 'الخبرات|الخبرة',
+    'VerificationCodes'    => 'أكواد التحقق|كود التحقق',
 ];
