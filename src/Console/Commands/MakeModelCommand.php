@@ -342,8 +342,8 @@ html;
             'order_by' => ['int'],
 html;
             $migration .= '
-            $table->boolean(\'active\')->default(!0);
-            $table->integer(\'order_by\')->default(0);';
+            $table->boolean(\'active\')->comment(\'Show or hide\')->default(!0);
+            $table->integer(\'order_by\')->comment(\'Item display order\')->default(0);';
             $resource .= '
             \'status_to_string\' => $model->active_to_string,';
         }
@@ -354,7 +354,7 @@ html;
             $class_methods .= "
     public static function translatorAttributes(): array
     {
-        return ['name',];
+        return ['name'];
     }
 ";
         }
