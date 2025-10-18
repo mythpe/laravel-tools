@@ -125,9 +125,9 @@ trait FilterTrait
                     $builder->whereDate($column, '>=', $from->min($to))->whereDate($column, '<=', $to->max($from));
                 }
                 elseif (!in_array($column, $idsColumns) && Helpers::hasNumericCast($model, $column) && !Str::endsWith($column, '_id')) {
-                    $from = ($value['from'] ?? ($value[0] ?? null));
-                    $to = ($value['to'] ?? ($value[1] ?? null));
-                    $builder->where($column, '>=', min($from, $to))->where($column, '<=', max($to, $from));
+                    $from = ($value['from'] ?? ($value[0] ?? null)) ?: 0;
+                    $to = ($value['to'] ?? ($value[1] ?? null)) ?: $from;
+                    $builder->where($column, '>=', floatval(min($from, $to)))->where($column, '<=', floatval(max($to, $from)));
                 }
                 else {
                     if (is_array($value[0] ?? null)) {
