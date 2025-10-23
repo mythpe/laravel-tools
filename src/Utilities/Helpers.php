@@ -110,7 +110,15 @@ return [
         if (method_exists($model, 'getDeletedAtColumn') && $model->getDeletedAtColumn() == $key) {
             return !0;
         }
-        return $model->hasCast($key, ['date', 'datetime', 'custom_datetime', 'immutable_date', 'immutable_custom_datetime', 'immutable_datetime', 'timestamp']);
+        return $model->hasCast($key, [
+            'date',
+            'datetime',
+            'custom_datetime',
+            'immutable_date',
+            'immutable_custom_datetime',
+            'immutable_datetime',
+            'timestamp',
+        ]);
     }
 
     /**
@@ -169,5 +177,29 @@ return [
         $lonDelta = $lonTo - $lonFrom;
         $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
         return round($angle * $earthRadius, $precision);
+    }
+
+    /**
+     * @param $value
+     * @param string $separator
+     * @param bool $int
+     * @param bool $unique
+     * @return array
+     */
+    public static function splitString($value, string $separator = ',;|', bool $int = !1, bool $unique = !0): array
+    {
+        if (empty($value)) {
+            return [];
+        }
+
+        if (!is_array($value)) {
+            $value = collect(preg_split('/\s*['.$separator.']\s*/', $value, -1, PREG_SPLIT_NO_EMPTY))
+                ->when($int, fn($collect) => $collect->filter(fn($item) => is_numeric(trim($item))))
+                ->when($int, fn($collect) => $collect->map(fn($item) => (int) (trim($item))))
+                ->when($unique, fn($collect) => $collect->unique())
+                ->values()
+                ->toArray();
+        }
+        return $value;
     }
 }
