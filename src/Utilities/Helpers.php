@@ -202,4 +202,20 @@ return [
         }
         return $value;
     }
+
+    /**
+     * @param $value
+     * @return bool
+     */
+    public static function isHtmlEmpty($value): bool
+    {
+        if (empty($value)) {
+            return false;
+        }
+        $text = html_entity_decode($value);
+        $text = strip_tags($text);
+        $text = preg_replace('/[^\S ]+/', ' ', $text);
+        $text = preg_replace('/\s+/', ' ', $text);
+        return empty(trim($text));
+    }
 }
