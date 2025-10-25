@@ -204,16 +204,16 @@ return [
     }
 
     /**
-     * @param $value
+     * @param $text
      * @return bool
      */
-    public static function isHtmlEmpty($value): bool
+    public static function isHtmlEmpty($text): bool
     {
-        if (empty($value)) {
-            return false;
+        if (empty($text)) {
+            return true;
         }
-        $text = html_entity_decode($value);
         $text = strip_tags($text);
+        $text = str_replace('&nbsp;', ' ', $text);
         $text = preg_replace('/[^\S ]+/', ' ', $text);
         $text = preg_replace('/\s+/', ' ', $text);
         return empty(trim($text));
