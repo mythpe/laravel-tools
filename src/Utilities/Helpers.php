@@ -213,7 +213,7 @@ return [
             return true;
         }
         $text = strip_tags($text);
-        $text = str_replace('&nbsp;', ' ', $text);
+        $text = str_replace('&nbsp;', '', $text);
         $text = preg_replace('/[^\S ]+/', ' ', $text);
         $text = preg_replace('/\s+/', ' ', $text);
         return empty(trim($text));
