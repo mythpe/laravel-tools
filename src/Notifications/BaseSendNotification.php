@@ -282,7 +282,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
             if (method_exists($notifiable, 'routeNotificationForSms')) {
                 return $notifiable->routeNotificationForSms($this);
             }
-            return $notifiable->phone || $notifiable->mobile;
+            return $notifiable->phone ?: $notifiable->mobile;
         }
         return null;
     }
