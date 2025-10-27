@@ -25,6 +25,8 @@ trait BaseModelTrait
     public ?int $numberFormat = null;
     /** @var array<int,string> - e.g: ['customers','users'] */
     protected array $cloneRelations = [];
+    /** @var bool */
+    protected bool $cloneAddCopyText = true;
 
     /**
      * @return string
@@ -489,7 +491,7 @@ trait BaseModelTrait
     public function cloneModel(array $except = []): static
     {
         $clone = $this->replicate(array_keys($except));
-        if (empty($except)) {
+        if ($clone->cloneAddCopyText) {
             if ($clone->isFillable('name')) {
                 $clone->name = __('replace.copy_of', ['name' => $this->name]);
             }
@@ -508,9 +510,9 @@ trait BaseModelTrait
             if ($clone->isFillable($s = Str::snake(class_basename($this)).'_name_en')) {
                 $clone->{$s} = __('replace.copy_of', ['name' => $clone->{$s}]);
             }
-            if ($clone->isFillable('order_by')) {
-                $clone->order_by = $this->order_by + 1;
-            }
+        }
+        if ($clone->isFillable('order_by')) {
+            $clone->order_by = $this->order_by + 1;
         }
         foreach ($except as $k => $v) {
             if ($clone->isFillable($k)) {
