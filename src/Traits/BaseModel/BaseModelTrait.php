@@ -26,7 +26,13 @@ trait BaseModelTrait
     /** @var array<int,string> - e.g: ['customers','users'] */
     protected array $cloneRelations = [];
     /** @var bool */
-    protected bool $cloneAddCopyText = true;
+    protected bool $addCopyTextToClone = true;
+    /**
+     * Examples: ['users' ,'invoices']
+     * If a method exists in the model, it will be called. "cloneUsers, cloneInvoices, etc..."
+     * @var array
+     */
+    protected array $cloneWithSync = [];
 
     /**
      * @return string
@@ -491,7 +497,7 @@ trait BaseModelTrait
     public function cloneModel(array $except = []): static
     {
         $clone = $this->replicate(array_keys($except));
-        if ($clone->cloneAddCopyText) {
+        if ($clone->addCopyTextToClone) {
             if ($clone->isFillable('name')) {
                 $clone->name = __('replace.copy_of', ['name' => $this->name]);
             }
@@ -553,6 +559,17 @@ trait BaseModelTrait
             foreach ($this->{$relationName} as $relation) {
                 $relation->cloneModel([$clone->getForeignKey() => $clone->getKey()]);
             }
+        }
+        foreach ($this->cloneWithSync as $relationName) {
+            if (method_exists($this, "clone{$relationName}")) {
+                $this->{"clone{$relationName}"}($clone);
+                continue;
+            }
+            /** @var BelongsToMany $relation */
+            $relation = $this->{$relationName}();
+            $key = $relation->getRelated()->getForeignKey();
+            $ids = $relation->pluck($key)->toArray();
+            $this->{$relationName}()->sync($ids);
         }
         return $clone;
     }
