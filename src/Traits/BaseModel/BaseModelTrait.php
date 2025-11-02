@@ -561,15 +561,15 @@ trait BaseModelTrait
             }
         }
         foreach ($this->cloneWithSync as $relationName) {
-            if (method_exists($this, "clone{$relationName}")) {
-                $this->{"clone{$relationName}"}($clone);
+            if (method_exists($this, $method = "clone".ucfirst($relationName))) {
+                $this->{$method}($clone);
                 continue;
             }
             /** @var BelongsToMany $relation */
             $relation = $this->{$relationName}();
             $key = $relation->getRelated()->getForeignKey();
             $ids = $relation->pluck($key)->toArray();
-            $this->{$relationName}()->sync($ids);
+            $clone->{$relationName}()->sync($ids);
         }
         return $clone;
     }
