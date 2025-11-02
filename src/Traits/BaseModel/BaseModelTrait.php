@@ -529,9 +529,9 @@ trait BaseModelTrait
             $clone->deleted_at = null;
         }
         try {
-            $clone->fireModelEvent('cloning', !1);
+            $clone->fireModelEvent('cloning');
             $clone->push();
-            $clone->fireModelEvent('cloned', !1);
+            $clone->fireModelEvent('cloned');
         }
         catch (Exception $e) {
         }
