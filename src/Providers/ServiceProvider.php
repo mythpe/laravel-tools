@@ -16,6 +16,7 @@ use Myth\LaravelTools\Console\Commands\Export\ExportAttributesCommand;
 use Myth\LaravelTools\Console\Commands\Export\ExportLanguageCommand;
 use Myth\LaravelTools\Console\Commands\MakeModelCommand;
 use Myth\LaravelTools\Console\Commands\PostmanCommand;
+use Myth\LaravelTools\Console\Commands\UtilitiesCommand;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -85,6 +86,7 @@ class ServiceProvider extends BaseServiceProvider
                 MakeModelCommand::class,
                 CheckPermissionNamesCommand::class,
                 ExportAttributesCommand::class,
+                UtilitiesCommand::class,
             ]);
         }
     }
