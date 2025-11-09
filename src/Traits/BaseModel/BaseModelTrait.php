@@ -575,6 +575,15 @@ trait BaseModelTrait
     }
 
     /**
+     * Get the importable attributes for the model.
+     * @return array<string>
+     */
+    public function getImportable()
+    {
+        return $this->getFillable();
+    }
+
+    /**
      *
      * $this->name
      * @return Attribute

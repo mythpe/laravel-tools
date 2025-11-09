@@ -41,10 +41,17 @@ class BaseExampleExport implements FromArray, WithEvents
     public function array(): array
     {
         $headers = [];
-        $fill = method_exists($this->model, 'exampleHeaders') ? $this->model->exampleHeaders() : $this->model->getFillable();
-        foreach ($fill as $field) {
-            $headers[] = __("attributes.$field");
+        $importable = method_exists($this->model, 'getImportable') ? $this->model->getImportable() : $this->model->getFillable();
+        foreach ($importable as $key => $value) {
+            if (is_numeric($key)) {
+                $header = trans_has("attributes.$value") ? __("attributes.$value") : $value;
+            }
+            else {
+                $header = trans_has("attributes.$key") ? __("attributes.$key") : $key;
+            }
+            $headers[] = $header;
         }
+
         return [
             $headers,
         ];
