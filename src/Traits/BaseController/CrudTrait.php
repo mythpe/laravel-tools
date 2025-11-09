@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
-use Myth\LaravelTools\Exports\BaseExport;
+use Myth\LaravelTools\Exports\BaseExampleExport;
 use Myth\LaravelTools\Http\Resources\ApiResource;
 use Myth\LaravelTools\Models\BaseModel as Model;
 use Psr\Container\ContainerExceptionInterface;
@@ -556,6 +556,6 @@ trait CrudTrait
      */
     protected function getExampleExportClass()
     {
-        return BaseExport::class;
+        return BaseExampleExport::class;
     }
 }
