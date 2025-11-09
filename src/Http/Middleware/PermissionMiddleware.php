@@ -45,6 +45,8 @@ class PermissionMiddleware
         $className = get_class($controller);
         $maps = [
             'clone'      => 'store',
+            'example'    => 'import',
+            'exampleUrl' => 'import',
             'destroyAll' => 'destroy',
         ];
         if (defined("$className::MAP_PERMISSIONS")) {
