@@ -16,7 +16,7 @@ use Myth\LaravelTools\Models\BaseModel;
 
 class BaseExampleExport implements FromArray, WithEvents
 {
-    public static ?string $locale = null;
+    public static ?string $locale = 'en';
 
     public function __construct(
         public BaseModel $model
