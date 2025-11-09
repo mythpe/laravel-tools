@@ -10,15 +10,29 @@
 namespace Myth\LaravelTools\Exports;
 
 use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
 use Myth\LaravelTools\Models\BaseModel;
 
-class BaseExampleExport implements FromArray
+class BaseExampleExport implements FromArray, WithEvents
 {
     public function __construct(
         public BaseModel $model
     )
     {
         //
+    }
+
+    /**
+     * @return array
+     */
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $event->sheet->getDelegate()->setRightToLeft(app()->getLocale() == 'ar');
+            },
+        ];
     }
 
     /**

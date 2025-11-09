@@ -536,8 +536,8 @@ trait CrudTrait
     public function example()
     {
         $class = $this->getExampleExportClass();
-        $fileName = class_basename($class);
-        return Excel::download(new $class($this->getBindModel()), "$fileName.xlsx");
+        $fileName = class_basename($this->getBindModel());
+        return Excel::download(new $class($this->getBindModel()), str("{$fileName}")->pluralStudly()."Example.xlsx");
     }
 
     /**
