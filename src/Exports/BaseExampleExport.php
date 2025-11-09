@@ -51,7 +51,7 @@ class BaseExampleExport implements FromArray, WithEvents
                 $header = trans_has("attributes.$value") ? __("attributes.$value", [], $locale) : $value;
             }
             else {
-                $header = trans_has("attributes.$key") ? __("attributes.$key", [], $locale) : $key;
+                $header = $value;
             }
             $headers[] = $header;
         }
