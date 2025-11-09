@@ -19,7 +19,6 @@ use Myth\LaravelTools\Http\Resources\ApiResource;
 use Myth\LaravelTools\Models\BaseModel as Model;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 trait CrudTrait
 {
@@ -534,7 +533,7 @@ trait CrudTrait
      * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function example(): BinaryFileResponse
+    public function example()
     {
         $class = $this->getExampleExportClass();
         $fileName = class_basename($class);
@@ -544,7 +543,7 @@ trait CrudTrait
     /**
      * @return JsonResponse
      */
-    public function exampleUrl(): JsonResponse
+    public function exampleUrl()
     {
         $name = str(class_basename($this->getBindModel()))->studly();
         return $this->resource([
@@ -555,7 +554,7 @@ trait CrudTrait
     /**
      * @return string
      */
-    protected function getExampleExportClass(): string
+    protected function getExampleExportClass()
     {
         return BaseExport::class;
     }
