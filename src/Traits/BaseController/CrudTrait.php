@@ -543,6 +543,7 @@ trait CrudTrait
     {
         $class = $this->getExampleExportClass();
         BaseExampleExport::$locale = static::$exampleLocale;
+        BaseExampleExport::$rtl = $this->getExampleExportRtl();
         $fileName = class_basename($this->getBindModel());
         return Excel::download(new $class($this->getBindModel()), str("{$fileName}")->pluralStudly()."Example.xlsx");
     }
@@ -556,6 +557,14 @@ trait CrudTrait
         return $this->resource([
             'url' => route("web.{$name}.example"),
         ]);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function getExampleExportRtl(): bool
+    {
+        return app()->getLocale() === 'ar';
     }
 
     /**

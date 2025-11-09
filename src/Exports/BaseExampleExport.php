@@ -17,6 +17,7 @@ use Myth\LaravelTools\Models\BaseModel;
 class BaseExampleExport implements FromArray, WithEvents
 {
     public static ?string $locale = 'en';
+    public static bool $rtl = false;
 
     public function __construct(
         public BaseModel $model
@@ -32,7 +33,7 @@ class BaseExampleExport implements FromArray, WithEvents
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->setRightToLeft(app()->getLocale() == 'ar');
+                $event->sheet->getDelegate()->setRightToLeft(static::$rtl);
             },
         ];
     }
