@@ -13,10 +13,13 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Facades\Excel;
+use Myth\LaravelTools\Exports\BaseExport;
 use Myth\LaravelTools\Http\Resources\ApiResource;
 use Myth\LaravelTools\Models\BaseModel as Model;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 trait CrudTrait
 {
@@ -507,5 +510,53 @@ trait CrudTrait
             return $this->request->route()?->parameter($name) ?: new static::$controllerModel;
         }
         return $model;
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function import()
+    {
+        $request = $this->request;
+        $request->validate($this->_importRules());
+        return $this->resource([], __('messages.import_success'));
+    }
+
+    /**
+     * @return array
+     */
+    public function _importRules(): array
+    {
+        return [];
+    }
+
+    /**
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    public function example(): BinaryFileResponse
+    {
+        $class = $this->getExampleExportClass();
+        $fileName = class_basename($class);
+        return Excel::download(new $class($this->getBindModel()), "$fileName.xlsx");
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function exampleUrl(): JsonResponse
+    {
+        $name = str(class_basename($this->getBindModel()))->studly();
+        return $this->resource([
+            'url' => route("web.{$name}.example"),
+        ]);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getExampleExportClass(): string
+    {
+        return BaseExport::class;
     }
 }
