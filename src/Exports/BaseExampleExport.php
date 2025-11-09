@@ -16,6 +16,8 @@ use Myth\LaravelTools\Models\BaseModel;
 
 class BaseExampleExport implements FromArray, WithEvents
 {
+    public static ?string $locale = null;
+
     public function __construct(
         public BaseModel $model
     )
@@ -42,12 +44,13 @@ class BaseExampleExport implements FromArray, WithEvents
     {
         $headers = [];
         $importable = method_exists($this->model, 'getImportable') ? $this->model->getImportable() : $this->model->getFillable();
+        $locale = static::$locale;
         foreach ($importable as $key => $value) {
             if (is_numeric($key)) {
-                $header = trans_has("attributes.$value") ? __("attributes.$value") : $value;
+                $header = trans_has("attributes.$value") ? __("attributes.$value", [], $locale) : $value;
             }
             else {
-                $header = trans_has("attributes.$key") ? __("attributes.$key") : $key;
+                $header = trans_has("attributes.$key") ? __("attributes.$key", [], $locale) : $key;
             }
             $headers[] = $header;
         }

@@ -43,6 +43,12 @@ trait CrudTrait
      * @var string
      */
     public static string $indexTransformer = ApiResource::class;
+    /**
+     * Set locale of example export.
+     * Default is 'en'
+     * @var string|null
+     */
+    public static ?string $exampleLocale = 'en';
 
     /**
      * With query index
@@ -536,6 +542,7 @@ trait CrudTrait
     public function example()
     {
         $class = $this->getExampleExportClass();
+        BaseExampleExport::$locale = static::$exampleLocale;
         $fileName = class_basename($this->getBindModel());
         return Excel::download(new $class($this->getBindModel()), str("{$fileName}")->pluralStudly()."Example.xlsx");
     }
