@@ -192,7 +192,8 @@ class BaseSendNotification extends Notification implements ShouldQueue
             return '';
         }
         if (is_array($this->{$name})) {
-            return __(...$this->{$name});
+            $values = $this->{$name};
+            return __($values[0] ?? '', $values[1] ?? [], $values[2] ?? $this->locale);
         }
         if (is_callable($this->{$name})) {
             return call_user_func($this->{$name}, $notifiable);
