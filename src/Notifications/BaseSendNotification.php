@@ -133,6 +133,7 @@ class BaseSendNotification extends Notification implements ShouldQueue
         return [
             'subject' => $this->getTitle($notifiable),
             'content' => $this->getContent($notifiable),
+            'locale'  => $this->locale,
             ...$this->getData($notifiable),
         ];
     }
