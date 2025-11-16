@@ -218,4 +218,39 @@ return [
         $text = preg_replace('/\s+/', ' ', $text);
         return empty(trim($text));
     }
+
+    /**
+     * Parse a template string and replace placeholders with values from the data array
+     * @param string $string The template string to parse
+     * @param array<string,\Closure|string> $data Associative array of placeholder values
+     * @param mixed|null $context Additional context to pass to callable values (optional)
+     * @param \Closure|string|null $default Default value for missing placeholders (optional)
+     * @param string $pattern Regex pattern to find placeholders (default: '/\{(\w+)\}/')
+     * @return string The parsed template with replaced values
+     *
+     * @example
+     * $template = "Hello {name}, you have {count} messages";
+     * $data = ['name' => 'Ahmed', 'count' => 5];
+     * Output: "Hello Ahmed, you have 5 messages"
+     */
+    public static function parseTemplate(
+        string $string,
+        array  $data = [],
+        mixed  $context = null,
+        mixed  $default = null,
+        string $pattern = '/\{(\w+)\}/',
+    ): string
+    {
+        return preg_replace_callback($pattern, function ($matches) use (&$data, &$context, $default) {
+            $key = $matches[1] ?? null;
+            if ($key) {
+                $value = $data[$key] ?? $matches[0] ?? '';
+                return is_callable($value) ? $value($context) : $value;
+            }
+            if (null !== $default) {
+                return is_callable($default) ? $default($context) : $default;
+            }
+            return $matches[0] ?? '';
+        }, $string);
+    }
 }
