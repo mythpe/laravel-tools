@@ -117,7 +117,7 @@ class BaseCommand extends Command
                     $src = "https://picsum.photos/id/$random/$w/$h";
                 }
                 elseif (is_string($src)) {
-                    $src = is_file($src) ? $src : (Str::startsWith($src, '/') ? base_path($src) : $this->disk()->path($src));
+                    $src = filter_var($src, FILTER_VALIDATE_URL) ? $src : (is_file($src) ? $src : (Str::startsWith($src, '/') ? base_path($src) : $this->disk()->path($src)));
                 }
                 $props = is_array($src) ? ($src['props'] ?? []) : [];
                 $model->addModelMedia($src, $collection, $props);
