@@ -10,6 +10,7 @@
 namespace Myth\LaravelTools\Providers;
 
 use Illuminate\Foundation\Console\AboutCommand;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Myth\LaravelTools\Console\Commands\CheckPermissionNamesCommand;
 use Myth\LaravelTools\Console\Commands\Export\ExportAttributesCommand;
@@ -17,6 +18,7 @@ use Myth\LaravelTools\Console\Commands\Export\ExportLanguageCommand;
 use Myth\LaravelTools\Console\Commands\MakeModelCommand;
 use Myth\LaravelTools\Console\Commands\PostmanCommand;
 use Myth\LaravelTools\Console\Commands\UtilitiesCommand;
+use Myth\LaravelTools\Utilities\Helpers;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -89,5 +91,24 @@ class ServiceProvider extends BaseServiceProvider
                 UtilitiesCommand::class,
             ]);
         }
+
+        // Validators
+        Validator::extend('required_html', function ($attribute, $html, $parameters, $validator) {
+            /** @var \Illuminate\Validation\Validator $validator */
+            if (empty($parameters)) {
+                return !Helpers::isHtmlEmpty($html);
+            }
+            $field = $validator->getValue($parameters[0]);
+            $values = collect($parameters)->slice(1)->map(fn($v) => match ($v) {
+                'true' => true,
+                'false' => false,
+                'null', 'undefined' => null,
+                default => $v
+            })->toArray();
+            if (in_array($field, $values)) {
+                return !Helpers::isHtmlEmpty($html);
+            }
+            return !0;
+        });
     }
 }
