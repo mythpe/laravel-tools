@@ -55,6 +55,9 @@ if (!function_exists('to_number_format')) {
         }
         $v = number_format((float) $number, $decimals, $dec_point, $thousands_sep);
         $v = $v ?: '0.00';
+        if (is_null($decimals) && str($v)->endsWith('.00')) {
+            $v = str($v)->beforeLast('.00');
+        }
         $currency = $currency ?: '';
         return trim("$v $currency");
     }
