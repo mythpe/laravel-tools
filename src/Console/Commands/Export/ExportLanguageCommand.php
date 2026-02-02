@@ -21,6 +21,8 @@ class ExportLanguageCommand extends BaseCommand
      */
     protected $signature = 'myth:lang
 {--f|flip : File choice files}
+{--t|type=json : Export type like json | undot | dot}
+{--e|ext=json : Export Extension}
 {--o|output=deploy : Output path}
 {--d|disk=setup : Output Disk}
 {--F|files=* : Files with export}';
@@ -42,38 +44,69 @@ class ExportLanguageCommand extends BaseCommand
         $this->applyCustomStyle();
         $this->info('Start Export');
         $langDisk = Storage::disk('lang');
+        $ext = $this->option('ext');
         $this->diskName = $this->option('disk');
         $outputDisk = $this->disk();
         $locales = $langDisk->allDirectories();
-        $configFiles = $this->option('files', '*');
+        $configFiles = $this->option('files');
         if (empty($configFiles)) {
             $configFiles = config('4myth-tools.js_lang_command_files', '*');
+        }
+        if (!is_array($configFiles)) {
+            $configFiles = [$configFiles];
         }
         // $configFiles = '*';
         $dir = $this->option('output');
         $flipChoiceFiles = $this->option('flip');
+        $empty = [];
+        $array = [];
         foreach ($locales as $locale) {
-            if ($configFiles == '*') {
+            $array[$locale] ??= [];
+            if ($configFiles == '*' || (count($configFiles) == 1 && $configFiles[0] == '*')) {
                 $files = $langDisk->allFiles($locale);
             }
             else {
-                $files = collect($langDisk->allFiles($locale))->filter(fn($e) => in_array(pathinfo($e, PATHINFO_FILENAME), $configFiles))->values()->toArray();
+                $files = collect($langDisk->allFiles($locale))
+                    ->filter(
+                        fn($e) => in_array(pathinfo($e, PATHINFO_FILENAME), $configFiles)
+                    )->values()->toArray();
             }
             foreach ($files as $file) {
-                $fileName = pathinfo($file, PATHINFO_FILENAME);
-                $data = collect(require $langDisk->path($file));
+                $info = pathinfo($file);
+                $fileName = $info['filename'];
+                $extension = $info['extension'];
+                $data = collect();
+                if ($extension == 'php') {
+                    $data = collect(require $langDisk->path($file));
+                }
+                if ($extension == 'json') {
+                    $data = collect(json_decode(trim($langDisk->get($file)), !0));
+                }
                 if ($fileName == 'choice' && $locale == 'ar') {
                     $data = $data->map(function ($v) {
                         $res = explode('|', $v);
                         if (count($res) == 2) {
                             return implode('|', [$res[1], $res[0]]);
                         }
-
                         return $v;
                     });
                 }
-                $path = "$dir/$locale/$fileName.json";
-                // $outputDisk->put($path, $data->undot()->toJson(JSON_UNESCAPED_UNICODE));
+                $array[$locale][$fileName] ??= collect();
+                $array[$locale][$fileName] = $array[$locale][$fileName]->merge($data);
+            }
+        }
+        foreach ($array as $locale => $files) {
+            foreach ($files as $fileName => $data) {
+                $outDir = "$dir/$locale";
+                if (!in_array($locale, $empty)) {
+                    $outputDisk->deleteDirectory($outDir);
+                    $empty[] = $locale;
+                }
+                $path = "$outDir/$fileName.$ext";
+                $type = $this->option('type');
+                if (method_exists($data, $type)) {
+                    $data = $data->{$type}();
+                }
                 $outputDisk->put($path, $data->toJson(JSON_UNESCAPED_UNICODE));
                 $o = str_ireplace(base_path(), '', $outputDisk->path($path));
                 $o = str_ireplace('/', '\\', $o);
