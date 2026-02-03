@@ -23,7 +23,7 @@ trait BaseModelTrait
      * Default is non. Will append it.
      */
     public ?int $numberFormat = null;
-    /** @var array<int,string> - e.g: ['customers','users'] */
+    /** @var array<int,string> - e.g.: ['customers','users'] */
     protected array $cloneRelations = [];
     /** @var bool */
     protected bool $addCopyTextToClone = true;
