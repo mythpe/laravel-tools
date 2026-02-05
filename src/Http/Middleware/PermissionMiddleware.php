@@ -57,7 +57,7 @@ class PermissionMiddleware
         }
         $mainPermission = Str::beforeLast($permissionName, '.');
         $currentMethod = Str::afterLast($permissionName, '.');
-        if (($permissions = ($maps[$permissionName] ?? null))) {
+        if ($permissions = ($maps[$permissionName] ?? null)) {
             throw_if(!$user->checkPermission($permissions), new NoPermissionException());
             return $next($request);
         }
