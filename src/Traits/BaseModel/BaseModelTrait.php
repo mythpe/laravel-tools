@@ -578,9 +578,30 @@ trait BaseModelTrait
      * Get the importable attributes for the model.
      * @return array<string>
      */
-    public function getImportable()
+    public function getImportable(): array
     {
         return $this->getFillable();
+    }
+
+    /**
+     * @param string $attribute
+     * @param string|null $country
+     * @param $default
+     * @return mixed|string|null
+     */
+    public function modelPhoneToString(string $attribute = 'phone', ?string $country = null, $default = null)
+    {
+        $value = $this->{$attribute};
+        $country ??= $this->{"{$attribute}_country"};
+        if (!$value || !$country) {
+            return $default;
+        }
+        try {
+            return phone($value, $country)->formatForMobileDialingInCountry($country);
+        }
+        catch (\Exception $exception) {
+            return $default;
+        }
     }
 
     /**

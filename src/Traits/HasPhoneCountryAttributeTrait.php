@@ -15,10 +15,10 @@ use Propaganistas\LaravelPhone\PhoneNumber;
 /**
  * @property PhoneNumber $phone
  * @property string $phone_country
- * @property string $phone_to_string normally used
- * @property string $phone_normalized
- * @property string $phone_international as a database save.
- * @property string $phone_national
+ * @property string $phone_to_string as phone national Normal phone. Local.
+ * @property string $phone_normalized country code without [+].
+ * @property string $phone_international as a database save with [+].
+ * @property string $phone_national Normal phone. Local.
  */
 trait HasPhoneCountryAttributeTrait
 {
@@ -51,26 +51,28 @@ trait HasPhoneCountryAttributeTrait
 
     /**
      * $this->phone_to_string
-     * without 0 and spaces
+     * as phone national
      *
      * @return Attribute
      */
     protected function phoneToString(): Attribute
     {
         return Attribute::get(
-        // fn() => preg_replace('/\s|^0/', '', $this->{$this->phoneAttributeKey()}?->formatNational() ?? '')
-            fn() => preg_replace('/\D/', '', $this->{$this->phoneAttributeKey()}?->formatNational() ?? '')
+            fn() => $this->{$this->phoneAttributeKey()}?->formatForMobileDialingInCountry($this->{$this->phoneCountryAttributeKey()})
         );
     }
 
     /**
      * $this->phone_national
+     * Normal phone.
      *
      * @return Attribute
      */
     protected function phoneNational(): Attribute
     {
-        return Attribute::get(fn() => preg_replace('/\s+/', '', $this->{$this->phoneAttributeKey()}?->formatNational() ?? ''));
+        return Attribute::get(
+            fn() => $this->{$this->phoneAttributeKey()}?->formatForMobileDialingInCountry($this->{$this->phoneCountryAttributeKey()})
+        );
     }
 
     /**
@@ -92,7 +94,6 @@ trait HasPhoneCountryAttributeTrait
      */
     protected function phoneNormalized(): Attribute
     {
-        //return Attribute::get(fn() => preg_replace('/\s+|\+/', '', $this->{$this->phoneAttributeKey()}?->formatE164() ?? ''));
         return Attribute::get(fn() => preg_replace('/\D/', '', $this->{$this->phoneAttributeKey()}?->formatE164() ?? ''));
     }
 }
