@@ -57,22 +57,17 @@ class PermissionMiddleware
         }
         $mainPermission = Str::beforeLast($permissionName, '.');
         $currentMethod = Str::afterLast($permissionName, '.');
+        if (($permissions = ($maps[$permissionName] ?? null))) {
+            throw_if(!$user->checkPermission($permissions), new NoPermissionException());
+            return $next($request);
+        }
+
         if ($methodMap = ($maps[$currentMethod] ?? null)) {
             $permissionName = [];
             foreach ((array) $methodMap as $method) {
                 $permissionName[] = Str::contains($method, ['.']) ? $method : $mainPermission.Str::start($method, '.');
             }
         }
-        // dd($permissionName, $currentMethod, $methodMap);
-        // foreach ($maps as $key => $values) {
-        //     foreach ((array) $values as $value) {
-        //         dd($key, $value, $permissionName);
-        //         if (Str::endsWith($permissionName, ".$key")) {
-        //             $permissionName = str_replace(".$key", ".$value", $permissionName);
-        //             break;
-        //         }
-        //     }
-        // }
 
         $skip = config('4myth-tools.skip_permission_ends_with', []);
         $skipMap = [];
@@ -90,7 +85,6 @@ class PermissionMiddleware
             $skip[] = Str::start($value, '.');
         }
         $skip = array_unique($skip);
-
         foreach ((array) $permissionName as $value) {
             if (Str::endsWith($value, $skip)) {
                 $throw = !1;
