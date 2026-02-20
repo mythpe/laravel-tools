@@ -34,4 +34,13 @@ trait BelongsTo{studlySingular}
         !is_array($value) && ($value = explode(',', $value));
         return $builder->whereIn('{snakeSingular}_id', $value);
     }
+
+    /**
+     * $this->{snakeSingular}_id_to_string
+     * @return Attribute
+     */
+    protected function {camelSingular}IdToString(): Attribute
+    {
+        return Attribute::get(fn() => $this->{camelSingular}->name);
+    }
 }

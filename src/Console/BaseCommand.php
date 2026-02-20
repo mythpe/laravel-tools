@@ -328,7 +328,7 @@ class BaseCommand extends Command
             $model = $RelationModel->create($fill);
         }
         if ($model->isFillable('order_by') && !$model->order_by) {
-            $model->update(['order_by' => $model::query()->count() + 1]);
+            $model->update(['order_by' => $model::query()->count()]);
         }
         $this->insertImage($model, $insert);
         $this->pushData($model);
