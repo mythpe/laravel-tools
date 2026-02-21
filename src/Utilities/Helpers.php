@@ -257,7 +257,7 @@ return [
     }
 
     /**
-     * @param  array|null  $codes
+     * @param array|null $codes
      * @return array
      */
     public static function countries(?array $codes = ['SA']): array
@@ -269,18 +269,22 @@ return [
         $countries = [];
         $arNames = Countries::getNames('ar');
         $enNames = Countries::getNames('en');
+        $locale = app()->getLocale();
         foreach ($codes as $countryCode) {
             $countryCallingCode = $phoneUtil->getCountryCodeForRegion($countryCode);
             $ar = $arNames[$countryCode] ?? null;
             $en = $enNames[$countryCode] ?? null;
             $id = $countryCode;
             $key = "$countryCallingCode";
+            $name = $locale == 'ar' ? $ar : $en;
             $countries[] = [
                 'id'         => $id,
                 'value'      => $id,
-                'label'      => "$key • $id",
+                // 'label'      => "$key • $id",
+                'label'      => $name,
                 'code'       => $id,
-                'code_label' => $id,
+                'code_label' => "$name $key",
+                'name'       => $name,
                 'name_ar'    => $ar,
                 'name_en'    => $en,
                 'key'        => $key,
