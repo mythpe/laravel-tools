@@ -312,4 +312,18 @@ return [
 
         return $flag;
     }
+
+    /**
+     * @param $country
+     * @param string|null $locale
+     * @return string|null
+     */
+    public static function getCountryDisplayName($country, ?string $locale = null): ?string
+    {
+        if (!$country) {
+            return null;
+        }
+        $locale ??= app()->getLocale();
+        return Countries::getName($country, $locale);
+    }
 }
