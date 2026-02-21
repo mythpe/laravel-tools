@@ -17,7 +17,8 @@
     "ext-zip": "*",
     "ext-json": "*",
     "ext-gd": "*",
-    "ext-sodium": "*"
+    "ext-sodium": "*",
+    "symfony/intl": "7.4.x-dev"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.13",

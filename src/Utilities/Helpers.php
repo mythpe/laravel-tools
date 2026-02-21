@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use libphonenumber\PhoneNumberUtil;
+use Symfony\Component\Intl\Countries;
 
 class Helpers
 {
@@ -252,5 +254,57 @@ return [
             }
             return $matches[0] ?? '';
         }, $string);
+    }
+
+    /**
+     * @param  array|null  $codes
+     * @return array
+     */
+    public static function countries(?array $codes = ['SA']): array
+    {
+        $phoneUtil = PhoneNumberUtil::getInstance();
+        if (empty($codes)) {
+            $codes = $phoneUtil->getSupportedRegions();
+        }
+        $countries = [];
+        $arNames = Countries::getNames('ar');
+        $enNames = Countries::getNames('en');
+        foreach ($codes as $countryCode) {
+            $countryCallingCode = $phoneUtil->getCountryCodeForRegion($countryCode);
+            $ar = $arNames[$countryCode] ?? null;
+            $en = $enNames[$countryCode] ?? null;
+            $id = $countryCode;
+            $key = "$countryCallingCode";
+            $countries[] = [
+                'id'         => $id,
+                'value'      => $id,
+                'label'      => "$key • $id",
+                'code'       => $id,
+                'code_label' => $id,
+                'name_ar'    => $ar,
+                'name_en'    => $en,
+                'key'        => $key,
+                'flag'       => static::countryCodeToFlag($countryCode),
+            ];
+        }
+        usort($countries, function ($a, $b) {
+            return strcmp($a['key'], $b['key']);
+        });
+        return $countries;
+    }
+
+    public static function countryCodeToFlag($countryCode): string
+    {
+        $countryCode = strtoupper($countryCode);
+        if (strlen($countryCode) !== 2 || !ctype_alpha($countryCode)) {
+            return '';
+        }
+
+        $flag = '';
+        foreach (str_split($countryCode) as $letter) {
+            $flag .= mb_chr(127397 + ord($letter));
+        }
+
+        return $flag;
     }
 }
