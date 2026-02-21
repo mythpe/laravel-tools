@@ -113,46 +113,6 @@ class GetawayTransaction extends BaseModel
     }
 
     /**
-     * @param Builder $builder
-     * @param $value
-     * @return Builder
-     */
-    protected function scopeByTransactionId(Builder $builder, $value): Builder
-    {
-        if (!is_array($value)) {
-            $value = explode(',', $value);
-        }
-        return $builder->whereIn('transaction_id', $value);
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeSuccessOnly(Builder $builder): Builder
-    {
-        return $builder->where('response_code', '=', '000');
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeUsedOnly(Builder $builder): Builder
-    {
-        return $builder->where('used', '=', !0);
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeNotUsedOnly(Builder $builder): Builder
-    {
-        return $builder->where('used', '=', !1);
-    }
-
-    /**
      * $this->description_to_string
      * @return ?string
      */
@@ -360,5 +320,45 @@ class GetawayTransaction extends BaseModel
     function getOutstandingAmountAttribute(): float
     {
         return $this->getOutstandingAmount();
+    }
+
+    /**
+     * @param Builder $builder
+     * @param $value
+     * @return Builder
+     */
+    protected function scopeByTransactionId(Builder $builder, $value): Builder
+    {
+        if (!is_array($value)) {
+            $value = explode(',', $value);
+        }
+        return $builder->whereIn('transaction_id', $value);
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeSuccessOnly(Builder $builder): Builder
+    {
+        return $builder->where('response_code', '=', '000');
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeUsedOnly(Builder $builder): Builder
+    {
+        return $builder->where('used', '=', !0);
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeNotUsedOnly(Builder $builder): Builder
+    {
+        return $builder->where('used', '=', !1);
     }
 }

@@ -445,7 +445,7 @@ html;
             $success = !1;
             foreach (config('4myth-tools.locales') as $locale) {
                 $path = lang_path("$locale/attributes.php");
-                $array = require $path;;
+                $array = require $path;
                 if (!is_array($file = file($path))) {
                     continue;
                 }

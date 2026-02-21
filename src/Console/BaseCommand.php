@@ -283,7 +283,7 @@ class BaseCommand extends Command
         request()->merge($insert);
         if ($hasRelations) {
             unset($data['_data']);
-        };
+        }
         $parentName = $RelationModel ? class_basename($RelationModel) : null;
         if (is_null($RelationModel)) {
             $namespaces = ['\\App\\Models', '\\App\\Models\\Utilities'];

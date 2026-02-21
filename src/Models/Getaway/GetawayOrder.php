@@ -241,60 +241,6 @@ class GetawayOrder extends BaseModel
     }
 
     /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeInitialOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '=', static::statuses('initial'));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopePaidOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '=', static::statuses('paid'));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeFailedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '=', static::statuses('failed'));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeUnSuccessfulOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '=', static::statuses('un_successful'));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopeRefundedOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '=', static::statuses('refunded'));
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    protected function scopePartialRefundOnly(Builder $builder): Builder
-    {
-        return $builder->where('status', '=', static::statuses('partial_refund'));
-    }
-
-    /**
      * Make attributes hidden fro array
      * @return string[]
      */
@@ -602,5 +548,59 @@ class GetawayOrder extends BaseModel
             return !1;
         }
         return $this->isAuthorization() && !$this->transactions()->successOnly()->captureOnly()->exists();
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeInitialOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('initial'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopePaidOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('paid'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeFailedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('failed'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeUnSuccessfulOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('un_successful'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopeRefundedOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('refunded'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    protected function scopePartialRefundOnly(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', static::statuses('partial_refund'));
     }
 }

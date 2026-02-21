@@ -9,6 +9,7 @@
 
 namespace Myth\LaravelTools\Utilities;
 
+use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -224,9 +225,9 @@ return [
     /**
      * Parse a template string and replace placeholders with values from the data array
      * @param string $string The template string to parse
-     * @param array<string,\Closure|string> $data Associative array of placeholder values
+     * @param array<string,Closure|string> $data Associative array of placeholder values
      * @param mixed|null $context Additional context to pass to callable values (optional)
-     * @param \Closure|string|null $default Default value for missing placeholders (optional)
+     * @param Closure|string|null $default Default value for missing placeholders (optional)
      * @param string $pattern Regex pattern to find placeholders (default: '/\{(\w+)\}/')
      * @return string The parsed template with replaced values
      *

@@ -599,7 +599,7 @@ trait BaseModelTrait
         try {
             return phone($value, $country)->formatForMobileDialingInCountry($country);
         }
-        catch (\Exception $exception) {
+        catch (Exception $exception) {
             return $default;
         }
     }

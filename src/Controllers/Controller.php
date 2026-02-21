@@ -10,8 +10,8 @@
 namespace Myth\LaravelTools\Controllers;
 
 use App\Models\User;
+use Closure;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -72,7 +72,7 @@ class Controller extends BaseController
     {
         $this->request = request();
         method_exists($this, 'iniPaginateRequest') && $this->iniPaginateRequest($this->request);
-        $this->middleware(function ($request, \Closure $next) {
+        $this->middleware(function ($request, Closure $next) {
             $this->user = $request->user();
             return $next($request);
         });
