@@ -40,7 +40,7 @@
     "laravel-notification-channels/fcm": "^4.5",
     "kreait/laravel-firebase": "^5.10",
     "propaganistas/laravel-phone": "^5.3",
-    "symfony/intl": "^v8.0.4"
+    "symfony/intl": "^v7"
   },
   "license": "MIT",
   "autoload": {
