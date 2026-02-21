@@ -273,9 +273,10 @@ return [
      * @param string|null $search
      * @param array $searchBy
      * @param array|null $codes
+     * @param array|null $locale
      * @return array
      */
-    public static function countries(?string $search = null, array $searchBy = [], ?array $codes = null): array
+    public static function countries(?string $search = null, array $searchBy = [], ?array $codes = null, ?array $locale = null): array
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
         if (empty($codes)) {
@@ -284,7 +285,7 @@ return [
         $countries = [];
         $arNames = Countries::getNames('ar');
         $enNames = Countries::getNames('en');
-        $locale = app()->getLocale();
+        $locale ??= app()->getLocale();
         foreach ($codes as $countryCode) {
             $countryCode = strtoupper($countryCode);
             $countryCallingCode = $phoneUtil->getCountryCodeForRegion($countryCode);
