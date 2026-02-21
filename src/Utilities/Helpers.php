@@ -258,10 +258,10 @@ return [
     }
 
     /**
-     * @param array|null $codes
+     * @param array $codes
      * @return array
      */
-    public static function countries(?array $codes = ['SA']): array
+    public static function countries(array $codes = []): array
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
         if (empty($codes)) {
