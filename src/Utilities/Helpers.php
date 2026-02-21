@@ -135,6 +135,11 @@ return [
         return $model->hasCast($key, ['int', 'integer', 'real', 'float', 'double', 'decimal']);
     }
 
+    /**
+     * @param $column
+     * @param $last
+     * @return mixed|string
+     */
     public static function columnBeforeLast($column, $last = [])
     {
         $last = array_unique(array_merge($last, [
@@ -158,6 +163,13 @@ return [
         return $column;
     }
 
+    /**
+     * @param array|null $coordinateFrom
+     * @param array|null $coordinateTo
+     * @param int $earthRadius
+     * @param $precision
+     * @return float|null
+     */
     public static function getDistance(?array $coordinateFrom = null, ?array $coordinateTo = null, int $earthRadius = 6371, $precision = 2): float | null
     {
         if (!$coordinateFrom || !$coordinateTo) {
@@ -258,10 +270,12 @@ return [
     }
 
     /**
-     * @param array $codes
+     * @param string|null $search
+     * @param array $searchBy
+     * @param array|null $codes
      * @return array
      */
-    public static function countries(array $codes = []): array
+    public static function countries(?string $search = null, array $searchBy = [], ?array $codes = null): array
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
         if (empty($codes)) {
@@ -278,7 +292,8 @@ return [
             $id = $countryCode;
             $key = "$countryCallingCode";
             $name = $locale == 'ar' ? $ar : $en;
-            $countries[] = [
+            $found = !$search;
+            $data = [
                 'id'         => $id,
                 'value'      => $id,
                 // 'label'      => "$key • $id",
@@ -291,6 +306,23 @@ return [
                 'key'        => $key,
                 'flag'       => static::countryCodeToFlag($countryCode),
             ];
+            if ($search) {
+                $search = strtolower($search);
+                if (empty($searchBy)) {
+                    //$searchBy = array_keys($data);
+                    $searchBy = ['name', 'name_ar', 'name_en', 'key'];
+                }
+                foreach ($searchBy as $searchField) {
+                    if (($data[$searchField] ?? null) && str_contains($data[$searchField], $search)) {
+                        $found = !0;
+                        break;
+                    }
+                }
+            }
+            if (!$found) {
+                continue;
+            }
+            $countries[] = $data;
         }
         usort($countries, function ($a, $b) {
             return strcmp($a['key'], $b['key']);
@@ -298,6 +330,10 @@ return [
         return $countries;
     }
 
+    /**
+     * @param $countryCode
+     * @return string
+     */
     public static function countryCodeToFlag($countryCode): string
     {
         $countryCode = strtoupper($countryCode);
