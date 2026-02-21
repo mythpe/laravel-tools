@@ -286,6 +286,7 @@ return [
         $enNames = Countries::getNames('en');
         $locale = app()->getLocale();
         foreach ($codes as $countryCode) {
+            $countryCode = strtoupper($countryCode);
             $countryCallingCode = $phoneUtil->getCountryCodeForRegion($countryCode);
             $ar = $arNames[$countryCode] ?? null;
             $en = $enNames[$countryCode] ?? null;
