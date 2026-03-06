@@ -303,7 +303,7 @@ return [
                 'code'       => $id,
                 // 'code_label' => "$name $key",
                 'code_label' => $id,
-                'code_key'   => "$id-$key",
+                'code_key'   => "$id $key",
                 'name'       => $name,
                 'name_ar'    => $ar,
                 'name_en'    => $en,
