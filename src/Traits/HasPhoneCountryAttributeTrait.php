@@ -15,7 +15,7 @@ use Propaganistas\LaravelPhone\PhoneNumber;
 /**
  * @property PhoneNumber $phone
  * @property string $phone_country
- * @property string $phone_to_string as phone national Normal phone. Local.
+ * @property string $phone_to_string as phone phone_normalized
  * @property string $phone_normalized country code without [+].
  * @property string $phone_international as a database save with [+].
  * @property string $phone_national Normal phone. Local.
@@ -58,7 +58,8 @@ trait HasPhoneCountryAttributeTrait
     protected function phoneToString(): Attribute
     {
         return Attribute::get(
-            fn() => $this->{$this->phoneAttributeKey()}?->formatForMobileDialingInCountry($this->{$this->phoneCountryAttributeKey()})
+            // fn() => $this->{$this->phoneAttributeKey()}?->formatForMobileDialingInCountry($this->{$this->phoneCountryAttributeKey()})
+            fn() => $this->phone_normalized
         );
     }
 
