@@ -76,6 +76,9 @@ class Controller extends BaseController
             $this->user = $request->user();
             return $next($request);
         });
+        if (method_exists($this, 'boot')) {
+            $this->boot();
+        }
     }
 
     /**

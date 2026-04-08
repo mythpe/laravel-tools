@@ -26,19 +26,16 @@ trait CrudTrait
      * @var string|Model
      */
     public static string $controllerModel = Model::class;
-
     /**
      * Name of model in URI
      *
      * @var string|Model
      */
     public static string $routeParameterModel = Model::class;
-
     /**
      * @var string
      */
     public static string $controllerTransformer = ApiResource::class;
-
     /**
      * @var string
      */
@@ -49,7 +46,23 @@ trait CrudTrait
      * @var string|null
      */
     public static ?string $exampleLocale = 'en';
-
+    /**
+     * Model events
+     * 1. index
+     * 2. saving
+     * 3. creating
+     * 4. saved
+     * 5. created
+     * 6. updating
+     * 7. updated
+     * 8. show
+     * 9. deleting
+     * 9. deleted
+     * 10. deletingAll
+     * 11. deletedAll
+     * @var array
+     */
+    protected static array $modelEvents = [];
     /**
      * With query index
      *
@@ -123,6 +136,39 @@ trait CrudTrait
      * @var bool
      */
     public bool $autoSavingImage = !1;
+
+    /**
+     * @param string $event
+     * @param callable|string $callback
+     * @return void
+     */
+    public static function registerModelEvent(string $event, callable | string $callback): void
+    {
+        if (!isset(static::$modelEvents[$event])) {
+            static::$modelEvents[$event] = [];
+        }
+        $className = static::class;
+        if (!isset(static::$modelEvents[$event][$className])) {
+            static::$modelEvents[$event][$className] = [];
+        }
+        static::$modelEvents[$event][$className][] = $callback;
+    }
+
+    /**
+     * @param string|null $event
+     * @param string|null $className
+     * @return array
+     */
+    public static function getModelEvent(?string $event = null, ?string $className = null): array
+    {
+        if ($event === null) {
+            return static::$modelEvents;
+        }
+        if ($className !== null) {
+            return static::$modelEvents[$event][$className] ?? [];
+        }
+        return static::$modelEvents[$event] ?? [];
+    }
 
     /**
      * @return array
@@ -229,7 +275,24 @@ trait CrudTrait
         $with = array_filter(array_unique($with));
         $withCount = array_filter(array_unique($this->withCount));
         $query->with($with)->withCount($withCount);
-        // dd($with);
+
+        $events = static::getModelEvent('index', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($query);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $query);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result) {
+                $query = $result;
+            }
+        }
+
         return $this->indexResponse($query, $transformer, $excelClass);
 
     }
@@ -257,23 +320,91 @@ trait CrudTrait
         $this->makeValidator($rules, $model);
         // $keys = array_keys($rules);
         $fill = array_merge($this->dataGet(array_keys($rules)), $this->getMapFromRequest());
-        // d($fill);
         $model->fill($fill);
+
         /** Events */
         if (($r = $this->creating($model))) {
             return $r;
         }
+        $events = static::getModelEvent('creating', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result instanceof \Illuminate\Database\Eloquent\Model) {
+                $model = $result;
+            }
+        }
+
         if (($r = $this->saving($model))) {
             return $r;
         }
+        $events = static::getModelEvent('saving', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result instanceof \Illuminate\Database\Eloquent\Model) {
+                $model = $result;
+            }
+        }
+
         $model->save();
         /** Events */
         if (($r = $this->created($model))) {
             return $r;
         }
+        $events = static::getModelEvent('created', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result instanceof \Illuminate\Database\Eloquent\Model) {
+                $model = $result;
+            }
+        }
+
         if (($r = $this->saved($model))) {
             return $r;
         }
+        $events = static::getModelEvent('saved', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result instanceof \Illuminate\Database\Eloquent\Model) {
+                $model = $result;
+            }
+        }
+
         if ($this->autoSavingImage) {
             if (($r = $this->insertModelImage($model))) {
                 return $r;
@@ -319,6 +450,22 @@ trait CrudTrait
         if ($r = $this->showing($model)) {
             return $r;
         }
+        $events = static::getModelEvent('show', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result instanceof \Illuminate\Database\Eloquent\Model) {
+                $model = $result;
+            }
+        }
         $requestWith = $this->request->input($this->requestWithKey, []);
         if (!is_array($requestWith)) {
             $requestWith = $requestWith ? explode(',', $requestWith) : [];
@@ -352,23 +499,91 @@ trait CrudTrait
         // $keys = array_keys($rules);
         // $fill = array_merge($this->request->only($keys), $this->getMapFromRequest());
         $fill = array_merge($this->dataGet(array_keys($rules), !1), $this->getMapFromRequest());
-        // d($fill);
         $model->fill($fill);
+
         /** Events */
         if (($r = $this->updating($model))) {
             return $r;
         }
+        $events = static::getModelEvent('updating', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result instanceof \Illuminate\Database\Eloquent\Model) {
+                $model = $result;
+            }
+        }
+
         if (($r = $this->saving($model))) {
             return $r;
         }
+        $events = static::getModelEvent('saving', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result instanceof \Illuminate\Database\Eloquent\Model) {
+                $model = $result;
+            }
+        }
+
         $model->save();
         /** Events */
         if (($r = $this->updated($model))) {
             return $r;
         }
+        $events = static::getModelEvent('updated', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result instanceof \Illuminate\Database\Eloquent\Model) {
+                $model = $result;
+            }
+        }
+
         if (($r = $this->saved($model))) {
             return $r;
         }
+        $events = static::getModelEvent('saved', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+            if ($result instanceof \Illuminate\Database\Eloquent\Model) {
+                $model = $result;
+            }
+        }
+
         if ($this->autoSavingImage) {
             if (($r = $this->insertModelImage($model))) {
                 return $r;
@@ -388,12 +603,25 @@ trait CrudTrait
      */
     public function destroy($model)
     {
-        if (($r = $this->deleting($model))) {
-            return $r;
-        }
         /** @var \Illuminate\Database\Eloquent\Model|Model $user */
         if (($user = auth()->user()) && $model->is($user)) {
             return $this->errorResponse(__("messages.deleted_failed"));
+        }
+        if (($r = $this->deleting($model))) {
+            return $r;
+        }
+        $events = static::getModelEvent('deleting', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
         }
 
         foreach ($this->checkBeforeDestroy as $relation) {
@@ -406,6 +634,19 @@ trait CrudTrait
 
         if (($r = $this->deleted($model))) {
             return $r;
+        }
+        $events = static::getModelEvent('deleted', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($model);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $model);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
         }
         $_m = '_message';
         return $this->resource($this->request->input($_m, __('messages.deleted_success')));
@@ -420,42 +661,80 @@ trait CrudTrait
      */
     public function destroyAll()
     {
-        $model = $this->request->input('ids', []);
-        if (!is_array($model)) {
-            $model = [];
+        $deleteIds = $this->request->input('ids', []);
+        if (!is_array($deleteIds)) {
+            $deleteIds = [];
         }
-        if (count($model) < 1) {
+        if (count($deleteIds) < 1) {
             return $this->errorResponse(__("messages.no_delete_selected"));
         }
-        if (($r = $this->deletingAll($model))) {
+        if (($r = $this->deletingAll($deleteIds))) {
             return $r;
         }
+        $events = static::getModelEvent('deletingAll', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($deleteIds);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $deleteIds);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
+        }
 
-        /** @var Builder $builder */
         $builder = static::$controllerModel::query();
 
-        if (count($model) > 0) {
-            $builder->whereIn('id', $model);
+        if (count($deleteIds) > 0) {
+            $builder->whereIn('id', $deleteIds);
         }
 
         try {
             /** @var Collection $models */
             $models = $builder->get();
-            foreach ($models as $m) {
+            foreach ($models as $model) {
                 foreach ($this->checkBeforeDestroy as $relation) {
-                    if ($m->$relation()->exists()) {
+                    if ($model->$relation()->exists()) {
                         return $this->errorResponse(__("messages.can_not_deleted"));
                     }
                 }
-                $m->delete();
+                $model->delete();
+                $events = static::getModelEvent('deleted', static::class);
+                foreach ($events as $callback) {
+                    $result = null;
+                    if (is_string($callback)) {
+                        $result = $this->{$callback}($model);
+                    }
+                    elseif (is_callable($callback)) {
+                        $result = $callback($this, $model);
+                    }
+                    if ($result instanceof JsonResponse) {
+                        return $result;
+                    }
+                }
             }
-            // $models->each(function($m) use ($model){});
         }
         catch (Exception$exception) {
             return $this->errorResponse($exception->getMessage());
         }
-        if (($r = $this->deletedAll($model))) {
+
+        if (($r = $this->deletedAll($deleteIds))) {
             return $r;
+        }
+        $events = static::getModelEvent('deletedAll', static::class);
+        foreach ($events as $callback) {
+            $result = null;
+            if (is_string($callback)) {
+                $result = $this->{$callback}($deleteIds);
+            }
+            elseif (is_callable($callback)) {
+                $result = $callback($this, $deleteIds);
+            }
+            if ($result instanceof JsonResponse) {
+                return $result;
+            }
         }
         $_m = '_message';
         return $this->resource($this->request->input($_m, __("messages.deleted_success")));
