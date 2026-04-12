@@ -170,7 +170,12 @@ return [
      * @param $precision
      * @return float|null
      */
-    public static function getDistance(?array $coordinateFrom = null, ?array $coordinateTo = null, int $earthRadius = 6371, $precision = 2): float | null
+    public static function getDistance(
+        ?array $coordinateFrom = null,
+        ?array $coordinateTo = null,
+        int    $earthRadius = 6371,
+               $precision = 2
+    ): float | null
     {
         if (!$coordinateFrom || !$coordinateTo) {
             return null;
@@ -312,11 +317,10 @@ return [
             if ($search) {
                 $search = strtolower($search);
                 if (empty($searchBy)) {
-                    //$searchBy = array_keys($data);
                     $searchBy = ['name', 'name_ar', 'name_en', 'key'];
                 }
                 foreach ($searchBy as $searchField) {
-                    if (($data[$searchField] ?? null) && str_contains($data[$searchField], $search)) {
+                    if (($data[$searchField] ?? null) && str_contains(strtolower($data[$searchField]), $search)) {
                         $found = !0;
                         break;
                     }
