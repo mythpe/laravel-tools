@@ -162,11 +162,11 @@ class ExportAttributesCommand extends BaseCommand
             $class_reflex = new ReflectionClass($model);
             $class_constants = $class_reflex->getConstants();
             foreach ($class_constants as $constantKey => $constant) {
-                if (Str::endsWith(strtolower($constantKey ?: ''), ['_status'])) {
+                if (Str::endsWith(strtolower($constantKey ?: ''), ['_status', '_const'])) {
                     $fillable = $fillable->filter(fn($v) => $v != $constant);
                     continue;
                 }
-                if (Str::startsWith(strtolower($constantKey ?: ''), ['hash_'])) {
+                if (Str::startsWith(strtolower($constantKey ?: ''), ['hash_', 'const_'])) {
                     continue;
                 }
                 if (is_string($constant) && preg_match_all("/[\w\d]+/", $constant)) {
