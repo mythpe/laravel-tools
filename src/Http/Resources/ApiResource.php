@@ -24,13 +24,14 @@ class ApiResource extends JsonResource
     const STATIC_REQUEST_KEY = 'staticRequest';
     /** @var string Type of transform the api resource */
     const API_RESOURCE_CASE_HEADER_KEY = 'X-Api-Trans';
+    /** @var string[] */
     const API_RESOURCE_CASES_KEY = [
         'camel',
         'snake',
     ];
 
     /** @var string Request key of items */
-    public static string $itemsRequestKey = 'items';
+    public static string $itemsRequestKey = 'ids';
     /** @var string Request key of headers */
     public static string $headerItemsRequestKey = 'headerItems';
 

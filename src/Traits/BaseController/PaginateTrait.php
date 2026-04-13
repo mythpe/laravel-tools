@@ -21,6 +21,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Myth\LaravelTools\Exports\BaseExport;
 use Myth\LaravelTools\Http\Resources\ApiCollectionResponse;
 use Myth\LaravelTools\Http\Resources\ApiResource;
+use PhpOffice\PhpSpreadsheet\Exception;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
@@ -150,6 +151,8 @@ trait PaginateTrait
      * @param mixed|string|null $excelClass
      *
      * @return JsonResponse|Response|ApiCollectionResponse|BinaryFileResponse
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     protected function indexResponse($query = null, ?string $transformer = null, $excelClass = null)
     {
@@ -160,20 +163,19 @@ trait PaginateTrait
         $modelName = Str::pluralStudly(class_basename($query->getModel()));
         $pageTitle = $request->input(($a = 'pageTitle')) ? $request->input($a) : (trans_has(($a = "choice.{$modelName}")) ? trans_choice($a, 2) : $modelName);
         if ($indexType == 'pdf' || $indexType == 'excel') {
-            $items = $request->input(ApiResource::$itemsRequestKey, []);
-            $headers = $request->input(ApiResource::$headerItemsRequestKey, []);
-
-            if (!$items) {
-                $ids = $request->input('ids', []);
-                $query = $this->apply($query);
-                if (!empty($ids) && is_array($ids)) {
-                    $query->whereIn($query->getModel()->getKeyName(), $ids);
-                }
-                $items = $transformer::collection($query->get())->toArray($this->request);
+            $ids = $request->input(ApiResource::$itemsRequestKey, []) ?: [];
+            $headers = $request->input(ApiResource::$headerItemsRequestKey, []) ?: [];
+            $query = $this->apply($query);
+            if (!empty($ids) && is_array($ids)) {
+                $query->whereIn($query->getModel()->getKeyName(), $ids);
             }
-            else {
-                $items = $transformer::collection($query->whereIn('id', $items)->get())->toArray($this->request);
+            if ($indexType == 'pdf' && method_exists($this, 'toPdf')) {
+                return $this->toPdf($query);
             }
+            if ($indexType == 'excel' && method_exists($this, 'toExcel')) {
+                return $this->toExcel($query);
+            }
+            $items = $transformer::collection($query->get())->toArray($this->request);
 
             if (!is_array($headers)) {
                 $headers = [];
@@ -181,8 +183,6 @@ trait PaginateTrait
             if (!is_array($items)) {
                 $items = [];
             }
-            //d($headers);
-            // $fileName = "Export-".(auth()->id() ?: round(time()));
             $fileName = "$modelName-".(auth()->id() ?: round(time()));
             $appendRows = $this->getExportFooter();
             $appendRows = is_callable($appendRows) ? $appendRows($items, $headers) : $appendRows;
