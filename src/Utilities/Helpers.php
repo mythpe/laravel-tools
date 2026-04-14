@@ -303,11 +303,11 @@ return [
             $data = [
                 'id'         => $id,
                 'value'      => $id,
-                // 'label'      => "$key • $id",
                 'label'      => $name,
                 'code'       => $id,
                 'code_label' => "$id • $key",
                 'code_key'   => "$id • $key",
+                'code_code'  => $id,
                 'name'       => $name,
                 'name_ar'    => $ar,
                 'name_en'    => $en,
