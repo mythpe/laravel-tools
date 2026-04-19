@@ -71,6 +71,7 @@ class ExportLanguageCommand extends BaseCommand
                         fn($e) => in_array(pathinfo($e, PATHINFO_FILENAME), $configFiles)
                     )->values()->toArray();
             }
+            //dd($files);
             foreach ($files as $file) {
                 $info = pathinfo($file);
                 $fileName = $info['filename'];
@@ -91,6 +92,8 @@ class ExportLanguageCommand extends BaseCommand
                         return $v;
                     });
                 }
+                //$data = $data->map(fn($t) => preg_replace('/:(\w+)/', '{$1}', $t));
+                $data = $data->map(fn($t) => preg_replace_callback('/:(\w+)/', fn($m) => '{'.strtolower($m[1]).'}', $t));
                 $array[$locale][$fileName] ??= collect();
                 $array[$locale][$fileName] = $array[$locale][$fileName]->merge($data);
             }
