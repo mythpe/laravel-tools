@@ -212,7 +212,7 @@ return [
     /**
      * Each model class used in your application must be registered
      */
-    'auto_discover_models_path'     => ['app/Models', 'app/Pivots', 'app/Settings'],
+    'auto_discover_models_path'     => ['Models', 'Settings'],
 
     'postman' => [
         'postman_id'                  => null,
@@ -242,7 +242,7 @@ return [
 
     'translator_class' => Translator::class,
 
-    'translator_morph' => 'translatable',
+    'translator_morph'  => 'translatable',
 
     /**
      * Default font family of views
