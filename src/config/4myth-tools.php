@@ -16,6 +16,7 @@ return [
     /*
     |--------------------------------------------------------------------------
     | Application Locales Configuration
+    | @depreciated
     |--------------------------------------------------------------------------
     |
     | Define the languages used by the application.

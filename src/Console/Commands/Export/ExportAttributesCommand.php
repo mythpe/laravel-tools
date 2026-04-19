@@ -58,6 +58,7 @@ class ExportAttributesCommand extends BaseCommand
         $withCountableOption = $this->option('countable');
         $saveOption = $this->option('save');
         $jsonOption = $this->option('json');
+        $rootDisk = Storage::disk('root');
         $appDisk = Storage::disk('app');
         $langDisk = Helpers::langDisk();
         $modelsPaths = config('4myth-tools.auto_discover_models_path', []);
@@ -70,6 +71,10 @@ class ExportAttributesCommand extends BaseCommand
         $choice = [];
         $additionalChoice = [];
         $locales = Helpers::locales();
+        $logArray = [
+            'controllers' => [],
+            'models'      => [],
+        ];
 
         $cacheAttrs = [
             'ar' => require __DIR__.'/../../../lang/ar/attributes.php',
@@ -83,36 +88,46 @@ class ExportAttributesCommand extends BaseCommand
             'ar' => require __DIR__.'/../../../lang/ar/countable.php',
             'en' => require __DIR__.'/../../../lang/en/countable.php',
         ];
-        $controllersFillable = collect();
+        $translates = collect([
+            'current_password',
+            'password',
+            'password_confirmation',
+            'new_password',
+            'new_password_confirmation',
+            'login_id',
+            'control',
+            'avatar',
+            'avatar_url',
+        ]);
         foreach ($controllersFiles as $controllersFile) {
             $controllerClass = Str::of($controllersFile)->beforeLast('.php')->replace('/', '\\', $controllersFile)->start('App\\');
-            $reflectionClass = new ReflectionClass($controllerClass->toString());
-            if (!$reflectionClass->isInstantiable()) {
+            $reflectionControllerClass = new ReflectionClass($controllerClass->toString());
+            if (!$reflectionControllerClass->isInstantiable()) {
                 continue;
             }
             $controller = app($controllerClass->toString());
-            foreach ($reflectionClass->getMethods() as $method) {
+            foreach ($reflectionControllerClass->getMethods() as $method) {
                 $methodName = $method->getName();
                 if (($methodName == 'getRules' || starts_with($methodName, '_')) && $method->getReturnType() == 'array') {
-                    $controllersFillable = $controllersFillable->merge(array_keys($controller->{$methodName}()));
+                    $translates = $translates->merge(array_keys($controller->{$methodName}()));
+                    $logArray['controllers'][$reflectionControllerClass->getName()] ??= [];
+                    $logArray['controllers'][$reflectionControllerClass->getName()][] = $methodName;
                 }
             }
         }
+        $translates = $translates->unique()->values();
+        $modelsBaseNames = [];
+        $skipConstants = collect(config('app.4myth.translate.skip_const', []) ?: [])->map(fn($t) => trim($t, '\\'));
         foreach ($modelsFiles as $modelFile) {
             $namespace = Str::of($modelFile)->beforeLast('.php')->replace(['/', '\\\\'], '\\')->start('App\\');
             /** @var BaseModel $model */
             $model = app($namespace->toString());
-            $fillable = collect([
-                'current_password',
-                'password',
-                'password_confirmation',
-                'new_password',
-                'new_password_confirmation',
-                'login_id',
-                'control',
-                'avatar',
-                'avatar_url',
-            ]);
+            $baseName = basename($model::class);
+            if (in_array($baseName, ['BaseModel', 'BasePivot'])) {
+                continue;
+            }
+            $modelsBaseNames[] = $baseName;
+            $fillable = collect();
             if (method_exists($model, 'getFillable')) {
                 $fillable = $fillable->merge($model->getFillable());
             }
@@ -136,19 +151,25 @@ class ExportAttributesCommand extends BaseCommand
             }
             $fillable = $fillable->filter(fn($value) => !is_numeric($value));
             $class_basename = Str::of(class_basename($model));
+            $classBasename = $class_basename->toString();
             $classSnake = $class_basename->snake();
             $classCamel = $class_basename->camel();
             $classPascal = ucfirst($classCamel);
             $fillable = $fillable->merge(["{$classSnake}_id", Str::plural($classSnake)."_id"]);
 
             // Customizing
-            if ($class_basename->toString() == 'Setting' && method_exists($model, 'setting')) {
+            if ($classBasename == 'Setting' && method_exists($model, 'setting')) {
                 $fillable = $fillable->merge(array_keys($model::setting()));
             }
 
-            $class_reflex = new ReflectionClass($model);
-            $class_constants = $class_reflex->getConstants();
-            foreach ($class_constants as $constantKey => $constant) {
+            $reflectionClassModel = new ReflectionClass($model);
+            $modelConstants = $reflectionClassModel->getConstants();
+            $logArray['models'][$reflectionClassModel->getName()] ??= [];
+            foreach ($modelConstants as $constantKey => $constant) {
+                $fullKey = trim("{$reflectionClassModel->getName()}::$constantKey", '\\');
+                if ($skipConstants->contains($fullKey)) {
+                    continue;
+                }
                 if (Str::endsWith(strtolower($constantKey ?: ''), ['_status', '_const'])) {
                     $fillable = $fillable->filter(fn($v) => $v != $constant);
                     continue;
@@ -156,7 +177,10 @@ class ExportAttributesCommand extends BaseCommand
                 if (Str::startsWith(strtolower($constantKey ?: ''), ['hash_', 'const_'])) {
                     continue;
                 }
-                if (is_string($constant) && preg_match_all("/[\w\d]+/", $constant)) {
+                if (is_string($constant) && Str::contains($constant, ['\\'])) {
+                    continue;
+                }
+                elseif (is_string($constant) && preg_match_all("/[\w\d]+/", $constant)) {
                     $fillable->push($constant);
                 }
                 elseif (is_array($constant)) {
@@ -170,9 +194,9 @@ class ExportAttributesCommand extends BaseCommand
                     }
                     $fillable = $fillable->merge($constantValues);
                 }
+                $logArray['models'][$reflectionClassModel->getName()][] = $fullKey;
             }
 
-            $sortArray = [];
             $fillable = $fillable->filter()->unique()->values();
             foreach ($fillable as $value) {
                 if ($value != 'id' && !ends_with($value, '_id')) {
@@ -197,153 +221,26 @@ class ExportAttributesCommand extends BaseCommand
                     '_pivot_',
                 ]) && !Str::endsWith($v, '_to_string'))->values()->toArray();
             sort($fillable);
-            $temp = [];
-            foreach ($fillable as $k => $value) {
-                $hasFrom = starts_with($value, 'from_');
-                $hasTo = starts_with($value, 'to_');
-                $strBeforeToFrom = Str::after($value, '_');
-                // Sort
-                if (($hasFrom || $hasTo) && in_array($strBeforeToFrom, $fillable)) {
-                    $attributeKey = "{$strBeforeToFrom}_{$value}";
-                    $sortArray[$attributeKey] = $value;
-                    $temp[$k] = $attributeKey;
-                }
-                else {
-                    $temp[$k] = $value;
-                }
+            $translates = $translates->merge($fillable)->unique()->values();
+        }
+        $temp = [];
+        $sortArray = [];
+        foreach ($translates as $k => $value) {
+            $hasFrom = starts_with($value, 'from_');
+            $hasTo = starts_with($value, 'to_');
+            $strBeforeToFrom = Str::after($value, '_');
+            // Sort
+            if (($hasFrom || $hasTo) && in_array($strBeforeToFrom, $translates->toArray())) {
+                $attributeKey = "{$strBeforeToFrom}_{$value}";
+                $sortArray[$attributeKey] = $value;
+                $temp[$k] = $attributeKey;
             }
-            $fillable = collect($temp)->filter((fn($v) => !Str::endsWith('.*', $v)))->values()->toArray();
-            sort($fillable);
-            // # Set Attributes.
-            foreach ($locales as $locale) {
-                foreach ($fillable as $attribute) {
-                    if (isset($sortArray[$attribute])) {
-                        $attribute = $sortArray[$attribute];
-                    }
-                    $transKey = "attributes.$attribute";
-                    $transHas = trans_has($transKey, $locale);
-                    $defaultTrans = $this->defaultTranslate($attribute, $locale);
-                    $transValue = $defaultTrans;
-                    if ($transHas) {
-                        $transValue = __($transKey, [], $locale);
-                    }
-                    elseif (isset($cacheAttrs[$locale][$attribute])) {
-                        $transValue = $cacheAttrs[$locale][$attribute];
-                    }
-                    $hasFrom = starts_with($attribute, 'from_');
-                    $hasTo = starts_with($attribute, 'to_');
-                    $strBeforeToFrom = Str::after($attribute, '_');
-                    if ($hasFrom || $hasTo) {
-                        if (trans_has($t = "attributes.$strBeforeToFrom", $locale) && !Str::contains($transValue, $v = __($t, [], $locale))) {
-                            if ($locale == 'ar') {
-                                $transValue = sprintf($v.' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
-                            }
-                            else {
-                                $transValue = sprintf('%s '.$v, $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
-                            }
-                        }
-                        elseif (isset($cacheAttrs[$locale][$attribute])) {
-                            $transValue = $cacheAttrs[$locale][$attribute];
-                        }
-                        elseif (isset($cacheAttrs[$locale][$strBeforeToFrom])) {
-                            $v = $cacheAttrs[$locale][$strBeforeToFrom];
-                            if ($locale == 'ar') {
-                                $transValue = sprintf($v.' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
-                            }
-                            else {
-                                $transValue = sprintf('%s '.$v, $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
-                            }
-                        }
-                    }
-                    // # No value set from cache
-                    if ($transValue == $defaultTrans && isset($cacheAttrs[$locale][$attribute])) {
-                        $transValue = $cacheAttrs[$locale][$attribute];
-                    }
-
-                    $attributes[$locale][$attribute] = $transValue;
-                }
-                if (!$newOption) {
-                    $localeFile = include lang_path("$locale/attributes.php");
-                    $attributes[$locale] = [...$attributes[$locale], ...$localeFile];
-                }
-                // Sort Values.
-                ksort($attributes[$locale]);
-
-                if (!empty($sortArray)) {
-                    $temp = [];
-                    foreach ($attributes[$locale] as $k => $v) {
-                        if (isset($sortArray[$k])) {
-                            $temp[$sortArray[$k]] = $v;
-                        }
-                        else {
-                            $temp[$k] = $v;
-                        }
-                    }
-                    $attributes[$locale] = $temp;
-                }
-            }
-            $key = Str::plural($classPascal);
-            $k = "choice.$key";
-            foreach ($locales as $locale) {
-                if (Str::contains($key, 'Pivot')) {
-                    continue;
-                }
-
-                foreach ($additionalChoice as $v) {
-                    if (trans_has($i = "choice.$v", $locale)) {
-                        if (isset($cacheChoice[$locale][$v])) {
-                            $choice[$locale][$v] = $cacheChoice[$locale][$v];
-                            continue;
-                        }
-                        $choice[$locale][$v] = __($i, [], $locale);
-                        continue;
-                    }
-
-                    $plural = str_replace('-', ' ', Str::plural(ucwords(Str::kebab($v), '-')));
-                    $singular = str_replace('-', ' ', Str::singular(ucwords(Str::kebab($v), '-')));
-                    if ($locale == 'ar') {
-                        $choice[$locale][$v] = "$plural|$singular";
-                    }
-                    else {
-                        $choice[$locale][$v] = "$singular|$plural";
-                    }
-                }
-
-                if (isset($cacheChoice[$locale][$key])) {
-                    $choice[$locale][$key] = $cacheChoice[$locale][$key];
-                }
-                if (!isset($choice[$locale][$key])) {
-                    $choice[$locale][$key] = null;
-                }
-
-                if (!$choice[$locale][$key]) {
-                    if (trans_has($k, $locale)) {
-                        $choice[$locale][$key] = __($k, [], $locale);
-                    }
-                    else {
-                        $plural = str_replace('-', ' ', Str::plural(ucwords(Str::kebab($class_basename), '-')));
-                        $singular = str_replace('-', ' ', Str::singular(ucwords(Str::kebab($class_basename), '-')));
-                        if ($locale == 'ar') {
-                            $choice[$locale][$key] = "$plural|$singular";
-                        }
-                        else {
-                            $choice[$locale][$key] = "$singular|$plural";
-                        }
-                    }
-                }
-                $localeChoice = is_file($p = lang_path("$locale/choice.php")) ? include $p : [];
-                $choice[$locale] = [...$choice[$locale], ...$localeChoice];
-                ksort($choice[$locale]);
-
-                if ($withChoiceOption && isset($cacheChoice[$locale])) {
-                    $choice[$locale] = [...$cacheChoice[$locale], ...$choice[$locale]];
-                }
-
-                if ($withCountableOption && isset($cacheCountable[$locale])) {
-                    $choice[$locale] = [...$cacheCountable[$locale], ...$choice[$locale]];
-                }
+            else {
+                $temp[$k] = $value;
             }
         }
+        $translates = collect($temp)->filter((fn($v) => !Str::endsWith('.*', $v)))->values()->toArray();
+        sort($translates);
         $outputPath = $this->option('output') ?: 'resources/setup/deploy';
         $callback = function ($exportedPath) use ($outputPath, $saveOption) {
             $disk = Storage::disk('root');
@@ -366,16 +263,149 @@ class ExportAttributesCommand extends BaseCommand
                 $this->components->info("Export file [$exportedPath]");
             }
         };
+
+        // # Set Attributes.
+        foreach ($locales as $locale) {
+            foreach ($translates as $attribute) {
+                if (isset($sortArray[$attribute])) {
+                    $attribute = $sortArray[$attribute];
+                }
+                $transKey = "attributes.$attribute";
+                $transHas = trans_has($transKey, $locale);
+                $defaultTrans = $this->defaultTranslate($attribute, $locale);
+                $transValue = $defaultTrans;
+                if ($transHas) {
+                    $transValue = __($transKey, [], $locale);
+                }
+                elseif (isset($cacheAttrs[$locale][$attribute])) {
+                    $transValue = $cacheAttrs[$locale][$attribute];
+                }
+                $hasFrom = starts_with($attribute, 'from_');
+                $hasTo = starts_with($attribute, 'to_');
+                $strBeforeToFrom = Str::after($attribute, '_');
+                if ($hasFrom || $hasTo) {
+                    if (trans_has($t = "attributes.$strBeforeToFrom", $locale) && !Str::contains($transValue, $v = __($t, [], $locale))) {
+                        if ($locale == 'ar') {
+                            $transValue = sprintf($v.' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
+                        }
+                        else {
+                            $transValue = sprintf('%s '.$v, $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
+                        }
+                    }
+                    elseif (isset($cacheAttrs[$locale][$attribute])) {
+                        $transValue = $cacheAttrs[$locale][$attribute];
+                    }
+                    elseif (isset($cacheAttrs[$locale][$strBeforeToFrom])) {
+                        $v = $cacheAttrs[$locale][$strBeforeToFrom];
+                        if ($locale == 'ar') {
+                            $transValue = sprintf($v.' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
+                        }
+                        else {
+                            $transValue = sprintf('%s '.$v, $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
+                        }
+                    }
+                }
+                // # No value set from cache
+                if ($transValue == $defaultTrans && isset($cacheAttrs[$locale][$attribute])) {
+                    $transValue = $cacheAttrs[$locale][$attribute];
+                }
+                $attributes[$locale] ??= [];
+                $attributes[$locale][$attribute] = $transValue;
+            }
+            if (!$newOption && is_file($p = lang_path("$locale/attributes.php"))) {
+                $localeFile = include $p;
+                $attributes[$locale] = [...$attributes[$locale], ...$localeFile];
+            }
+            // Sort Values.
+            ksort($attributes[$locale]);
+
+            if (!empty($sortArray)) {
+                $temp = [];
+                foreach ($attributes[$locale] as $k => $v) {
+                    if (isset($sortArray[$k])) {
+                        $temp[$sortArray[$k]] = $v;
+                    }
+                    else {
+                        $temp[$k] = $v;
+                    }
+                }
+                $attributes[$locale] = $temp;
+            }
+        }
         Helpers::writeFile("attributes.php", $attributes, [
             'output'      => $outputPath,
             'directories' => !0,
             'callback'    => $callback,
         ]);
+
+        foreach ($modelsBaseNames as $modelClass) {
+            $modelClass = "DocumentItem";
+            $baseKey = Str::of($modelClass);
+            $plural = $baseKey->plural()->kebab()->title()->replace('-', ' ')->toString();
+            $snakePlural = $baseKey->plural()->snake()->finish('_id')->toString();
+            $singular = $baseKey->singular()->kebab()->title()->replace('-', ' ')->toString();
+            $snakeSingular = $baseKey->singular()->snake()->finish('_id')->toString();
+            $key = $baseKey->camel()->plural()->ucfirst()->toString();
+            $k = "choice.$key";
+            foreach ($locales as $locale) {
+                $choice[$locale][$key] ??= null;
+                foreach ($additionalChoice as $v) {
+                    if (trans_has($i = "choice.$v", $locale)) {
+                        if (isset($cacheChoice[$locale][$v])) {
+                            $choice[$locale][$v] = $cacheChoice[$locale][$v];
+                            continue;
+                        }
+                        $choice[$locale][$v] = __($i, [], $locale);
+                        continue;
+                    }
+                    $plural = str_replace('-', ' ', Str::plural(ucwords(Str::kebab($v), '-')));
+                    $singular = str_replace('-', ' ', Str::singular(ucwords(Str::kebab($v), '-')));
+                    if ($locale == 'ar') {
+                        $choice[$locale][$v] = "$plural|$singular";
+                    }
+                    else {
+                        $choice[$locale][$v] = "$singular|$plural";
+                    }
+                }
+                if ($cacheChoice[$locale][$key] ?? null) {
+                    $choice[$locale][$key] = $cacheChoice[$locale][$key];
+                }
+                if (!$choice[$locale][$key]) {
+                    if (trans_has($k, $locale)) {
+                        $choice[$locale][$key] = __($k, [], $locale);
+                    }
+                    else {
+                        $singularValue = trans_has($sca = "attributes.$snakeSingular", $locale) ? __($sca) : $singular;
+                        $pluralValue = trans_has($pca = "attributes.$snakePlural", $locale) ? __($pca) : $plural;
+                        if ($locale == 'ar') {
+                            $choice[$locale][$key] = "$pluralValue|$singularValue";
+                        }
+                        else {
+                            $choice[$locale][$key] = "$singularValue|$pluralValue";
+                        }
+                    }
+                }
+                $localeChoice = is_file($p = lang_path("$locale/choice.php")) ? include $p : [];
+                $choice[$locale] = [...$choice[$locale], ...$localeChoice];
+                if ($withChoiceOption && isset($cacheChoice[$locale])) {
+                    $choice[$locale] = [...$cacheChoice[$locale], ...$choice[$locale]];
+                }
+                if ($withCountableOption && isset($cacheCountable[$locale])) {
+                    $choice[$locale] = [...$cacheCountable[$locale], ...$choice[$locale]];
+                }
+                ksort($choice[$locale]);
+            }
+        }
         Helpers::writeFile("choice.php", $choice, [
             'output'      => $outputPath,
             'directories' => !0,
             'callback'    => $callback,
         ]);
+
+        ksort($logArray);
+        $logExport = var_export($logArray, true);
+        $fileContent = "<?php\n\nreturn {$logExport};";
+        $rootDisk->put("{$outputPath}/log.php", $fileContent);
 
         if ($jsonOption) {
             $this->call('myth:lang');
@@ -387,6 +417,9 @@ class ExportAttributesCommand extends BaseCommand
         $key = $attribute;
         if (strtolower($attribute) == 'myth') {
             return 'MyTh';
+        }
+        if (trans_has($tKey = "attributes.$attribute", $locale, !1)) {
+            return __($tKey, [], $locale);
         }
         if (strlen($attribute) == 3) {
             $attribute = strtoupper($attribute);
