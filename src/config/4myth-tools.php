@@ -48,7 +48,7 @@ return [
     */
     'development_modes'             => ['development', 'testing', 'local'],
 
-    /** Application one user login */
+    /** Application one-user login */
     'one_login'                     => !1,
 
     /** Country Code */
@@ -130,7 +130,7 @@ return [
      */
     'whatsapp'                      => [
         /**
-         * Whatsapp channel.
+         * WhatsApp channel.
          */
         'driver' => 'App\Channels\WhatsappChannel',
     ],
@@ -205,45 +205,14 @@ return [
     'snappy_pdf_view'               => '4myth-tools::layouts.table_pdf',
 
     /**
-     * Name of lang files
-     * Example: ['file1', 'file2']
-     * Example: '*' for all
-     */
-    'js_lang_command_files'         => ['attributes', 'choice', 'const', 'global', 'labels', 'replace'],
-
-    /**
-     * Attributes will be exported
-     * @uses ExportAttributesCommand::class
-     */
-    'export_attributes'             => [
-        'current_password',
-        'new_password',
-        'new_password_confirmation',
-        'password_confirmation',
-        'login_id',
-        'control',
-        'avatar',
-        'avatar_url',
-        'tax',
-        'status',
-        'inactive',
-        'name_ar',
-        'name_en',
-        'description_ar',
-        'description_en',
-        'subject',
-        'subject_ar',
-        'subject_en',
-        'content',
-        'content_ar',
-        'content_en',
-        'date',
-    ],
-
-    /**
      * Permissions to skip
      */
     'skip_permission_ends_with'     => ['.', '.allIndex', '.indexResource'],
+
+    /**
+     * Each model class used in your application must be registered
+     */
+    'auto_discover_models_path'     => ['app/Models', 'app/Pivots', 'app/Settings'],
 
     'postman' => [
         'postman_id'                  => null,
@@ -274,10 +243,6 @@ return [
     'translator_class' => Translator::class,
 
     'translator_morph' => 'translatable',
-
-    'transformer'       => [
-        'append_text' => !1,
-    ],
 
     /**
      * Default font family of views

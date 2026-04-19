@@ -9,7 +9,6 @@
 
 namespace Myth\LaravelTools\Console\Commands\Export;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -52,6 +51,8 @@ class ExportAttributesCommand extends BaseCommand
      */
     public function handle(): void
     {
+        $discoveredModels = config('4myth-tools.auto_discover_models', []);
+        dd($discoveredModels);
         $appDisk = Storage::disk('app');
         $langDisk = Storage::disk('lang');
         $modelsFiles = $appDisk->allFiles('Models');
@@ -89,11 +90,7 @@ class ExportAttributesCommand extends BaseCommand
         $modelsFiles = collect($modelsFiles)->filter(fn($name) => !Str::contains($name, Str::afterLast(BaseModel::class, '\\'))
             && !Str::contains($name, ['/Pivots/'])
         );
-        // d($modelsFiles);
         foreach ($modelsFiles as $file) {
-            // if (Str::contains($file, Str::afterLast(BaseModel::class, '\\'))) {
-            //     continue;
-            // }
             $c = Str::beforeLast($file, '.php');
             $c = str_replace(['/', '\\\\'], '\\', $c);
             $namespace = "\App\\{$c}";
@@ -102,25 +99,29 @@ class ExportAttributesCommand extends BaseCommand
             }
             /** @var BaseModel $model */
             $model = app($namespace);
-            /** @var Collection $fillable */
-            $fillable = collect([]);
-
+            $fillable = collect([
+                'current_password',
+                'password',
+                'password_confirmation',
+                'new_password',
+                'new_password_confirmation',
+                'login_id',
+                'control',
+                'avatar',
+                'avatar_url',
+            ]);
             if (method_exists($model, 'getFillable')) {
                 $fillable = $fillable->merge($model->getFillable());
             }
-
             if (method_exists($model, 'getAppends')) {
                 $fillable = $fillable->merge($model->getAppends());
             }
-
             if (method_exists($model, 'getHidden')) {
                 $fillable = $fillable->merge($model->getHidden());
             }
-
             if (method_exists($model, 'getTable')) {
                 $fillable = $fillable->merge(Schema::getColumnListing($model->getTable()));
             }
-            $fillable = $fillable->merge(config('4myth-tools.export_attributes', []));
             $parents = explode('\\', $model::class);
             if (count($parents) > 3) {
                 unset($parents[count($parents) - 1]);

@@ -9,8 +9,8 @@
 
 namespace Myth\LaravelTools\Console\Commands\Export;
 
-use Illuminate\Support\Facades\Storage;
 use Myth\LaravelTools\Console\BaseCommand;
+use Myth\LaravelTools\Utilities\Helpers;
 
 class ExportLanguageCommand extends BaseCommand
 {
@@ -43,30 +43,29 @@ class ExportLanguageCommand extends BaseCommand
     {
         $this->applyCustomStyle();
         $this->info('Start Export');
-        $langDisk = Storage::disk('lang');
+        $langDisk = Helpers::langDisk();
         $ext = $this->option('ext');
         $this->diskName = $this->option('disk');
         $outputDisk = $this->disk();
-        $locales = $langDisk->allDirectories();
+        $localeDirectories = $langDisk->allDirectories();
         $configFiles = $this->option('files');
         if (empty($configFiles)) {
-            $configFiles = config('4myth-tools.js_lang_command_files', '*');
+            $configFiles = ['attributes', 'choice', 'const', 'global', 'labels', 'replace'];
         }
         if (!is_array($configFiles)) {
             $configFiles = [$configFiles];
         }
-        // $configFiles = '*';
         $dir = $this->option('output');
         $flipChoiceFiles = $this->option('flip');
         $empty = [];
         $array = [];
-        foreach ($locales as $locale) {
-            $array[$locale] ??= [];
+        foreach ($localeDirectories as $localeDirectory) {
+            $array[$localeDirectory] ??= [];
             if ($configFiles == '*' || (count($configFiles) == 1 && $configFiles[0] == '*')) {
-                $files = $langDisk->allFiles($locale);
+                $files = $langDisk->allFiles($localeDirectory);
             }
             else {
-                $files = collect($langDisk->allFiles($locale))
+                $files = collect($langDisk->allFiles($localeDirectory))
                     ->filter(
                         fn($e) => in_array(pathinfo($e, PATHINFO_FILENAME), $configFiles)
                     )->values()->toArray();
@@ -83,7 +82,7 @@ class ExportLanguageCommand extends BaseCommand
                 if ($extension == 'json') {
                     $data = collect(json_decode(trim($langDisk->get($file)), !0));
                 }
-                if ($fileName == 'choice' && $locale == 'ar') {
+                if ($fileName == 'choice' && $localeDirectory == 'ar') {
                     $data = $data->map(function ($v) {
                         $res = explode('|', $v);
                         if (count($res) == 2) {
@@ -94,8 +93,8 @@ class ExportLanguageCommand extends BaseCommand
                 }
                 //$data = $data->map(fn($t) => preg_replace('/:(\w+)/', '{$1}', $t));
                 $data = $data->map(fn($t) => preg_replace_callback('/:(\w+)/', fn($m) => '{'.strtolower($m[1]).'}', $t));
-                $array[$locale][$fileName] ??= collect();
-                $array[$locale][$fileName] = $array[$locale][$fileName]->merge($data);
+                $array[$localeDirectory][$fileName] ??= collect();
+                $array[$localeDirectory][$fileName] = $array[$localeDirectory][$fileName]->merge($data);
             }
         }
         foreach ($array as $locale => $files) {

@@ -107,9 +107,6 @@ class ApiResource extends JsonResource
             "value" => $id,
             "label" => $label,
         ];
-        if (config('4myth-tools.transformer.append_text')) {
-            $main['text'] = $label;
-        }
         return static::transformResourceKeys(array_merge($main, $merge));
     }
 

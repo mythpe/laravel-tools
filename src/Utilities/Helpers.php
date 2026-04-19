@@ -10,6 +10,7 @@
 namespace Myth\LaravelTools\Utilities;
 
 use Closure;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -170,12 +171,7 @@ return [
      * @param $precision
      * @return float|null
      */
-    public static function getDistance(
-        ?array $coordinateFrom = null,
-        ?array $coordinateTo = null,
-        int    $earthRadius = 6371,
-               $precision = 2
-    ): float | null
+    public static function getDistance(?array $coordinateFrom = null, ?array $coordinateTo = null, int $earthRadius = 6371, $precision = 2): float | null
     {
         if (!$coordinateFrom || !$coordinateTo) {
             return null;
@@ -213,12 +209,7 @@ return [
         }
 
         if (!is_array($value)) {
-            $value = collect(preg_split('/\s*['.$separator.']\s*/', $value, -1, PREG_SPLIT_NO_EMPTY))
-                ->when($int, fn($collect) => $collect->filter(fn($item) => is_numeric(trim($item))))
-                ->when($int, fn($collect) => $collect->map(fn($item) => (int) (trim($item))))
-                ->when($unique, fn($collect) => $collect->unique())
-                ->values()
-                ->toArray();
+            $value = collect(preg_split('/\s*['.$separator.']\s*/', $value, -1, PREG_SPLIT_NO_EMPTY))->when($int, fn($collect) => $collect->filter(fn($item) => is_numeric(trim($item))))->when($int, fn($collect) => $collect->map(fn($item) => (int) (trim($item))))->when($unique, fn($collect) => $collect->unique())->values()->toArray();
         }
         return $value;
     }
@@ -253,13 +244,7 @@ return [
      * $data = ['name' => 'Ahmed', 'count' => 5];
      * Output: "Hello Ahmed, you have 5 messages"
      */
-    public static function parseTemplate(
-        string $string,
-        array  $data = [],
-        mixed  $context = null,
-        mixed  $default = null,
-        string $pattern = '/\{(\w+)\}/',
-    ): string
+    public static function parseTemplate(string $string, array $data = [], mixed $context = null, mixed $default = null, string $pattern = '/\{(\w+)\}/'): string
     {
         return preg_replace_callback($pattern, function ($matches) use (&$data, &$context, $default) {
             $key = $matches[1] ?? null;
@@ -368,5 +353,22 @@ return [
         }
         $locale ??= app()->getLocale();
         return Countries::getName($country, $locale);
+    }
+
+    /**
+     * @return Filesystem
+     */
+    public static function langDisk(): Filesystem
+    {
+        return Storage::disk('lang');
+    }
+
+    /**
+     * Get all available locales inside the lang directory
+     * @return array
+     */
+    public static function locales(): array
+    {
+        return array_map('basename', static::langDisk()->allDirectories());
     }
 }
