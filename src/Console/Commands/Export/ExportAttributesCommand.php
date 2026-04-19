@@ -339,7 +339,6 @@ class ExportAttributesCommand extends BaseCommand
         ]);
 
         foreach ($modelsBaseNames as $modelClass) {
-            $modelClass = "DocumentItem";
             $baseKey = Str::of($modelClass);
             $plural = $baseKey->plural()->kebab()->title()->replace('-', ' ')->toString();
             $snakePlural = $baseKey->plural()->snake()->finish('_id')->toString();
