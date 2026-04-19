@@ -35,7 +35,7 @@ class ExportAttributesCommand extends BaseCommand
 {--j|json : Use Language Files Command }
 {--s|save : save files to lang directories}
 {--c|choice : with exists choice}
-{--C|countables : with exists countables}
+{--C|countable : with exists countable}
 ';
 
     /**
@@ -64,7 +64,7 @@ class ExportAttributesCommand extends BaseCommand
         $fromOption = $this->option('from');
         $newOption = $this->option('new');
         $withChoiceOption = $this->option('choice');
-        $withCountablesOption = $this->option('countables');
+        $withCountableOption = $this->option('countable');
         $saveOption = $this->option('save');
         $jsonOption = $this->option('json');
 
@@ -76,9 +76,9 @@ class ExportAttributesCommand extends BaseCommand
             'ar' => require __DIR__.'/../../../lang/ar/choice.php',
             'en' => require __DIR__.'/../../../lang/en/choice.php',
         ];
-        $cacheCountables = [
-            'ar' => require __DIR__.'/../../../lang/ar/countables.php',
-            'en' => require __DIR__.'/../../../lang/en/countables.php',
+        $cacheCountable = [
+            'ar' => require __DIR__.'/../../../lang/ar/countable.php',
+            'en' => require __DIR__.'/../../../lang/en/countable.php',
         ];
 
         foreach ($locales as $locale) {
@@ -354,8 +354,8 @@ class ExportAttributesCommand extends BaseCommand
                     $choice[$locale] = [...$cacheChoice[$locale], ...$choice[$locale]];
                 }
 
-                if ($withCountablesOption && isset($cacheCountables[$locale])) {
-                    $choice[$locale] = [...$cacheCountables[$locale], ...$choice[$locale]];
+                if ($withCountableOption && isset($cacheCountable[$locale])) {
+                    $choice[$locale] = [...$cacheCountable[$locale], ...$choice[$locale]];
                 }
             }
         }
