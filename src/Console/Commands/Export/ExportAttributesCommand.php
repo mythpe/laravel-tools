@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Myth\LaravelTools\Console\BaseCommand;
-use Myth\LaravelTools\Controllers\Controller;
 use Myth\LaravelTools\Models\BaseModel;
 use Myth\LaravelTools\Utilities\Helpers;
 use ReflectionClass;
@@ -48,19 +47,10 @@ class ExportAttributesCommand extends BaseCommand
      * Execute the console command.
      *
      * @return void
+     * @throws \ReflectionException
      */
     public function handle(): void
     {
-        $discoveredModels = config('4myth-tools.auto_discover_models', []);
-        dd($discoveredModels);
-        $appDisk = Storage::disk('app');
-        $langDisk = Storage::disk('lang');
-        $modelsFiles = $appDisk->allFiles('Models');
-        $controllersFiles = $appDisk->allFiles('Http/Controllers');
-        $attributes = [];
-        $choice = [];
-        $additionalChoice = [];
-        $locales = $langDisk->allDirectories();
         $toOption = $this->option('to');
         $fromOption = $this->option('from');
         $newOption = $this->option('new');
@@ -68,6 +58,18 @@ class ExportAttributesCommand extends BaseCommand
         $withCountableOption = $this->option('countable');
         $saveOption = $this->option('save');
         $jsonOption = $this->option('json');
+        $appDisk = Storage::disk('app');
+        $langDisk = Helpers::langDisk();
+        $modelsPaths = config('4myth-tools.auto_discover_models_path', []);
+        $modelsFiles = [];
+        foreach ($modelsPaths as $path) {
+            $modelsFiles = array_merge($modelsFiles, $appDisk->allFiles($path));
+        }
+        $controllersFiles = $appDisk->allFiles('Http/Controllers');
+        $attributes = [];
+        $choice = [];
+        $additionalChoice = [];
+        $locales = Helpers::locales();
 
         $cacheAttrs = [
             'ar' => require __DIR__.'/../../../lang/ar/attributes.php',
@@ -81,24 +83,25 @@ class ExportAttributesCommand extends BaseCommand
             'ar' => require __DIR__.'/../../../lang/ar/countable.php',
             'en' => require __DIR__.'/../../../lang/en/countable.php',
         ];
-
-        foreach ($locales as $locale) {
-            $l = pathinfo($locale, PATHINFO_FILENAME);
-            $attributes[$l] = [];
-            $choice[$l] = [];
-        }
-        $modelsFiles = collect($modelsFiles)->filter(fn($name) => !Str::contains($name, Str::afterLast(BaseModel::class, '\\'))
-            && !Str::contains($name, ['/Pivots/'])
-        );
-        foreach ($modelsFiles as $file) {
-            $c = Str::beforeLast($file, '.php');
-            $c = str_replace(['/', '\\\\'], '\\', $c);
-            $namespace = "\App\\{$c}";
-            if (!class_exists($namespace)) {
+        $controllersFillable = collect();
+        foreach ($controllersFiles as $controllersFile) {
+            $controllerClass = Str::of($controllersFile)->beforeLast('.php')->replace('/', '\\', $controllersFile)->start('App\\');
+            $reflectionClass = new ReflectionClass($controllerClass->toString());
+            if (!$reflectionClass->isInstantiable()) {
                 continue;
             }
+            $controller = app($controllerClass->toString());
+            foreach ($reflectionClass->getMethods() as $method) {
+                $methodName = $method->getName();
+                if (($methodName == 'getRules' || starts_with($methodName, '_')) && $method->getReturnType() == 'array') {
+                    $controllersFillable = $controllersFillable->merge(array_keys($controller->{$methodName}()));
+                }
+            }
+        }
+        foreach ($modelsFiles as $modelFile) {
+            $namespace = Str::of($modelFile)->beforeLast('.php')->replace(['/', '\\\\'], '\\')->start('App\\');
             /** @var BaseModel $model */
-            $model = app($namespace);
+            $model = app($namespace->toString());
             $fillable = collect([
                 'current_password',
                 'password',
@@ -131,32 +134,15 @@ class ExportAttributesCommand extends BaseCommand
                     $additionalChoice[] = $v;
                 }
             }
-            foreach ($controllersFiles as $controller) {
-                $fileName = 'App\\'.Str::before(str_replace('/', '\\', $controller), '.php');
-                if (!class_exists($fileName)) {
-                    continue;
-                }
-                $c = app($fileName);
-                if (!$c instanceof Controller) {
-                    continue;
-                }
-                $r = new ReflectionClass($c);
-                foreach ($r->getMethods() as $method) {
-                    $methodName = $method->getName();
-                    if (($methodName == 'getRules' || starts_with($methodName, '_')) && $method->getReturnType() == 'array') {
-                        $fillable = $fillable->merge(array_keys($c->{$methodName}()));
-                    }
-                }
-            }
             $fillable = $fillable->filter(fn($value) => !is_numeric($value));
-            $class_basename = class_basename($model);
-            $classSnake = Str::snake($class_basename);
-            $classCamel = Str::camel($class_basename);
+            $class_basename = Str::of(class_basename($model));
+            $classSnake = $class_basename->snake();
+            $classCamel = $class_basename->camel();
             $classPascal = ucfirst($classCamel);
             $fillable = $fillable->merge(["{$classSnake}_id", Str::plural($classSnake)."_id"]);
 
             // Customizing
-            if ($class_basename == 'Setting' && method_exists($model, 'setting')) {
+            if ($class_basename->toString() == 'Setting' && method_exists($model, 'setting')) {
                 $fillable = $fillable->merge(array_keys($model::setting()));
             }
 
@@ -228,7 +214,6 @@ class ExportAttributesCommand extends BaseCommand
             }
             $fillable = collect($temp)->filter((fn($v) => !Str::endsWith('.*', $v)))->values()->toArray();
             sort($fillable);
-
             // # Set Attributes.
             foreach ($locales as $locale) {
                 foreach ($fillable as $attribute) {
@@ -296,7 +281,6 @@ class ExportAttributesCommand extends BaseCommand
                     }
                     $attributes[$locale] = $temp;
                 }
-
             }
             $key = Str::plural($classPascal);
             $k = "choice.$key";
