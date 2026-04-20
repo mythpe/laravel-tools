@@ -271,19 +271,20 @@ class ExportAttributesCommand extends BaseCommand
                     $attribute = $sortArray[$attribute];
                 }
                 $transKey = "attributes.$attribute";
-                $transHas = trans_has($transKey, $locale);
                 $defaultTrans = $this->defaultTranslate($attribute, $locale);
                 $transValue = $defaultTrans;
-                if ($transHas) {
+                $cashValue = $cacheAttrs[$locale][$attribute] ?? null;
+                if (trans_has($transKey, $locale)) {
                     $transValue = __($transKey, [], $locale);
                 }
-                elseif (isset($cacheAttrs[$locale][$attribute])) {
-                    $transValue = $cacheAttrs[$locale][$attribute];
+                elseif ($cashValue) {
+                    $transValue = $cashValue;
                 }
-                $hasFrom = starts_with($attribute, 'from_');
-                $hasTo = starts_with($attribute, 'to_');
+                $hasFrom = ends_with($attribute, '_from');
+                $hasTo = ends_with($attribute, '_to');
                 $strBeforeToFrom = Str::after($attribute, '_');
-                if ($hasFrom || $hasTo) {
+                if ($hasFrom) {
+                    $name = Str::beforeLast($attribute, '_from');
                     if (trans_has($t = "attributes.$strBeforeToFrom", $locale) && !Str::contains($transValue, $v = __($t, [], $locale))) {
                         if ($locale == 'ar') {
                             $transValue = sprintf($v.' %s', $hasFrom ? 'من' : ($hasTo ? 'إلى' : ''));
@@ -292,7 +293,7 @@ class ExportAttributesCommand extends BaseCommand
                             $transValue = sprintf('%s '.$v, $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
                         }
                     }
-                    elseif (isset($cacheAttrs[$locale][$attribute])) {
+                    /*elseif (isset($cacheAttrs[$locale][$attribute])) {
                         $transValue = $cacheAttrs[$locale][$attribute];
                     }
                     elseif (isset($cacheAttrs[$locale][$strBeforeToFrom])) {
@@ -303,11 +304,15 @@ class ExportAttributesCommand extends BaseCommand
                         else {
                             $transValue = sprintf('%s '.$v, $hasFrom ? 'From' : ($hasTo ? 'To' : ''));
                         }
-                    }
+                    }*/
                 }
+
                 // # No value set from cache
-                if ($transValue == $defaultTrans && isset($cacheAttrs[$locale][$attribute])) {
-                    $transValue = $cacheAttrs[$locale][$attribute];
+                if ($transValue == $defaultTrans && $cashValue) {
+                    $transValue = $cashValue;
+                }
+                if (!$transValue) {
+                    dd($transValue, $attribute, $transKey, $defaultTrans);
                 }
                 $attributes[$locale] ??= [];
                 $attributes[$locale][$attribute] = $transValue;
@@ -413,41 +418,37 @@ class ExportAttributesCommand extends BaseCommand
 
     public function defaultTranslate(string $attribute, string $locale): string
     {
-        $key = $attribute;
-        if (strtolower($attribute) == 'myth') {
+        $attribute = Str::of($attribute);
+        $locales = array_map(fn($v) => "_$v", Helpers::locales());
+        if ($attribute->lower() == 'myth') {
             return 'MyTh';
         }
-        if (trans_has($tKey = "attributes.$attribute", $locale, !1)) {
+        elseif ($attribute->endsWith('.*')) {
+            $attribute = $attribute->beforeLast('.*');
+        }
+        elseif ($attribute->contains('.*.')) {
+            $attribute = $attribute->afterLast('.*.');
+            if (trans_has($tKey = "attributes.$attribute", $locale, !0)) {
+                return __($tKey, [], $locale);
+            }
+        }
+        elseif ($attribute->length() <= 3) {
+            return $attribute->upper()->toString();
+        }
+        $last = $attribute->substr(-3);
+        if (in_array($last, ['_ar', '_en'])) {
+            $ar = $last == '_ar';
+            $attr = $attribute->beforeLast($last);
+            $label = trans_has($tk = "attributes.$attr", $locale, !1) ? __($tk, [], $locale) : $attr->title()->replace('_', ' ')->toString();
+            return (!$ar ? ($last == '_en' ? "English" : "Arabic") : '')."$label ".($ar ? ($last == '_en' ? "بالإنجليزية" : "بالعربية") : '');
+        }
+        if (trans_has($tKey = "attributes.$attribute", $locale, !0)) {
             return __($tKey, [], $locale);
         }
-        if (strlen($attribute) == 3) {
-            $attribute = strtoupper($attribute);
-        }
-        elseif (strlen($attribute) > 3) {
-            $attribute = Str::of($attribute);
-            if (Str::endsWith('_id', $attribute)) {
-                $attribute = $attribute->beforeLast('_id');
-            }
-            $attribute = $attribute->snake()->title()->replace('_', ' ')->ucfirst();
-            if ($attribute->contains('.*.')) {
-                $attribute = Str::of($key);
-                $attribute = $attribute->endsWith('.*.id') ? $attribute->before('.*.') : $attribute->afterLast('.*.');
-                // dd($attribute);
-                if (trans_has($tKey = "attributes.".$attribute->lower()->snake(), $locale, !0)) {
-                    $attribute = __($tKey, [], $locale);
-                }
-            }
-        }
-        $last = substr($key, -3);
-        if (in_array($last, ['_ar', '_en'])) {
-            $attribute = substr($attribute, 0, -3);
-            if ($locale == 'ar') {
-                $attribute = "$attribute ".($last == '_en' ? "بالإنجليزية" : "بالعربية");
-            }
-            else {
-                $attribute = ($last == '_en' ? "English" : "Arabic")." $attribute";
-            }
-        }
-        return $attribute;
+        return Str::of($attribute)
+            ->replaceMatches('/(\.\*|\.id|_id)$/', '')
+            ->replaceMatches('/[^a-zA-Z0-9]+/', ' ')
+            ->replaceMatches('/\s+/', ' ')
+            ->trim(' .*')->title()->toString();
     }
 }
