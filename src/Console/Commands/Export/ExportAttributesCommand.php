@@ -98,6 +98,7 @@ class ExportAttributesCommand extends BaseCommand
             'control',
             'avatar',
             'avatar_url',
+            'status',
         ]);
         foreach ($controllersFiles as $controllersFile) {
             $controllerClass = Str::of($controllersFile)->beforeLast('.php')->replace('/', '\\', $controllersFile)->start('App\\');
