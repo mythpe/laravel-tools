@@ -259,14 +259,22 @@ return [
         }, $string);
     }
 
+
     /**
      * @param string|null $search
-     * @param array $searchBy
+     * @param string[] $searchBy
      * @param array|null $codes
      * @param array|null $locale
+     * @param string[]|null $sort
      * @return array
      */
-    public static function countries(?string $search = null, array $searchBy = [], ?array $codes = null, ?array $locale = null): array
+    public static function countries(
+        ?string $search = null,
+        ?array  $searchBy = null,
+        ?array  $codes = null,
+        ?array  $locale = null,
+        ?array  $sort = null,
+    ): array
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
         if (empty($codes)) {
@@ -317,8 +325,13 @@ return [
             $countries[] = $data;
         }
         usort($countries, function ($a, $b) {
-            return strcmp($a['key'], $b['key']);
+            return strcmp(intval($a['key']), intval($b['key']));
         });
+        if (!empty($sort)) {
+            $sorted = array_values(array_filter($countries, fn($c) => in_array($c['id'], $sort)));
+            $countries = array_values(array_filter($countries, fn($c) => !in_array($c['id'], $sort)));
+            return [...$sorted, ...$countries];
+        }
         return $countries;
     }
 
