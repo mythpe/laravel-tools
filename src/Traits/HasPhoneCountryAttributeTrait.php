@@ -10,15 +10,17 @@
 namespace Myth\LaravelTools\Traits;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use libphonenumber\PhoneNumberUtil;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
 /**
  * @property PhoneNumber $phone
- * @property string $phone_country
- * @property string $phone_to_string as phone normalized without [+].
- * @property string $phone_normalized country code without [+].
- * @property string $phone_international as a database save with [+].
- * @property string $phone_national Normal phone. Local.
+ * @property null|string $phone_country
+ * @property null|string $phone_to_string as phone normalized without [+].
+ * @property null|string $phone_normalized country code without [+].
+ * @property null|string $phone_international as a database save with [+].
+ * @property null|string $phone_national Normal phone. Local.
+ * @property null|string $phone_dialing Normal phone. Local no zero.
  */
 trait HasPhoneCountryAttributeTrait
 {
@@ -95,5 +97,23 @@ trait HasPhoneCountryAttributeTrait
     protected function phoneNormalized(): Attribute
     {
         return Attribute::get(fn() => preg_replace('/\D/', '', $this->{$this->phoneAttributeKey()}?->formatE164() ?? ''));
+    }
+
+    /**
+     * $this->phone_dialing
+     * without country code without [+]
+     *
+     * @return Attribute
+     */
+    protected function phoneDialing(): Attribute
+    {
+        return Attribute::get(function () {
+            if ($phone = $this->{$this->phoneAttributeKey()}?->formatE164()) {
+                $phoneUtil = PhoneNumberUtil::getInstance();
+                $dialing = $phoneUtil->getCountryCodeForRegion($this->{$this->phoneCountryAttributeKey()});
+                return str_replace("+$dialing", '', $phone);
+            }
+            return null;
+        });
     }
 }
