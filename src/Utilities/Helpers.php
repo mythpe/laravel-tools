@@ -259,13 +259,13 @@ return [
         }, $string);
     }
 
-
     /**
      * @param string|null $search
      * @param string[] $searchBy
      * @param array|null $codes
      * @param array|null $locale
      * @param string[]|null $sort
+     * @param bool $onlyCodes
      * @return array
      */
     public static function countries(
@@ -274,6 +274,7 @@ return [
         ?array  $codes = null,
         ?array  $locale = null,
         ?array  $sort = null,
+        bool    $onlyCodes = !1,
     ): array
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
@@ -324,15 +325,14 @@ return [
             }
             $countries[] = $data;
         }
-        usort($countries, function ($a, $b) {
-            return strcmp(intval($a['key']), intval($b['key']));
-        });
+        usort($countries, fn($a, $b) => strcmp(intval($a['key']), intval($b['key'])));
+        $return = fn(array $values) => $onlyCodes ? array_column($values, 'id') : $values;
         if (!empty($sort)) {
             $sorted = array_values(array_filter($countries, fn($c) => in_array($c['id'], $sort)));
             $countries = array_values(array_filter($countries, fn($c) => !in_array($c['id'], $sort)));
-            return [...$sorted, ...$countries];
+            return $return([...$sorted, ...$countries]);
         }
-        return $countries;
+        return $return($countries);
     }
 
     /**
