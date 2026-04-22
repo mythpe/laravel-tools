@@ -25,7 +25,7 @@ if (!function_exists('mythAllowHeaders')) {
      */
     function mythAllowHeaders(int $code = 600): void
     {
-        if (!app()->runningInConsole() || !app()->runningUnitTests()) {
+        if (!app()->runningInConsole()) {
             header('Access-Control-Allow-Origin: *');
             header('Access-Control-Allow-Methods: *');
             header('Access-Control-Allow-Headers: *');
