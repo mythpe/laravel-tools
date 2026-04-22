@@ -171,7 +171,12 @@ return [
      * @param $precision
      * @return float|null
      */
-    public static function getDistance(?array $coordinateFrom = null, ?array $coordinateTo = null, int $earthRadius = 6371, $precision = 2): float | null
+    public static function getDistance(
+        ?array $coordinateFrom = null,
+        ?array $coordinateTo = null,
+        int    $earthRadius = 6371,
+               $precision = 2
+    ): float | null
     {
         if (!$coordinateFrom || !$coordinateTo) {
             return null;
@@ -209,7 +214,10 @@ return [
         }
 
         if (!is_array($value)) {
-            $value = collect(preg_split('/\s*['.$separator.']\s*/', $value, -1, PREG_SPLIT_NO_EMPTY))->when($int, fn($collect) => $collect->filter(fn($item) => is_numeric(trim($item))))->when($int, fn($collect) => $collect->map(fn($item) => (int) (trim($item))))->when($unique, fn($collect) => $collect->unique())->values()->toArray();
+            $value = collect(preg_split('/\s*['.$separator.']\s*/', $value, -1, PREG_SPLIT_NO_EMPTY))->when($int,
+                fn($collect) => $collect->filter(fn($item) => is_numeric(trim($item))))->when($int,
+                fn($collect) => $collect->map(fn($item) => (int) (trim($item))))->when($unique,
+                fn($collect) => $collect->unique())->values()->toArray();
         }
         return $value;
     }
@@ -244,7 +252,13 @@ return [
      * $data = ['name' => 'Ahmed', 'count' => 5];
      * Output: "Hello Ahmed, you have 5 messages"
      */
-    public static function parseTemplate(string $string, array $data = [], mixed $context = null, mixed $default = null, string $pattern = '/\{(\w+)\}/'): string
+    public static function parseTemplate(
+        string $string,
+        array  $data = [],
+        mixed  $context = null,
+        mixed  $default = null,
+        string $pattern = '/\{(\w+)\}/'
+    ): string
     {
         return preg_replace_callback($pattern, function ($matches) use (&$data, &$context, $default) {
             $key = $matches[1] ?? null;
@@ -264,7 +278,9 @@ return [
      * @param string[] $searchBy
      * @param array|null $codes
      * @param array|null $locale
-     * @param string[]|null $sort
+     * @param string[]|null $sortCodes
+     * @param string $sortBy
+     * @param null $uniqueBy
      * @param bool $onlyCodes
      * @return array
      */
@@ -273,45 +289,48 @@ return [
         ?array  $searchBy = null,
         ?array  $codes = null,
         ?array  $locale = null,
-        ?array  $sort = null,
+        ?array  $sortCodes = null,
+        string  $sortBy = 'key',
+                $uniqueBy = null,
         bool    $onlyCodes = !1,
     ): array
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
+        $locale ??= app()->getLocale();
         if (empty($codes)) {
             $codes = $phoneUtil->getSupportedRegions();
         }
         $countries = [];
-        $arNames = Countries::getNames('ar');
-        $enNames = Countries::getNames('en');
-        $locale ??= app()->getLocale();
+        $locales = static::locales();
         foreach ($codes as $countryCode) {
             $countryCode = strtoupper($countryCode);
             $countryCallingCode = $phoneUtil->getCountryCodeForRegion($countryCode);
-            $ar = $arNames[$countryCode] ?? null;
-            $en = $enNames[$countryCode] ?? null;
             $id = $countryCode;
             $key = "$countryCallingCode";
-            $name = $locale == 'ar' ? $ar : $en;
-            $found = !$search;
+            $codeWithKey = "$id • $key";
+            $label = static::getCountryDisplayName($id, $locale) ?: $codeWithKey;
+            $found = empty($search);
+            $_names = [];
+            foreach ($locales as $lang) {
+                $_names["name_$lang"] = static::getCountryDisplayName($id, $lang);
+            }
             $data = [
                 'id'         => $id,
                 'value'      => $id,
-                'label'      => $name,
+                'label'      => $label,
+                'name'       => $label,
                 'code'       => $id,
                 'code_label' => "$id • $key",
                 'code_key'   => "$id • $key",
                 'code_code'  => $id,
-                'name'       => $name,
-                'name_ar'    => $ar,
-                'name_en'    => $en,
                 'key'        => $key,
                 'flag'       => static::countryCodeToFlag($countryCode),
+                ...$_names,
             ];
-            if ($search) {
+            if (!empty($search)) {
                 $search = strtolower($search);
                 if (empty($searchBy)) {
-                    $searchBy = ['name', 'name_ar', 'name_en', 'key'];
+                    $searchBy = ['name', ...$_names, 'key'];
                 }
                 foreach ($searchBy as $searchField) {
                     if (($data[$searchField] ?? null) && str_contains(strtolower($data[$searchField]), $search)) {
@@ -325,14 +344,32 @@ return [
             }
             $countries[] = $data;
         }
-        usort($countries, fn($a, $b) => strcmp(intval($a['key']), intval($b['key'])));
+        // usort($countries, fn($a, $b) => strcmp(intval($a['key']), intval($b['key'])));
+        $countries = collect($countries)->sortBy($sortBy)->when(!empty($uniqueBy), fn($v) => $v->unique($uniqueBy))->values()->toArray();
         $return = fn(array $values) => $onlyCodes ? array_column($values, 'id') : $values;
-        if (!empty($sort)) {
-            $sorted = array_values(array_filter($countries, fn($c) => in_array($c['id'], $sort)));
-            $countries = array_values(array_filter($countries, fn($c) => !in_array($c['id'], $sort)));
+        if (!empty($sortCodes)) {
+            $sorted = array_values(array_filter($countries, fn($c) => in_array($c['id'], $sortCodes)));
+            $countries = array_values(array_filter($countries, fn($c) => !in_array($c['id'], $sortCodes)));
             return $return([...$sorted, ...$countries]);
         }
         return $return($countries);
+    }
+
+    /**
+     * Get all available locales inside the lang directory
+     * @return array
+     */
+    public static function locales(): array
+    {
+        return array_map('basename', static::langDisk()->allDirectories());
+    }
+
+    /**
+     * @return Filesystem
+     */
+    public static function langDisk(): Filesystem
+    {
+        return Storage::disk('lang');
     }
 
     /**
@@ -361,27 +398,16 @@ return [
      */
     public static function getCountryDisplayName($country, ?string $locale = null): ?string
     {
-        if (!$country) {
-            return null;
+        try {
+
+            if (!$country) {
+                return null;
+            }
+            $locale ??= app()->getLocale();
+            return Countries::getName($country, $locale);
         }
-        $locale ??= app()->getLocale();
-        return Countries::getName($country, $locale);
-    }
-
-    /**
-     * @return Filesystem
-     */
-    public static function langDisk(): Filesystem
-    {
-        return Storage::disk('lang');
-    }
-
-    /**
-     * Get all available locales inside the lang directory
-     * @return array
-     */
-    public static function locales(): array
-    {
-        return array_map('basename', static::langDisk()->allDirectories());
+        catch (\Exception $e) {
+        }
+        return $country;
     }
 }
