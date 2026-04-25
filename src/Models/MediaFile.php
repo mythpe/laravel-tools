@@ -31,13 +31,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class MediaFile extends Media
 {
-    public const EXCEL_EXT = ['xlsx', 'xlsm', 'xltx', 'xltm', 'xls', 'xlt', 'csv'];
-    public const TYPE_PDF = 'pdf';
-    public const TYPE_EXCEL = 'excel';
-    public const TYPE_IMAGE = 'image';
-    public const TYPE_AUDIO = 'audio';
-    public const TYPE_VIDEO = 'video';
-    public const HASH_PDF_MIMES = [
+    public const CONST_EXCEL_EXT = ['xlsx', 'xlsm', 'xltx', 'xltm', 'xls', 'xlt', 'csv'];
+    public const CONST_PDF_TYPE = 'pdf';
+    public const CONST_EXCEL_TYPE = 'excel';
+    public const CONST_IMAGE_TYPE = 'image';
+    public const CONST_AUDIO_TYPE = 'audio';
+    public const CONST_VIDEO_TYPE = 'video';
+    public const CONST_PDF_MIMES = [
         'application/pdf',
         'application/x-pdf',
         'application/acrobat',
@@ -106,19 +106,19 @@ class MediaFile extends Media
         return Attribute::get(function () {
             $type = $this->getTypeFromExtension();
             if ($this->is_excel) {
-                return static::TYPE_EXCEL;
+                return static::CONST_EXCEL_TYPE;
             }
 
             if ($this->is_pdf) {
-                return static::TYPE_PDF;
+                return static::CONST_PDF_TYPE;
             }
 
             if ($this->is_video) {
-                return static::TYPE_VIDEO;
+                return static::CONST_VIDEO_TYPE;
             }
 
             if ($this->is_audio) {
-                return static::TYPE_AUDIO;
+                return static::CONST_AUDIO_TYPE;
             }
 
             if ($type !== static::TYPE_OTHER) {
@@ -174,7 +174,7 @@ class MediaFile extends Media
     protected function isImage(): Attribute
     {
         return Attribute::get(function () {
-            return Str::startsWith($this->mime_type, static::TYPE_IMAGE);
+            return Str::startsWith($this->mime_type, static::CONST_IMAGE_TYPE);
         });
     }
 
@@ -185,7 +185,7 @@ class MediaFile extends Media
     {
         return Attribute::get(function () {
             $ext = strtolower($this->extension ?: '');
-            return $ext == static::TYPE_PDF && in_array($this->mime_type, static::HASH_PDF_MIMES);
+            return $ext == static::CONST_PDF_TYPE && in_array($this->mime_type, static::CONST_PDF_MIMES);
         });
     }
 
@@ -197,7 +197,7 @@ class MediaFile extends Media
         return Attribute::get(function () {
             $ext = strtolower($this->extension ?: '');
             $type = $this->getTypeFromExtension();
-            return in_array($ext, static::EXCEL_EXT) && strtolower($type) === static::TYPE_OTHER;
+            return in_array($ext, static::CONST_EXCEL_EXT) && strtolower($type) === static::TYPE_OTHER;
         });
     }
 
@@ -207,7 +207,7 @@ class MediaFile extends Media
     protected function isVideo(): Attribute
     {
         return Attribute::get(function () {
-            return Str::startsWith($this->mime_type, static::TYPE_VIDEO);
+            return Str::startsWith($this->mime_type, static::CONST_VIDEO_TYPE);
         });
     }
 
@@ -217,7 +217,7 @@ class MediaFile extends Media
     protected function isAudio(): Attribute
     {
         return Attribute::get(function () {
-            return Str::startsWith($this->mime_type, static::TYPE_AUDIO);
+            return Str::startsWith($this->mime_type, static::CONST_AUDIO_TYPE);
         });
     }
 
