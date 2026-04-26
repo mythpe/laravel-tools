@@ -410,4 +410,20 @@ return [
         }
         return $country;
     }
+
+    /**
+     * @param string|int|null $index
+     * @return string
+     */
+    public static function getColumnLetter(string | int | null $index = null): string
+    {
+        $letter = '';
+        $index = intval($index ?? 0);
+        while ($index > 0) {
+            $temp = ($index - 1) % 26;
+            $letter = chr($temp + 65).$letter;
+            $index = intdiv($index - $temp, 26);
+        }
+        return strtoupper($letter ?: 'a');
+    }
 }
