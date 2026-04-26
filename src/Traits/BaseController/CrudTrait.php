@@ -144,13 +144,8 @@ trait CrudTrait
      */
     public static function registerModelEvent(string $event, callable | string $callback): void
     {
-        if (!isset(static::$modelEvents[$event])) {
-            static::$modelEvents[$event] = [];
-        }
         $className = static::class;
-        if (!isset(static::$modelEvents[$event][$className])) {
-            static::$modelEvents[$event][$className] = [];
-        }
+        static::$modelEvents[$event][$className] ??= [];
         static::$modelEvents[$event][$className][] = $callback;
     }
 
@@ -180,7 +175,9 @@ trait CrudTrait
     }
 
     /**
-     * @return JsonResponse|mixed
+     * @return JsonResponse|mixed|void
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function indexActiveOnly()
     {
@@ -189,7 +186,9 @@ trait CrudTrait
     }
 
     /**
-     * @return JsonResponse|mixed
+     * @return JsonResponse|mixed|void
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function allIndex()
     {
@@ -199,13 +198,15 @@ trait CrudTrait
     }
 
     /**
-     * @return JsonResponse|mixed
+     * @return JsonResponse|mixed|void
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function index()
     {
-        /** @var Builder $query */
         $query = static::$controllerModel;
         $args = func_get_args();
+        /** @var Builder $query */
         $query = ($args[0] ?? $query::query());
         $transformer = ($args[1] ?? $this->getIndexTransformer());
         $excelClass = ($args[2] ?? null);
@@ -416,7 +417,7 @@ trait CrudTrait
     }
 
     /**
-     * Insert auto image of model
+     * Insert auto image of a model
      * @param Model $model
      *
      * @return mixed|void
