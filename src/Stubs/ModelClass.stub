@@ -9,7 +9,7 @@ class {studlySingular} extends BaseModel
 {
     {class_use}
     /**
-     * The attributes that are mass assignable.
+     * The attributes that are mass-assignable.
      *
      * @var array<int, string>
      */

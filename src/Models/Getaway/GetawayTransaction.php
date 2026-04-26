@@ -50,7 +50,7 @@ class GetawayTransaction extends BaseModel
     use GetawayActionsTrait;
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that are mass-assignable.
      *
      * @var array
      */

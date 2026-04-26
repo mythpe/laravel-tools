@@ -18,7 +18,7 @@ class AttributeLog extends BaseModel
     use SoftDeletes;
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that are mass-assignable.
      *
      * @var array
      */
