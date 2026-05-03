@@ -58,9 +58,10 @@ trait ModelMediaControllerTrait
             }
         }
         catch (Exception $exception) {
-            return $this->errorResponse($exception->getMessage());
+            $errorMessage = developmentMode() ? $exception->getMessage() : __('messages.uploaded_failed');
+            return $this->errorResponse($errorMessage);
         }
-        return $this->resource($this->getModelAttachmentsMedia($model), __("messages.uploaded_success"));
+        return $this->resource($this->getModelAttachmentsMedia($model), __('messages.uploaded_success'));
     }
 
     /**
@@ -76,22 +77,30 @@ trait ModelMediaControllerTrait
                     'image/*',
                     'audio/*',
                     'video/*',
-                    'application/*',
+                    //'application/*',
                 ])->extensions([
-                    // 'pdf',
-                    // 'docx',
-                    // 'doc',
-                    // 'dot',
-                    // 'docm',
-                    // 'rtf',
-                    // 'xlsx',
-                    // 'xlsm',
-                    // 'xltx',
-                    // 'xltm',
-                    // 'xls',
-                    // 'xlt',
-                    // 'csv',
-                ])->max(config('media-library.max_file_size', '10MB')),
+                    'jpg',
+                    'jpeg',
+                    'png',
+                    'mp3',
+                    'wav',
+                    'mp4',
+                    'mov',
+                    'avi',
+                    'pdf',
+                    'doc',
+                    'docx',
+                    'dot',
+                    'docm',
+                    'rtf',
+                    'xlsx',
+                    'xlsm',
+                    'xltx',
+                    'xltm',
+                    'xls',
+                    'xlt',
+                    'csv',
+                ])->max(config('media-library.max_file_size', '5MB')),
             ],
         ];
     }
