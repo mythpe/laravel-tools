@@ -13,22 +13,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-/**
- * @property string $type
- * @property-read string $model_type_to_string
- * @property-read string $type_to_string
- * @property-read string $size_to_string
- * @property-read bool $is_image
- * @property-read bool $is_pdf
- * @property-read bool $is_excel
- * @property-read bool $is_video
- * @property-read bool $is_audio
- * @property-read string $description
- * @property-read string $attachment_type
- * @property-read string $collection_to_string
- * @property-read string $download_url
- * @property-read string $url
- */
 class MediaFile extends Media
 {
     public const CONST_EXCEL_EXT = ['xlsx', 'xlsm', 'xltx', 'xltm', 'xls', 'xlt', 'csv'];
@@ -226,75 +210,100 @@ class MediaFile extends Media
      */
     protected function description(): Attribute
     {
-        return Attribute::get(function () {
-            $attachmentType = $this->attachment_type;
-            if (!empty($attachmentType)) {
-                return $attachmentType;
-            }
-
-            $collectionToString = $this->collection_to_string;
-            if (!empty($collectionToString)) {
-                return $collectionToString;
-            }
-
-            $customProperties = $this->custom_properties ?: [];
-            $string = $customProperties['description'] ?? null;
-            if ($string) {
-                if (trans_has(($k = "attributes.$string"))) {
-                    $string = __($k);
-                }
-                elseif (trans_has(($k = "media.$string"))) {
-                    $string = __($k);
-                }
-                return $string;
-            }
-
-            return '';
-        });
+        return Attribute::get(
+            fn() => $this->getAttrToString($this->custom_properties['description'] ?? null)
+        );
+        // return Attribute::get(function () {
+        //     $attachmentType = $this->attachment_type;
+        //     if (!empty($attachmentType)) {
+        //         return $attachmentType;
+        //     }
+        //
+        //     $collectionToString = $this->collection_to_string;
+        //     if (!empty($collectionToString)) {
+        //         return $collectionToString;
+        //     }
+        //
+        //     $customProperties = $this->custom_properties ?: [];
+        //     $string = $customProperties['description'] ?? null;
+        //     if ($string) {
+        //         if (trans_has(($k = "attributes.$string"))) {
+        //             $string = __($k);
+        //         }
+        //         elseif (trans_has(($k = "media.$string"))) {
+        //             $string = __($k);
+        //         }
+        //         return $string;
+        //     }
+        //
+        //     return '';
+        // });
     }
 
     /**
+     * $this->attachment_type
      * @return Attribute
      */
     protected function attachmentType(): Attribute
     {
-        return Attribute::get(function () {
-            $customProperties = $this->custom_properties ?: [];
-            $string = $customProperties['attachment_type'] ?? null;
-            if ($string) {
-                if (trans_has(($k = "attributes.$string"))) {
-                    $string = __($k);
-                }
-                elseif (trans_has(($k = "media.$string"))) {
-                    $string = __($k);
-                }
-                return $string;
-            }
-            return '';
-        });
+        return Attribute::get(
+            fn() => $this->getAttrToString($this->custom_properties['attachment_type'] ?? null)
+        );
+        // return Attribute::get(function () {
+        //     $customProperties = $this->custom_properties ?: [];
+        //     $string = $customProperties['attachment_type'] ?? null;
+        //     if ($string) {
+        //         if (trans_has(($k = "attributes.$string"))) {
+        //             $string = __($k);
+        //         }
+        //         elseif (trans_has(($k = "media.$string"))) {
+        //             $string = __($k);
+        //         }
+        //         return $string;
+        //     }
+        //     return '';
+        // });
     }
 
     /**
+     * $this->collection_to_string
      * @return Attribute
      */
     protected function collectionToString(): Attribute
     {
-        return Attribute::get(function () {
-            $string = $this->collection_name;
-            if ($string) {
-                if (trans_has(($k = "attributes.$string"))) {
-                    $string = __($k);
-                }
-                elseif (trans_has(($k = "media.$string"))) {
-                    $string = __($k);
-                }
-                return $string;
-            }
-            return '';
-        });
+        return Attribute::get(
+            fn() => $this->getAttrToString($this->collection_name) ?: ucfirst($this->collection_name ?: '')
+        );
     }
 
     /**
+     * @param mixed $string
+     * @return string|null
+     */
+    protected function getAttrToString(mixed $string): ?string
+    {
+        if (empty($string)) {
+            return null;
+        }
+        if (is_string($string)) {
+            if (trans_has(($string))) {
+                $string = __($string);
+            }
+            elseif (trans_has(($k = "attributes.$string"))) {
+                $string = __($k);
+            }
+            elseif (trans_has(($k = "media.$string"))) {
+                $string = __($k);
+            }
+            elseif (trans_has(($k = "labels.$string"))) {
+                $string = __($k);
+            }
+        }
+        return $string ?: null;
+    }
+
+    /**
+     * $this->download_url
      * @return Attribute
      */
     protected function downloadUrl(): Attribute
@@ -305,6 +314,7 @@ class MediaFile extends Media
     }
 
     /**
+     * $this->url
      * @return Attribute
      */
     protected function url(): Attribute
