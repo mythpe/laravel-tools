@@ -104,6 +104,7 @@ class ExportAttributesCommand extends BaseCommand
             'export',
             'download',
             'upload',
+            'attachments',
         ]);
         foreach ($controllersFiles as $controllersFile) {
             $controllerClass = Str::of($controllersFile)->beforeLast('.php')->replace('/', '\\', $controllersFile)->start('App\\');
