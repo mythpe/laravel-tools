@@ -113,11 +113,14 @@ trait SortTrait
             foreach ($sortBy as $k => $column) {
                 $value = $sortDesc[$k] ?? false;
                 $direction = ((trim(strtolower($value)) === 'true' || $value === true || $value == 1) ? 'desc' : 'asc');
-                $last = ['ToString', '_to_string', '_to_yes', 'ToYes'];
+                $last = ['ToString', 'ToYes', '_to_string', '_to_yes'];
                 foreach ($last as $str) {
                     $column = Str::beforeLast($column, $str);
                 }
-                $column = $this->getMapSortColumns($column);
+                $map = $this->getMapSortColumns($column);
+                if (!is_array($map)) {
+                    $column = $map;
+                }
                 $hasColumn = Schema::hasColumn($table, $column);
                 $hasScope = array_key_exists($column, $this->orderByScopes);
                 $scope = ($this->orderByScopes[$column] ?? null);
@@ -174,8 +177,15 @@ trait SortTrait
                     }
                 }
                 elseif ($this->hasMapSortColumns($column)) {
-                    //d(1);
-                    $query->orderBy($this->getMapSortColumns($column), $direction);
+                    $columns = $this->getMapSortColumns($column);
+                    if (is_array($columns)) {
+                        foreach ($columns as $col) {
+                            $query->orderBy($col, $direction);
+                        }
+                    }
+                    else {
+                        $query->orderBy($columns, $direction);
+                    }
                 }
                 if ($hasScope) {
                     //d($scope,$direction);
@@ -191,9 +201,9 @@ trait SortTrait
     /**
      * @param $column
      *
-     * @return string
+     * @return string|array
      */
-    protected function getMapSortColumns($column): string
+    protected function getMapSortColumns($column): string | array
     {
         return ($this->mapSortColumns[$column] ?? $column);
     }
@@ -205,6 +215,6 @@ trait SortTrait
      */
     protected function hasMapSortColumns($column): bool
     {
-        return array_key_exists($column, $this->mapSortColumns);
+        return !empty($this->mapSortColumns[$column] ?? null);
     }
 }
