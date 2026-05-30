@@ -124,35 +124,8 @@ trait SortTrait
                 $hasColumn = Schema::hasColumn($table, $column);
                 $hasScope = array_key_exists($column, $this->orderByScopes);
                 $scope = ($this->orderByScopes[$column] ?? null);
-                // || (
-                //     Str::endsWith($column, ($s = 'ToString')) && ($column = Str::beforeLast($column, $s))
-                //     && Schema::hasColumn($table, $column)
-                // )
-                // || (
-                //     Str::endsWith($column, ($s = '_to_string')) && ($column = Str::beforeLast($column, $s))
-                //     && Schema::hasColumn($table, $column)
-                // )
-                // || (
-                //     Str::endsWith($column, ($s = '_to_yes')) && ($column = Str::beforeLast($column, $s))
-                //     && Schema::hasColumn($table, $column)
-                // );
-
-                // if (
-                //     Schema::hasColumn($query->getModel()->getTable(), $column)
-                //     || (Str::endsWith($column, ($s = 'ToString')) && ($column = Str::beforeLast($column, $s))
-                //         && Schema::hasColumn($query->getModel()->getTable(), $column))
-                // ) {
-                //     $query->orderBy($column, $direction);
-                //     continue;
-                // }
-
-                // if (Str::endsWith($column, ($s = 'ToString')) && ($column = Str::beforeLast($column, $s))
-                //     && Schema::hasColumn($query->getModel()->getTable(), $column)
-                // ) {
-                //     $query->orderBy($column, $direction);
-                //     continue;
-                // }
-                if (($hasColumn || $hasScope) && !$emptyBaseOrder) {
+                $hasEmpty = $hasColumn || $hasScope || $this->hasMapSortColumns($column);
+                if ($hasEmpty && !$emptyBaseOrder) {
                     $emptyBaseOrder = true;
                     if ($query->getQuery() instanceof \Illuminate\Database\Query\Builder) {
                         $query->getQuery()->orders = [];
@@ -161,14 +134,19 @@ trait SortTrait
                         $query->getQuery()->getQuery()->orders = [];
                     }
                 }
-                //$hasColumn && !$emptyBaseOrder && ($emptyBaseOrder = true);
-                //$emptyBaseOrder && ($query->getQuery()->orders = []);
-                //$hasColumn && $query->orderBy($column, $direction);
-                //$hasColumn && $query->orderByRaw("CONVERT({$column}, SIGNED) {$direction}");
-                //$direction = strtoupper($direction);
-                //$hasColumn && $query->orderByRaw("CONVERT(`{$column}`, UNSIGNED) {$direction}");
 
-                if ($hasColumn) {
+                if ($this->hasMapSortColumns($column)) {
+                    $columns = $this->getMapSortColumns($column);
+                    if (is_array($columns)) {
+                        foreach ($columns as $col) {
+                            $query = $query->orderBy($col, $direction);
+                        }
+                    }
+                    else {
+                        $query->orderBy($columns, $direction);
+                    }
+                }
+                elseif ($hasColumn) {
                     if (array_key_exists($column, $this->orderByRawColumns)) {
                         $query->orderByRaw("CONVERT(`{$column}`, {$this->orderByRawColumns[$column]}) {$direction}");
                     }
@@ -176,21 +154,9 @@ trait SortTrait
                         $query->orderBy($column, $direction);
                     }
                 }
-                elseif ($this->hasMapSortColumns($column)) {
-                    $columns = $this->getMapSortColumns($column);
-                    if (is_array($columns)) {
-                        foreach ($columns as $col) {
-                            $query->orderBy($col, $direction);
-                        }
-                    }
-                    else {
-                        $query->orderBy($columns, $direction);
-                    }
-                }
+
                 if ($hasScope) {
-                    //d($scope,$direction);
                     $query = $model->{$scope}($query, $direction);
-                    //d($query->getQuery()->orders);
                 }
             }
         }
