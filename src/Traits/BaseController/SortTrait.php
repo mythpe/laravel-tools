@@ -112,7 +112,7 @@ trait SortTrait
 
             foreach ($sortBy as $k => $column) {
                 $value = $sortDesc[$k] ?? false;
-                $direction = ((trim(strtolower($value)) === 'true' || $value === true || $value == 1) ? 'desc' : 'asc');
+                $direction = ((trim(strtolower($value)) == 'true' || $value === true || $value == 1) ? 'desc' : 'asc');
                 $last = ['ToString', 'ToYes', '_to_string', '_to_yes'];
                 foreach ($last as $str) {
                     $column = Str::beforeLast($column, $str);
