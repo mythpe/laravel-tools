@@ -115,7 +115,7 @@ class ExportAttributesCommand extends BaseCommand
             $controller = app($controllerClass->toString());
             foreach ($reflectionControllerClass->getMethods() as $method) {
                 $methodName = $method->getName();
-                if (($methodName == 'getRules' || starts_with($methodName, '_')) && $method->getReturnType() == 'array') {
+                if (($methodName == 'getRules' || (starts_with($methodName, '_') && ends_with($methodName, 'Rules'))) && $method->getReturnType() == 'array') {
                     $translates = $translates->merge(array_keys($controller->{$methodName}()));
                     $logArray['controllers'][$reflectionControllerClass->getName()] ??= [];
                     $logArray['controllers'][$reflectionControllerClass->getName()][] = $methodName;
