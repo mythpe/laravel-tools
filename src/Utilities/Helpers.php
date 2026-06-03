@@ -81,11 +81,11 @@ class Helpers
             if ($isPhp) {
                 $content = "<?php
 /*
- * MyTh Ahmed Faiz Copyright © 2016-$year All rights reserved.
+ * MyTh Ahmed Faiz Copyright © $year. All rights reserved.
  * Email: mythpe@gmail.com
  * Mobile: +966590470092
  * Website: https://www.4myth.com
- * Github: https://github.com/mythpe
+ * GitHub: https://github.com/mythpe
  */
 
 return [
